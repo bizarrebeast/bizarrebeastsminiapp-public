@@ -7,7 +7,7 @@ export default function Home() {
       {/* Hero Section */}
       <section className="relative px-4 py-20 text-center">
         <div className="max-w-4xl mx-auto">
-          <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+          <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-gem-gold via-gem-crystal to-gem-blue bg-clip-text text-transparent">
             Welcome to BizarreBeasts
           </h1>
           <p className="text-xl text-gray-300 mb-8">
@@ -16,16 +16,16 @@ export default function Home() {
           
           {/* Quick Stats */}
           <div className="grid grid-cols-3 gap-4 max-w-2xl mx-auto mb-12">
-            <div className="bg-gray-800 rounded-lg p-4">
-              <div className="text-2xl font-bold text-purple-400">$BB</div>
+            <div className="bg-dark-card border border-gem-gold/20 rounded-lg p-4 transition-all duration-300">
+              <div className="text-2xl font-bold text-gem-gold">$BB</div>
               <div className="text-sm text-gray-400">Token</div>
             </div>
-            <div className="bg-gray-800 rounded-lg p-4">
-              <div className="text-2xl font-bold text-pink-400">1000+</div>
+            <div className="bg-dark-card border border-gem-crystal/20 rounded-lg p-4 transition-all duration-300">
+              <div className="text-2xl font-bold text-gem-crystal">1000+</div>
               <div className="text-sm text-gray-400">Holders</div>
             </div>
-            <div className="bg-gray-800 rounded-lg p-4">
-              <div className="text-2xl font-bold text-blue-400">5</div>
+            <div className="bg-dark-card border border-gem-blue/20 rounded-lg p-4 transition-all duration-300">
+              <div className="text-2xl font-bold text-gem-blue">5</div>
               <div className="text-sm text-gray-400">Games</div>
             </div>
           </div>
@@ -34,14 +34,14 @@ export default function Home() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               href="/meme-generator"
-              className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-8 py-3 rounded-lg font-semibold hover:opacity-90 transition flex items-center justify-center gap-2"
+              className="bg-gradient-to-r from-gem-gold to-gem-pink text-dark-bg px-8 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2"
             >
               <Palette className="w-5 h-5" />
               Create Meme
             </Link>
             <Link
               href="/games"
-              className="bg-gray-800 text-white px-8 py-3 rounded-lg font-semibold hover:bg-gray-700 transition flex items-center justify-center gap-2"
+              className="bg-gradient-to-r from-gem-gold to-gem-pink text-dark-bg px-8 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2"
             >
               <Gamepad2 className="w-5 h-5" />
               Play Games
@@ -58,9 +58,9 @@ export default function Home() {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* Meme Generator */}
             <Link href="/meme-generator" className="group">
-              <div className="bg-gray-800 rounded-lg p-6 hover:bg-gray-700 transition cursor-pointer">
-                <div className="w-12 h-12 bg-purple-500/20 rounded-lg flex items-center justify-center mb-4">
-                  <Palette className="w-6 h-6 text-purple-400" />
+              <div className="bg-dark-card border border-gem-crystal/20 rounded-lg p-6 hover:border-gem-crystal/40 transition-all duration-300 cursor-pointer">
+                <div className="w-12 h-12 bg-gem-crystal/20 rounded-lg flex items-center justify-center mb-4">
+                  <Palette className="w-6 h-6 text-gem-crystal" />
                 </div>
                 <h3 className="text-xl font-semibold mb-2">Meme Generator</h3>
                 <p className="text-gray-400">
@@ -71,9 +71,9 @@ export default function Home() {
 
             {/* Games Hub */}
             <Link href="/games" className="group">
-              <div className="bg-gray-800 rounded-lg p-6 hover:bg-gray-700 transition cursor-pointer">
-                <div className="w-12 h-12 bg-pink-500/20 rounded-lg flex items-center justify-center mb-4">
-                  <Gamepad2 className="w-6 h-6 text-pink-400" />
+              <div className="bg-dark-card border border-gem-gold/20 rounded-lg p-6 hover:border-gem-gold/40 transition-all duration-300 cursor-pointer">
+                <div className="w-12 h-12 bg-gem-gold/20 rounded-lg flex items-center justify-center mb-4">
+                  <Gamepad2 className="w-6 h-6 text-gem-gold" />
                 </div>
                 <h3 className="text-xl font-semibold mb-2">Games Hub</h3>
                 <p className="text-gray-400">
@@ -84,9 +84,9 @@ export default function Home() {
 
             {/* Leaderboard */}
             <Link href="/leaderboard" className="group">
-              <div className="bg-gray-800 rounded-lg p-6 hover:bg-gray-700 transition cursor-pointer">
-                <div className="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center mb-4">
-                  <Trophy className="w-6 h-6 text-blue-400" />
+              <div className="bg-dark-card border border-gem-blue/20 rounded-lg p-6 hover:border-gem-blue/40 transition-all duration-300 cursor-pointer">
+                <div className="w-12 h-12 bg-gem-blue/20 rounded-lg flex items-center justify-center mb-4">
+                  <Trophy className="w-6 h-6 text-gem-blue" />
                 </div>
                 <h3 className="text-xl font-semibold mb-2">Leaderboard</h3>
                 <p className="text-gray-400">
@@ -96,9 +96,9 @@ export default function Home() {
             </Link>
 
             {/* Token Info */}
-            <div className="bg-gray-800 rounded-lg p-6">
-              <div className="w-12 h-12 bg-green-500/20 rounded-lg flex items-center justify-center mb-4">
-                <TrendingUp className="w-6 h-6 text-green-400" />
+            <div className="bg-dark-card border border-gem-purple/20 rounded-lg p-6 hover:border-gem-purple/40 transition-all duration-300">
+              <div className="w-12 h-12 bg-gem-purple/20 rounded-lg flex items-center justify-center mb-4">
+                <TrendingUp className="w-6 h-6 text-gem-purple" />
               </div>
               <h3 className="text-xl font-semibold mb-2">$BB Token</h3>
               <p className="text-gray-400">
@@ -107,9 +107,9 @@ export default function Home() {
             </div>
 
             {/* Community */}
-            <div className="bg-gray-800 rounded-lg p-6">
-              <div className="w-12 h-12 bg-yellow-500/20 rounded-lg flex items-center justify-center mb-4">
-                <Users className="w-6 h-6 text-yellow-400" />
+            <div className="bg-dark-card border border-gem-pink/20 rounded-lg p-6 hover:border-gem-pink/40 transition-all duration-300">
+              <div className="w-12 h-12 bg-gem-pink/20 rounded-lg flex items-center justify-center mb-4">
+                <Users className="w-6 h-6 text-gem-pink" />
               </div>
               <h3 className="text-xl font-semibold mb-2">Community</h3>
               <p className="text-gray-400">
@@ -118,7 +118,7 @@ export default function Home() {
             </div>
 
             {/* Coming Soon */}
-            <div className="bg-gray-800 rounded-lg p-6 opacity-60">
+            <div className="bg-dark-card border border-dark-border rounded-lg p-6 opacity-60">
               <div className="w-12 h-12 bg-gray-600/20 rounded-lg flex items-center justify-center mb-4">
                 <Sparkles className="w-6 h-6 text-gray-400" />
               </div>
@@ -134,14 +134,14 @@ export default function Home() {
       {/* Contest Banner */}
       <section className="px-4 py-16">
         <div className="max-w-4xl mx-auto">
-          <div className="bg-gradient-to-r from-purple-900/50 to-pink-900/50 rounded-lg p-8 text-center">
+          <div className="bg-gradient-to-r from-gem-crystal/20 to-gem-gold/20 rounded-lg p-8 text-center border border-gem-crystal/30">
             <h2 className="text-2xl font-bold mb-4">🏆 Meme Contest Coming Soon</h2>
             <p className="text-gray-300 mb-6">
               Get ready to showcase your creativity and win amazing prizes!
             </p>
             <Link
               href="/meme-generator"
-              className="inline-block bg-white text-gray-900 px-6 py-2 rounded-lg font-semibold hover:bg-gray-100 transition"
+              className="inline-block bg-gradient-to-r from-gem-gold to-gem-crystal text-dark-bg px-6 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105"
             >
               Start Creating
             </Link>

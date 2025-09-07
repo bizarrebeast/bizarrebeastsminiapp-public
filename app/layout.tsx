@@ -38,7 +38,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.className} bg-gray-950 text-white min-h-screen antialiased`}>
+      <body className={`${inter.className} bg-dark-bg text-white min-h-screen antialiased`}>
         <Navbar />
         <main className="flex-1">
           {children}

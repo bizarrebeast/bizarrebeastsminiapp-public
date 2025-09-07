@@ -58,7 +58,7 @@ export default function MemeGeneratorPage() {
   }, []);
 
   return (
-    <div className="min-h-[calc(100vh-64px)] bg-gray-900 flex flex-col">
+    <div className="min-h-[calc(100vh-64px)] bg-dark-bg flex flex-col">
       <div className="flex-1 flex flex-col max-w-full mx-auto px-2 sm:px-4 py-2 sm:py-4">
         {/* Header */}
         <div className="mb-4">
@@ -67,7 +67,7 @@ export default function MemeGeneratorPage() {
         </div>
 
         {/* Sticker Library - Above everything */}
-        <div className="bg-gray-800 rounded-lg p-3 sm:p-4 mb-4">
+        <div className="bg-dark-card border border-gem-crystal/20 rounded-lg p-3 sm:p-4 mb-4">
           <StickerGallery
             collections={mockCollections}
             selectedCollection={selectedCollection}
@@ -88,7 +88,7 @@ export default function MemeGeneratorPage() {
         {/* Main Layout - Canvas and Controls */}
         <div className="flex-1 grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-2 sm:gap-4 lg:gap-6">
           {/* Left - Canvas */}
-          <div className="bg-gray-800 rounded-lg p-3 sm:p-4 flex items-start justify-center min-h-[400px]">
+          <div className="bg-dark-card border border-gem-gold/20 rounded-lg p-3 sm:p-4 flex items-start justify-center min-h-[400px]">
             <MemeCanvas
               onCanvasReady={handleCanvasReady}
               selectedCollection={mockCollections.find(c => c.id === selectedCollection)}
@@ -98,7 +98,7 @@ export default function MemeGeneratorPage() {
           {/* Right - Controls */}
           <div className="space-y-2 sm:space-y-4">
             {/* Text Controls */}
-            <div className="bg-gray-800 rounded-lg p-3 sm:p-4">
+            <div className="bg-dark-card border border-gem-purple/20 rounded-lg p-3 sm:p-4 transition-all duration-300">
               <TextControls
                 onAddText={(text, options) => {
                   if (canvasRef) {
@@ -109,7 +109,7 @@ export default function MemeGeneratorPage() {
             </div>
 
             {/* Export Controls */}
-            <div className="bg-gray-800 rounded-lg p-3 sm:p-4">
+            <div className="bg-dark-card border border-gem-blue/20 rounded-lg p-3 sm:p-4 transition-all duration-300">
               <ExportControls
                 onExport={(options) => {
                   if (canvasRef) {
