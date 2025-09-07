@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" width="800" height="800">
+  <!-- Pirate Ship Background -->
+  <defs>
+    <linearGradient id="oceanGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#4682B4;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#191970;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Night sky -->
+  <rect width="800" height="450" fill="#0F0F2E"/>
+  
+  <!-- Stars -->
+  <circle cx="100" cy="100" r="2" fill="#FFF"/>
+  <circle cx="200" cy="50" r="2" fill="#FFF"/>
+  <circle cx="300" cy="120" r="2" fill="#FFF"/>
+  <circle cx="450" cy="80" r="2" fill="#FFF"/>
+  <circle cx="600" cy="110" r="2" fill="#FFF"/>
+  <circle cx="700" cy="60" r="2" fill="#FFF"/>
+  <circle cx="150" cy="200" r="2" fill="#FFF"/>
+  <circle cx="550" cy="180" r="2" fill="#FFF"/>
+  
+  <!-- Moon -->
+  <circle cx="650" cy="150" r="50" fill="#F0E68C" opacity="0.8"/>
+  
+  <!-- Ocean -->
+  <rect y="450" width="800" height="350" fill="url(#oceanGrad)"/>
+  
+  <!-- Ship hull -->
+  <path d="M 200 500 L 250 600 L 550 600 L 600 500 Z" fill="#654321" stroke="#4A3018" stroke-width="3"/>
+  
+  <!-- Mast -->
+  <rect x="395" y="300" width="10" height="200" fill="#8B4513"/>
+  
+  <!-- Sail -->
+  <path d="M 410 320 Q 500 360 410 420 Z" fill="#FFF" opacity="0.9" stroke="#DDD" stroke-width="2"/>
+  
+  <!-- Pirate flag -->
+  <rect x="380" y="280" width="40" height="30" fill="#000"/>
+  <circle cx="395" cy="292" r="4" fill="#FFF"/>
+  <circle cx="405" cy="292" r="4" fill="#FFF"/>
+  <path d="M 390 298 L 410 298" stroke="#FFF" stroke-width="2"/>
+  <path d="M 390 302 L 395 298 L 400 302 L 405 298 L 410 302" stroke="#FFF" stroke-width="1.5" fill="none"/>
+  
+  <!-- Wave effects -->
+  <path d="M 0 500 Q 100 480 200 500 T 400 500 T 600 500 T 800 500" stroke="#FFF" stroke-width="2" fill="none" opacity="0.3"/>
+  <path d="M 0 550 Q 100 530 200 550 T 400 550 T 600 550 T 800 550" stroke="#FFF" stroke-width="2" fill="none" opacity="0.2"/>
+</svg>

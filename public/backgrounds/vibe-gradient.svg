@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" width="800" height="800">
+  <!-- Vibe Gradient Background -->
+  <defs>
+    <radialGradient id="vibeGrad" cx="50%" cy="50%" r="70%">
+      <stop offset="0%" style="stop-color:#FF00FF;stop-opacity:1" />
+      <stop offset="30%" style="stop-color:#00FFFF;stop-opacity:1" />
+      <stop offset="60%" style="stop-color:#FFFF00;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FF00FF;stop-opacity:1" />
+    </radialGradient>
+    <filter id="blur">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="30" />
+    </filter>
+  </defs>
+  
+  <!-- Base gradient -->
+  <rect width="800" height="800" fill="url(#vibeGrad)"/>
+  
+  <!-- Floating orbs for depth -->
+  <circle cx="200" cy="200" r="150" fill="#FF00FF" opacity="0.3" filter="url(#blur)"/>
+  <circle cx="600" cy="300" r="120" fill="#00FFFF" opacity="0.3" filter="url(#blur)"/>
+  <circle cx="400" cy="600" r="180" fill="#FFFF00" opacity="0.3" filter="url(#blur)"/>
+  <circle cx="100" cy="500" r="100" fill="#00FF00" opacity="0.3" filter="url(#blur)"/>
+  <circle cx="700" cy="700" r="130" fill="#FF00FF" opacity="0.3" filter="url(#blur)"/>
+  
+  <!-- Wave pattern overlay -->
+  <path d="M 0 400 Q 200 300 400 400 T 800 400" stroke="#FFF" stroke-width="3" fill="none" opacity="0.2"/>
+  <path d="M 0 450 Q 200 350 400 450 T 800 450" stroke="#FFF" stroke-width="3" fill="none" opacity="0.15"/>
+  <path d="M 0 350 Q 200 250 400 350 T 800 350" stroke="#FFF" stroke-width="3" fill="none" opacity="0.15"/>
+</svg>

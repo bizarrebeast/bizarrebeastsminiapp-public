@@ -52,10 +52,20 @@ export interface StickerCollection {
   description: string;
   icon: string;
   stickers: Sticker[];
+  backgrounds?: BackgroundImage[];
+  backgroundType: 'color' | 'image' | 'both' | 'none';
   isTokenGated: boolean;
   requiredTokenAmount?: number;
   sortOrder: number;
   tags: string[];
+}
+
+export interface BackgroundImage {
+  id: string;
+  src: string;
+  thumbnail: string;
+  name: string;
+  collection: string;
 }
 
 export interface Sticker {

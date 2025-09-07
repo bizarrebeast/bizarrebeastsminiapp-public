@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" width="800" height="800">
+  <!-- Treasure Island Background -->
+  <!-- Sky gradient -->
+  <defs>
+    <linearGradient id="skyGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#87CEEB;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FFE4B5;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="waterGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#1E90FF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00008B;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Sky -->
+  <rect width="800" height="400" fill="url(#skyGradient)"/>
+  
+  <!-- Sun -->
+  <circle cx="650" cy="150" r="60" fill="#FFD700" opacity="0.9"/>
+  
+  <!-- Clouds -->
+  <ellipse cx="200" cy="100" rx="80" ry="30" fill="#FFF" opacity="0.6"/>
+  <ellipse cx="250" cy="110" rx="60" ry="25" fill="#FFF" opacity="0.6"/>
+  <ellipse cx="500" cy="80" rx="70" ry="25" fill="#FFF" opacity="0.5"/>
+  
+  <!-- Water -->
+  <rect y="400" width="800" height="400" fill="url(#waterGradient)"/>
+  
+  <!-- Island -->
+  <ellipse cx="400" cy="500" rx="300" ry="120" fill="#F4A460"/>
+  
+  <!-- Palm trees -->
+  <rect x="250" y="380" width="20" height="100" fill="#8B4513"/>
+  <path d="M 260 380 L 240 360 L 250 365 L 255 350 L 260 365 L 270 360 L 260 380" fill="#228B22"/>
+  <path d="M 260 380 L 280 360 L 270 365 L 265 350 L 260 365 L 250 360 L 260 380" fill="#228B22"/>
+  
+  <rect x="500" y="370" width="25" height="120" fill="#8B4513"/>
+  <path d="M 512 370 L 490 345 L 500 350 L 505 330 L 512 350 L 525 345 L 512 370" fill="#228B22"/>
+  <path d="M 512 370 L 535 345 L 525 350 L 520 330 L 512 350 L 500 345 L 512 370" fill="#228B22"/>
+  
+  <!-- Treasure chest -->
+  <rect x="360" y="450" width="80" height="50" fill="#8B4513" stroke="#654321" stroke-width="2"/>
+  <rect x="360" y="440" width="80" height="20" rx="10" fill="#DAA520" stroke="#B8860B" stroke-width="2"/>
+  <circle cx="400" cy="460" r="5" fill="#FFD700"/>
+</svg>
