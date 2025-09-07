@@ -11,7 +11,7 @@ export default function Home() {
             Welcome to BizarreBeasts
           </h1>
           <p className="text-xl text-gray-300 mb-8">
-            Create memes, play games, and join the most bizarre community in Web3
+            Create memes, play games, and join the most BIZARRE community in web3
           </p>
           
           {/* Quick Stats */}
@@ -34,14 +34,14 @@ export default function Home() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               href="/meme-generator"
-              className="bg-gradient-to-r from-gem-gold to-gem-pink text-dark-bg px-8 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2"
+              className="bg-gradient-to-r from-gem-gold via-gem-crystal to-gem-blue text-black px-8 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2"
             >
               <Palette className="w-5 h-5" />
               Create Meme
             </Link>
             <Link
               href="/games"
-              className="bg-gradient-to-r from-gem-gold to-gem-pink text-dark-bg px-8 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2"
+              className="bg-gradient-to-r from-gem-crystal to-gem-gold text-black px-8 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2"
             >
               <Gamepad2 className="w-5 h-5" />
               Play Games
