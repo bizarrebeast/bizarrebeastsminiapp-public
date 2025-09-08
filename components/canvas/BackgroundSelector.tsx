@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BackgroundImage, StickerCollection } from '@/types';
 import { Image as ImageIcon, Palette, Upload, Lock } from 'lucide-react';
 import { useWallet } from '@/hooks/useWallet';
@@ -20,45 +20,58 @@ export default function BackgroundSelector({
   currentBackground 
 }: BackgroundSelectorProps) {
   const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);
+  const [backgrounds, setBackgrounds] = useState<BackgroundImage[]>([]);
+  const [isLoadingBackgrounds, setIsLoadingBackgrounds] = useState(false);
   const { empireTier } = useWallet();
   const userTier = empireTier || AccessTier.VISITOR;
   
   // Check if user can upload backgrounds (Elite/Champion on BizarreBeasts collection only)
   const canUpload = canUploadBackground(userTier, collection.id);
   
-  // Mock background images for collections (not for BizarreBeasts - that's upload only)
-  const mockBackgrounds: BackgroundImage[] = 
-    collection.id === 'treasure-quest' ? [
-      {
-        id: 'tq-bg-1',
-        src: '/backgrounds/treasure-island.svg',
-        thumbnail: '/backgrounds/treasure-island-thumb.svg',
-        name: 'Treasure Island',
-        collection: 'treasure-quest',
-      },
-      {
-        id: 'tq-bg-2',
-        src: '/backgrounds/pirate-ship.svg',
-        thumbnail: '/backgrounds/pirate-ship-thumb.svg',
-        name: 'Pirate Ship',
-        collection: 'treasure-quest',
-      },
-    ] : collection.id === 'vibecards' ? [
-      {
-        id: 'vc-bg-1',
-        src: '/backgrounds/vibe-gradient.svg',
-        thumbnail: '/backgrounds/vibe-gradient-thumb.svg',
-        name: 'Vibe Gradient',
-        collection: 'vibecards',
-      },
-      {
-        id: 'vc-bg-2',
-        src: '/backgrounds/cosmic-vibes.svg',
-        thumbnail: '/backgrounds/cosmic-vibes-thumb.svg',
-        name: 'Cosmic Vibes',
-        collection: 'vibecards',
-      },
-    ] : [];
+  // Load backgrounds for the collection
+  useEffect(() => {
+    const loadBackgrounds = async () => {
+      if (collection.id === 'bizarrebeasts') {
+        // BizarreBeasts doesn't have preset backgrounds, just upload
+        setBackgrounds([]);
+        return;
+      }
+      
+      setIsLoadingBackgrounds(true);
+      
+      // For treasure-quest, we have actual backgrounds in the folder
+      if (collection.id === 'treasure-quest') {
+        // Sample of available backgrounds - you can expand this list
+        const bgList = [
+          { id: 'bg-1', name: 'Crystal Cavern', file: 'treasure-quest-1.svg' },
+          { id: 'bg-2', name: 'Underground Path', file: 'treasure-quest-2.svg' },
+          { id: 'bg-3', name: 'Treasure Room', file: 'treasure-quest-3.svg' },
+          { id: 'bg-4', name: 'Dark Dungeon', file: 'treasure-quest-4.svg' },
+          { id: 'bg-5', name: 'Mystic Portal', file: 'treasure-quest-5.svg' },
+          { id: 'bg-6', name: 'Ancient Temple', file: 'treasure-quest-6.svg' },
+          { id: 'bg-7', name: 'Lava Cavern', file: 'treasure-quest-7.svg' },
+          { id: 'bg-8', name: 'Ice Palace', file: 'treasure-quest-8.svg' },
+        ];
+        
+        const loadedBackgrounds: BackgroundImage[] = bgList.map(bg => ({
+          id: bg.id,
+          src: `/assets/stickers/treasure-quest/backgrounds/${bg.file}`,
+          thumbnail: `/assets/stickers/treasure-quest/backgrounds/${bg.file}`,
+          name: bg.name,
+          collection: 'treasure-quest',
+        }));
+        
+        setBackgrounds(loadedBackgrounds);
+      } else {
+        // Mock backgrounds for other collections
+        setBackgrounds([]);
+      }
+      
+      setIsLoadingBackgrounds(false);
+    };
+    
+    loadBackgrounds();
+  }, [collection.id]);
 
   // BizarreBeasts doesn't show color picker here (it's in the canvas area)
   const showColorPicker = collection.id !== 'bizarrebeasts' && 
@@ -162,24 +175,44 @@ export default function BackgroundSelector({
 
       {/* Background Images Grid */}
       {showBackgrounds && (
-        <div className="grid grid-cols-2 gap-2 mb-3">
-          {/* Preset backgrounds for other collections */}
-          {mockBackgrounds.map(bg => (
-            <button
-              key={bg.id}
-              onClick={() => onSelectBackground('image', bg.src)}
-              className="group relative bg-gray-700 rounded p-1 hover:bg-gray-600 transition-colors aspect-video"
-            >
-              <div className="w-full h-full bg-gray-600 rounded flex items-center justify-center text-gray-400">
-                <span className="text-xs text-center">{bg.name}</span>
-              </div>
-              
-              {/* Selected indicator */}
-              {currentBackground === bg.src && (
-                <div className="absolute inset-0 border-2 border-purple-500 rounded pointer-events-none" />
-              )}
-            </button>
-          ))}
+        <div className="grid grid-cols-3 sm:grid-cols-4 gap-1 mb-3">
+          {isLoadingBackgrounds ? (
+            <div className="col-span-full text-center py-4">
+              <span className="text-gray-400 text-sm">Loading backgrounds...</span>
+            </div>
+          ) : backgrounds.length > 0 ? (
+            backgrounds.map(bg => (
+              <button
+                key={bg.id}
+                onClick={() => onSelectBackground('image', bg.src)}
+                className="group relative bg-gray-700 rounded p-0.5 hover:bg-gray-600 transition-all hover:scale-105 aspect-square"
+                title={bg.name}
+              >
+                <img
+                  src={bg.thumbnail}
+                  alt={bg.name}
+                  className="w-full h-full object-cover rounded"
+                  loading="lazy"
+                />
+                
+                {/* Selected indicator */}
+                {currentBackground === bg.src && (
+                  <div className="absolute inset-0 border-2 border-gem-gold rounded pointer-events-none" />
+                )}
+                
+                {/* Hover overlay with name - Desktop only */}
+                <div className="hidden sm:flex absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity rounded items-end">
+                  <span className="text-white text-[10px] p-1 w-full truncate">
+                    {bg.name}
+                  </span>
+                </div>
+              </button>
+            ))
+          ) : (
+            <div className="col-span-full text-center py-4">
+              <span className="text-gray-500 text-sm">No backgrounds available</span>
+            </div>
+          )}
         </div>
       )}
 

@@ -26,26 +26,26 @@ const mockCollections: StickerCollection[] = [
   {
     id: 'treasure-quest',
     name: 'Treasure Quest',
-    description: 'Exclusive game sprites and treasure items from the BizarreBeasts Treasure Quest game. Requires Veteran tier or higher to unlock these premium gaming assets.',
+    description: 'Hand-illustrated sprites and treasures from BizarreBeasts: Treasure Quest! Create epic memes with heroes, enemies, legendary loot, and dungeon backgrounds straight from the game. Greyed out stickers require higher $BB token tiers to unlock premium content and rare artifacts.',
     icon: '💎',
     stickers: [],
     backgrounds: [], // Will add background images
     backgroundType: 'image', // Background images only (no upload)
     isTokenGated: false,
-    requiredTier: AccessTier.VETERAN, // Requires Veteran tier
+    requiredTier: AccessTier.VISITOR, // Open to all
     sortOrder: 2,
     tags: ['game', 'items'],
   },
   {
     id: 'vibecards',
     name: 'Vibecards',
-    description: 'Special vibe check characters and mood expressions. Perfect for creating reaction memes! Requires Veteran tier or higher to access this collection.',
+    description: 'Special vibe check characters and mood expressions. Perfect for creating reaction memes! Individual cards have tier requirements.',
     icon: '✨',
     stickers: [],
     backgrounds: [], // Will add background images
     backgroundType: 'image', // Background images only (no upload)
     isTokenGated: false,
-    requiredTier: AccessTier.VETERAN, // Requires Veteran tier
+    requiredTier: AccessTier.VISITOR, // Open to all
     sortOrder: 3,
     tags: ['characters', 'vibes'],
   },

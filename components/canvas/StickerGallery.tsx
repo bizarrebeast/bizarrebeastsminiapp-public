@@ -222,7 +222,7 @@ export default function StickerGallery({
             </div>
           </div>
         ) : (
-        <div className="grid grid-cols-3 gap-1 sm:gap-2">
+        <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 gap-1">
         {filteredStickers.length > 0 ? (
           filteredStickers.map(sticker => {
             const hasAccess = !sticker.tier || canAccessSticker(userTier, sticker.tier);
@@ -250,41 +250,41 @@ export default function StickerGallery({
                     setShowUpgradePrompt(true);
                   }
                 }}
-                className={`group relative bg-gray-700 rounded p-1 sm:p-2 transition-colors aspect-square ${
-                  hasAccess ? 'hover:bg-gray-600 cursor-pointer' : 'hover:bg-gray-600/50 cursor-pointer'
+                className={`group relative bg-gray-700 rounded p-1 transition-all aspect-square ${
+                  hasAccess ? 'hover:bg-gray-600 hover:scale-110 cursor-pointer' : 'hover:bg-gray-600/50 cursor-pointer'
                 }`}
+                title={sticker.name}
               >
                 {/* Sticker image */}
                 <img 
                   src={sticker.thumbnail} 
                   alt={sticker.name}
-                  className={`w-full h-full object-contain ${!hasAccess ? 'grayscale' : ''}`}
+                  className={`w-full h-full object-contain ${!hasAccess ? 'grayscale opacity-60' : ''}`}
+                  loading="lazy"
                 />
                 
-                {/* Tier Badge */}
+                {/* Tier Badge - smaller and only icon on mobile */}
                 {!hasAccess && tierBadge && (
-                  <div className="absolute bottom-1 right-1 bg-black/80 rounded px-1 py-0.5 flex items-center gap-0.5">
-                    {tierBadge.icon}
-                    <span className="text-[8px] sm:text-[10px] font-semibold">
-                      {tierBadge.label}
-                    </span>
+                  <div className="absolute bottom-0.5 right-0.5 bg-black/70 rounded p-0.5">
+                    <div className="w-3 h-3 sm:w-4 sm:h-4">
+                      {tierBadge.icon}
+                    </div>
                   </div>
                 )}
                 
                 {/* Hover overlay with name - Desktop only */}
-                <div className={`hidden sm:flex absolute inset-0 bg-black/70 opacity-0 ${
+                <div className={`hidden md:flex absolute inset-0 bg-black/80 opacity-0 ${
                   hasAccess ? 'group-hover:opacity-100' : ''
                 } transition-opacity rounded items-end`}>
-                  <span className="text-white text-xs p-1 w-full truncate">
+                  <span className="text-white text-[10px] p-1 w-full truncate">
                     {sticker.name}
-                    {!hasAccess && ' (Locked)'}
                   </span>
                 </div>
               </button>
             );
           })
         ) : (
-          <div className="col-span-3 text-center text-gray-500 py-4 sm:py-8 text-sm">
+          <div className="col-span-full text-center text-gray-500 py-4 text-sm">
             No stickers found
           </div>
         )}
