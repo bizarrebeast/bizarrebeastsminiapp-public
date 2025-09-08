@@ -11,7 +11,6 @@ const navItems = [
   { href: '/meme-generator', label: 'Meme Generator', icon: Palette },
   { href: '/games', label: 'Games', icon: Gamepad2 },
   { href: '/empire', label: 'Empire', icon: Crown },
-  { href: '/leaderboard', label: 'Leaderboard', icon: Trophy },
   { href: '/blog', label: 'Blog', icon: BookOpen },
   { href: '/resources', label: 'Resources', icon: FileText },
 ];

@@ -6,6 +6,7 @@ import { Download, Share2, Settings, ChevronDown, ChevronUp, Lock } from 'lucide
 import { useWallet } from '@/hooks/useWallet';
 import { AccessTier } from '@/lib/empire';
 import { canRemoveWatermark } from '@/lib/empire-gating';
+import UpgradePrompt from '@/components/UpgradePrompt';
 
 interface ExportControlsProps {
   onExport: (options: ExportOptions) => void | Promise<void>;
@@ -14,6 +15,7 @@ interface ExportControlsProps {
 export default function ExportControls({ onExport }: ExportControlsProps) {
   const [isExpanded, setIsExpanded] = useState(true);
   const [isSharing, setIsSharing] = useState(false);
+  const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);
   const { empireTier } = useWallet();
   
   // Check if user can remove watermark (Elite or Champion only)
@@ -144,18 +146,35 @@ export default function ExportControls({ onExport }: ExportControlsProps) {
                         enabled: e.target.checked,
                       },
                     });
+                  } else if (!e.target.checked) {
+                    // User trying to disable watermark without permission
+                    setShowUpgradePrompt(true);
                   }
                 }}
                 disabled={!canToggleWatermark}
                 className={`rounded ${!canToggleWatermark ? 'opacity-50 cursor-not-allowed' : ''}`}
               />
-              <label htmlFor="watermark" className="text-gray-400 text-sm flex items-center gap-2">
+              <label 
+                htmlFor="watermark" 
+                className="text-gray-400 text-sm flex items-center gap-2 cursor-pointer"
+                onClick={() => {
+                  if (!canToggleWatermark && exportOptions.watermark.enabled) {
+                    setShowUpgradePrompt(true);
+                  }
+                }}
+              >
                 Add Watermark
                 {!canToggleWatermark && (
-                  <span className="inline-flex items-center gap-1 text-xs text-gem-crystal">
+                  <button
+                    className="inline-flex items-center gap-1 text-xs text-gem-crystal hover:text-gem-gold transition-colors"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowUpgradePrompt(true);
+                    }}
+                  >
                     <Lock className="w-3 h-3" />
                     Elite/Champion only
-                  </span>
+                  </button>
                 )}
               </label>
             </div>
@@ -226,6 +245,15 @@ export default function ExportControls({ onExport }: ExportControlsProps) {
       </div>
     </>
   )}
+
+  {/* Upgrade Prompt Modal */}
+  <UpgradePrompt
+    isOpen={showUpgradePrompt}
+    onClose={() => setShowUpgradePrompt(false)}
+    requiredTier={AccessTier.ELITE}
+    featureName="Remove Watermark"
+    currentTier={empireTier || AccessTier.VISITOR}
+  />
   </div>
   );
 }

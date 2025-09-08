@@ -82,15 +82,15 @@ export default function Home() {
               </div>
             </Link>
 
-            {/* Leaderboard */}
-            <Link href="/leaderboard" className="group">
+            {/* Empire Rankings */}
+            <Link href="/empire" className="group">
               <div className="bg-dark-card border border-gem-blue/20 rounded-lg p-6 hover:border-gem-blue/40 transition-all duration-300 cursor-pointer">
                 <div className="w-12 h-12 bg-gem-blue/20 rounded-lg flex items-center justify-center mb-4">
                   <Trophy className="w-6 h-6 text-gem-blue" />
                 </div>
-                <h3 className="text-xl font-semibold mb-2">Leaderboard</h3>
+                <h3 className="text-xl font-semibold mb-2">Empire Rankings</h3>
                 <p className="text-gray-400">
-                  Check your ranking and compete with the community
+                  Check your Empire rank, boosters and climb the leaderboard
                 </p>
               </div>
             </Link>

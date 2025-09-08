@@ -1,11 +1,12 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { BackgroundImage, StickerCollection } from '@/types';
 import { Image as ImageIcon, Palette, Upload, Lock } from 'lucide-react';
 import { useWallet } from '@/hooks/useWallet';
 import { AccessTier } from '@/lib/empire';
 import { canUploadBackground } from '@/lib/empire-gating';
+import UpgradePrompt from '@/components/UpgradePrompt';
 
 interface BackgroundSelectorProps {
   collection: StickerCollection;
@@ -18,6 +19,7 @@ export default function BackgroundSelector({
   onSelectBackground,
   currentBackground 
 }: BackgroundSelectorProps) {
+  const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);
   const { empireTier } = useWallet();
   const userTier = empireTier || AccessTier.VISITOR;
   
@@ -70,60 +72,82 @@ export default function BackgroundSelector({
   // Special case for BizarreBeasts - just show upload button
   if (collection.id === 'bizarrebeasts') {
     return (
-      <div className="mb-4">
-        <div className="flex items-center justify-between mb-2">
-          <h4 className="text-white font-semibold text-sm flex items-center gap-2">
-            <ImageIcon className="w-4 h-4" />
-            Upload Background
-          </h4>
-          {!canUpload && (
-            <span className="text-xs text-gem-crystal flex items-center gap-1">
-              <Lock className="w-3 h-3" />
-              Elite/Champion only
-            </span>
-          )}
-        </div>
-
-        {/* Upload button */}
-        <label className={`block w-full bg-gray-700 rounded p-3 transition-colors ${
-          canUpload ? 'hover:bg-gray-600 cursor-pointer' : 'opacity-50 cursor-not-allowed'
-        }`}>
-          <input
-            type="file"
-            accept="image/*"
-            disabled={!canUpload}
-            onChange={(e) => {
-              if (!canUpload) return;
-              
-              const file = e.target.files?.[0];
-              if (file) {
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                  // Directly apply the background without storing it
-                  onSelectBackground('image', event.target?.result as string);
-                };
-                reader.readAsDataURL(file);
-              }
-              // Reset input
-              e.target.value = '';
-            }}
-            className="hidden"
-          />
-          <div className="text-center">
-            {canUpload ? (
-              <>
-                <Upload className="w-5 h-5 text-gray-400 mx-auto mb-1" />
-                <span className="text-sm text-gray-400">Click to upload custom background</span>
-              </>
-            ) : (
-              <>
-                <Lock className="w-5 h-5 text-gray-500 mx-auto mb-1" />
-                <span className="text-sm text-gray-500">Unlock with Elite or Champion tier</span>
-              </>
+      <>
+        <div className="mb-4">
+          <div className="flex items-center justify-between mb-2">
+            <h4 className="text-white font-semibold text-sm flex items-center gap-2">
+              <ImageIcon className="w-4 h-4" />
+              Upload Background
+            </h4>
+            {!canUpload && (
+              <button
+                onClick={() => setShowUpgradePrompt(true)}
+                className="text-xs text-gem-crystal flex items-center gap-1 hover:text-gem-gold transition-colors"
+              >
+                <Lock className="w-3 h-3" />
+                Elite/Champion only
+              </button>
             )}
           </div>
-        </label>
-      </div>
+
+          {/* Upload button */}
+          <label 
+            onClick={(e) => {
+              if (!canUpload) {
+                e.preventDefault();
+                setShowUpgradePrompt(true);
+              }
+            }}
+            className={`block w-full bg-gray-700 rounded p-3 transition-colors ${
+              canUpload ? 'hover:bg-gray-600 cursor-pointer' : 'hover:bg-gray-600/50 cursor-pointer'
+            }`}
+          >
+            <input
+              type="file"
+              accept="image/*"
+              disabled={!canUpload}
+              onChange={(e) => {
+                if (!canUpload) return;
+                
+                const file = e.target.files?.[0];
+                if (file) {
+                  const reader = new FileReader();
+                  reader.onload = (event) => {
+                    // Directly apply the background without storing it
+                    onSelectBackground('image', event.target?.result as string);
+                  };
+                  reader.readAsDataURL(file);
+                }
+                // Reset input
+                e.target.value = '';
+              }}
+              className="hidden"
+            />
+            <div className="text-center">
+              {canUpload ? (
+                <>
+                  <Upload className="w-5 h-5 text-gray-400 mx-auto mb-1" />
+                  <span className="text-sm text-gray-400">Click to upload custom background</span>
+                </>
+              ) : (
+                <>
+                  <Lock className="w-5 h-5 text-gray-500 mx-auto mb-1" />
+                  <span className="text-sm text-gray-500">Unlock with Elite or Champion tier</span>
+                </>
+              )}
+            </div>
+          </label>
+        </div>
+
+        {/* Upgrade Prompt Modal */}
+        <UpgradePrompt
+          isOpen={showUpgradePrompt}
+          onClose={() => setShowUpgradePrompt(false)}
+          requiredTier={AccessTier.ELITE}
+          featureName="Upload Custom Backgrounds"
+          currentTier={userTier}
+        />
+      </>
     );
   }
 

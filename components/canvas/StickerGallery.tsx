@@ -7,6 +7,7 @@ import BackgroundSelector from './BackgroundSelector';
 import { useWallet } from '@/hooks/useWallet';
 import { AccessTier } from '@/lib/empire';
 import { canAccessSticker, hasCollectionAccess } from '@/lib/empire-gating';
+import UpgradePrompt from '@/components/UpgradePrompt';
 
 interface StickerGalleryProps {
   collections: StickerCollection[];
@@ -69,6 +70,11 @@ export default function StickerGallery({
 }: StickerGalleryProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [isExpanded, setIsExpanded] = useState(true);
+  const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);
+  const [upgradeInfo, setUpgradeInfo] = useState<{ tier: AccessTier, feature: string }>({
+    tier: AccessTier.VETERAN,
+    feature: 'Premium Sticker Collection'
+  });
   
   const currentCollection = collections.find(c => c.id === selectedCollection);
   
@@ -160,6 +166,16 @@ export default function StickerGallery({
             // Check if user has access to this collection
             if (hasCollectionAccess(userTier, collectionId)) {
               onSelectCollection(collectionId);
+            } else {
+              // Show upgrade prompt for locked collection
+              const collection = collections.find(c => c.id === collectionId);
+              if (collection) {
+                setUpgradeInfo({
+                  tier: collection.requiredTier || AccessTier.VETERAN,
+                  feature: `${collection.name} Collection`
+                });
+                setShowUpgradePrompt(true);
+              }
             }
           }}
           className="w-full bg-gray-700 text-white rounded px-2 sm:px-3 py-1.5 sm:py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
@@ -235,12 +251,25 @@ export default function StickerGallery({
                 onClick={() => {
                   if (hasAccess) {
                     onSelectSticker(sticker);
+                  } else {
+                    // Show upgrade prompt for locked sticker
+                    const requiredTier = 
+                      sticker.tier === 'all' ? AccessTier.ELITE :
+                      sticker.tier === 'premium' ? AccessTier.CHAMPION :
+                      sticker.tier === 'rare' ? AccessTier.VETERAN :
+                      sticker.tier === 'common' ? AccessTier.MEMBER :
+                      AccessTier.VISITOR;
+                    
+                    setUpgradeInfo({
+                      tier: requiredTier,
+                      feature: `${sticker.name} Sticker`
+                    });
+                    setShowUpgradePrompt(true);
                   }
                 }}
                 className={`group relative bg-gray-700 rounded p-1 sm:p-2 transition-colors aspect-square ${
-                  hasAccess ? 'hover:bg-gray-600 cursor-pointer' : 'opacity-50 cursor-not-allowed'
+                  hasAccess ? 'hover:bg-gray-600 cursor-pointer' : 'hover:bg-gray-600/50 cursor-pointer'
                 }`}
-                disabled={!hasAccess}
               >
                 {/* Sticker image */}
                 <img 
@@ -281,6 +310,15 @@ export default function StickerGallery({
 
         </>
       )}
+
+      {/* Upgrade Prompt Modal */}
+      <UpgradePrompt
+        isOpen={showUpgradePrompt}
+        onClose={() => setShowUpgradePrompt(false)}
+        requiredTier={upgradeInfo.tier}
+        featureName={upgradeInfo.feature}
+        currentTier={userTier}
+      />
     </div>
   );
 }
