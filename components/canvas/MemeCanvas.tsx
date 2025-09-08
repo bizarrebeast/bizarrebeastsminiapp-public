@@ -233,8 +233,9 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
     };
   }, [canvasSize]); // Removed onCanvasReady and backgroundColor to prevent loops
 
-  // Check if collection supports color backgrounds
+  // Always show color picker for BizarreBeasts, or if collection supports colors
   const showColorPicker = !selectedCollection || 
+    selectedCollection.id === 'bizarrebeasts' ||
     selectedCollection.backgroundType === 'color' || 
     selectedCollection.backgroundType === 'both';
 
