@@ -6,9 +6,10 @@ import { Type, AlignLeft, AlignCenter, AlignRight, ChevronDown, ChevronUp } from
 
 interface TextControlsProps {
   onAddText: (text: string, options: TextOptions) => void;
+  onUpdateText?: (updates: Partial<TextOptions>) => void;
 }
 
-export default function TextControls({ onAddText }: TextControlsProps) {
+export default function TextControls({ onAddText, onUpdateText }: TextControlsProps) {
   const [topText, setTopText] = useState('');
   const [bottomText, setBottomText] = useState('');
   const [customText, setCustomText] = useState('');
@@ -120,12 +121,20 @@ export default function TextControls({ onAddText }: TextControlsProps) {
 
       {/* Text Options */}
       <div className="space-y-3 pt-3 border-t border-gray-700">
+        <div className="text-gray-400 text-xs mb-2">
+          <p className="font-semibold">Style Options:</p>
+          <p>Select text on canvas to update its style, or set style before adding new text</p>
+        </div>
         {/* Font Selection */}
         <div>
           <label className="text-gray-400 text-sm block mb-1">Font</label>
           <select
             value={textOptions.font}
-            onChange={(e) => setTextOptions({ ...textOptions, font: e.target.value as any })}
+            onChange={(e) => {
+              const newFont = e.target.value as any;
+              setTextOptions({ ...textOptions, font: newFont });
+              if (onUpdateText) onUpdateText({ font: newFont });
+            }}
             className="w-full bg-gray-700 text-white rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
           >
             {fonts.map(font => (
@@ -139,7 +148,11 @@ export default function TextControls({ onAddText }: TextControlsProps) {
           <label className="text-gray-400 text-sm block mb-1">Size</label>
           <select
             value={textOptions.size}
-            onChange={(e) => setTextOptions({ ...textOptions, size: Number(e.target.value) })}
+            onChange={(e) => {
+              const newSize = Number(e.target.value);
+              setTextOptions({ ...textOptions, size: newSize });
+              if (onUpdateText) onUpdateText({ size: newSize });
+            }}
             className="w-full bg-gray-700 text-white rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
           >
             {sizes.map(size => (
@@ -156,13 +169,21 @@ export default function TextControls({ onAddText }: TextControlsProps) {
               <input
                 type="color"
                 value={textOptions.color}
-                onChange={(e) => setTextOptions({ ...textOptions, color: e.target.value })}
+                onChange={(e) => {
+                  const newColor = e.target.value;
+                  setTextOptions({ ...textOptions, color: newColor });
+                  if (onUpdateText) onUpdateText({ color: newColor });
+                }}
                 className="w-10 h-8 rounded cursor-pointer"
               />
               <input
                 type="text"
                 value={textOptions.color}
-                onChange={(e) => setTextOptions({ ...textOptions, color: e.target.value })}
+                onChange={(e) => {
+                  const newColor = e.target.value;
+                  setTextOptions({ ...textOptions, color: newColor });
+                  if (onUpdateText) onUpdateText({ color: newColor });
+                }}
                 className="flex-1 bg-gray-700 text-white rounded px-2 py-1 text-sm"
               />
             </div>
@@ -174,7 +195,11 @@ export default function TextControls({ onAddText }: TextControlsProps) {
               <input
                 type="color"
                 value={textOptions.stroke}
-                onChange={(e) => setTextOptions({ ...textOptions, stroke: e.target.value })}
+                onChange={(e) => {
+                  const newStroke = e.target.value;
+                  setTextOptions({ ...textOptions, stroke: newStroke });
+                  if (onUpdateText) onUpdateText({ stroke: newStroke });
+                }}
                 className="w-10 h-8 rounded cursor-pointer"
               />
               <input
@@ -182,7 +207,11 @@ export default function TextControls({ onAddText }: TextControlsProps) {
                 min="0"
                 max="10"
                 value={textOptions.strokeWidth}
-                onChange={(e) => setTextOptions({ ...textOptions, strokeWidth: Number(e.target.value) })}
+                onChange={(e) => {
+                  const newWidth = Number(e.target.value);
+                  setTextOptions({ ...textOptions, strokeWidth: newWidth });
+                  if (onUpdateText) onUpdateText({ strokeWidth: newWidth });
+                }}
                 className="w-16 bg-gray-700 text-white rounded px-2 py-1 text-sm"
                 placeholder="Width"
               />
@@ -195,7 +224,10 @@ export default function TextControls({ onAddText }: TextControlsProps) {
           <label className="text-gray-400 text-sm block mb-1">Alignment</label>
           <div className="flex gap-2">
             <button
-              onClick={() => setTextOptions({ ...textOptions, align: 'left' })}
+              onClick={() => {
+                setTextOptions({ ...textOptions, align: 'left' });
+                if (onUpdateText) onUpdateText({ align: 'left' });
+              }}
               className={`flex-1 p-2 rounded ${
                 textOptions.align === 'left' 
                   ? 'bg-purple-600 text-white' 
@@ -205,7 +237,10 @@ export default function TextControls({ onAddText }: TextControlsProps) {
               <AlignLeft className="w-4 h-4 mx-auto" />
             </button>
             <button
-              onClick={() => setTextOptions({ ...textOptions, align: 'center' })}
+              onClick={() => {
+                setTextOptions({ ...textOptions, align: 'center' });
+                if (onUpdateText) onUpdateText({ align: 'center' });
+              }}
               className={`flex-1 p-2 rounded ${
                 textOptions.align === 'center' 
                   ? 'bg-purple-600 text-white' 
@@ -215,7 +250,10 @@ export default function TextControls({ onAddText }: TextControlsProps) {
               <AlignCenter className="w-4 h-4 mx-auto" />
             </button>
             <button
-              onClick={() => setTextOptions({ ...textOptions, align: 'right' })}
+              onClick={() => {
+                setTextOptions({ ...textOptions, align: 'right' });
+                if (onUpdateText) onUpdateText({ align: 'right' });
+              }}
               className={`flex-1 p-2 rounded ${
                 textOptions.align === 'right' 
                   ? 'bg-purple-600 text-white' 

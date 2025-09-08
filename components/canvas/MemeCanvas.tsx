@@ -48,6 +48,23 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
 
     fabricCanvasRef.current = canvas;
 
+    // Enable text editing on double-click
+    canvas.on('text:editing:entered', () => {
+      const activeObject = canvas.getActiveObject();
+      if (activeObject && activeObject.type === 'text') {
+        // Text is being edited
+      }
+    });
+
+    // Allow inline text editing
+    canvas.on('mouse:dblclick', (e) => {
+      if (e.target && e.target.type === 'text') {
+        const textObj = e.target as FabricText;
+        textObj.enterEditing();
+        textObj.selectAll();
+      }
+    });
+
     // Canvas API for parent component
     const canvasApi = {
       addSticker: (sticker: Sticker) => {
@@ -65,9 +82,12 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
       },
 
       addText: (text: string, options: TextOptions) => {
+        const centerX = canvas.width! / 2;
         const textObj = new FabricText(text, {
-          left: options.position === 'top' ? 400 : options.position === 'bottom' ? 400 : 200,
-          top: options.position === 'top' ? 50 : options.position === 'bottom' ? 700 : 400,
+          left: centerX,
+          top: options.position === 'top' ? 50 : 
+                options.position === 'bottom' ? canvas.height! - 80 : 
+                canvas.height! / 2,
           fontSize: options.size || 48,
           fontFamily: options.font || 'Impact',
           fill: options.color || '#FFFFFF',
@@ -75,10 +95,27 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
           strokeWidth: options.strokeWidth || 2,
           textAlign: options.align || 'center',
           originX: 'center',
+          originY: options.position === 'bottom' ? 'bottom' : 
+                   options.position === 'custom' ? 'center' : 'top',
+          editable: true,
         });
         canvas.add(textObj);
         canvas.setActiveObject(textObj);
         canvas.renderAll();
+      },
+
+      updateSelectedText: (updates: Partial<TextOptions>) => {
+        const activeObject = canvas.getActiveObject();
+        if (activeObject && activeObject.type === 'text') {
+          const textObj = activeObject as FabricText;
+          if (updates.font) textObj.set('fontFamily', updates.font);
+          if (updates.size) textObj.set('fontSize', updates.size);
+          if (updates.color) textObj.set('fill', updates.color);
+          if (updates.stroke) textObj.set('stroke', updates.stroke);
+          if (updates.strokeWidth !== undefined) textObj.set('strokeWidth', updates.strokeWidth);
+          if (updates.align) textObj.set('textAlign', updates.align);
+          canvas.renderAll();
+        }
       },
 
       setBackground: (type: 'color' | 'image' | 'transparent', value?: string) => {
@@ -257,9 +294,18 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
         />
       </div>
 
-      {/* Instructions - Hide on small screens */}
-      <div className="hidden sm:block mt-2 sm:mt-4 text-gray-400 text-xs sm:text-sm">
-        <p>• Click stickers to add • Drag to move • Delete key removes</p>
+      {/* Instructions */}
+      <div className="mt-2 sm:mt-4 text-gray-400 text-xs sm:text-sm space-y-1">
+        <p className="flex flex-wrap gap-x-3">
+          <span>• Click stickers to add them</span>
+          <span>• Drag items to move</span>
+          <span>• Click to select</span>
+        </p>
+        <p className="flex flex-wrap gap-x-3">
+          <span>• Resize by dragging corners</span>
+          <span>• Delete key removes selected</span>
+          <span>• Double-click text to edit</span>
+        </p>
       </div>
     </div>
   );

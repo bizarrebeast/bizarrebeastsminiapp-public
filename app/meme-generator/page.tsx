@@ -105,6 +105,11 @@ export default function MemeGeneratorPage() {
                     canvasRef.addText(text, options);
                   }
                 }}
+                onUpdateText={(updates) => {
+                  if (canvasRef && canvasRef.updateSelectedText) {
+                    canvasRef.updateSelectedText(updates);
+                  }
+                }}
               />
             </div>
 
