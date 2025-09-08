@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Canvas, FabricImage, FabricText } from 'fabric';
 import { Sticker, TextOptions, ExportOptions, StickerCollection, BackgroundImage } from '@/types';
+import { shareMemeToFarcaster } from '@/lib/farcaster';
 
 interface MemeCanvasProps {
   onCanvasReady: (canvasApi: any) => void;
@@ -198,8 +199,8 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
 
         // Handle Farcaster share
         if (options.shareToFarcaster) {
-          // TODO: Implement Farcaster sharing
-          console.log('Sharing to Farcaster...');
+          // Share to Farcaster
+          await shareMemeToFarcaster(dataURL);
         }
 
         return dataURL;

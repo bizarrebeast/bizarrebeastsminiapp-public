@@ -8,11 +8,12 @@ import { AccessTier } from '@/lib/empire';
 import { canRemoveWatermark } from '@/lib/empire-gating';
 
 interface ExportControlsProps {
-  onExport: (options: ExportOptions) => void;
+  onExport: (options: ExportOptions) => void | Promise<void>;
 }
 
 export default function ExportControls({ onExport }: ExportControlsProps) {
   const [isExpanded, setIsExpanded] = useState(true);
+  const [isSharing, setIsSharing] = useState(false);
   const { empireTier } = useWallet();
   
   // Check if user can remove watermark (Elite or Champion only)
@@ -51,12 +52,17 @@ export default function ExportControls({ onExport }: ExportControlsProps) {
     onExport(exportOptions);
   };
 
-  const handleShareToFarcaster = () => {
-    onExport({
-      ...exportOptions,
-      shareToFarcaster: true,
-      downloadToDevice: false,
-    });
+  const handleShareToFarcaster = async () => {
+    setIsSharing(true);
+    try {
+      await onExport({
+        ...exportOptions,
+        shareToFarcaster: true,
+        downloadToDevice: true, // Also download so user has the file
+      });
+    } finally {
+      setIsSharing(false);
+    }
   };
 
   return (
@@ -88,10 +94,20 @@ export default function ExportControls({ onExport }: ExportControlsProps) {
 
         <button
           onClick={handleShareToFarcaster}
-          className="w-full bg-purple-600 text-white py-3 rounded-lg font-semibold hover:bg-purple-700 transition flex items-center justify-center gap-2"
+          disabled={isSharing}
+          className="w-full bg-purple-600 text-white py-3 rounded-lg font-semibold hover:bg-purple-700 transition flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <Share2 className="w-5 h-5" />
-          Share to Farcaster
+          {isSharing ? (
+            <>
+              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
+              Preparing share...
+            </>
+          ) : (
+            <>
+              <Share2 className="w-5 h-5" />
+              Share to Farcaster
+            </>
+          )}
         </button>
       </div>
 
