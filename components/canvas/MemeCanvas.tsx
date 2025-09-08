@@ -50,8 +50,6 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
       width: canvasSize.width,
       height: canvasSize.height,
       backgroundColor: 'transparent',
-      snapAngle: 15, // Snap rotation to 15-degree increments
-      snapThreshold: 5, // Snap when within 5 degrees
       uniformScaling: false, // Allow proportional scaling with shift key
       centeredRotation: true,
       centeredScaling: true,
@@ -67,6 +65,19 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
     canvas.on('object:added', () => saveHistory());
     canvas.on('object:removed', () => saveHistory());
     canvas.on('object:modified', () => saveHistory());
+    
+    // Add shift-based rotation snapping like Canva
+    canvas.on('object:rotating', (e) => {
+      const obj = e.target;
+      if (!obj) return;
+      
+      // Check if shift key is pressed
+      if (e.e.shiftKey) {
+        const snapAngle = 15; // Snap to 15-degree increments
+        const angle = Math.round(obj.angle! / snapAngle) * snapAngle;
+        obj.angle = angle;
+      }
+    });
     
     const saveHistory = () => {
       // Don't save during undo/redo operations

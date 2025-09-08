@@ -49,6 +49,19 @@ const mockCollections: StickerCollection[] = [
     sortOrder: 3,
     tags: ['characters', 'vibes'],
   },
+  {
+    id: 'ugc-memes',
+    name: 'UGC Memes by @siablo.eth',
+    description: 'Siablo $BB Memes Collection - Hand-illustrated BizarreBeasts stickers and memes created by @siablo.eth for the $BB Community! Create BIZARRE content with custom artwork and characters based on the original BizarreBeasts. Greyed out stickers require a higher leaderboard tier to unlock premium content.',
+    icon: '🎨',
+    stickers: [],
+    backgrounds: [],
+    backgroundType: 'color', // Color picker only (no background images)
+    isTokenGated: false,
+    requiredTier: AccessTier.VISITOR, // Open to all
+    sortOrder: 4,
+    tags: ['community', 'ugc', 'memes'],
+  },
 ];
 
 export default function MemeGeneratorPage() {

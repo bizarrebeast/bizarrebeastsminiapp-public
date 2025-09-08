@@ -140,7 +140,7 @@ export default function BackgroundSelector({
         };
       case 'common':
         return { 
-          icon: <Lock className="w-3 h-3 text-gem-crystal" />, 
+          icon: <Star className="w-3 h-3 text-gem-crystal" />, 
           label: 'Member',
           color: 'text-gem-crystal'
         };

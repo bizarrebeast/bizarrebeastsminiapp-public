@@ -44,7 +44,7 @@ function getTierBadge(tier?: string) {
       };
     case 'common':
       return { 
-        icon: <Lock className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-gem-crystal" />, 
+        icon: <Sparkles className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-gem-crystal" />, 
         label: 'Member',
         color: 'text-gem-crystal'
       };
