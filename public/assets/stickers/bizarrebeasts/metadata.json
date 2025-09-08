@@ -15,43 +15,11 @@
       "tier": "basic"
     },
     {
-      "id": "beast-10",
-      "name": "LOL Bubble",
-      "filename": "bizarrebeasts-stickers-10.svg",
-      "category": "bubbles",
-      "tags": ["speech", "bubble", "lol", "text"],
-      "tier": "basic"
-    },
-    {
-      "id": "beast-17",
-      "name": "Simple Banner",
-      "filename": "bizarrebeasts-stickers-17.svg",
-      "category": "banners",
-      "tags": ["banner", "text", "label"],
-      "tier": "basic"
-    },
-    {
-      "id": "beast-16",
-      "name": "Basic Item",
-      "filename": "bizarrebeasts-stickers-16.svg",
-      "category": "items",
-      "tags": ["item", "tool", "object"],
-      "tier": "basic"
-    },
-    {
       "id": "beast-4",
       "name": "Sad Beast",
       "filename": "bizarrebeasts-stickers-4.svg",
       "category": "characters",
       "tags": ["beast", "sad", "crying", "emotion"],
-      "tier": "basic"
-    },
-    {
-      "id": "beast-11",
-      "name": "OMG Bubble",
-      "filename": "bizarrebeasts-stickers-11.svg",
-      "category": "bubbles",
-      "tags": ["speech", "bubble", "omg", "shocked"],
       "tier": "basic"
     },
     {
@@ -71,14 +39,6 @@
       "tier": "basic"
     },
     {
-      "id": "beast-12",
-      "name": "WTF Bubble",
-      "filename": "bizarrebeasts-stickers-12.svg",
-      "category": "bubbles",
-      "tags": ["speech", "bubble", "wtf", "confused"],
-      "tier": "basic"
-    },
-    {
       "id": "beast-7",
       "name": "Cool Beast",
       "filename": "bizarrebeasts-stickers-7.svg",
@@ -92,31 +52,7 @@
       "filename": "bizarrebeasts-stickers-8.svg",
       "category": "characters",
       "tags": ["beast", "dancing", "party", "fun"],
-      "tier": "common"
-    },
-    {
-      "id": "beast-13",
-      "name": "LMAO Bubble",
-      "filename": "bizarrebeasts-stickers-13.svg",
-      "category": "bubbles",
-      "tags": ["speech", "bubble", "lmao", "laughing"],
-      "tier": "common"
-    },
-    {
-      "id": "beast-24",
-      "name": "Action Banner",
-      "filename": "bizarrebeasts-stickers-24.svg",
-      "category": "banners",
-      "tags": ["banner", "action", "text", "pow"],
-      "tier": "common"
-    },
-    {
-      "id": "beast-23",
-      "name": "Heart Item",
-      "filename": "bizarrebeasts-stickers-23.svg",
-      "category": "items",
-      "tags": ["heart", "love", "item", "symbol"],
-      "tier": "common"
+      "tier": "basic"
     },
     {
       "id": "beast-9",
@@ -124,7 +60,55 @@
       "filename": "bizarrebeasts-stickers-9.svg",
       "category": "characters",
       "tags": ["beast", "thinking", "hmm", "ponder"],
-      "tier": "common"
+      "tier": "basic"
+    },
+    {
+      "id": "beast-10",
+      "name": "LOL Bubble",
+      "filename": "bizarrebeasts-stickers-10.svg",
+      "category": "bubbles",
+      "tags": ["speech", "bubble", "lol", "text"],
+      "tier": "basic"
+    },
+    {
+      "id": "beast-11",
+      "name": "OMG Bubble",
+      "filename": "bizarrebeasts-stickers-11.svg",
+      "category": "bubbles",
+      "tags": ["speech", "bubble", "omg", "shocked"],
+      "tier": "basic"
+    },
+    {
+      "id": "beast-12",
+      "name": "WTF Bubble",
+      "filename": "bizarrebeasts-stickers-12.svg",
+      "category": "bubbles",
+      "tags": ["speech", "bubble", "wtf", "confused"],
+      "tier": "basic"
+    },
+    {
+      "id": "beast-13",
+      "name": "LMAO Bubble",
+      "filename": "bizarrebeasts-stickers-13.svg",
+      "category": "bubbles",
+      "tags": ["speech", "bubble", "lmao", "laughing"],
+      "tier": "basic"
+    },
+    {
+      "id": "beast-16",
+      "name": "Basic Item",
+      "filename": "bizarrebeasts-stickers-16.svg",
+      "category": "items",
+      "tags": ["item", "tool", "object"],
+      "tier": "basic"
+    },
+    {
+      "id": "beast-17",
+      "name": "Simple Banner",
+      "filename": "bizarrebeasts-stickers-17.svg",
+      "category": "banners",
+      "tags": ["banner", "text", "label"],
+      "tier": "basic"
     },
     {
       "id": "beast-19",
@@ -132,23 +116,7 @@
       "filename": "bizarrebeasts-stickers-19.svg",
       "category": "items",
       "tags": ["power", "energy", "item", "boost"],
-      "tier": "common"
-    },
-    {
-      "id": "beast-25",
-      "name": "Victory Banner",
-      "filename": "bizarrebeasts-stickers-25.svg",
-      "category": "banners",
-      "tags": ["banner", "victory", "win", "text"],
-      "tier": "common"
-    },
-    {
-      "id": "beast-21",
-      "name": "Magic Beast",
-      "filename": "bizarrebeasts-stickers-21.svg",
-      "category": "characters",
-      "tags": ["beast", "magic", "wizard", "spell"],
-      "tier": "common"
+      "tier": "basic"
     },
     {
       "id": "beast-20",
@@ -156,7 +124,15 @@
       "filename": "bizarrebeasts-stickers-20.svg",
       "category": "items",
       "tags": ["star", "item", "special", "reward"],
-      "tier": "common"
+      "tier": "basic"
+    },
+    {
+      "id": "beast-21",
+      "name": "Magic Beast",
+      "filename": "bizarrebeasts-stickers-21.svg",
+      "category": "characters",
+      "tags": ["beast", "magic", "wizard", "spell"],
+      "tier": "basic"
     },
     {
       "id": "beast-22",
@@ -164,6 +140,38 @@
       "filename": "bizarrebeasts-stickers-22.svg",
       "category": "characters",
       "tags": ["beast", "ninja", "stealth", "warrior"],
+      "tier": "basic"
+    },
+    {
+      "id": "beast-23",
+      "name": "Heart Item",
+      "filename": "bizarrebeasts-stickers-23.svg",
+      "category": "items",
+      "tags": ["heart", "love", "item", "symbol"],
+      "tier": "basic"
+    },
+    {
+      "id": "beast-24",
+      "name": "Action Banner",
+      "filename": "bizarrebeasts-stickers-24.svg",
+      "category": "banners",
+      "tags": ["banner", "action", "text", "pow"],
+      "tier": "basic"
+    },
+    {
+      "id": "beast-25",
+      "name": "Victory Banner",
+      "filename": "bizarrebeasts-stickers-25.svg",
+      "category": "banners",
+      "tags": ["banner", "victory", "win", "text"],
+      "tier": "basic"
+    },
+    {
+      "id": "beast-26",
+      "name": "Epic Banner",
+      "filename": "bizarrebeasts-stickers-26.svg",
+      "category": "banners",
+      "tags": ["banner", "epic", "grand", "text"],
       "tier": "common"
     },
     {
@@ -172,23 +180,7 @@
       "filename": "bizarrebeasts-stickers-27.svg",
       "category": "characters",
       "tags": ["beast", "fire", "flame", "hot"],
-      "tier": "rare"
-    },
-    {
-      "id": "beast-14",
-      "name": "Legendary Banner",
-      "filename": "bizarrebeasts-stickers-14.svg",
-      "category": "banners",
-      "tags": ["banner", "legendary", "special", "rare"],
-      "tier": "rare"
-    },
-    {
-      "id": "beast-31",
-      "name": "Diamond Item",
-      "filename": "bizarrebeasts-stickers-31.svg",
-      "category": "items",
-      "tags": ["diamond", "gem", "rare", "treasure"],
-      "tier": "rare"
+      "tier": "common"
     },
     {
       "id": "beast-28",
@@ -196,15 +188,7 @@
       "filename": "bizarrebeasts-stickers-28.svg",
       "category": "characters",
       "tags": ["beast", "ice", "frozen", "cold"],
-      "tier": "rare"
-    },
-    {
-      "id": "beast-26",
-      "name": "Epic Banner",
-      "filename": "bizarrebeasts-stickers-26.svg",
-      "category": "banners",
-      "tags": ["banner", "epic", "grand", "text"],
-      "tier": "rare"
+      "tier": "common"
     },
     {
       "id": "beast-29",
@@ -212,15 +196,7 @@
       "filename": "bizarrebeasts-stickers-29.svg",
       "category": "characters",
       "tags": ["beast", "lightning", "electric", "thunder"],
-      "tier": "rare"
-    },
-    {
-      "id": "beast-34",
-      "name": "Mystic Orb",
-      "filename": "bizarrebeasts-stickers-34.svg",
-      "category": "items",
-      "tags": ["orb", "mystic", "magic", "item"],
-      "tier": "rare"
+      "tier": "common"
     },
     {
       "id": "beast-30",
@@ -228,23 +204,15 @@
       "filename": "bizarrebeasts-stickers-30.svg",
       "category": "characters",
       "tags": ["beast", "shadow", "dark", "mysterious"],
-      "tier": "rare"
+      "tier": "common"
     },
     {
-      "id": "beast-15",
-      "name": "Ultimate Banner",
-      "filename": "bizarrebeasts-stickers-15.svg",
-      "category": "banners",
-      "tags": ["banner", "ultimate", "supreme", "best"],
-      "tier": "rare"
-    },
-    {
-      "id": "beast-18",
-      "name": "Elite Scene",
-      "filename": "bizarrebeasts-stickers-18.svg",
-      "category": "scenes",
-      "tags": ["scene", "background", "complex", "art"],
-      "tier": "rare"
+      "id": "beast-31",
+      "name": "Diamond Item",
+      "filename": "bizarrebeasts-stickers-31.svg",
+      "category": "items",
+      "tags": ["diamond", "gem", "rare", "treasure"],
+      "tier": "common"
     },
     {
       "id": "beast-32",
@@ -263,6 +231,14 @@
       "tier": "rare"
     },
     {
+      "id": "beast-34",
+      "name": "Mystic Orb",
+      "filename": "bizarrebeasts-stickers-34.svg",
+      "category": "items",
+      "tags": ["orb", "mystic", "magic", "item"],
+      "tier": "rare"
+    },
+    {
       "id": "beast-35",
       "name": "Rainbow Beast",
       "filename": "bizarrebeasts-stickers-35.svg",
@@ -276,6 +252,30 @@
       "filename": "bizarrebeasts-stickers-36.svg",
       "category": "characters",
       "tags": ["beast", "cosmic", "space", "galaxy"],
+      "tier": "rare"
+    },
+    {
+      "id": "beast-14",
+      "name": "Legendary Banner",
+      "filename": "bizarrebeasts-stickers-14.svg",
+      "category": "banners",
+      "tags": ["banner", "legendary", "special", "rare"],
+      "tier": "rare"
+    },
+    {
+      "id": "beast-15",
+      "name": "Ultimate Banner",
+      "filename": "bizarrebeasts-stickers-15.svg",
+      "category": "banners",
+      "tags": ["banner", "ultimate", "supreme", "best"],
+      "tier": "rare"
+    },
+    {
+      "id": "beast-18",
+      "name": "Elite Scene",
+      "filename": "bizarrebeasts-stickers-18.svg",
+      "category": "scenes",
+      "tags": ["scene", "background", "complex", "art"],
       "tier": "rare"
     },
     {
