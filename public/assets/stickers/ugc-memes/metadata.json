@@ -8,202 +8,82 @@
   "stickers": [
     {
       "id": "ugc-1",
-      "name": "Siablo Beast 1",
-      "filename": "ugc-meme-1.svg",
+      "name": "Bizarre Ticher",
+      "filename": "../siablo/siablo-bizarrebeasts-UGC-stickers-bizbe_ticher.svg",
       "category": "characters",
-      "tags": ["beast", "siablo", "custom", "meme"],
+      "tags": ["beast", "siablo", "teacher", "custom"],
       "tier": "basic"
     },
     {
       "id": "ugc-2",
-      "name": "BB Vibes",
-      "filename": "ugc-meme-2.svg",
-      "category": "memes",
-      "tags": ["vibes", "bb", "community", "meme"],
+      "name": "Bizarre Boing",
+      "filename": "../siablo/siablo-bizarrebeasts-UGC-stickers-bizarre_Boing.svg",
+      "category": "characters",
+      "tags": ["boing", "bounce", "siablo", "meme"],
       "tier": "basic"
     },
     {
       "id": "ugc-3",
-      "name": "Diamond Hands Beast",
-      "filename": "ugc-meme-3.svg",
+      "name": "Bizarre Boing Podball",
+      "filename": "../siablo/siablo-bizarrebeasts-UGC-stickers-bizarre_Boing_podball.svg",
       "category": "characters",
-      "tags": ["diamond", "hands", "hodl", "meme"],
+      "tags": ["boing", "podball", "siablo", "meme"],
       "tier": "basic"
     },
     {
       "id": "ugc-4",
-      "name": "WAGMI Speech",
-      "filename": "ugc-meme-4.svg",
-      "category": "bubbles",
-      "tags": ["wagmi", "speech", "bubble", "text"],
+      "name": "Bizarre Cheers",
+      "filename": "../siablo/siablo-bizarrebeasts-UGC-stickers-bizarre_cheers.svg",
+      "category": "characters",
+      "tags": ["cheers", "celebration", "siablo", "happy"],
       "tier": "basic"
     },
     {
       "id": "ugc-5",
-      "name": "Moon Beast",
-      "filename": "ugc-meme-5.svg",
+      "name": "Bizarre Cheers Podball",
+      "filename": "../siablo/siablo-bizarrebeasts-UGC-stickers-bizarre_cheers_podball.svg",
       "category": "characters",
-      "tags": ["moon", "rocket", "space", "meme"],
+      "tags": ["cheers", "podball", "siablo", "celebration"],
       "tier": "basic"
     },
     {
       "id": "ugc-6",
-      "name": "NGMI Bubble",
-      "filename": "ugc-meme-6.svg",
-      "category": "bubbles",
-      "tags": ["ngmi", "speech", "bubble", "text"],
+      "name": "Bizarre Dopamine Blue",
+      "filename": "../siablo/siablo-bizarrebeasts-UGC-stickers-bizarre_dopamine_blueBG.svg",
+      "category": "characters",
+      "tags": ["dopamine", "blue", "siablo", "happy"],
       "tier": "basic"
     },
     {
       "id": "ugc-7",
-      "name": "Degen Beast",
-      "filename": "ugc-meme-7.svg",
+      "name": "Bizarre Dopamine White",
+      "filename": "../siablo/siablo-bizarrebeasts-UGC-stickers-bizarre_dopamine_whiteBG.svg",
       "category": "characters",
-      "tags": ["degen", "wild", "crazy", "meme"],
+      "tags": ["dopamine", "white", "siablo", "happy"],
       "tier": "basic"
     },
     {
       "id": "ugc-8",
-      "name": "GM Banner",
-      "filename": "ugc-meme-8.svg",
-      "category": "banners",
-      "tags": ["gm", "good", "morning", "banner"],
+      "name": "Bizarre Dopamine Podball",
+      "filename": "../siablo/siablo-bizarrebeasts-UGC-stickers-bizarre_dopamine_podball.svg",
+      "category": "characters",
+      "tags": ["dopamine", "podball", "siablo", "happy"],
       "tier": "basic"
     },
     {
       "id": "ugc-9",
-      "name": "Ape Beast",
-      "filename": "ugc-meme-9.svg",
-      "category": "characters",
-      "tags": ["ape", "together", "strong", "meme"],
+      "name": "Bizarre Higher",
+      "filename": "../siablo/siablo-bizarrebeasts-UGC-stickers-bizarre_higher.svg",
+      "category": "memes",
+      "tags": ["higher", "up", "siablo", "meme"],
       "tier": "basic"
     },
     {
       "id": "ugc-10",
-      "name": "LFG Bubble",
-      "filename": "ugc-meme-10.svg",
-      "category": "bubbles",
-      "tags": ["lfg", "lets", "go", "speech"],
-      "tier": "basic"
-    },
-    {
-      "id": "ugc-11",
-      "name": "Siablo Beast 2",
-      "filename": "ugc-meme-11.svg",
+      "name": "Bizarre Look",
+      "filename": "../siablo/siablo-bizarrebeasts-UGC-stickers-bizarre_look.svg",
       "category": "characters",
-      "tags": ["beast", "siablo", "custom", "special"],
-      "tier": "basic"
-    },
-    {
-      "id": "ugc-12",
-      "name": "Bullish Banner",
-      "filename": "ugc-meme-12.svg",
-      "category": "banners",
-      "tags": ["bullish", "pump", "up", "banner"],
-      "tier": "basic"
-    },
-    {
-      "id": "ugc-13",
-      "name": "Rekt Beast",
-      "filename": "ugc-meme-13.svg",
-      "category": "characters",
-      "tags": ["rekt", "loss", "sad", "meme"],
-      "tier": "basic"
-    },
-    {
-      "id": "ugc-14",
-      "name": "Ser Speech",
-      "filename": "ugc-meme-14.svg",
-      "category": "bubbles",
-      "tags": ["ser", "speech", "bubble", "formal"],
-      "tier": "basic"
-    },
-    {
-      "id": "ugc-15",
-      "name": "Whale Beast",
-      "filename": "ugc-meme-15.svg",
-      "category": "characters",
-      "tags": ["whale", "big", "holder", "meme"],
-      "tier": "basic"
-    },
-    {
-      "id": "ugc-16",
-      "name": "DYOR Banner",
-      "filename": "ugc-meme-16.svg",
-      "category": "banners",
-      "tags": ["dyor", "research", "banner", "advice"],
-      "tier": "basic"
-    },
-    {
-      "id": "ugc-17",
-      "name": "Based Beast",
-      "filename": "ugc-meme-17.svg",
-      "category": "characters",
-      "tags": ["based", "cool", "awesome", "meme"],
-      "tier": "basic"
-    },
-    {
-      "id": "ugc-18",
-      "name": "Siablo Special",
-      "filename": "ugc-meme-18.svg",
-      "category": "special",
-      "tags": ["siablo", "special", "rare", "unique"],
-      "tier": "basic"
-    },
-    {
-      "id": "ugc-19",
-      "name": "Alpha Bubble",
-      "filename": "ugc-meme-19.svg",
-      "category": "bubbles",
-      "tags": ["alpha", "insider", "info", "speech"],
-      "tier": "basic"
-    },
-    {
-      "id": "ugc-20",
-      "name": "Chad Beast",
-      "filename": "ugc-meme-20.svg",
-      "category": "characters",
-      "tags": ["chad", "strong", "confident", "meme"],
-      "tier": "basic"
-    },
-    {
-      "id": "ugc-21",
-      "name": "Legendary Banner",
-      "filename": "ugc-meme-21.svg",
-      "category": "banners",
-      "tags": ["legendary", "epic", "rare", "banner"],
-      "tier": "basic"
-    },
-    {
-      "id": "ugc-22",
-      "name": "Siablo Masterpiece",
-      "filename": "ugc-meme-22.svg",
-      "category": "special",
-      "tags": ["masterpiece", "siablo", "art", "premium"],
-      "tier": "basic"
-    },
-    {
-      "id": "ugc-23",
-      "name": "Gigachad Beast",
-      "filename": "ugc-meme-23.svg",
-      "category": "characters",
-      "tags": ["gigachad", "ultimate", "powerful", "meme"],
-      "tier": "basic"
-    },
-    {
-      "id": "ugc-24",
-      "name": "Siablo Signature",
-      "filename": "ugc-meme-24.svg",
-      "category": "special",
-      "tags": ["signature", "siablo", "exclusive", "art"],
-      "tier": "basic"
-    },
-    {
-      "id": "ugc-25",
-      "name": "Ultimate BB Beast",
-      "filename": "ugc-meme-25.svg",
-      "category": "characters",
-      "tags": ["ultimate", "bb", "final", "beast"],
+      "tags": ["look", "eyes", "siablo", "watching"],
       "tier": "basic"
     }
   ]

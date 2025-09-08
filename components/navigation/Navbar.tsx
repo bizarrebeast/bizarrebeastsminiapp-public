@@ -49,7 +49,11 @@ export function Navbar() {
           {/* Logo */}
           <div className="flex items-center">
             <Link href="/" className="flex items-center space-x-2 group">
-              <div className="w-8 h-8 bg-gradient-to-br from-gem-gold to-gem-crystal rounded-lg transition-all duration-300" />
+              <img 
+                src="/assets/page-assets/logos/bizarrebeasts-miniapp-logo.svg" 
+                alt="BizarreBeasts Logo" 
+                className="w-8 h-8 object-contain transition-all duration-300 group-hover:scale-110"
+              />
               <span className="text-gem-gold font-bold text-xl group-hover:text-gem-crystal transition-colors duration-300">BizarreBeasts</span>
             </Link>
           </div>
