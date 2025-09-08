@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Canvas, FabricImage, FabricText } from 'fabric';
 import { Sticker, TextOptions, ExportOptions, StickerCollection, BackgroundImage } from '@/types';
 import { shareMemeToFarcaster } from '@/lib/farcaster';
+import { Info, ChevronDown, ChevronUp } from 'lucide-react';
 
 interface MemeCanvasProps {
   onCanvasReady: (canvasApi: any) => void;
@@ -16,6 +17,7 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
   const fabricCanvasRef = useRef<Canvas | null>(null);
   const [backgroundColor, setBackgroundColor] = useState('transparent');
   const [canvasSize, setCanvasSize] = useState({ width: 600, height: 600 });
+  const [showInstructions, setShowInstructions] = useState(false);
 
   // Handle responsive canvas sizing
   useEffect(() => {
@@ -359,45 +361,60 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
       </div>
 
       {/* Instructions */}
-      <div className="mt-2 sm:mt-4 bg-dark-card border border-gem-crystal/20 rounded-lg p-3 sm:p-4">
-        <h4 className="text-white font-semibold mb-2 text-sm">BizarreBeasts ($BB) Meme Generator Instructions</h4>
+      <div className="mt-2 sm:mt-4 bg-dark-card border border-gem-crystal/20 rounded-lg">
+        {/* Collapsible Header */}
+        <button
+          onClick={() => setShowInstructions(!showInstructions)}
+          className="w-full p-3 sm:p-4 flex items-center justify-between text-white font-semibold text-sm hover:bg-gray-800/50 transition-colors rounded-lg"
+        >
+          <span className="flex items-center gap-2">
+            <Info className="w-4 h-4" />
+            BizarreBeasts ($BB) Meme Generator Instructions
+          </span>
+          {showInstructions ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+        </button>
         
-        <div className="space-y-3 text-xs sm:text-sm">
-          <div>
-            <p className="text-gem-crystal font-semibold mb-1">🎨 Create Your BizarreBeasts Meme:</p>
-            <ul className="text-gray-400 space-y-1 ml-4">
-              <li>• Click stickers to add to your canvas</li>
-              <li>• Drag to move and position anywhere</li>
-              <li>• Drag corner handles to resize</li>
-              <li>• Double-click text areas to edit</li>
-              <li>• Use Delete key or trash button to remove items</li>
-            </ul>
+        {/* Collapsible Content */}
+        {showInstructions && (
+          <div className="px-3 sm:px-4 pb-3 sm:pb-4">
+            <div className="space-y-3 text-xs sm:text-sm">
+              <div>
+                <p className="text-gem-crystal font-semibold mb-1">🎨 Create Your BizarreBeasts Meme:</p>
+                <ul className="text-gray-400 space-y-1 ml-4">
+                  <li>• Click stickers to add to your canvas</li>
+                  <li>• Drag to move and position anywhere</li>
+                  <li>• Drag corner handles to resize</li>
+                  <li>• Double-click text areas to edit</li>
+                  <li>• Use Delete key or trash button to remove items</li>
+                </ul>
+              </div>
+              
+              <div>
+                <p className="text-gem-purple font-semibold mb-1">🚀 Pro Tips:</p>
+                <ul className="text-gray-400 space-y-1 ml-4">
+                  <li>• Top & bottom text work best for classic meme format</li>
+                  <li>• Layer stickers to create dynamic scenes</li>
+                  <li>• Items snap to center for perfect alignment</li>
+                </ul>
+              </div>
+              
+              <div>
+                <p className="text-gem-gold font-semibold mb-1">💎 Token Holder Benefits:</p>
+                <p className="text-gray-400 ml-4 mb-1">Hold $BB tokens and empire boosters to unlock:</p>
+                <ul className="text-gray-400 space-y-1 ml-8">
+                  <li>• Exclusive sticker collections</li>
+                  <li>• Remove watermarks</li>
+                  <li>• Upload custom backgrounds</li>
+                  <li>• Premium features</li>
+                </ul>
+              </div>
+              
+              <p className="text-white font-semibold text-center pt-2 border-t border-gray-700">
+                Once you have created your BizarreBeasts Meme, click share! 🚀
+              </p>
+            </div>
           </div>
-          
-          <div>
-            <p className="text-gem-purple font-semibold mb-1">🚀 Pro Tips:</p>
-            <ul className="text-gray-400 space-y-1 ml-4">
-              <li>• Top & bottom text work best for classic meme format</li>
-              <li>• Layer stickers to create dynamic scenes</li>
-              <li>• Items snap to center for perfect alignment</li>
-            </ul>
-          </div>
-          
-          <div>
-            <p className="text-gem-gold font-semibold mb-1">💎 Token Holder Benefits:</p>
-            <p className="text-gray-400 ml-4 mb-1">Hold $BB tokens and empire boosters to unlock:</p>
-            <ul className="text-gray-400 space-y-1 ml-8">
-              <li>• Exclusive sticker collections</li>
-              <li>• Remove watermarks</li>
-              <li>• Upload custom backgrounds</li>
-              <li>• Premium features</li>
-            </ul>
-          </div>
-          
-          <p className="text-white font-semibold text-center pt-2 border-t border-gray-700">
-            Once you have created your BizarreBeasts Meme, click share! 🚀
-          </p>
-        </div>
+        )}
       </div>
     </div>
   );
