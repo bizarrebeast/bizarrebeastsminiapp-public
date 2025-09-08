@@ -181,6 +181,15 @@ export default function StickerGallery({
         </select>
       </div>
 
+      {/* Collection Description */}
+      {currentCollection && currentCollection.description && (
+        <div className="mb-3 p-2 bg-gray-800/50 rounded border border-gray-700">
+          <p className="text-xs text-gray-400">
+            {currentCollection.description}
+          </p>
+        </div>
+      )}
+
       {/* Background Selector - Show for collections with image or both background types */}
       {currentCollection && onSelectBackground && 
        (currentCollection.backgroundType === 'image' || currentCollection.backgroundType === 'both') && (

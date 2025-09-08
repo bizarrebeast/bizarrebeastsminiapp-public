@@ -13,7 +13,7 @@ const mockCollections: StickerCollection[] = [
   {
     id: 'bizarrebeasts',
     name: 'BizarreBeasts',
-    description: 'Original BizarreBeasts characters',
+    description: 'The original BizarreBeasts collection featuring all your favorite bizarre characters. Create hilarious memes with our signature beasts and share them with the community!',
     icon: '🦾',
     stickers: [],
     backgrounds: [],
@@ -26,7 +26,7 @@ const mockCollections: StickerCollection[] = [
   {
     id: 'treasure-quest',
     name: 'Treasure Quest',
-    description: 'Game sprites and items',
+    description: 'Exclusive game sprites and treasure items from the BizarreBeasts Treasure Quest game. Requires Veteran tier or higher to unlock these premium gaming assets.',
     icon: '💎',
     stickers: [],
     backgrounds: [], // Will add background images
@@ -39,7 +39,7 @@ const mockCollections: StickerCollection[] = [
   {
     id: 'vibecards',
     name: 'Vibecards',
-    description: 'Vibe check characters',
+    description: 'Special vibe check characters and mood expressions. Perfect for creating reaction memes! Requires Veteran tier or higher to access this collection.',
     icon: '✨',
     stickers: [],
     backgrounds: [], // Will add background images
