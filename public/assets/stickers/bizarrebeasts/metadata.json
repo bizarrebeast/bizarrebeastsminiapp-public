@@ -15,22 +15,6 @@
       "tier": "basic"
     },
     {
-      "id": "beast-2",
-      "name": "Happy Beast",
-      "filename": "bizarrebeasts-stickers-2.svg",
-      "category": "emotions",
-      "tags": ["beast", "happy", "joy"],
-      "tier": "basic"
-    },
-    {
-      "id": "beast-3",
-      "name": "Angry Beast",
-      "filename": "bizarrebeasts-stickers-3.svg",
-      "category": "emotions",
-      "tags": ["beast", "angry", "mad"],
-      "tier": "basic"
-    },
-    {
       "id": "beast-4",
       "name": "Sad Beast",
       "filename": "bizarrebeasts-stickers-4.svg",
