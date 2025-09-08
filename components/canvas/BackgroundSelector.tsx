@@ -121,6 +121,7 @@ export default function BackgroundSelector({
   const getTierBadge = (tier?: string) => {
     switch(tier) {
       case 'all':
+      case 'elite':
         return { 
           icon: <Crown className="w-3 h-3 text-gem-gold" />, 
           label: 'Elite',

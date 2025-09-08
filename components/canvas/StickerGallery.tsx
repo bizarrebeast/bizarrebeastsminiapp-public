@@ -25,6 +25,7 @@ interface StickerGalleryProps {
 function getTierBadge(tier?: string) {
   switch(tier) {
     case 'all':
+    case 'elite':
       return { 
         icon: <Crown className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-gem-gold" />, 
         label: 'Elite',

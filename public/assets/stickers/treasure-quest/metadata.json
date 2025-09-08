@@ -388,7 +388,7 @@
       "filename": "treasure-quest-bizbe-15.svg",
       "category": "characters",
       "tags": ["bizbe", "elite", "exclusive", "top"],
-      "tier": "elite"
+      "tier": "all"
     },
     {
       "id": "bizbe-16",
@@ -396,7 +396,7 @@
       "filename": "treasure-quest-bizbe-16.svg",
       "category": "characters",
       "tags": ["bizbe", "ultimate", "supreme", "top"],
-      "tier": "elite"
+      "tier": "all"
     },
     {
       "id": "beast-mode-crystal-cavern",
@@ -404,7 +404,7 @@
       "filename": "treasure-quest-beast-mode-crystal-cavern.svg",
       "category": "special",
       "tags": ["beast", "mode", "epic", "cavern"],
-      "tier": "elite"
+      "tier": "all"
     },
     {
       "id": "galatic-crystal-cavern",
@@ -412,7 +412,7 @@
       "filename": "treasure-quest-galatic-crystal-cavern.svg",
       "category": "special",
       "tags": ["galactic", "space", "cavern", "epic"],
-      "tier": "elite"
+      "tier": "all"
     },
     {
       "id": "volcanic-crystal-cavern",
@@ -420,7 +420,7 @@
       "filename": "treasure-quest-volcanic-crystal-cavern.svg",
       "category": "special",
       "tags": ["volcanic", "lava", "cavern", "epic"],
-      "tier": "elite"
+      "tier": "all"
     },
     {
       "id": "electrified-crystal-cavern",
@@ -428,7 +428,7 @@
       "filename": "treasure-quest-electrified-crystal-cavern.svg",
       "category": "special",
       "tags": ["electric", "lightning", "cavern", "epic"],
-      "tier": "elite"
+      "tier": "all"
     },
     {
       "id": "bizarrebeasets-banner",
@@ -436,7 +436,7 @@
       "filename": "treasure-quest-bizarrebeasets-banner.svg",
       "category": "special",
       "tags": ["banner", "logo", "exclusive"],
-      "tier": "elite"
+      "tier": "all"
     }
   ]
 }
