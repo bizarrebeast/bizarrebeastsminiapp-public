@@ -319,16 +319,18 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
       </div>
 
       {/* Instructions */}
-      <div className="mt-2 sm:mt-4 text-gray-400 text-xs sm:text-sm space-y-1">
+      <div className="mt-2 sm:mt-4 text-gray-400 text-xs sm:text-sm space-y-2">
         <p className="flex flex-wrap gap-x-3">
-          <span>• Click stickers to add them</span>
-          <span>• Drag items to move</span>
-          <span>• Click to select</span>
+          <span>• Click stickers to add to canvas</span>
+          <span>• Drag to move & position</span>
+          <span>• Drag corners to resize</span>
         </p>
         <p className="flex flex-wrap gap-x-3">
-          <span>• Resize by dragging corners</span>
-          <span>• Delete key removes selected</span>
           <span>• Double-click text to edit</span>
+          <span>• Click Delete button or press Delete key</span>
+        </p>
+        <p className="text-gem-crystal text-xs">
+          💎 Hold more $BB tokens to climb the Empire leaderboard and unlock premium features!
         </p>
       </div>
     </div>

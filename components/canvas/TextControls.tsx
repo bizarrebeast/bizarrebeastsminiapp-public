@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { TextOptions } from '@/types';
-import { Type, AlignLeft, AlignCenter, AlignRight, ChevronDown, ChevronUp } from 'lucide-react';
+import { Type, ChevronDown, ChevronUp } from 'lucide-react';
 
 interface TextControlsProps {
   onAddText: (text: string, options: TextOptions) => void;
@@ -25,7 +25,6 @@ export default function TextControls({ onAddText, onUpdateText }: TextControlsPr
   });
 
   const fonts = ['Impact', 'Arial', 'Comic Sans'];
-  const sizes = [24, 32, 48, 64, 72, 96];
 
   return (
     <div>
@@ -143,29 +142,11 @@ export default function TextControls({ onAddText, onUpdateText }: TextControlsPr
           </select>
         </div>
 
-        {/* Size Selection */}
-        <div>
-          <label className="text-gray-400 text-sm block mb-1">Size</label>
-          <select
-            value={textOptions.size}
-            onChange={(e) => {
-              const newSize = Number(e.target.value);
-              setTextOptions({ ...textOptions, size: newSize });
-              if (onUpdateText) onUpdateText({ size: newSize });
-            }}
-            className="w-full bg-gray-700 text-white rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
-          >
-            {sizes.map(size => (
-              <option key={size} value={size}>{size}px</option>
-            ))}
-          </select>
-        </div>
-
         {/* Colors */}
-        <div className="grid grid-cols-2 gap-2">
+        <div className="space-y-3">
           <div>
             <label className="text-gray-400 text-sm block mb-1">Text Color</label>
-            <div className="flex gap-2">
+            <div className="flex gap-2 items-center">
               <input
                 type="color"
                 value={textOptions.color}
@@ -174,8 +155,7 @@ export default function TextControls({ onAddText, onUpdateText }: TextControlsPr
                   setTextOptions({ ...textOptions, color: newColor });
                   if (onUpdateText) onUpdateText({ color: newColor });
                 }}
-                className="h-8 rounded cursor-pointer border border-gray-600"
-                style={{ width: '3rem' }}
+                className="w-16 h-10 rounded cursor-pointer border border-gray-600"
               />
               <input
                 type="text"
@@ -185,14 +165,14 @@ export default function TextControls({ onAddText, onUpdateText }: TextControlsPr
                   setTextOptions({ ...textOptions, color: newColor });
                   if (onUpdateText) onUpdateText({ color: newColor });
                 }}
-                className="flex-1 bg-gray-700 text-white rounded px-2 py-1 text-sm"
+                className="flex-1 bg-gray-700 text-white rounded px-3 py-2 text-sm"
               />
             </div>
           </div>
           
           <div>
             <label className="text-gray-400 text-sm block mb-1">Outline</label>
-            <div className="flex gap-2">
+            <div className="flex gap-2 items-center">
               <input
                 type="color"
                 value={textOptions.stroke}
@@ -201,8 +181,7 @@ export default function TextControls({ onAddText, onUpdateText }: TextControlsPr
                   setTextOptions({ ...textOptions, stroke: newStroke });
                   if (onUpdateText) onUpdateText({ stroke: newStroke });
                 }}
-                className="h-8 rounded cursor-pointer border border-gray-600"
-                style={{ width: '3rem' }}
+                className="w-16 h-10 rounded cursor-pointer border border-gray-600"
               />
               <input
                 type="number"
@@ -214,58 +193,13 @@ export default function TextControls({ onAddText, onUpdateText }: TextControlsPr
                   setTextOptions({ ...textOptions, strokeWidth: newWidth });
                   if (onUpdateText) onUpdateText({ strokeWidth: newWidth });
                 }}
-                className="w-16 bg-gray-700 text-white rounded px-2 py-1 text-sm"
-                placeholder="Width"
+                className="flex-1 bg-gray-700 text-white rounded px-3 py-2 text-sm"
+                placeholder="Outline Width"
               />
             </div>
           </div>
         </div>
 
-        {/* Alignment */}
-        <div>
-          <label className="text-gray-400 text-sm block mb-1">Alignment</label>
-          <div className="flex gap-2">
-            <button
-              onClick={() => {
-                setTextOptions({ ...textOptions, align: 'left' });
-                if (onUpdateText) onUpdateText({ align: 'left' });
-              }}
-              className={`flex-1 p-2 rounded ${
-                textOptions.align === 'left' 
-                  ? 'bg-purple-600 text-white' 
-                  : 'bg-gray-700 text-gray-400 hover:bg-gray-600'
-              }`}
-            >
-              <AlignLeft className="w-4 h-4 mx-auto" />
-            </button>
-            <button
-              onClick={() => {
-                setTextOptions({ ...textOptions, align: 'center' });
-                if (onUpdateText) onUpdateText({ align: 'center' });
-              }}
-              className={`flex-1 p-2 rounded ${
-                textOptions.align === 'center' 
-                  ? 'bg-purple-600 text-white' 
-                  : 'bg-gray-700 text-gray-400 hover:bg-gray-600'
-              }`}
-            >
-              <AlignCenter className="w-4 h-4 mx-auto" />
-            </button>
-            <button
-              onClick={() => {
-                setTextOptions({ ...textOptions, align: 'right' });
-                if (onUpdateText) onUpdateText({ align: 'right' });
-              }}
-              className={`flex-1 p-2 rounded ${
-                textOptions.align === 'right' 
-                  ? 'bg-purple-600 text-white' 
-                  : 'bg-gray-700 text-gray-400 hover:bg-gray-600'
-              }`}
-            >
-              <AlignRight className="w-4 h-4 mx-auto" />
-            </button>
-            </div>
-          </div>
         </div>
       </>
     )}
