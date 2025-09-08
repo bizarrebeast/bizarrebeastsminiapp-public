@@ -159,7 +159,7 @@ export default function StickerGallery({
             const collectionId = e.target.value;
             const collection = collections.find(c => c.id === collectionId);
             // Check if collection is disabled
-            if (collection && (collection as any).disabled) {
+            if (collection && collection.disabled) {
               // Don't change selection if disabled
               return;
             }
@@ -171,8 +171,8 @@ export default function StickerGallery({
             <option 
               key={collection.id} 
               value={collection.id}
-              disabled={(collection as any).disabled}
-              className={(collection as any).disabled ? 'text-gray-500' : ''}
+              disabled={collection.disabled}
+              className={collection.disabled ? 'text-gray-500' : ''}
             >
               {collection.icon} {collection.name}
             </option>
@@ -190,7 +190,7 @@ export default function StickerGallery({
       )}
       
       {/* Coming Soon Message for Disabled Collections */}
-      {currentCollection && (currentCollection as any).disabled && (
+      {currentCollection && currentCollection.disabled && (
         <div className="mb-3 p-3 bg-yellow-900/30 border border-yellow-600/50 rounded">
           <div className="flex items-center gap-2 text-yellow-400 text-sm">
             <Sparkles className="w-4 h-4" />

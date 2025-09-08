@@ -59,6 +59,7 @@ export interface StickerCollection {
   requiredTier?: any; // Empire tier requirement (using any to avoid circular dependency)
   sortOrder: number;
   tags: string[];
+  disabled?: boolean; // Mark collection as coming soon or disabled
 }
 
 export interface BackgroundImage {
