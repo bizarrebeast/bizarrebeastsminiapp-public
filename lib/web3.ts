@@ -70,19 +70,41 @@ class Web3Service {
         },
         themeMode: 'dark',
         themeVariables: {
-          '--w3m-color-mix': '#1a1a1a',  // Dark gray instead of yellow
-          '--w3m-color-mix-strength': 20,
-          '--w3m-accent': '#44D0A7',  // Gem crystal accent
-          '--w3m-background': '#000000',  // Pure black background
+          // Core colors
+          '--w3m-color-mix': '#1a1a1a',
+          '--w3m-color-mix-strength': 40,
+          '--w3m-accent': '#44D0A7',
+          
+          // Background colors
+          '--w3m-background-color': '#000000',
+          '--w3m-background-color-secondary': '#0a0a0a',
+          '--w3m-background-border-radius': '8px',
+          '--w3m-container-border-radius': '8px',
+          '--w3m-wallet-icon-border-radius': '8px',
+          '--w3m-input-border-radius': '8px',
+          '--w3m-button-border-radius': '8px',
+          '--w3m-secondary-button-border-radius': '8px',
+          '--w3m-icon-button-border-radius': '8px',
+          '--w3m-button-hover-highlight-border-radius': '8px',
+          
+          // Text colors
+          '--w3m-text-primary-color': '#ffffff',
+          '--w3m-text-secondary-color': '#888888',
+          
+          // Other
+          '--w3m-overlay-background-color': 'rgba(0, 0, 0, 0.8)',
+          '--w3m-overlay-backdrop-filter': 'blur(4px)',
+          '--w3m-z-index': 9999,
           '--w3m-font-family': 'system-ui, -apple-system, sans-serif',
-          '--w3m-border-radius-master': '8px',
-          '--w3m-font-size-master': '14px',
-          '--w3m-z-index': 9999
+          '--w3m-font-size-master': '14px'
         }
       });
 
       // Set up event listeners
       this.setupEventListeners();
+      
+      // Inject custom CSS to override modal colors
+      this.injectCustomModalStyles();
       
       this.isInitialized = true;
       console.log('Web3Service initialized with Reown AppKit');
@@ -166,6 +188,71 @@ class Web3Service {
     };
     
     this.notifyStateChange();
+  }
+
+  /**
+   * Inject custom CSS to override modal colors
+   */
+  private injectCustomModalStyles(): void {
+    const styleId = 'bb-w3m-custom-styles';
+    
+    // Check if styles already exist
+    if (document.getElementById(styleId)) return;
+    
+    const style = document.createElement('style');
+    style.id = styleId;
+    style.innerHTML = `
+      /* Override WalletConnect Modal colors */
+      w3m-modal, w3m-router {
+        --w3m-color-mix: #000000 !important;
+        --w3m-accent: #44D0A7 !important;
+        --w3m-background-color: #000000 !important;
+      }
+      
+      /* Dark background for modal */
+      w3m-modal::part(container) {
+        background: #000000 !important;
+      }
+      
+      /* Override yellow/gold colors */
+      w3m-modal [data-variant="fill-primary"] {
+        background: #44D0A7 !important;
+        color: #000000 !important;
+      }
+      
+      /* Wallet list items */
+      w3m-wallet-button {
+        background: #0a0a0a !important;
+        border-color: #1a1a1a !important;
+      }
+      
+      w3m-wallet-button:hover {
+        background: #1a1a1a !important;
+      }
+      
+      /* Headers and text */
+      w3m-modal h1, w3m-modal h2, w3m-modal h3 {
+        color: #ffffff !important;
+      }
+      
+      w3m-modal p, w3m-modal span {
+        color: #888888 !important;
+      }
+      
+      /* Buttons */
+      w3m-button[variant="fill-primary"] {
+        background: linear-gradient(90deg, #FFD700, #44D0A7) !important;
+        color: #000000 !important;
+      }
+      
+      /* Remove any yellow backgrounds */
+      [style*="background-color: rgb(255, 215, 0)"],
+      [style*="background: rgb(255, 215, 0)"] {
+        background: #44D0A7 !important;
+      }
+    `;
+    
+    document.head.appendChild(style);
   }
 
   /**
