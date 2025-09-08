@@ -55,12 +55,20 @@ export class EmpireService {
     }
 
     try {
-      const response = await fetch(`${EMPIRE_API_BASE}/leaderboard/${BB_TOKEN_ADDRESS}`);
+      // Use our API route to avoid CORS issues
+      const response = await fetch('/api/empire/leaderboard');
       if (!response.ok) {
         throw new Error('Failed to fetch leaderboard');
       }
       
       const data = await response.json();
+      
+      // Check if we got an error response
+      if (data.error) {
+        console.error('Empire API error:', data.error);
+        return { holders: [], cached: false };
+      }
+      
       this.cache.set(cacheKey, { data, timestamp: Date.now() });
       return data;
     } catch (error) {
