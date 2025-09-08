@@ -35,52 +35,52 @@ interface Track {
   tags: string[];
 }
 
-// Sample track data - replace with your actual tracks
+// BizarreBeasts game soundtracks
 const tracks: Track[] = [
   {
     id: '1',
-    title: 'Empire Quest Theme',
-    game: 'Empire Builder',
-    description: 'The epic main theme for Empire Builder, featuring orchestral elements and electronic beats.',
-    coverArt: '/music/empire-quest-cover.jpg',
-    audioUrl: '/music/empire-quest-theme.mp3',
+    title: 'Crystal Cavern',
+    game: 'Treasure Quest',
+    description: 'Ethereal underground adventure theme with mysterious crystal cave ambience and epic orchestral swells.',
+    coverArt: '/assets/page-assets/music/album-covers/crystal-cavern-bizarrebeasts-album-cover-2.svg',
+    audioUrl: '',
     duration: '3:45',
     links: {
-      spotify: 'https://open.spotify.com/track/...',
-      apple: 'https://music.apple.com/...',
-      amazon: 'https://music.amazon.com/...',
-      mint: 'https://mint.link/...'
+      spotify: '',
+      apple: '',
+      amazon: '',
+      mint: ''
     },
-    tags: ['Epic', 'Orchestral', 'Electronic']
+    tags: ['Adventure', 'Ambient', 'Orchestral']
   },
   {
     id: '2',
-    title: 'Treasure Hunt',
-    game: 'Treasure Quest',
-    description: 'An adventurous and mysterious track that plays during treasure hunting sequences.',
-    coverArt: '/music/treasure-hunt-cover.jpg',
-    audioUrl: '/music/treasure-hunt.mp3',
+    title: 'Head Crush',
+    game: 'Head Crush',
+    description: 'High-energy action soundtrack with pounding beats and intense electronic rhythms for crushing gameplay.',
+    coverArt: '/assets/page-assets/music/album-covers/head-crush-bizarrebeasts-album-cover-1.svg',
+    audioUrl: '',
     duration: '2:30',
     links: {
-      spotify: 'https://open.spotify.com/track/...',
-      apple: 'https://music.apple.com/...',
-      amazon: 'https://music.amazon.com/...',
+      spotify: '',
+      apple: '',
+      amazon: '',
     },
-    tags: ['Adventure', 'Mystery', 'Ambient']
+    tags: ['Action', 'Electronic', 'Intense']
   },
   {
     id: '3',
-    title: 'Battle Beasts',
-    game: 'BizarreBeasts Arena',
-    description: 'High-energy combat music for intense beast battles.',
-    coverArt: '/music/battle-beasts-cover.jpg',
-    audioUrl: '/music/battle-beasts.mp3',
+    title: 'Night Beast',
+    game: 'BizarreBeasts',
+    description: 'Dark and mysterious theme featuring haunting melodies and atmospheric soundscapes.',
+    coverArt: '/assets/page-assets/music/album-covers/night-beast-bizarrebeasts-album-cover-3.svg',
+    audioUrl: '',
     duration: '4:12',
     links: {
-      spotify: 'https://open.spotify.com/track/...',
-      apple: 'https://music.apple.com/...',
+      spotify: '',
+      apple: '',
     },
-    tags: ['Battle', 'Intense', 'Electronic']
+    tags: ['Dark', 'Atmospheric', 'Mystery']
   },
 ];
 
@@ -118,23 +118,50 @@ export default function MusicPage() {
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-white mb-2 flex items-center gap-3">
-            <Music className="w-8 h-8 text-gem-purple" />
-            Game Soundtracks
+          <h1 className="text-3xl font-bold mb-2 flex items-center gap-3">
+            <Music className="w-8 h-8 text-gem-crystal" />
+            <span className="bg-gradient-to-r from-gem-gold via-gem-crystal to-gem-blue bg-clip-text text-transparent">
+              Game Soundtracks
+            </span>
           </h1>
           <p className="text-gray-400">
             Original music from BizarreBeasts games. Stream on your favorite platform or collect as NFTs.
           </p>
         </div>
 
-        {/* Featured Track Banner */}
-        <div className="mb-8 bg-gradient-to-r from-gem-purple/20 to-gem-blue/20 rounded-lg p-6 border border-gem-purple/30">
-          <div className="flex items-center gap-2 mb-2">
-            <Sparkles className="w-5 h-5 text-gem-gold" />
-            <span className="text-sm font-semibold text-gem-gold">Featured Track</span>
-          </div>
-          <h2 className="text-xl font-bold text-white mb-1">{tracks[0].title}</h2>
-          <p className="text-gray-300 text-sm">{tracks[0].description}</p>
+        {/* About the Music Section */}
+        <div className="mb-8 bg-gray-800/50 rounded-lg p-6 border border-gray-700">
+          <h2 className="text-xl font-semibold text-white mb-3 flex items-center gap-2">
+            <Headphones className="w-5 h-5 text-gem-crystal" />
+            About the Music
+          </h2>
+          <p className="text-gray-400 mb-4">
+            All tracks are original compositions created and produced by{' '}
+            <a 
+              href="https://farcaster.xyz/kateyarter" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-gem-crystal hover:text-gem-gold transition-colors"
+            >
+              @kateyarter
+            </a>
+            {' '}of Honey High Records for the BizarreBeasts gaming ecosystem. 
+            Each piece is crafted to enhance the gaming experience and bring the world of BizarreBeasts to life. 
+            Reach out to{' '}
+            <a 
+              href="https://farcaster.xyz/kateyarter" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-gem-crystal hover:text-gem-gold transition-colors"
+            >
+              @kateyarter
+            </a>
+            {' '}for original tracks for your games or projects!
+          </p>
+          <p className="text-gray-400">
+            Stream on your favorite platform or collect limited edition NFT versions to support the project 
+            and own a piece of BizarreBeasts history.
+          </p>
         </div>
 
         {/* Track Grid */}
@@ -147,7 +174,11 @@ export default function MusicPage() {
               {/* Cover Art with Play Button */}
               <div className="relative aspect-square bg-gray-800 group">
                 {track.coverArt ? (
-                  <div className="w-full h-full bg-gradient-to-br from-gem-purple to-gem-blue" />
+                  <img 
+                    src={track.coverArt}
+                    alt={track.title}
+                    className="w-full h-full object-cover"
+                  />
                 ) : (
                   <div className="w-full h-full bg-gradient-to-br from-gem-purple to-gem-blue flex items-center justify-center">
                     <Music className="w-16 h-16 text-white/30" />
@@ -258,21 +289,6 @@ export default function MusicPage() {
           ))}
         </div>
 
-        {/* Info Section */}
-        <div className="mt-12 bg-gray-800/50 rounded-lg p-6 border border-gray-700">
-          <h2 className="text-xl font-semibold text-white mb-3 flex items-center gap-2">
-            <Headphones className="w-5 h-5 text-gem-crystal" />
-            About the Music
-          </h2>
-          <p className="text-gray-400 mb-4">
-            All tracks are original compositions created for the BizarreBeasts gaming ecosystem. 
-            Each piece is crafted to enhance the gaming experience and bring the world of BizarreBeasts to life.
-          </p>
-          <p className="text-gray-400">
-            Stream on your favorite platform or collect limited edition NFT versions to support the project 
-            and own a piece of BizarreBeasts history.
-          </p>
-        </div>
       </div>
     </div>
   );

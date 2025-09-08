@@ -1,95 +1,22 @@
-import Link from 'next/link';
-import { ExternalLink, Gamepad2, Globe, MessageSquare, Smartphone, Trophy, Users, Zap } from 'lucide-react';
+'use client';
 
-const games = [
-  {
-    id: 'treasure-quest',
-    name: 'Bizarre Underground Treasure Quest',
-    description: 'The original treasure hunting adventure with BizarreBeasts',
-    platform: 'Telegram',
-    platformIcon: MessageSquare,
-    url: 'https://t.me/treasurequestbot',
-    color: 'gem-gold',
-    borderColor: 'border-gem-gold/20',
-    hoverShadow: 'hover:shadow-gold',
-    stats: {
-      players: '5,000+',
-      dailyActive: '1,200+',
-      totalGems: '1M+',
-    },
-    features: ['Daily rewards', 'Gem collection', 'Leaderboards', 'NFT rewards'],
-  },
-  {
-    id: 'vibecards',
-    name: 'Vibecards',
-    description: 'Check your vibe and collect unique character cards',
-    platform: 'World App',
-    platformIcon: Globe,
-    url: 'https://worldapp.com/vibecards',
-    color: 'gem-crystal',
-    borderColor: 'border-gem-crystal/20',
-    hoverShadow: 'hover:shadow-crystal',
-    stats: {
-      players: '3,000+',
-      cardsCollected: '50,000+',
-      vibeChecks: '100,000+',
-    },
-    features: ['Vibe checking', 'Card collection', 'Trading', 'Social features'],
-  },
-  {
-    id: 'memory-match',
-    name: 'Memory Match',
-    description: 'Test your memory with BizarreBeasts characters',
-    platform: 'Web',
-    platformIcon: Globe,
-    url: '/games/memory-match',
-    color: 'gem-blue',
-    borderColor: 'border-gem-blue/20',
-    hoverShadow: 'hover:shadow-gem',
-    stats: {
-      players: '2,000+',
-      gamesPlayed: '25,000+',
-      highScore: '9,999',
-    },
-    features: ['Multiple difficulties', 'Time challenges', 'Power-ups', 'Achievements'],
-  },
-  {
-    id: 'beast-battle',
-    name: 'Beast Battle',
-    description: 'Strategic card battles with your favorite beasts',
-    platform: 'Telegram',
-    platformIcon: MessageSquare,
-    url: 'https://t.me/beastbattlebot',
-    color: 'gem-purple',
-    borderColor: 'border-gem-purple/20',
-    hoverShadow: 'hover:shadow-gem',
-    stats: {
-      players: '4,000+',
-      battles: '50,000+',
-      tournaments: '100+',
-    },
-    features: ['PvP battles', 'Tournament mode', 'Card upgrades', 'Season rewards'],
-  },
-  {
-    id: 'gem-rush',
-    name: 'Gem Rush',
-    description: 'Fast-paced gem collecting arcade action',
-    platform: 'Mobile',
-    platformIcon: Smartphone,
-    url: '#',
-    color: 'gem-pink',
-    borderColor: 'border-gem-pink/20',
-    hoverShadow: 'hover:shadow-gem',
-    comingSoon: true,
-    stats: {
-      preRegistered: '1,500+',
-      expectedLaunch: 'Q2 2024',
-    },
-    features: ['Arcade gameplay', 'Daily challenges', 'Global leaderboard', 'Gem rewards'],
-  },
-];
+import Link from 'next/link';
+import { ExternalLink, Gamepad2, Globe, MessageSquare, Smartphone, Trophy, Users, Zap, PlayCircle } from 'lucide-react';
+import { gamesData, formatPlayCount, getTotalPlays, getGamesByPopularity } from '@/lib/games-data';
+import { useState } from 'react';
+
+const platformIcons: Record<string, any> = {
+  telegram: MessageSquare,
+  worldApp: Globe,
+  online: Globe,
+  farcaster: MessageSquare,
+};
 
 export default function GamesPage() {
+  const [sortBy, setSortBy] = useState<'all' | 'popular'>('all');
+  const displayGames = sortBy === 'popular' ? getGamesByPopularity() : gamesData;
+  const totalPlays = getTotalPlays();
+
   return (
     <div className="min-h-[calc(100vh-64px)] px-4 py-8">
       <div className="max-w-7xl mx-auto">
@@ -99,7 +26,7 @@ export default function GamesPage() {
             BizarreBeasts Games
           </h1>
           <p className="text-xl text-gray-300">
-            Play, earn, and compete across multiple platforms
+            8 Hand-crafted games with over {formatPlayCount(totalPlays)} plays!
           </p>
         </div>
 
@@ -107,138 +34,194 @@ export default function GamesPage() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
           <div className="bg-dark-card border border-gem-gold/20 rounded-lg p-4 text-center transition-all duration-300">
             <Gamepad2 className="w-8 h-8 text-gem-gold mx-auto mb-2" />
-            <div className="text-2xl font-bold text-gem-gold">5</div>
-            <div className="text-sm text-gray-400">Active Games</div>
+            <div className="text-2xl font-bold text-gem-gold">8</div>
+            <div className="text-sm text-gray-400">Games</div>
           </div>
           <div className="bg-dark-card border border-gem-crystal/20 rounded-lg p-4 text-center transition-all duration-300">
-            <Users className="w-8 h-8 text-gem-crystal mx-auto mb-2" />
-            <div className="text-2xl font-bold text-gem-crystal">15K+</div>
-            <div className="text-sm text-gray-400">Total Players</div>
+            <PlayCircle className="w-8 h-8 text-gem-crystal mx-auto mb-2" />
+            <div className="text-2xl font-bold text-gem-crystal">{formatPlayCount(totalPlays)}</div>
+            <div className="text-sm text-gray-400">Total Plays</div>
           </div>
           <div className="bg-dark-card border border-gem-blue/20 rounded-lg p-4 text-center transition-all duration-300">
             <Trophy className="w-8 h-8 text-gem-blue mx-auto mb-2" />
-            <div className="text-2xl font-bold text-gem-blue">$10K</div>
-            <div className="text-sm text-gray-400">Prizes Given</div>
+            <div className="text-2xl font-bold text-gem-blue">42K</div>
+            <div className="text-sm text-gray-400">Top Game Plays</div>
           </div>
           <div className="bg-dark-card border border-gem-purple/20 rounded-lg p-4 text-center transition-all duration-300">
-            <Zap className="w-8 h-8 text-gem-purple mx-auto mb-2" />
-            <div className="text-2xl font-bold text-gem-purple">200K+</div>
-            <div className="text-sm text-gray-400">Games Played</div>
+            <Users className="w-8 h-8 text-gem-crystal mx-auto mb-2" />
+            <div className="text-2xl font-bold bg-gradient-to-r from-gem-gold via-gem-crystal to-gem-blue bg-clip-text text-transparent">10K+</div>
+            <div className="text-sm text-gray-400">Players</div>
           </div>
+        </div>
+
+        {/* Sort Options */}
+        <div className="flex justify-center gap-4 mb-8">
+          <button
+            onClick={() => setSortBy('all')}
+            className={`px-4 py-2 rounded-lg font-semibold transition-all duration-300 ${
+              sortBy === 'all' 
+                ? 'bg-gradient-to-r from-gem-gold to-gem-crystal text-dark-bg' 
+                : 'bg-dark-card border border-gem-crystal/20 text-gray-400 hover:text-gem-crystal'
+            }`}
+          >
+            All Games
+          </button>
+          <button
+            onClick={() => setSortBy('popular')}
+            className={`px-4 py-2 rounded-lg font-semibold transition-all duration-300 ${
+              sortBy === 'popular' 
+                ? 'bg-gradient-to-r from-gem-gold to-gem-crystal text-dark-bg' 
+                : 'bg-dark-card border border-gem-crystal/20 text-gray-400 hover:text-gem-crystal'
+            }`}
+          >
+            Most Popular
+          </button>
         </div>
 
         {/* Games Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {games.map((game) => {
-            const PlatformIcon = game.platformIcon;
+          {displayGames.map((game, index) => {
+            const gameColors = ['gem-gold', 'gem-crystal', 'gem-blue', 'gem-purple', 'gem-pink'];
+            const color = gameColors[index % gameColors.length];
+            
+            // Determine if any platform link exists
+            const hasLink = game.platforms.farcaster || game.platforms.telegram || 
+                          game.platforms.worldApp || game.platforms.online;
+            
             return (
               <div
                 key={game.id}
-                className={`bg-dark-card border ${game.borderColor} rounded-lg p-6 ${game.hoverShadow} transition-all duration-300 ${
-                  game.comingSoon ? 'opacity-75' : ''
-                }`}
+                className={`bg-dark-card border border-${color}/20 rounded-lg overflow-hidden hover:shadow-lg hover:shadow-${color}/20 transition-all duration-300 flex flex-col`}
               >
-                {/* Game Header */}
-                <div className="flex items-start justify-between mb-4">
-                  <div className={`w-12 h-12 bg-${game.color}/20 rounded-lg flex items-center justify-center`}>
-                    <Gamepad2 className={`w-6 h-6 text-${game.color}`} />
+                {/* Banner Image - Square */}
+                {game.bannerImage && (
+                  <div className="relative aspect-square bg-gradient-to-br from-gray-800 to-gray-900 overflow-hidden">
+                    <img 
+                      src={game.bannerImage} 
+                      alt={game.title}
+                      className="w-full h-full object-cover"
+                    />
+                    {game.featured && (
+                      <span className="absolute top-2 right-2 bg-gem-gold/90 text-dark-bg text-xs px-2 py-1 rounded-full font-semibold">
+                        Featured
+                      </span>
+                    )}
                   </div>
-                  {game.comingSoon && (
-                    <span className="bg-gem-gold/20 text-gem-gold text-xs px-2 py-1 rounded-full font-semibold">
-                      Coming Soon
-                    </span>
+                )}
+
+                {/* Game Content */}
+                <div className="p-6 flex flex-col flex-1">
+                  {/* Game Info */}
+                  <h3 className="text-xl font-semibold mb-2">{game.title}</h3>
+                  <p className="text-gray-400 text-sm mb-4 flex-1">{game.shortDescription}</p>
+
+                  {/* Stats */}
+                  <div className="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                      <div className={`text-2xl font-bold bg-gradient-to-r from-${color} to-gem-crystal bg-clip-text text-transparent`}>
+                        {formatPlayCount(game.plays)}
+                      </div>
+                      <div className="text-gray-500 text-xs">Plays</div>
+                    </div>
+                    <div>
+                      <div className="text-sm text-gray-400">{game.genre}</div>
+                      <div className="text-gray-500 text-xs">Genre</div>
+                    </div>
+                  </div>
+
+                  {/* Platform Links */}
+                  <div className="flex gap-2 mb-4">
+                    {game.platforms.farcaster && (
+                      <a
+                        href={game.platforms.farcaster}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="bg-purple-500/20 text-purple-400 p-2 rounded-lg hover:bg-purple-500/30 transition-colors"
+                        title="Play on Farcaster"
+                      >
+                        <MessageSquare className="w-4 h-4" />
+                      </a>
+                    )}
+                    {game.platforms.telegram && (
+                      <a
+                        href={game.platforms.telegram}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="bg-blue-500/20 text-blue-400 p-2 rounded-lg hover:bg-blue-500/30 transition-colors"
+                        title="Play on Telegram"
+                      >
+                        <MessageSquare className="w-4 h-4" />
+                      </a>
+                    )}
+                    {game.platforms.worldApp && (
+                      <a
+                        href={game.platforms.worldApp}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="bg-green-500/20 text-green-400 p-2 rounded-lg hover:bg-green-500/30 transition-colors"
+                        title="Play on World App"
+                      >
+                        <Globe className="w-4 h-4" />
+                      </a>
+                    )}
+                    {game.platforms.online && (
+                      <a
+                        href={game.platforms.online}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="bg-gem-crystal/20 text-gem-crystal p-2 rounded-lg hover:bg-gem-crystal/30 transition-colors"
+                        title="Play Online"
+                      >
+                        <Globe className="w-4 h-4" />
+                      </a>
+                    )}
+                  </div>
+
+                  {/* Play Button */}
+                  {hasLink ? (
+                    <a
+                      href={Object.values(game.platforms).find(url => url) || '#'}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`w-full bg-gradient-to-r from-${color} to-${color === 'gem-gold' ? 'gem-crystal' : 'gem-gold'} text-dark-bg px-4 py-2 rounded-lg font-semibold hover:shadow-lg transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2`}
+                    >
+                      Play Now
+                      <ExternalLink className="w-4 h-4" />
+                    </a>
+                  ) : (
+                    <button
+                      className="w-full bg-gray-700 text-gray-400 px-4 py-2 rounded-lg font-semibold"
+                    >
+                      Links Coming Soon
+                    </button>
                   )}
                 </div>
-
-                {/* Game Info */}
-                <h3 className="text-xl font-semibold mb-2">{game.name}</h3>
-                <p className="text-gray-400 text-sm mb-4">{game.description}</p>
-
-                {/* Platform Badge */}
-                <div className="flex items-center gap-2 mb-4">
-                  <PlatformIcon className="w-4 h-4 text-gray-400" />
-                  <span className="text-sm text-gray-400">{game.platform}</span>
-                </div>
-
-                {/* Stats */}
-                {!game.comingSoon ? (
-                  <div className="grid grid-cols-2 gap-2 mb-4 text-sm">
-                    {Object.entries(game.stats).slice(0, 2).map(([key, value]) => (
-                      <div key={key}>
-                        <div className={`text-${game.color} font-semibold`}>{value}</div>
-                        <div className="text-gray-500 text-xs capitalize">
-                          {key.replace(/([A-Z])/g, ' $1').trim()}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="mb-4 text-sm">
-                    <div className="text-gem-gold font-semibold">{game.stats.preRegistered}</div>
-                    <div className="text-gray-500 text-xs">Pre-registered</div>
-                    <div className="text-gray-400 mt-2">{game.stats.expectedLaunch}</div>
-                  </div>
-                )}
-
-                {/* Features */}
-                <div className="flex flex-wrap gap-1 mb-4">
-                  {game.features.slice(0, 3).map((feature) => (
-                    <span
-                      key={feature}
-                      className={`text-xs bg-${game.color}/10 text-${game.color} px-2 py-1 rounded`}
-                    >
-                      {feature}
-                    </span>
-                  ))}
-                </div>
-
-                {/* Play Button */}
-                {!game.comingSoon ? (
-                  <Link
-                    href={game.url}
-                    target={game.url.startsWith('http') ? '_blank' : undefined}
-                    className={`w-full bg-gradient-to-r from-${game.color} to-${
-                      game.color === 'gem-gold' ? 'gem-crystal' : 'gem-gold'
-                    } text-dark-bg px-4 py-2 rounded-lg font-semibold ${game.hoverShadow} transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2`}
-                  >
-                    Play Now
-                    <ExternalLink className="w-4 h-4" />
-                  </Link>
-                ) : (
-                  <button
-                    disabled
-                    className="w-full bg-gray-700 text-gray-400 px-4 py-2 rounded-lg font-semibold cursor-not-allowed"
-                  >
-                    Coming Soon
-                  </button>
-                )}
               </div>
             );
           })}
         </div>
 
+
         {/* Bottom CTA */}
         <div className="mt-12 text-center">
-          <div className="bg-gradient-to-r from-gem-crystal/20 to-gem-purple/20 rounded-lg p-8 border border-gem-crystal/30">
-            <h2 className="text-2xl font-bold mb-4">🎮 More Games Coming Soon</h2>
+          <div className="bg-dark-card rounded-lg p-8 border border-gem-crystal/20">
+            <h2 className="text-2xl font-bold mb-4">🚀 More Games Coming!</h2>
             <p className="text-gray-300 mb-6">
-              We're constantly building new ways to play and earn with BizarreBeasts
+              Join the BizarreBeasts community to get early access to new games
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
-                href="/leaderboard"
-                className="inline-block bg-gradient-to-r from-gem-gold to-gem-crystal text-dark-bg px-6 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105"
+                href="/empire"
+                className="inline-block bg-gradient-to-r from-gem-gold via-gem-crystal to-gem-blue text-black px-8 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105"
               >
-                View Leaderboard
+                Join Empire
               </Link>
-              <a
-                href="https://discord.gg/bizarrebeasts"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-block bg-gradient-to-r from-gem-purple to-gem-pink text-dark-bg px-6 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105"
+              <Link
+                href="/meme-generator"
+                className="inline-block bg-gradient-to-r from-gem-crystal to-gem-gold text-black px-8 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105"
               >
-                Join Community
-              </a>
+                Create Memes
+              </Link>
             </div>
           </div>
         </div>

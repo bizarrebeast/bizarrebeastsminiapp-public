@@ -1,18 +1,56 @@
+'use client';
+
 import Link from 'next/link';
 import { Palette, Gamepad2, Trophy, TrendingUp, Users, Sparkles, ArrowDownUp } from 'lucide-react';
+import { useState, useEffect } from 'react';
 
 export default function Home() {
+  const [marketCap, setMarketCap] = useState<string>('--');
+
+  useEffect(() => {
+    const fetchMarketCap = async () => {
+      try {
+        // Using DexScreener API to get BB token price data
+        const response = await fetch('https://api.dexscreener.com/latest/dex/tokens/0x0520bf1d3cEE163407aDA79109333aB1599b4004');
+        const data = await response.json();
+        
+        if (data.pairs && data.pairs.length > 0) {
+          // Get the first pair's market cap
+          const mcap = data.pairs[0].fdv || data.pairs[0].marketCap;
+          if (mcap) {
+            // Format market cap without decimals
+            if (mcap >= 1000000) {
+              setMarketCap(`$${Math.round(mcap / 1000000)}M`);
+            } else if (mcap >= 1000) {
+              setMarketCap(`$${Math.round(mcap / 1000)}K`);
+            } else {
+              setMarketCap(`$${Math.round(mcap)}`);
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching market cap:', error);
+        setMarketCap('--');
+      }
+    };
+
+    fetchMarketCap();
+    // Refresh every 30 seconds
+    const interval = setInterval(fetchMarketCap, 30000);
+    
+    return () => clearInterval(interval);
+  }, []);
   return (
     <div className="min-h-[calc(100vh-64px)]">
       {/* Hero Section */}
       <section className="relative px-4 py-20 text-center">
         <div className="max-w-4xl mx-auto">
-          {/* Logo */}
+          {/* Banner */}
           <div className="flex justify-center mb-6">
             <img 
-              src="/assets/page-assets/logos/bizarrebeasts-miniapp-logo.svg" 
-              alt="BizarreBeasts Logo" 
-              className="w-[250px] h-[250px] object-contain rounded-2xl"
+              src="/assets/page-assets/banners/bizarrebeasts-homepage-banner-bb-token.svg" 
+              alt="BizarreBeasts Banner" 
+              className="w-full max-w-4xl object-contain rounded-2xl"
             />
           </div>
           
@@ -24,17 +62,21 @@ export default function Home() {
           </p>
           
           {/* Quick Stats */}
-          <div className="grid grid-cols-3 gap-4 max-w-2xl mx-auto mb-12">
-            <div className="bg-dark-card border border-gem-gold/20 rounded-lg p-4 transition-all duration-300">
+          <div className="grid grid-cols-4 gap-4 max-w-3xl mx-auto mb-12">
+            <Link href="/swap" className="bg-dark-card border border-gem-gold/20 rounded-lg p-4 transition-all duration-300 hover:border-gem-gold/40 hover:scale-105 cursor-pointer">
               <div className="text-2xl font-bold text-gem-gold">$BB</div>
               <div className="text-sm text-gray-400">Token</div>
+            </Link>
+            <div className="bg-dark-card border border-gem-purple/20 rounded-lg p-4 transition-all duration-300">
+              <div className="text-2xl font-bold bg-gradient-to-r from-gem-gold via-gem-crystal to-gem-blue bg-clip-text text-transparent">{marketCap}</div>
+              <div className="text-sm text-gray-400">Market Cap</div>
             </div>
             <div className="bg-dark-card border border-gem-crystal/20 rounded-lg p-4 transition-all duration-300">
-              <div className="text-2xl font-bold text-gem-crystal">1000+</div>
+              <div className="text-2xl font-bold text-gem-crystal">4400+</div>
               <div className="text-sm text-gray-400">Holders</div>
             </div>
             <div className="bg-dark-card border border-gem-blue/20 rounded-lg p-4 transition-all duration-300">
-              <div className="text-2xl font-bold text-gem-blue">5</div>
+              <div className="text-2xl font-bold text-gem-blue">8</div>
               <div className="text-sm text-gray-400">Games</div>
             </div>
           </div>
@@ -46,7 +88,7 @@ export default function Home() {
               className="bg-gradient-to-r from-gem-gold via-gem-crystal to-gem-blue text-black px-8 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2"
             >
               <Palette className="w-5 h-5" />
-              Create Meme
+              Stickers & Meme Creator
             </Link>
             <Link
               href="/games"

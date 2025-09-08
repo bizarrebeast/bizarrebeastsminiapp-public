@@ -9,6 +9,11 @@ export const metadata: Metadata = {
   title: "BizarreBeasts Miniapp",
   description: "Create memes, play games, and join the BizarreBeasts community",
   keywords: "BizarreBeasts, meme generator, Farcaster, Base, Web3",
+  icons: {
+    icon: '/favicon.svg',
+    shortcut: '/favicon.svg',
+    apple: '/favicon.svg',
+  },
   openGraph: {
     title: "BizarreBeasts Miniapp",
     description: "Create memes, play games, and join the BizarreBeasts community",
