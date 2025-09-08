@@ -1,8 +1,11 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ExportOptions } from '@/types';
-import { Download, Share2, Settings, ChevronDown, ChevronUp } from 'lucide-react';
+import { Download, Share2, Settings, ChevronDown, ChevronUp, Lock } from 'lucide-react';
+import { useWallet } from '@/hooks/useWallet';
+import { AccessTier } from '@/lib/empire';
+import { canRemoveWatermark } from '@/lib/empire-gating';
 
 interface ExportControlsProps {
   onExport: (options: ExportOptions) => void;
@@ -10,11 +13,16 @@ interface ExportControlsProps {
 
 export default function ExportControls({ onExport }: ExportControlsProps) {
   const [isExpanded, setIsExpanded] = useState(true);
+  const { empireTier } = useWallet();
+  
+  // Check if user can remove watermark (Elite or Champion only)
+  const canToggleWatermark = canRemoveWatermark(empireTier || AccessTier.VISITOR);
+  
   const [exportOptions, setExportOptions] = useState<ExportOptions>({
     format: 'png',
     quality: 1.0, // PNG doesn't use quality, always lossless
     watermark: {
-      enabled: true,
+      enabled: !canToggleWatermark, // Auto-disable for Elite/Champion
       text: 'BizarreBeasts ($BB)',
       position: 'bottom-right',
       opacity: 0.5,
@@ -24,6 +32,20 @@ export default function ExportControls({ onExport }: ExportControlsProps) {
   });
 
   const [showAdvanced, setShowAdvanced] = useState(false);
+  
+  // Update watermark when tier changes
+  useEffect(() => {
+    if (!canToggleWatermark) {
+      // Force watermark on for non-Elite/Champion users
+      setExportOptions(prev => ({
+        ...prev,
+        watermark: {
+          ...prev.watermark,
+          enabled: true
+        }
+      }));
+    }
+  }, [canToggleWatermark]);
 
   const handleExport = () => {
     onExport(exportOptions);
@@ -97,17 +119,28 @@ export default function ExportControls({ onExport }: ExportControlsProps) {
                 type="checkbox"
                 id="watermark"
                 checked={exportOptions.watermark.enabled}
-                onChange={(e) => setExportOptions({
-                  ...exportOptions,
-                  watermark: {
-                    ...exportOptions.watermark,
-                    enabled: e.target.checked,
-                  },
-                })}
-                className="rounded"
+                onChange={(e) => {
+                  if (canToggleWatermark) {
+                    setExportOptions({
+                      ...exportOptions,
+                      watermark: {
+                        ...exportOptions.watermark,
+                        enabled: e.target.checked,
+                      },
+                    });
+                  }
+                }}
+                disabled={!canToggleWatermark}
+                className={`rounded ${!canToggleWatermark ? 'opacity-50 cursor-not-allowed' : ''}`}
               />
-              <label htmlFor="watermark" className="text-gray-400 text-sm">
+              <label htmlFor="watermark" className="text-gray-400 text-sm flex items-center gap-2">
                 Add Watermark
+                {!canToggleWatermark && (
+                  <span className="inline-flex items-center gap-1 text-xs text-gem-crystal">
+                    <Lock className="w-3 h-3" />
+                    Elite/Champion only
+                  </span>
+                )}
               </label>
             </div>
 

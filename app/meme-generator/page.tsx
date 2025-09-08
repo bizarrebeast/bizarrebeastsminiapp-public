@@ -6,8 +6,9 @@ import StickerGallery from '@/components/canvas/StickerGallery';
 import TextControls from '@/components/canvas/TextControls';
 import ExportControls from '@/components/canvas/ExportControls';
 import { StickerCollection } from '@/types';
+import { AccessTier } from '@/lib/empire';
 
-// Mock sticker collections with background types
+// Collections with Empire tier requirements
 const mockCollections: StickerCollection[] = [
   {
     id: 'bizarrebeasts',
@@ -16,8 +17,9 @@ const mockCollections: StickerCollection[] = [
     icon: '🦾',
     stickers: [],
     backgrounds: [],
-    backgroundType: 'color', // Color selection only
+    backgroundType: 'both', // Color + upload for Elite/Champion
     isTokenGated: false,
+    requiredTier: AccessTier.VISITOR, // Basic access for all
     sortOrder: 1,
     tags: ['characters', 'main'],
   },
@@ -28,8 +30,9 @@ const mockCollections: StickerCollection[] = [
     icon: '💎',
     stickers: [],
     backgrounds: [], // Will add background images
-    backgroundType: 'image', // Background images only
+    backgroundType: 'image', // Background images only (no upload)
     isTokenGated: false,
+    requiredTier: AccessTier.VETERAN, // Requires Veteran tier
     sortOrder: 2,
     tags: ['game', 'items'],
   },
@@ -40,9 +43,9 @@ const mockCollections: StickerCollection[] = [
     icon: '✨',
     stickers: [],
     backgrounds: [], // Will add background images
-    backgroundType: 'image', // Background images only
-    isTokenGated: true,
-    requiredTokenAmount: 100,
+    backgroundType: 'image', // Background images only (no upload)
+    isTokenGated: false,
+    requiredTier: AccessTier.VETERAN, // Requires Veteran tier
     sortOrder: 3,
     tags: ['characters', 'vibes'],
   },

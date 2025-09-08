@@ -56,6 +56,7 @@ export interface StickerCollection {
   backgroundType: 'color' | 'image' | 'both' | 'none';
   isTokenGated: boolean;
   requiredTokenAmount?: number;
+  requiredTier?: any; // Empire tier requirement (using any to avoid circular dependency)
   sortOrder: number;
   tags: string[];
 }
