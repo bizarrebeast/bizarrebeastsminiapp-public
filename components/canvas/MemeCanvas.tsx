@@ -18,6 +18,9 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
   const [backgroundColor, setBackgroundColor] = useState('transparent');
   const [canvasSize, setCanvasSize] = useState({ width: 600, height: 600 });
   const [showInstructions, setShowInstructions] = useState(false);
+  const historyRef = useRef<string[]>([]);
+  const historyIndexRef = useRef<number>(-1);
+  const canvasApiRef = useRef<any>(null);
 
   // Handle responsive canvas sizing
   useEffect(() => {
@@ -49,9 +52,41 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
       backgroundColor: 'transparent',
       snapAngle: 15, // Snap rotation to 15-degree increments
       snapThreshold: 5, // Snap when within 5 degrees
+      uniformScaling: false, // Allow proportional scaling with shift key
+      centeredRotation: true,
+      centeredScaling: true,
     });
 
     fabricCanvasRef.current = canvas;
+    
+    // Save initial state
+    historyRef.current = [JSON.stringify(canvas.toJSON())];
+    historyIndexRef.current = 0;
+    
+    // Track changes for undo/redo
+    canvas.on('object:added', () => saveHistory());
+    canvas.on('object:removed', () => saveHistory());
+    canvas.on('object:modified', () => saveHistory());
+    
+    const saveHistory = () => {
+      // Don't save during undo/redo operations
+      if ((canvas as any)._isUndoRedo) return;
+      
+      const state = JSON.stringify(canvas.toJSON());
+      
+      // Remove any states after current index
+      historyRef.current = historyRef.current.slice(0, historyIndexRef.current + 1);
+      
+      // Add new state
+      historyRef.current.push(state);
+      historyIndexRef.current++;
+      
+      // Limit history to 50 states
+      if (historyRef.current.length > 50) {
+        historyRef.current.shift();
+        historyIndexRef.current--;
+      }
+    };
     
     // Add snap-to-center functionality
     const centerLine = canvasSize.width / 2;
@@ -80,15 +115,8 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
         });
       }
       
-      // Snap to edges
-      if (obj.left! < snapZone) obj.left = 0;
-      if (obj.top! < snapZone) obj.top = 0;
-      if (obj.left! + (obj.width! * obj.scaleX!) > canvasSize.width - snapZone) {
-        obj.left = canvasSize.width - (obj.width! * obj.scaleX!);
-      }
-      if (obj.top! + (obj.height! * obj.scaleY!) > canvasSize.height - snapZone) {
-        obj.top = canvasSize.height - (obj.height! * obj.scaleY!);
-      }
+      // Remove edge snapping to allow objects to go off canvas
+      // Objects can now freely move beyond canvas boundaries
     });
 
     // Enable text editing on double-click
@@ -114,11 +142,20 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
     const canvasApi = {
       addSticker: (sticker: Sticker) => {
         FabricImage.fromURL(sticker.src).then((img) => {
+          // Calculate scale to make sticker 300x300
+          const desiredSize = 300;
+          const scaleX = desiredSize / (img.width || 100);
+          const scaleY = desiredSize / (img.height || 100);
+          const scale = Math.min(scaleX, scaleY); // Keep aspect ratio
+          
           img.set({
-            left: Math.random() * 400,
-            top: Math.random() * 400,
-            scaleX: 0.5,
-            scaleY: 0.5,
+            left: (canvas.width! - desiredSize) / 2,
+            top: (canvas.height! - desiredSize) / 2,
+            scaleX: scale,
+            scaleY: scale,
+            lockScalingFlip: true, // Prevent negative scaling
+            centeredRotation: true,
+            hasRotatingPoint: true, // Enable rotation handle
           });
           canvas.add(img);
           canvas.setActiveObject(img);
@@ -196,6 +233,31 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
         canvas.clear();
         canvas.backgroundColor = backgroundColor;
         canvas.renderAll();
+        // Reset history
+        historyRef.current = [JSON.stringify(canvas.toJSON())];
+        historyIndexRef.current = 0;
+      },
+      
+      undo: () => {
+        if (historyIndexRef.current > 0) {
+          historyIndexRef.current--;
+          (canvas as any)._isUndoRedo = true;
+          canvas.loadFromJSON(historyRef.current[historyIndexRef.current], () => {
+            canvas.renderAll();
+            (canvas as any)._isUndoRedo = false;
+          });
+        }
+      },
+      
+      redo: () => {
+        if (historyIndexRef.current < historyRef.current.length - 1) {
+          historyIndexRef.current++;
+          (canvas as any)._isUndoRedo = true;
+          canvas.loadFromJSON(historyRef.current[historyIndexRef.current], () => {
+            canvas.renderAll();
+            (canvas as any)._isUndoRedo = false;
+          });
+        }
       },
 
       export: async (options: ExportOptions) => {
@@ -260,12 +322,22 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
       },
     };
 
+    canvasApiRef.current = canvasApi;
     onCanvasReady(canvasApi);
 
     // Keyboard shortcuts
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Delete' || e.key === 'Backspace') {
         canvasApi.deleteSelected();
+      }
+      // Undo/Redo shortcuts
+      if ((e.metaKey || e.ctrlKey) && e.key === 'z' && !e.shiftKey) {
+        e.preventDefault();
+        canvasApi.undo();
+      }
+      if ((e.metaKey || e.ctrlKey) && (e.key === 'Z' || (e.key === 'z' && e.shiftKey))) {
+        e.preventDefault();
+        canvasApi.redo();
       }
     };
 
@@ -290,6 +362,24 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
         <div className="flex gap-1 sm:gap-2">
           <button
             onClick={() => {
+              canvasApiRef.current?.undo();
+            }}
+            className="px-2 sm:px-3 py-1 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded hover:scale-105 transition-all text-xs sm:text-sm font-semibold"
+            title="Undo (Ctrl+Z)"
+          >
+            Undo
+          </button>
+          <button
+            onClick={() => {
+              canvasApiRef.current?.redo();
+            }}
+            className="px-2 sm:px-3 py-1 bg-gradient-to-r from-green-600 to-green-700 text-white rounded hover:scale-105 transition-all text-xs sm:text-sm font-semibold"
+            title="Redo (Ctrl+Shift+Z)"
+          >
+            Redo
+          </button>
+          <button
+            onClick={() => {
               const activeObject = fabricCanvasRef.current?.getActiveObject();
               if (activeObject && fabricCanvasRef.current) {
                 fabricCanvasRef.current.remove(activeObject);
@@ -305,6 +395,9 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
                 fabricCanvasRef.current.clear();
                 fabricCanvasRef.current.backgroundColor = backgroundColor;
                 fabricCanvasRef.current.renderAll();
+                // Reset history
+                historyRef.current = [JSON.stringify(fabricCanvasRef.current.toJSON())];
+                historyIndexRef.current = 0;
               }
             }}
             className="px-2 sm:px-3 py-1 bg-gradient-to-r from-gray-600 to-gray-700 text-white rounded hover:scale-105 transition-all text-xs sm:text-sm font-semibold"
@@ -348,7 +441,7 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
       {/* Main Canvas */}
       <div className="relative bg-gray-700 rounded-lg p-2 sm:p-4 mx-auto">
         <div 
-          className="relative mx-auto block border-2 border-gray-600 rounded overflow-hidden"
+          className="relative mx-auto block border-2 border-gray-600 rounded overflow-visible"
           style={{ 
             maxWidth: '100%',
             width: canvasSize.width,

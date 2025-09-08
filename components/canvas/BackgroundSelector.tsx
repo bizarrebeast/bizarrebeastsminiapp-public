@@ -301,7 +301,7 @@ export default function BackgroundSelector({
                         <img
                           src={bg.thumbnail}
                           alt={bg.name}
-                          className={`relative w-full h-full object-cover rounded z-10 ${!hasAccess ? 'grayscale opacity-60' : ''}`}
+                          className="relative w-full h-full object-cover rounded z-10"
                           loading="lazy"
                           onError={(e) => {
                             console.error('Failed to load background:', bg.thumbnail);
