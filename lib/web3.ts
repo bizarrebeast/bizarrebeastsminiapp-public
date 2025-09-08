@@ -70,11 +70,14 @@ class Web3Service {
         },
         themeMode: 'dark',
         themeVariables: {
-          '--w3m-color-mix': '#FFD700',  // Gold color to match BB theme
-          '--w3m-color-mix-strength': 40,
+          '--w3m-color-mix': '#000000',  // Black to match site
+          '--w3m-color-mix-strength': 90,
+          '--w3m-accent': '#44D0A7',  // Gem crystal color
+          '--w3m-background': '#0A0A0A',  // Dark background
           '--w3m-font-family': 'system-ui, -apple-system, sans-serif',
           '--w3m-border-radius-master': '8px',
-          '--w3m-font-size-master': '14px'
+          '--w3m-font-size-master': '14px',
+          '--w3m-z-index': 9999
         }
       });
 

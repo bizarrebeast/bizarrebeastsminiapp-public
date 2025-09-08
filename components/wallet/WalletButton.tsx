@@ -21,17 +21,18 @@ export function WalletButton() {
   } = useWallet();
 
   const getTierColor = () => {
+    // Return subtle tier indicator color for text only
     switch(empireTier) {
       case AccessTier.ELITE:
-        return 'from-gem-gold to-yellow-600';
+        return 'text-gem-gold';
       case AccessTier.CHAMPION:
-        return 'from-gem-purple to-purple-600';
+        return 'text-gem-purple';
       case AccessTier.VETERAN:
-        return 'from-gem-blue to-blue-600';
+        return 'text-gem-blue';
       case AccessTier.MEMBER:
-        return 'from-gem-crystal to-teal-600';
+        return 'text-gem-crystal';
       default:
-        return 'from-gray-600 to-gray-700';
+        return 'text-gray-400';
     }
   };
 
@@ -54,10 +55,10 @@ export function WalletButton() {
     return (
       <button 
         disabled
-        className="flex items-center gap-2 px-4 py-2 bg-gray-700 text-gray-400 rounded-lg cursor-not-allowed"
+        className="flex items-center gap-1 px-2 py-1 text-xs bg-dark-card border border-gray-700 text-gray-400 rounded cursor-not-allowed"
       >
         <div className="animate-spin">
-          <RefreshCw className="w-4 h-4" />
+          <RefreshCw className="w-3 h-3" />
         </div>
         <span className="hidden sm:inline">Loading...</span>
       </button>
@@ -68,10 +69,10 @@ export function WalletButton() {
     return (
       <button
         onClick={connect}
-        className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-gem-gold to-gem-crystal text-black font-semibold rounded-lg hover:opacity-90 transition-all duration-300"
+        className="flex items-center gap-1 px-3 py-1.5 text-xs bg-dark-card border border-gem-crystal/30 text-gem-crystal hover:bg-gem-crystal/10 rounded transition-all duration-300"
       >
-        <Wallet className="w-4 h-4" />
-        <span className="hidden sm:inline">Connect Wallet</span>
+        <Wallet className="w-3 h-3" />
+        <span className="hidden sm:inline">Connect</span>
         <span className="sm:hidden">Connect</span>
       </button>
     );
@@ -80,21 +81,18 @@ export function WalletButton() {
   return (
     <div className="relative group">
       <button
-        className={`flex items-center gap-2 px-4 py-2 bg-gradient-to-r ${getTierColor()} text-white rounded-lg transition-all duration-300`}
+        className={`flex items-center gap-1 px-3 py-1.5 text-xs bg-dark-card border border-gem-crystal/30 text-white rounded transition-all duration-300 hover:bg-gem-crystal/10`}
       >
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1">
           {empireRank && (
             <>
-              <span className="text-lg">{getTierBadge()}</span>
-              <span className="font-bold">#{empireRank}</span>
-              <span className="hidden lg:inline text-xs opacity-90">|</span>
+              <span className="text-sm">{getTierBadge()}</span>
+              <span className={`font-semibold ${getTierColor()}`}>#{empireRank}</span>
+              <span className="hidden lg:inline opacity-50 mx-1">|</span>
             </>
           )}
-          <span className="hidden lg:inline text-sm">
+          <span className="text-gray-300">
             {formatAddress(address!)}
-          </span>
-          <span className="lg:hidden text-sm">
-            {address?.slice(0, 4)}...
           </span>
         </div>
       </button>
