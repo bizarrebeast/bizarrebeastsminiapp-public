@@ -62,7 +62,7 @@ export default function MemeGeneratorPage() {
 
   return (
     <div className="min-h-[calc(100vh-64px)] bg-dark-bg flex flex-col">
-      <div className="flex-1 flex flex-col max-w-full mx-auto px-2 sm:px-4 py-2 sm:py-4">
+      <div className="flex-1 flex flex-col w-full max-w-7xl mx-auto px-2 sm:px-4 py-2 sm:py-4">
         {/* Header */}
         <div className="mb-4">
           <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white mb-1">Meme Generator</h1>

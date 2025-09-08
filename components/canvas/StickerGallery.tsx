@@ -134,7 +134,7 @@ export default function StickerGallery({
   );
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col w-full overflow-hidden">
       {/* Collapsible Header */}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
