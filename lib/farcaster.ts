@@ -2,39 +2,7 @@
  * Farcaster sharing utilities
  */
 
-interface FarcasterShareOptions {
-  text?: string;
-  embeds?: string[];
-  channelKey?: string;
-}
-
-/**
- * Share to Farcaster using Warpcast composer
- * This opens Warpcast with a pre-filled cast
- */
-export function shareToWarpcast(options: FarcasterShareOptions) {
-  const baseUrl = 'https://warpcast.com/~/compose';
-  const params = new URLSearchParams();
-  
-  // Add cast text
-  const defaultText = 'Check out my BizarreBeasts meme! 🦾\n\nMade with BizarreBeasts Meme Generator';
-  params.append('text', options.text || defaultText);
-  
-  // Add embeds (image URLs)
-  if (options.embeds && options.embeds.length > 0) {
-    options.embeds.forEach(embed => {
-      params.append('embeds[]', embed);
-    });
-  }
-  
-  // Add channel if specified (e.g., 'bizarrebeasts')
-  if (options.channelKey) {
-    params.append('channelKey', options.channelKey);
-  }
-  
-  const shareUrl = `${baseUrl}?${params.toString()}`;
-  window.open(shareUrl, '_blank');
-}
+// Removed shareToWarpcast function - functionality merged into shareMemeToFarcaster
 
 /**
  * Upload image to temporary storage for sharing
@@ -75,8 +43,9 @@ export async function uploadImageForSharing(dataUrl: string): Promise<string> {
 export async function shareMemeToFarcaster(
   imageDataUrl: string,
   customText?: string,
-  channelKey?: string
-): Promise<void> {
+  channelKey?: string,
+  existingWindow?: Window | null
+): Promise<string> {
   try {
     // For development, we'll open Warpcast directly with the text
     // In production with proper image hosting, uncomment the upload step
@@ -84,20 +53,42 @@ export async function shareMemeToFarcaster(
     // Uncomment when you have proper image hosting configured:
     // const imageUrl = await uploadImageForSharing(imageDataUrl);
     
-    // For now, just share the text without the image embed
-    // Users can still manually attach the downloaded image in Warpcast
-    shareToWarpcast({
-      text: customText || `Just created an epic meme with @bizarrebeasts! 🦾\n\nJoin the Empire and make your own: https://app.bizarrebeasts.io`,
-      embeds: [], // Will be [imageUrl] when hosting is configured
-      channelKey: channelKey || 'bizarrebeasts', // Default to bizarrebeasts channel
-    });
+    const baseUrl = 'https://warpcast.com/~/compose';
+    const params = new URLSearchParams();
+    
+    // Add cast text
+    const defaultText = `Just created an epic meme with @bizarrebeasts! 🦾\n\nJoin the Empire and make your own: https://app.bizarrebeasts.io`;
+    params.append('text', customText || defaultText);
+    
+    // Add channel
+    params.append('channelKey', channelKey || 'bizarrebeasts');
+    
+    // Will add image embeds when hosting is configured
+    // params.append('embeds[]', imageUrl);
+    
+    const shareUrl = `${baseUrl}?${params.toString()}`;
+    
+    // Use existing window or open new one
+    if (existingWindow) {
+      existingWindow.location.href = shareUrl;
+    } else {
+      window.open(shareUrl, '_blank');
+    }
     
     // Show a helpful message
     console.log('Opening Warpcast... You can attach your downloaded meme to the cast.');
+    
+    return shareUrl;
   } catch (error) {
     console.error('Failed to share to Farcaster:', error);
     // Simple fallback - just open Warpcast
-    window.open('https://warpcast.com', '_blank');
+    const fallbackUrl = 'https://warpcast.com';
+    if (existingWindow) {
+      existingWindow.location.href = fallbackUrl;
+    } else {
+      window.open(fallbackUrl, '_blank');
+    }
+    return fallbackUrl;
   }
 }
 

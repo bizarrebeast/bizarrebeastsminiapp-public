@@ -199,8 +199,17 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
 
         // Handle Farcaster share
         if (options.shareToFarcaster) {
-          // Share to Farcaster
-          await shareMemeToFarcaster(dataURL);
+          // Share to Farcaster - open window immediately to avoid popup blocker
+          const warpcastWindow = window.open('about:blank', '_blank');
+          
+          try {
+            // Prepare the share URL
+            const shareUrl = await shareMemeToFarcaster(dataURL, undefined, undefined, warpcastWindow);
+            console.log('Farcaster share initiated');
+          } catch (error) {
+            console.error('Failed to share to Farcaster:', error);
+            if (warpcastWindow) warpcastWindow.close();
+          }
         }
 
         return dataURL;
