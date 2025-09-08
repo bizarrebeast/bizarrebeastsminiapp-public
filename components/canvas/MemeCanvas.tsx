@@ -299,16 +299,15 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
       {/* Main Canvas */}
       <div className="relative bg-gray-700 rounded-lg p-2 sm:p-4 mx-auto">
         <div 
-          className="relative mx-auto block border-2 border-gray-600 rounded"
+          className="relative mx-auto block border-2 border-gray-600 rounded overflow-hidden"
           style={{ 
             maxWidth: '100%',
             width: canvasSize.width,
             height: canvasSize.height,
             // Checkerboard pattern for transparent background
-            backgroundImage: backgroundColor === 'transparent' 
-              ? `repeating-conic-gradient(#808080 0% 25%, #b0b0b0 0% 50%) 50% / 20px 20px`
-              : 'none',
-            backgroundColor: backgroundColor === 'transparent' ? '#ffffff' : backgroundColor
+            background: backgroundColor === 'transparent' 
+              ? `repeating-conic-gradient(#e0e0e0 0% 25%, #ffffff 0% 50%) 50% / 20px 20px`
+              : backgroundColor
           }}
         >
           <canvas
