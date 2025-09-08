@@ -1,0 +1,442 @@
+{
+  "id": "treasure-quest",
+  "name": "Treasure Quest",
+  "icon": "💎",
+  "description": "Epic stickers from the Bizarre Underground Treasure Quest adventure!",
+  "backgroundType": "image",
+  "requiredTier": "basic",
+  "stickers": [
+    {
+      "id": "bizbe-1",
+      "name": "Bizbe Explorer",
+      "filename": "treasure-quest-bizbe-1.svg",
+      "category": "characters",
+      "tags": ["bizbe", "explorer", "adventure"],
+      "tier": "basic"
+    },
+    {
+      "id": "bizbe-4",
+      "name": "Bizbe Hero",
+      "filename": "treasure-quest-bizbe-4.svg",
+      "category": "characters",
+      "tags": ["bizbe", "hero", "brave"],
+      "tier": "basic"
+    },
+    {
+      "id": "bizbe-5",
+      "name": "Bizbe Adventurer",
+      "filename": "treasure-quest-bizbe-5.svg",
+      "category": "characters",
+      "tags": ["bizbe", "adventurer"],
+      "tier": "basic"
+    },
+    {
+      "id": "bizbe-6",
+      "name": "Bizbe Wanderer",
+      "filename": "treasure-quest-bizbe-6.svg",
+      "category": "characters",
+      "tags": ["bizbe", "wanderer"],
+      "tier": "basic"
+    },
+    {
+      "id": "bizbe-7",
+      "name": "Bizbe Scout",
+      "filename": "treasure-quest-bizbe-7.svg",
+      "category": "characters",
+      "tags": ["bizbe", "scout"],
+      "tier": "basic"
+    },
+    {
+      "id": "rex",
+      "name": "Rex",
+      "filename": "treasure-quest-rex.svg",
+      "category": "characters",
+      "tags": ["rex", "companion", "friend"],
+      "tier": "basic"
+    },
+    {
+      "id": "blu",
+      "name": "Blu",
+      "filename": "treasure-quest-blu.svg",
+      "category": "characters",
+      "tags": ["blu", "companion", "blue"],
+      "tier": "basic"
+    },
+    {
+      "id": "snail",
+      "name": "Crystal Snail",
+      "filename": "treasure-quest-snail.svg",
+      "category": "creatures",
+      "tags": ["snail", "creature", "slow"],
+      "tier": "basic"
+    },
+    {
+      "id": "caterpillar-1",
+      "name": "Caterpillar Green",
+      "filename": "treasure-quest-caterpillar-1.svg",
+      "category": "creatures",
+      "tags": ["caterpillar", "creature", "green"],
+      "tier": "basic"
+    },
+    {
+      "id": "yellow-gem",
+      "name": "Yellow Gem",
+      "filename": "treasure-quest-yellow-gem.svg",
+      "category": "items",
+      "tags": ["gem", "yellow", "treasure"],
+      "tier": "basic"
+    },
+    {
+      "id": "teal-gem",
+      "name": "Teal Gem",
+      "filename": "treasure-quest-teal-gem.svg",
+      "category": "items",
+      "tags": ["gem", "teal", "treasure"],
+      "tier": "basic"
+    },
+    {
+      "id": "purple-gem",
+      "name": "Purple Gem",
+      "filename": "treasure-quest-purple-gem.svg",
+      "category": "items",
+      "tags": ["gem", "purple", "treasure"],
+      "tier": "basic"
+    },
+    {
+      "id": "pink-gem",
+      "name": "Pink Gem",
+      "filename": "treasure-quest-pink-gem.svg",
+      "category": "items",
+      "tags": ["gem", "pink", "treasure"],
+      "tier": "basic"
+    },
+    {
+      "id": "game-logo",
+      "name": "Game Logo",
+      "filename": "treasure-quest-game-logo.svg",
+      "category": "special",
+      "tags": ["logo", "game", "title"],
+      "tier": "basic"
+    },
+    {
+      "id": "game-title",
+      "name": "Game Title",
+      "filename": "treasure-quest-game-title.svg",
+      "category": "special",
+      "tags": ["title", "game", "text"],
+      "tier": "basic"
+    },
+    {
+      "id": "bizbe-8",
+      "name": "Bizbe Warrior",
+      "filename": "treasure-quest-bizbe-8.svg",
+      "category": "characters",
+      "tags": ["bizbe", "warrior", "fighter"],
+      "tier": "common"
+    },
+    {
+      "id": "bizbe-9",
+      "name": "Bizbe Mystic",
+      "filename": "treasure-quest-bizbe-9.svg",
+      "category": "characters",
+      "tags": ["bizbe", "mystic", "magic"],
+      "tier": "common"
+    },
+    {
+      "id": "bizbe-10",
+      "name": "Bizbe Guardian",
+      "filename": "treasure-quest-bizbe-10.svg",
+      "category": "characters",
+      "tags": ["bizbe", "guardian", "protector"],
+      "tier": "common"
+    },
+    {
+      "id": "rollz",
+      "name": "Rollz",
+      "filename": "treasure-quest-rollz.svg",
+      "category": "characters",
+      "tags": ["rollz", "companion", "rolling"],
+      "tier": "common"
+    },
+    {
+      "id": "caterpillar-2",
+      "name": "Caterpillar Purple",
+      "filename": "treasure-quest-caterpillar-2.svg",
+      "category": "creatures",
+      "tags": ["caterpillar", "creature", "purple"],
+      "tier": "common"
+    },
+    {
+      "id": "bouncer",
+      "name": "Bouncer",
+      "filename": "treasure-quest-bouncer.svg",
+      "category": "creatures",
+      "tags": ["bouncer", "enemy", "jumping"],
+      "tier": "common"
+    },
+    {
+      "id": "yellow-chest",
+      "name": "Yellow Chest",
+      "filename": "treasure-quest-yellow-chest.svg",
+      "category": "items",
+      "tags": ["chest", "yellow", "treasure"],
+      "tier": "common"
+    },
+    {
+      "id": "teal-chest",
+      "name": "Teal Chest",
+      "filename": "treasure-quest-teal-chest.svg",
+      "category": "items",
+      "tags": ["chest", "teal", "treasure"],
+      "tier": "common"
+    },
+    {
+      "id": "purple-chest",
+      "name": "Purple Chest",
+      "filename": "treasure-quest-purple-chest.svg",
+      "category": "items",
+      "tags": ["chest", "purple", "treasure"],
+      "tier": "common"
+    },
+    {
+      "id": "ladder-1",
+      "name": "Wooden Ladder",
+      "filename": "treasure-quest-ladder-1.svg",
+      "category": "items",
+      "tags": ["ladder", "wooden", "climb"],
+      "tier": "common"
+    },
+    {
+      "id": "ladder-2",
+      "name": "Metal Ladder",
+      "filename": "treasure-quest-ladder-2.svg",
+      "category": "items",
+      "tags": ["ladder", "metal", "climb"],
+      "tier": "common"
+    },
+    {
+      "id": "floor-tiles",
+      "name": "Floor Tiles",
+      "filename": "treasure-quest-floor-tiles.svg",
+      "category": "environment",
+      "tags": ["floor", "tiles", "ground"],
+      "tier": "common"
+    },
+    {
+      "id": "bizbe-11",
+      "name": "Bizbe Champion",
+      "filename": "treasure-quest-bizbe-11.svg",
+      "category": "characters",
+      "tags": ["bizbe", "champion", "winner"],
+      "tier": "rare"
+    },
+    {
+      "id": "bizbe-12",
+      "name": "Bizbe Knight",
+      "filename": "treasure-quest-bizbe-12.svg",
+      "category": "characters",
+      "tags": ["bizbe", "knight", "armor"],
+      "tier": "rare"
+    },
+    {
+      "id": "bizbe-13",
+      "name": "Bizbe Wizard",
+      "filename": "treasure-quest-bizbe-13.svg",
+      "category": "characters",
+      "tags": ["bizbe", "wizard", "magic"],
+      "tier": "rare"
+    },
+    {
+      "id": "bizbe-14",
+      "name": "Bizbe Ranger",
+      "filename": "treasure-quest-bizbe-14.svg",
+      "category": "characters",
+      "tags": ["bizbe", "ranger", "archer"],
+      "tier": "rare"
+    },
+    {
+      "id": "chomper",
+      "name": "Chomper",
+      "filename": "treasure-quest-chomper.svg",
+      "category": "creatures",
+      "tags": ["chomper", "enemy", "teeth"],
+      "tier": "rare"
+    },
+    {
+      "id": "stalker",
+      "name": "Stalker",
+      "filename": "treasure-quest-stalker.svg",
+      "category": "creatures",
+      "tags": ["stalker", "enemy", "shadow"],
+      "tier": "rare"
+    },
+    {
+      "id": "diamond",
+      "name": "Diamond",
+      "filename": "treasure-quest-diamond.svg",
+      "category": "items",
+      "tags": ["diamond", "gem", "precious"],
+      "tier": "rare"
+    },
+    {
+      "id": "big-blue-gem",
+      "name": "Big Blue Gem",
+      "filename": "treasure-quest-big-blue-gem.svg",
+      "category": "items",
+      "tags": ["gem", "blue", "big", "rare"],
+      "tier": "rare"
+    },
+    {
+      "id": "pendant",
+      "name": "Mystical Pendant",
+      "filename": "treasure-quest-pendant.svg",
+      "category": "items",
+      "tags": ["pendant", "mystical", "jewelry"],
+      "tier": "rare"
+    },
+    {
+      "id": "crystal-ball",
+      "name": "Crystal Ball",
+      "filename": "treasure-quest-crystal-ball.svg",
+      "category": "items",
+      "tags": ["crystal", "ball", "magic"],
+      "tier": "rare"
+    },
+    {
+      "id": "crystal-door",
+      "name": "Crystal Door",
+      "filename": "treasure-quest-crystal-door.svg",
+      "category": "environment",
+      "tags": ["door", "crystal", "portal"],
+      "tier": "rare"
+    },
+    {
+      "id": "floor-spikes",
+      "name": "Floor Spikes",
+      "filename": "treasure-quest-floor-spikes.svg",
+      "category": "hazards",
+      "tags": ["spikes", "danger", "trap"],
+      "tier": "rare"
+    },
+    {
+      "id": "ceiling-spikes",
+      "name": "Ceiling Spikes",
+      "filename": "treasure-quest-ceiling-spikes.svg",
+      "category": "hazards",
+      "tags": ["spikes", "danger", "ceiling"],
+      "tier": "rare"
+    },
+    {
+      "id": "bizbe-17",
+      "name": "Bizbe Master",
+      "filename": "treasure-quest-bizbe-17.svg",
+      "category": "characters",
+      "tags": ["bizbe", "master", "expert"],
+      "tier": "rare"
+    },
+    {
+      "id": "bizbe-2",
+      "name": "Bizbe Legend",
+      "filename": "treasure-quest-bizbe-2.svg",
+      "category": "characters",
+      "tags": ["bizbe", "legend", "epic", "special"],
+      "tier": "premium"
+    },
+    {
+      "id": "bizbe-3",
+      "name": "Bizbe Mythic",
+      "filename": "treasure-quest-bizbe-3.svg",
+      "category": "characters",
+      "tags": ["bizbe", "mythic", "legendary", "special"],
+      "tier": "premium"
+    },
+    {
+      "id": "cursed-orb",
+      "name": "Cursed Orb",
+      "filename": "treasure-quest-cursed-orb.svg",
+      "category": "items",
+      "tags": ["orb", "cursed", "dark", "magic"],
+      "tier": "premium"
+    },
+    {
+      "id": "cursed-teal-orb",
+      "name": "Cursed Teal Orb",
+      "filename": "treasure-quest-cursed-teal-orb.svg",
+      "category": "items",
+      "tags": ["orb", "cursed", "teal", "magic"],
+      "tier": "premium"
+    },
+    {
+      "id": "crystal-cavern",
+      "name": "Crystal Cavern Scene",
+      "filename": "treasure-quest-crystal-cavern.svg",
+      "category": "special",
+      "tags": ["scene", "cavern", "crystal", "background"],
+      "tier": "premium"
+    },
+    {
+      "id": "steampunk-crystal-cavern",
+      "name": "Steampunk Cavern",
+      "filename": "treasure-quest-steampunk-crystal-cavern.svg",
+      "category": "special",
+      "tags": ["steampunk", "cavern", "special"],
+      "tier": "premium"
+    },
+    {
+      "id": "bizbe-15",
+      "name": "Bizbe Elite",
+      "filename": "treasure-quest-bizbe-15.svg",
+      "category": "characters",
+      "tags": ["bizbe", "elite", "exclusive", "top"],
+      "tier": "elite"
+    },
+    {
+      "id": "bizbe-16",
+      "name": "Bizbe Ultimate",
+      "filename": "treasure-quest-bizbe-16.svg",
+      "category": "characters",
+      "tags": ["bizbe", "ultimate", "supreme", "top"],
+      "tier": "elite"
+    },
+    {
+      "id": "beast-mode-crystal-cavern",
+      "name": "Beast Mode Cavern",
+      "filename": "treasure-quest-beast-mode-crystal-cavern.svg",
+      "category": "special",
+      "tags": ["beast", "mode", "epic", "cavern"],
+      "tier": "elite"
+    },
+    {
+      "id": "galatic-crystal-cavern",
+      "name": "Galactic Cavern",
+      "filename": "treasure-quest-galatic-crystal-cavern.svg",
+      "category": "special",
+      "tags": ["galactic", "space", "cavern", "epic"],
+      "tier": "elite"
+    },
+    {
+      "id": "volcanic-crystal-cavern",
+      "name": "Volcanic Cavern",
+      "filename": "treasure-quest-volcanic-crystal-cavern.svg",
+      "category": "special",
+      "tags": ["volcanic", "lava", "cavern", "epic"],
+      "tier": "elite"
+    },
+    {
+      "id": "electrified-crystal-cavern",
+      "name": "Electrified Cavern",
+      "filename": "treasure-quest-electrified-crystal-cavern.svg",
+      "category": "special",
+      "tags": ["electric", "lightning", "cavern", "epic"],
+      "tier": "elite"
+    },
+    {
+      "id": "bizarrebeasets-banner",
+      "name": "BizarreBeasts Banner",
+      "filename": "treasure-quest-bizarrebeasets-banner.svg",
+      "category": "special",
+      "tags": ["banner", "logo", "exclusive"],
+      "tier": "elite"
+    }
+  ]
+}

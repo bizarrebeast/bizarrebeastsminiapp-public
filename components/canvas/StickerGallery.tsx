@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StickerCollection, Sticker } from '@/types';
 import { Search, Lock, ChevronDown, ChevronUp, Sparkles, Crown, Star } from 'lucide-react';
 import BackgroundSelector from './BackgroundSelector';
@@ -80,9 +80,46 @@ export default function StickerGallery({
   
   const { empireTier } = useWallet();
   const userTier = empireTier || AccessTier.VISITOR;
+  const [collectionStickers, setCollectionStickers] = useState<Sticker[]>([]);
+  const [isLoadingStickers, setIsLoadingStickers] = useState(false);
   
-  // Sample stickers with actual SVGs and tier requirements
-  const mockStickers: Sticker[] = [
+  // Load stickers from metadata when collection changes
+  useEffect(() => {
+    const loadStickers = async () => {
+      setIsLoadingStickers(true);
+      try {
+        // Try to load metadata for the selected collection
+        const response = await fetch(`/assets/stickers/${selectedCollection}/metadata.json`);
+        if (response.ok) {
+          const metadata = await response.json();
+          const stickers: Sticker[] = metadata.stickers.map((sticker: any) => ({
+            id: sticker.id,
+            src: `/assets/stickers/${selectedCollection}/${sticker.filename}`,
+            thumbnail: `/assets/stickers/${selectedCollection}/${sticker.filename}`,
+            name: sticker.name,
+            tags: sticker.tags,
+            category: sticker.category,
+            collection: selectedCollection,
+            tier: sticker.tier
+          }));
+          setCollectionStickers(stickers);
+        } else {
+          // Fallback to mock stickers if no metadata found
+          setCollectionStickers(getMockStickers());
+        }
+      } catch (error) {
+        console.log('Using mock stickers for', selectedCollection);
+        setCollectionStickers(getMockStickers());
+      } finally {
+        setIsLoadingStickers(false);
+      }
+    };
+    
+    loadStickers();
+  }, [selectedCollection]);
+  
+  // Fallback mock stickers for collections without metadata
+  const getMockStickers = (): Sticker[] => [
     {
       id: '1',
       src: '/stickers/happy-beast.svg',
@@ -92,50 +129,13 @@ export default function StickerGallery({
       category: 'emotions',
       collection: selectedCollection,
       tier: 'basic', // Available to all
-    },
-    {
-      id: '2',
-      src: '/stickers/sad-beast.svg',
-      thumbnail: '/stickers/sad-beast.svg',
-      name: 'Sad Beast',
-      tags: ['sad', 'emotion', 'cry'],
-      category: 'emotions',
-      collection: selectedCollection,
-      tier: 'common', // Member and above
-    },
-    {
-      id: '3',
-      src: '/stickers/angry-beast.svg',
-      thumbnail: '/stickers/angry-beast.svg',
-      name: 'Angry Beast',
-      tags: ['angry', 'emotion', 'mad'],
-      category: 'emotions',
-      collection: selectedCollection,
-      tier: 'rare', // Veteran and above
-    },
-    {
-      id: '4',
-      src: '/stickers/excited-beast.svg',
-      thumbnail: '/stickers/excited-beast.svg',
-      name: 'Excited Beast',
-      tags: ['excited', 'emotion', 'happy'],
-      category: 'emotions',
-      collection: selectedCollection,
-      tier: 'premium', // Champion and above
-    },
-    {
-      id: '5',
-      src: '/stickers/legendary-beast.svg',
-      thumbnail: '/stickers/legendary-beast.svg',
-      name: 'Legendary Beast',
-      tags: ['legendary', 'special', 'rare'],
-      category: 'special',
-      collection: selectedCollection,
-      tier: 'all', // Elite only
-    },
+    }
   ];
+  
+  const filteredStickers = collectionStickers.filter(sticker =>
 
-  const filteredStickers = mockStickers.filter(sticker =>
+  // Use the filtered stickers already defined above
+  // const filteredStickers = collectionStickers.filter(sticker =>
     sticker.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     sticker.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
   );
@@ -239,6 +239,14 @@ export default function StickerGallery({
 
       {/* Stickers Grid */}
       <div className="flex-1 overflow-y-auto">
+        {isLoadingStickers ? (
+          <div className="flex items-center justify-center py-8">
+            <div className="text-gray-400">
+              <Sparkles className="w-8 h-8 animate-pulse mx-auto mb-2" />
+              <p className="text-sm">Loading stickers...</p>
+            </div>
+          </div>
+        ) : (
         <div className="grid grid-cols-3 gap-1 sm:gap-2">
         {filteredStickers.length > 0 ? (
           filteredStickers.map(sticker => {
@@ -306,6 +314,7 @@ export default function StickerGallery({
           </div>
         )}
         </div>
+        )}
       </div>
 
         </>
