@@ -70,10 +70,10 @@ class Web3Service {
         },
         themeMode: 'dark',
         themeVariables: {
-          '--w3m-color-mix': '#000000',  // Black to match site
-          '--w3m-color-mix-strength': 90,
-          '--w3m-accent': '#44D0A7',  // Gem crystal color
-          '--w3m-background': '#0A0A0A',  // Dark background
+          '--w3m-color-mix': '#1a1a1a',  // Dark gray instead of yellow
+          '--w3m-color-mix-strength': 20,
+          '--w3m-accent': '#44D0A7',  // Gem crystal accent
+          '--w3m-background': '#000000',  // Pure black background
           '--w3m-font-family': 'system-ui, -apple-system, sans-serif',
           '--w3m-border-radius-master': '8px',
           '--w3m-font-size-master': '14px',

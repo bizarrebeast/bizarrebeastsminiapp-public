@@ -21,18 +21,17 @@ export function WalletButton() {
   } = useWallet();
 
   const getTierColor = () => {
-    // Return subtle tier indicator color for text only
     switch(empireTier) {
       case AccessTier.ELITE:
-        return 'text-gem-gold';
+        return 'from-gem-gold to-yellow-600';
       case AccessTier.CHAMPION:
-        return 'text-gem-purple';
+        return 'from-gem-purple to-purple-600';
       case AccessTier.VETERAN:
-        return 'text-gem-blue';
+        return 'from-gem-blue to-blue-600';
       case AccessTier.MEMBER:
-        return 'text-gem-crystal';
+        return 'from-gem-crystal to-teal-600';
       default:
-        return 'text-gray-400';
+        return 'from-gray-600 to-gray-700';
     }
   };
 
@@ -69,11 +68,10 @@ export function WalletButton() {
     return (
       <button
         onClick={connect}
-        className="flex items-center gap-1 px-3 py-1.5 text-xs bg-dark-card border border-gem-crystal/30 text-gem-crystal hover:bg-gem-crystal/10 rounded transition-all duration-300"
+        className="flex items-center gap-1 px-3 py-1.5 text-xs bg-gradient-to-r from-gem-gold to-gem-crystal text-black font-semibold rounded hover:opacity-90 transition-all duration-300"
       >
         <Wallet className="w-3 h-3" />
-        <span className="hidden sm:inline">Connect</span>
-        <span className="sm:hidden">Connect</span>
+        <span>Connect</span>
       </button>
     );
   }
@@ -81,18 +79,21 @@ export function WalletButton() {
   return (
     <div className="relative group">
       <button
-        className={`flex items-center gap-1 px-3 py-1.5 text-xs bg-dark-card border border-gem-crystal/30 text-white rounded transition-all duration-300 hover:bg-gem-crystal/10`}
+        className={`flex items-center gap-1 px-3 py-1.5 text-xs bg-gradient-to-r ${getTierColor()} text-white rounded transition-all duration-300 hover:opacity-90`}
       >
         <div className="flex items-center gap-1">
           {empireRank && (
             <>
               <span className="text-sm">{getTierBadge()}</span>
-              <span className={`font-semibold ${getTierColor()}`}>#{empireRank}</span>
-              <span className="hidden lg:inline opacity-50 mx-1">|</span>
+              <span className="font-semibold">#{empireRank}</span>
+              <span className="hidden lg:inline opacity-75 mx-1">|</span>
             </>
           )}
-          <span className="text-gray-300">
+          <span className="hidden lg:inline">
             {formatAddress(address!)}
+          </span>
+          <span className="lg:hidden">
+            {address?.slice(0, 4)}...
           </span>
         </div>
       </button>
