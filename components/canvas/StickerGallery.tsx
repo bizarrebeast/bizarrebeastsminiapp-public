@@ -281,8 +281,8 @@ export default function StickerGallery({
                       loading="lazy"
                     />
                     
-                    {/* Tier Badge - smaller and only icon on mobile */}
-                    {!hasAccess && tierBadge && (
+                    {/* Tier Badge - show for all tier-locked items */}
+                    {tierBadge && (
                       <div className="absolute bottom-0.5 right-0.5 bg-black/70 rounded p-0.5">
                         <div className="w-3 h-3">
                           {tierBadge.icon}

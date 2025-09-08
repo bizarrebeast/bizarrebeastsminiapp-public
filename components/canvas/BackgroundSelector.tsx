@@ -310,8 +310,8 @@ export default function BackgroundSelector({
                           }}
                         />
                         
-                        {/* Tier Badge */}
-                        {!hasAccess && tierBadge && (
+                        {/* Tier Badge - show for all tier-locked items */}
+                        {tierBadge && (
                           <div className="absolute bottom-0.5 right-0.5 bg-black/70 rounded p-0.5 z-20">
                             {tierBadge.icon}
                           </div>
