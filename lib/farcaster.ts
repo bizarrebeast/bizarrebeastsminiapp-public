@@ -57,7 +57,7 @@ export async function shareMemeToFarcaster(
     const params = new URLSearchParams();
     
     // Add cast text
-    const defaultText = `Just created an epic meme with @bizarrebeasts! 🦾\n\nJoin the Empire and make your own: https://app.bizarrebeasts.io`;
+    const defaultText = `(your text here)\n\nCheck out BizarreBeasts ($BB) and hold 25M tokens to join /bizarrebeasts! 🚀 👹\n\nCC @bizarrebeast\nhttps://app.bizarrebeasts.io`;
     params.append('text', customText || defaultText);
     
     // Add channel
