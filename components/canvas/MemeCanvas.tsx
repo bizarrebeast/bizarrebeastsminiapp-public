@@ -102,9 +102,11 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
     // Allow inline text editing
     canvas.on('mouse:dblclick', (e) => {
       if (e.target && e.target.type === 'text') {
-        const textObj = e.target as FabricText;
-        textObj.enterEditing();
-        textObj.selectAll();
+        const textObj = e.target as any; // Type assertion for Fabric.js compatibility
+        if (textObj.enterEditing) {
+          textObj.enterEditing();
+          textObj.selectAll();
+        }
       }
     });
 
@@ -287,7 +289,12 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
       <div className="mb-2 sm:mb-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
         <div className="flex gap-1 sm:gap-2">
           <button
-            onClick={() => fabricCanvasRef.current?.getActiveObject() && fabricCanvasRef.current.remove(fabricCanvasRef.current.getActiveObject())}
+            onClick={() => {
+              const activeObject = fabricCanvasRef.current?.getActiveObject();
+              if (activeObject && fabricCanvasRef.current) {
+                fabricCanvasRef.current.remove(activeObject);
+              }
+            }}
             className="px-2 sm:px-3 py-1 bg-gradient-to-r from-red-600 to-pink-600 text-white rounded hover:scale-105 transition-all text-xs sm:text-sm font-semibold"
           >
             Delete

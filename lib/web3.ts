@@ -75,29 +75,12 @@ class Web3Service {
           '--w3m-color-mix-strength': 40,
           '--w3m-accent': '#44D0A7',
           
-          // Background colors
-          '--w3m-background-color': '#000000',
-          '--w3m-background-color-secondary': '#0a0a0a',
-          '--w3m-background-border-radius': '8px',
-          '--w3m-container-border-radius': '8px',
-          '--w3m-wallet-icon-border-radius': '8px',
-          '--w3m-input-border-radius': '8px',
-          '--w3m-button-border-radius': '8px',
-          '--w3m-secondary-button-border-radius': '8px',
-          '--w3m-icon-button-border-radius': '8px',
-          '--w3m-button-hover-highlight-border-radius': '8px',
+          // Border radius
+          '--w3m-border-radius-master': '8px',
           
-          // Text colors
-          '--w3m-text-primary-color': '#ffffff',
-          '--w3m-text-secondary-color': '#888888',
-          
-          // Other
-          '--w3m-overlay-background-color': 'rgba(0, 0, 0, 0.8)',
-          '--w3m-overlay-backdrop-filter': 'blur(4px)',
-          '--w3m-z-index': 9999,
-          '--w3m-font-family': 'system-ui, -apple-system, sans-serif',
-          '--w3m-font-size-master': '14px'
-        }
+          // Z-index
+          '--w3m-z-index': 9999
+        } as any
       });
 
       // Set up event listeners
