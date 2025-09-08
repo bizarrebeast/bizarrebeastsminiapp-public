@@ -259,8 +259,8 @@ export default function BackgroundSelector({
             </div>
           ) : backgrounds.length > 0 ? (
             <>
-              <div className="overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800">
-                <div className="flex gap-2 min-w-min">
+              <div className="overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800 max-w-full">
+                <div className="flex gap-2">
                   {backgrounds.map(bg => {
                     const hasAccess = !bg.tier || canAccessSticker(userTier, bg.tier);
                     const tierBadge = getTierBadge(bg.tier);

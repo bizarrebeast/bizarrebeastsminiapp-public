@@ -222,8 +222,8 @@ export default function StickerGallery({
             </div>
           </div>
         ) : filteredStickers.length > 0 ? (
-          <div className="overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800">
-            <div className="flex gap-2 min-w-min">
+          <div className="overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800 max-w-full">
+            <div className="flex gap-2">
               {filteredStickers.map(sticker => {
                 const hasAccess = !sticker.tier || canAccessSticker(userTier, sticker.tier);
                 const tierBadge = getTierBadge(sticker.tier);
