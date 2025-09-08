@@ -1,0 +1,178 @@
+'use client';
+
+import React from 'react';
+import { useWallet } from '@/hooks/useWallet';
+import { Wallet, Crown, LogOut, RefreshCw } from 'lucide-react';
+import { AccessTier } from '@/lib/empire';
+import { empireService } from '@/lib/empire';
+
+export function WalletButton() {
+  const { 
+    isConnected, 
+    address, 
+    empireRank, 
+    empireScore,
+    empireTier, 
+    connect, 
+    disconnect,
+    refreshEmpireData,
+    formatAddress,
+    isInitializing 
+  } = useWallet();
+
+  const getTierColor = () => {
+    switch(empireTier) {
+      case AccessTier.ELITE:
+        return 'from-gem-gold to-yellow-600';
+      case AccessTier.CHAMPION:
+        return 'from-gem-purple to-purple-600';
+      case AccessTier.VETERAN:
+        return 'from-gem-blue to-blue-600';
+      case AccessTier.MEMBER:
+        return 'from-gem-crystal to-teal-600';
+      default:
+        return 'from-gray-600 to-gray-700';
+    }
+  };
+
+  const getTierBadge = () => {
+    switch(empireTier) {
+      case AccessTier.ELITE:
+        return '👑';
+      case AccessTier.CHAMPION:
+        return '🏆';
+      case AccessTier.VETERAN:
+        return '⭐';
+      case AccessTier.MEMBER:
+        return '✨';
+      default:
+        return '';
+    }
+  };
+
+  if (isInitializing) {
+    return (
+      <button 
+        disabled
+        className="flex items-center gap-2 px-4 py-2 bg-gray-700 text-gray-400 rounded-lg cursor-not-allowed"
+      >
+        <div className="animate-spin">
+          <RefreshCw className="w-4 h-4" />
+        </div>
+        <span className="hidden sm:inline">Loading...</span>
+      </button>
+    );
+  }
+
+  if (!isConnected) {
+    return (
+      <button
+        onClick={connect}
+        className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-gem-gold to-gem-crystal text-black font-semibold rounded-lg hover:opacity-90 transition-all duration-300"
+      >
+        <Wallet className="w-4 h-4" />
+        <span className="hidden sm:inline">Connect Wallet</span>
+        <span className="sm:hidden">Connect</span>
+      </button>
+    );
+  }
+
+  return (
+    <div className="relative group">
+      <button
+        className={`flex items-center gap-2 px-4 py-2 bg-gradient-to-r ${getTierColor()} text-white rounded-lg transition-all duration-300`}
+      >
+        <div className="flex items-center gap-2">
+          {empireRank && (
+            <>
+              <span className="text-lg">{getTierBadge()}</span>
+              <span className="font-bold">#{empireRank}</span>
+              <span className="hidden lg:inline text-xs opacity-90">|</span>
+            </>
+          )}
+          <span className="hidden lg:inline text-sm">
+            {formatAddress(address!)}
+          </span>
+          <span className="lg:hidden text-sm">
+            {address?.slice(0, 4)}...
+          </span>
+        </div>
+      </button>
+
+      {/* Dropdown Menu */}
+      <div className="absolute right-0 mt-2 w-64 bg-dark-card border border-gem-crystal/20 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
+        <div className="p-4 border-b border-gray-700">
+          <p className="text-xs text-gray-400 mb-1">Connected Wallet</p>
+          <p className="text-white font-mono text-xs">{address}</p>
+          
+          {empireRank && (
+            <>
+              <div className="mt-3 pt-3 border-t border-gray-700">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-gray-400">Empire Rank</span>
+                  <span className="text-white font-bold">#{empireRank}</span>
+                </div>
+                <div className="flex items-center justify-between mt-1">
+                  <span className="text-xs text-gray-400">Score</span>
+                  <span className="text-white text-xs">{empireService.formatScore(empireScore || '0')}</span>
+                </div>
+                <div className="flex items-center justify-between mt-1">
+                  <span className="text-xs text-gray-400">Tier</span>
+                  <span className={`text-xs font-semibold uppercase ${
+                    empireTier === AccessTier.ELITE ? 'text-gem-gold' :
+                    empireTier === AccessTier.CHAMPION ? 'text-gem-purple' :
+                    empireTier === AccessTier.VETERAN ? 'text-gem-blue' :
+                    empireTier === AccessTier.MEMBER ? 'text-gem-crystal' :
+                    'text-gray-400'
+                  }`}>
+                    {empireTier}
+                  </span>
+                </div>
+              </div>
+
+              {/* Tier Benefits */}
+              <div className="mt-3 pt-3 border-t border-gray-700">
+                <p className="text-xs text-gray-400 mb-2">Your Benefits</p>
+                <ul className="text-xs text-gray-300 space-y-1">
+                  {empireService.getTierBenefits(empireTier!).slice(0, 3).map((benefit, i) => (
+                    <li key={i} className="flex items-start gap-1">
+                      <span className="text-gem-crystal">•</span>
+                      <span>{benefit}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </>
+          )}
+
+          {!empireRank && (
+            <div className="mt-3 pt-3 border-t border-gray-700">
+              <p className="text-xs text-gray-400">Not ranked in Empire</p>
+              <p className="text-xs text-gray-500 mt-1">
+                Hold $BB tokens to join the leaderboard
+              </p>
+            </div>
+          )}
+        </div>
+
+        <div className="p-2 space-y-1">
+          <button
+            onClick={refreshEmpireData}
+            className="w-full flex items-center gap-2 px-3 py-2 text-left text-sm text-gray-300 hover:bg-gray-700 rounded transition"
+          >
+            <RefreshCw className="w-4 h-4" />
+            Refresh Empire Data
+          </button>
+          
+          <button
+            onClick={disconnect}
+            className="w-full flex items-center gap-2 px-3 py-2 text-left text-sm text-red-400 hover:bg-gray-700 rounded transition"
+          >
+            <LogOut className="w-4 h-4" />
+            Disconnect
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}

@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { Menu, X, Home, Palette, Gamepad2, Trophy, BookOpen, FileText, Crown } from 'lucide-react';
 import { cn } from '@/utils/cn';
+import { WalletButton } from '@/components/wallet/WalletButton';
 
 const navItems = [
   { href: '/', label: 'Home', icon: Home },
@@ -31,8 +32,8 @@ export function Navbar() {
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:block">
-            <div className="ml-10 flex items-baseline space-x-4">
+          <div className="hidden md:flex items-center gap-4">
+            <div className="flex items-baseline space-x-4">
               {navItems.map((item) => {
                 const Icon = item.icon;
                 return (
@@ -47,10 +48,12 @@ export function Navbar() {
                 );
               })}
             </div>
+            <WalletButton />
           </div>
 
-          {/* Mobile menu button */}
-          <div className="md:hidden">
+          {/* Mobile menu button and wallet */}
+          <div className="md:hidden flex items-center gap-2">
+            <WalletButton />
             <button
               onClick={() => setIsOpen(!isOpen)}
               className="text-gray-400 hover:text-gem-crystal focus:outline-none focus:text-gem-crystal transition-colors duration-300"
