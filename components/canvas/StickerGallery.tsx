@@ -270,43 +270,6 @@ export default function StickerGallery({
         </div>
       </div>
 
-          {/* Upload Section */}
-          <div className="mt-3 pt-3 border-t border-gray-700">
-        <label className="block">
-          <span className="text-gray-400 text-xs sm:text-sm mb-1 sm:mb-2 block">Upload Custom</span>
-          <input
-            type="file"
-            accept="image/*"
-            multiple
-            onChange={(e) => {
-              const files = Array.from(e.target.files || []);
-              files.forEach(file => {
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                  const customSticker: Sticker = {
-                    id: `custom-${Date.now()}-${Math.random()}`,
-                    src: event.target?.result as string,
-                    thumbnail: event.target?.result as string,
-                    name: file.name,
-                    tags: ['custom'],
-                    category: 'custom',
-                    collection: 'custom',
-                  };
-                  onSelectSticker(customSticker);
-                };
-                reader.readAsDataURL(file);
-              });
-            }}
-            className="block w-full text-xs sm:text-sm text-gray-400
-              file:mr-2 sm:file:mr-4 file:py-1 sm:file:py-2 file:px-2 sm:file:px-4
-              file:rounded file:border-0
-              file:text-xs sm:file:text-sm file:font-semibold
-              file:bg-purple-600 file:text-white
-              hover:file:bg-purple-700
-              cursor-pointer"
-          />
-          </label>
-          </div>
         </>
       )}
     </div>
