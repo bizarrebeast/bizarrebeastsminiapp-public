@@ -14,7 +14,7 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const fabricCanvasRef = useRef<Canvas | null>(null);
-  const [backgroundColor, setBackgroundColor] = useState('#1F2937');
+  const [backgroundColor, setBackgroundColor] = useState('transparent');
   const [canvasSize, setCanvasSize] = useState({ width: 600, height: 600 });
 
   // Handle responsive canvas sizing
@@ -44,7 +44,7 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
     const canvas = new Canvas(canvasRef.current, {
       width: canvasSize.width,
       height: canvasSize.height,
-      backgroundColor: backgroundColor,
+      backgroundColor: 'transparent',
     });
 
     fabricCanvasRef.current = canvas;
@@ -267,7 +267,7 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
         {/* Background Color Picker - Only show if collection supports colors */}
         {showColorPicker && (
           <div className="flex items-center gap-1 sm:gap-2">
-            <label className="text-white text-xs sm:text-sm">BG:</label>
+            <label className="text-white text-xs sm:text-sm">Background Color:</label>
             <input
               type="color"
               value={backgroundColor === 'transparent' ? '#000000' : backgroundColor}
@@ -298,11 +298,25 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
 
       {/* Main Canvas */}
       <div className="relative bg-gray-700 rounded-lg p-2 sm:p-4 mx-auto">
-        <canvas
-          ref={canvasRef}
-          className="border-2 border-gray-600 rounded mx-auto block"
-          style={{ maxWidth: '100%', height: 'auto' }}
-        />
+        <div 
+          className="relative mx-auto block border-2 border-gray-600 rounded"
+          style={{ 
+            maxWidth: '100%',
+            width: canvasSize.width,
+            height: canvasSize.height,
+            // Checkerboard pattern for transparent background
+            backgroundImage: backgroundColor === 'transparent' 
+              ? `repeating-conic-gradient(#808080 0% 25%, #b0b0b0 0% 50%) 50% / 20px 20px`
+              : 'none',
+            backgroundColor: backgroundColor === 'transparent' ? '#ffffff' : backgroundColor
+          }}
+        >
+          <canvas
+            ref={canvasRef}
+            className="rounded mx-auto block relative z-10"
+            style={{ maxWidth: '100%', height: 'auto' }}
+          />
+        </div>
       </div>
 
       {/* Instructions */}
