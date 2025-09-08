@@ -52,7 +52,7 @@ export function Navbar() {
               <img 
                 src="/assets/page-assets/logos/bizarrebeasts-miniapp-logo.svg" 
                 alt="BizarreBeasts Logo" 
-                className="w-8 h-8 object-contain transition-all duration-300 group-hover:scale-110"
+                className="w-8 h-8 object-contain rounded-lg transition-all duration-300 group-hover:scale-110"
               />
               <span className="text-gem-gold font-bold text-xl group-hover:text-gem-crystal transition-colors duration-300">BizarreBeasts</span>
             </Link>

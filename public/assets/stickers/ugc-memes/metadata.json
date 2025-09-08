@@ -8,82 +8,66 @@
   "stickers": [
     {
       "id": "ugc-1",
-      "name": "Bizarre Ticher",
-      "filename": "../siablo/siablo-bizarrebeasts-UGC-stickers-bizbe_ticher.svg",
+      "name": "Siablo Beast 1",
+      "filename": "../siablo/siablo-bizarrebeasts-UGC-stickers-1.svg",
       "category": "characters",
-      "tags": ["beast", "siablo", "teacher", "custom"],
+      "tags": ["beast", "siablo", "custom", "meme"],
       "tier": "basic"
     },
     {
       "id": "ugc-2",
-      "name": "Bizarre Boing",
-      "filename": "../siablo/siablo-bizarrebeasts-UGC-stickers-bizarre_Boing.svg",
+      "name": "Siablo Beast 2",
+      "filename": "../siablo/siablo-bizarrebeasts-UGC-stickers-2.svg",
       "category": "characters",
-      "tags": ["boing", "bounce", "siablo", "meme"],
+      "tags": ["beast", "siablo", "custom", "meme"],
       "tier": "basic"
     },
     {
       "id": "ugc-3",
-      "name": "Bizarre Boing Podball",
-      "filename": "../siablo/siablo-bizarrebeasts-UGC-stickers-bizarre_Boing_podball.svg",
+      "name": "Siablo Beast 3",
+      "filename": "../siablo/siablo-bizarrebeasts-UGC-stickers-3.svg",
       "category": "characters",
-      "tags": ["boing", "podball", "siablo", "meme"],
+      "tags": ["beast", "siablo", "custom", "meme"],
       "tier": "basic"
     },
     {
       "id": "ugc-4",
-      "name": "Bizarre Cheers",
-      "filename": "../siablo/siablo-bizarrebeasts-UGC-stickers-bizarre_cheers.svg",
+      "name": "Siablo Beast 4",
+      "filename": "../siablo/siablo-bizarrebeasts-UGC-stickers-4.svg",
       "category": "characters",
-      "tags": ["cheers", "celebration", "siablo", "happy"],
+      "tags": ["beast", "siablo", "custom", "meme"],
       "tier": "basic"
     },
     {
       "id": "ugc-5",
-      "name": "Bizarre Cheers Podball",
-      "filename": "../siablo/siablo-bizarrebeasts-UGC-stickers-bizarre_cheers_podball.svg",
+      "name": "Siablo Beast 5",
+      "filename": "../siablo/siablo-bizarrebeasts-UGC-stickers-5.svg",
       "category": "characters",
-      "tags": ["cheers", "podball", "siablo", "celebration"],
+      "tags": ["beast", "siablo", "custom", "meme"],
       "tier": "basic"
     },
     {
       "id": "ugc-6",
-      "name": "Bizarre Dopamine Blue",
-      "filename": "../siablo/siablo-bizarrebeasts-UGC-stickers-bizarre_dopamine_blueBG.svg",
+      "name": "Siablo Beast 6",
+      "filename": "../siablo/siablo-bizarrebeasts-UGC-stickers-6.svg",
       "category": "characters",
-      "tags": ["dopamine", "blue", "siablo", "happy"],
+      "tags": ["beast", "siablo", "custom", "meme"],
       "tier": "basic"
     },
     {
       "id": "ugc-7",
-      "name": "Bizarre Dopamine White",
-      "filename": "../siablo/siablo-bizarrebeasts-UGC-stickers-bizarre_dopamine_whiteBG.svg",
+      "name": "Siablo Beast 7",
+      "filename": "../siablo/siablo-bizarrebeasts-UGC-stickers-7.svg",
       "category": "characters",
-      "tags": ["dopamine", "white", "siablo", "happy"],
+      "tags": ["beast", "siablo", "custom", "meme"],
       "tier": "basic"
     },
     {
       "id": "ugc-8",
-      "name": "Bizarre Dopamine Podball",
-      "filename": "../siablo/siablo-bizarrebeasts-UGC-stickers-bizarre_dopamine_podball.svg",
+      "name": "Siablo Beast 8",
+      "filename": "../siablo/siablo-bizarrebeasts-UGC-stickers-8.svg",
       "category": "characters",
-      "tags": ["dopamine", "podball", "siablo", "happy"],
-      "tier": "basic"
-    },
-    {
-      "id": "ugc-9",
-      "name": "Bizarre Higher",
-      "filename": "../siablo/siablo-bizarrebeasts-UGC-stickers-bizarre_higher.svg",
-      "category": "memes",
-      "tags": ["higher", "up", "siablo", "meme"],
-      "tier": "basic"
-    },
-    {
-      "id": "ugc-10",
-      "name": "Bizarre Look",
-      "filename": "../siablo/siablo-bizarrebeasts-UGC-stickers-bizarre_look.svg",
-      "category": "characters",
-      "tags": ["look", "eyes", "siablo", "watching"],
+      "tags": ["beast", "siablo", "custom", "meme"],
       "tier": "basic"
     }
   ]
