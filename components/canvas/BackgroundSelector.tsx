@@ -25,7 +25,7 @@ export default function BackgroundSelector({
   // Check if user can upload backgrounds (Elite/Champion on BizarreBeasts collection only)
   const canUpload = canUploadBackground(userTier, collection.id);
   
-  // Mock background images for collections
+  // Mock background images for collections (not for BizarreBeasts - that's upload only)
   const mockBackgrounds: BackgroundImage[] = 
     collection.id === 'treasure-quest' ? [
       {
@@ -59,7 +59,9 @@ export default function BackgroundSelector({
       },
     ] : [];
 
-  const showColorPicker = collection.backgroundType === 'color' || collection.backgroundType === 'both';
+  // BizarreBeasts doesn't show color picker here (it's in the canvas area)
+  const showColorPicker = collection.id !== 'bizarrebeasts' && 
+    (collection.backgroundType === 'color' || collection.backgroundType === 'both');
   const showBackgrounds = collection.backgroundType === 'image' || collection.backgroundType === 'both';
 
   if (!showColorPicker && !showBackgrounds) {
@@ -84,7 +86,7 @@ export default function BackgroundSelector({
       {/* Background Images Grid */}
       {showBackgrounds && (
         <div className="grid grid-cols-2 gap-2 mb-3">
-          {/* Preset backgrounds */}
+          {/* Preset backgrounds - not for BizarreBeasts */}
           {mockBackgrounds.map(bg => (
             <button
               key={bg.id}

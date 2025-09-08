@@ -17,7 +17,7 @@ const mockCollections: StickerCollection[] = [
     icon: '🦾',
     stickers: [],
     backgrounds: [],
-    backgroundType: 'both', // Color + upload for Elite/Champion
+    backgroundType: 'image', // Upload only for Elite/Champion (color picker is in canvas)
     isTokenGated: false,
     requiredTier: AccessTier.VISITOR, // Basic access for all
     sortOrder: 1,
