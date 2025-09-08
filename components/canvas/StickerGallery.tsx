@@ -181,8 +181,9 @@ export default function StickerGallery({
         </select>
       </div>
 
-      {/* Background Selector - Only show for collections with image backgrounds */}
-      {currentCollection && onSelectBackground && currentCollection.backgroundType === 'image' && (
+      {/* Background Selector - Show for collections with image or both background types */}
+      {currentCollection && onSelectBackground && 
+       (currentCollection.backgroundType === 'image' || currentCollection.backgroundType === 'both') && (
         <BackgroundSelector 
           collection={currentCollection}
           onSelectBackground={onSelectBackground}
