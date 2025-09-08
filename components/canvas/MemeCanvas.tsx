@@ -45,9 +45,49 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
       width: canvasSize.width,
       height: canvasSize.height,
       backgroundColor: 'transparent',
+      snapAngle: 15, // Snap rotation to 15-degree increments
+      snapThreshold: 5, // Snap when within 5 degrees
     });
 
     fabricCanvasRef.current = canvas;
+    
+    // Add snap-to-center functionality
+    const centerLine = canvasSize.width / 2;
+    const middleLine = canvasSize.height / 2;
+    const snapZone = 10; // Pixels within which to snap
+
+    canvas.on('object:moving', (e) => {
+      const obj = e.target;
+      if (!obj) return;
+      
+      // Get object center
+      const objCenterX = obj.left! + (obj.width! * obj.scaleX!) / 2;
+      const objCenterY = obj.top! + (obj.height! * obj.scaleY!) / 2;
+      
+      // Snap to vertical center
+      if (Math.abs(objCenterX - centerLine) < snapZone) {
+        obj.set({
+          left: centerLine - (obj.width! * obj.scaleX!) / 2,
+        });
+      }
+      
+      // Snap to horizontal middle
+      if (Math.abs(objCenterY - middleLine) < snapZone) {
+        obj.set({
+          top: middleLine - (obj.height! * obj.scaleY!) / 2,
+        });
+      }
+      
+      // Snap to edges
+      if (obj.left! < snapZone) obj.left = 0;
+      if (obj.top! < snapZone) obj.top = 0;
+      if (obj.left! + (obj.width! * obj.scaleX!) > canvasSize.width - snapZone) {
+        obj.left = canvasSize.width - (obj.width! * obj.scaleX!);
+      }
+      if (obj.top! + (obj.height! * obj.scaleY!) > canvasSize.height - snapZone) {
+        obj.top = canvasSize.height - (obj.height! * obj.scaleY!);
+      }
+    });
 
     // Enable text editing on double-click
     canvas.on('text:editing:entered', () => {
@@ -246,7 +286,7 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
         <div className="flex gap-1 sm:gap-2">
           <button
             onClick={() => fabricCanvasRef.current?.getActiveObject() && fabricCanvasRef.current.remove(fabricCanvasRef.current.getActiveObject())}
-            className="px-2 sm:px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-xs sm:text-sm"
+            className="px-2 sm:px-3 py-1 bg-gradient-to-r from-red-600 to-pink-600 text-white rounded hover:scale-105 transition-all text-xs sm:text-sm font-semibold"
           >
             Delete
           </button>
@@ -258,7 +298,7 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
                 fabricCanvasRef.current.renderAll();
               }
             }}
-            className="px-2 sm:px-3 py-1 bg-gray-600 text-white rounded hover:bg-gray-700 text-xs sm:text-sm"
+            className="px-2 sm:px-3 py-1 bg-gradient-to-r from-gray-600 to-gray-700 text-white rounded hover:scale-105 transition-all text-xs sm:text-sm font-semibold"
           >
             Clear
           </button>
@@ -319,19 +359,45 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
       </div>
 
       {/* Instructions */}
-      <div className="mt-2 sm:mt-4 text-gray-400 text-xs sm:text-sm space-y-2">
-        <p className="flex flex-wrap gap-x-3">
-          <span>• Click stickers to add to canvas</span>
-          <span>• Drag to move & position</span>
-          <span>• Drag corners to resize</span>
-        </p>
-        <p className="flex flex-wrap gap-x-3">
-          <span>• Double-click text to edit</span>
-          <span>• Click Delete button or press Delete key</span>
-        </p>
-        <p className="text-gem-crystal text-xs">
-          💎 Hold more $BB tokens to climb the Empire leaderboard and unlock premium features!
-        </p>
+      <div className="mt-2 sm:mt-4 bg-dark-card border border-gem-crystal/20 rounded-lg p-3 sm:p-4">
+        <h4 className="text-white font-semibold mb-2 text-sm">BizarreBeasts ($BB) Meme Generator Instructions</h4>
+        
+        <div className="space-y-3 text-xs sm:text-sm">
+          <div>
+            <p className="text-gem-crystal font-semibold mb-1">🎨 Create Your BizarreBeasts Meme:</p>
+            <ul className="text-gray-400 space-y-1 ml-4">
+              <li>• Click stickers to add to your canvas</li>
+              <li>• Drag to move and position anywhere</li>
+              <li>• Drag corner handles to resize</li>
+              <li>• Double-click text areas to edit</li>
+              <li>• Use Delete key or trash button to remove items</li>
+            </ul>
+          </div>
+          
+          <div>
+            <p className="text-gem-purple font-semibold mb-1">🚀 Pro Tips:</p>
+            <ul className="text-gray-400 space-y-1 ml-4">
+              <li>• Top & bottom text work best for classic meme format</li>
+              <li>• Layer stickers to create dynamic scenes</li>
+              <li>• Items snap to center for perfect alignment</li>
+            </ul>
+          </div>
+          
+          <div>
+            <p className="text-gem-gold font-semibold mb-1">💎 Token Holder Benefits:</p>
+            <p className="text-gray-400 ml-4 mb-1">Hold $BB tokens and empire boosters to unlock:</p>
+            <ul className="text-gray-400 space-y-1 ml-8">
+              <li>• Exclusive sticker collections</li>
+              <li>• Remove watermarks</li>
+              <li>• Upload custom backgrounds</li>
+              <li>• Premium features</li>
+            </ul>
+          </div>
+          
+          <p className="text-white font-semibold text-center pt-2 border-t border-gray-700">
+            Once you have created your BizarreBeasts Meme, click share! 🚀
+          </p>
+        </div>
       </div>
     </div>
   );

@@ -86,7 +86,7 @@ export default function ExportControls({ onExport }: ExportControlsProps) {
           <div className="space-y-2 mb-4">
         <button
           onClick={handleExport}
-          className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-3 rounded-lg font-semibold hover:opacity-90 transition flex items-center justify-center gap-2"
+          className="w-full bg-gradient-to-r from-gem-gold via-gem-crystal to-gem-blue text-black py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2"
         >
           <Download className="w-5 h-5" />
           Download Meme
@@ -95,7 +95,7 @@ export default function ExportControls({ onExport }: ExportControlsProps) {
         <button
           onClick={handleShareToFarcaster}
           disabled={isSharing}
-          className="w-full bg-purple-600 text-white py-3 rounded-lg font-semibold hover:bg-purple-700 transition flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full bg-gradient-to-r from-gem-crystal to-gem-gold text-black py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isSharing ? (
             <>
