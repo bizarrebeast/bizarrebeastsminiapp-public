@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import { BackgroundImage, StickerCollection } from '@/types';
 import { Image as ImageIcon, Palette, Upload, Lock } from 'lucide-react';
 import { useWallet } from '@/hooks/useWallet';
@@ -20,7 +20,6 @@ export default function BackgroundSelector({
 }: BackgroundSelectorProps) {
   const { empireTier } = useWallet();
   const userTier = empireTier || AccessTier.VISITOR;
-  const [customBackgrounds, setCustomBackgrounds] = useState<BackgroundImage[]>([]);
   
   // Check if user can upload backgrounds (Elite/Champion on BizarreBeasts collection only)
   const canUpload = canUploadBackground(userTier, collection.id);
@@ -68,6 +67,66 @@ export default function BackgroundSelector({
     return null;
   }
 
+  // Special case for BizarreBeasts - just show upload button
+  if (collection.id === 'bizarrebeasts') {
+    return (
+      <div className="mb-4">
+        <div className="flex items-center justify-between mb-2">
+          <h4 className="text-white font-semibold text-sm flex items-center gap-2">
+            <ImageIcon className="w-4 h-4" />
+            Upload Background
+          </h4>
+          {!canUpload && (
+            <span className="text-xs text-gem-crystal flex items-center gap-1">
+              <Lock className="w-3 h-3" />
+              Elite/Champion only
+            </span>
+          )}
+        </div>
+
+        {/* Upload button */}
+        <label className={`block w-full bg-gray-700 rounded p-3 transition-colors ${
+          canUpload ? 'hover:bg-gray-600 cursor-pointer' : 'opacity-50 cursor-not-allowed'
+        }`}>
+          <input
+            type="file"
+            accept="image/*"
+            disabled={!canUpload}
+            onChange={(e) => {
+              if (!canUpload) return;
+              
+              const file = e.target.files?.[0];
+              if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                  // Directly apply the background without storing it
+                  onSelectBackground('image', event.target?.result as string);
+                };
+                reader.readAsDataURL(file);
+              }
+              // Reset input
+              e.target.value = '';
+            }}
+            className="hidden"
+          />
+          <div className="text-center">
+            {canUpload ? (
+              <>
+                <Upload className="w-5 h-5 text-gray-400 mx-auto mb-1" />
+                <span className="text-sm text-gray-400">Click to upload custom background</span>
+              </>
+            ) : (
+              <>
+                <Lock className="w-5 h-5 text-gray-500 mx-auto mb-1" />
+                <span className="text-sm text-gray-500">Unlock with Elite or Champion tier</span>
+              </>
+            )}
+          </div>
+        </label>
+      </div>
+    );
+  }
+
   return (
     <div className="mb-4">
       <div className="flex items-center justify-between mb-2">
@@ -75,18 +134,12 @@ export default function BackgroundSelector({
           {showBackgrounds ? <ImageIcon className="w-4 h-4" /> : <Palette className="w-4 h-4" />}
           Backgrounds
         </h4>
-        {collection.id === 'bizarrebeasts' && !canUpload && (
-          <span className="text-xs text-gem-crystal flex items-center gap-1">
-            <Lock className="w-3 h-3" />
-            Upload: Elite/Champion
-          </span>
-        )}
       </div>
 
       {/* Background Images Grid */}
       {showBackgrounds && (
         <div className="grid grid-cols-2 gap-2 mb-3">
-          {/* Preset backgrounds - not for BizarreBeasts */}
+          {/* Preset backgrounds for other collections */}
           {mockBackgrounds.map(bg => (
             <button
               key={bg.id}
@@ -103,87 +156,6 @@ export default function BackgroundSelector({
               )}
             </button>
           ))}
-          
-          {/* Custom uploaded backgrounds */}
-          {customBackgrounds.map(bg => (
-            <button
-              key={bg.id}
-              onClick={() => onSelectBackground('image', bg.src)}
-              className="group relative bg-gray-700 rounded p-1 hover:bg-gray-600 transition-colors aspect-video overflow-hidden"
-            >
-              <img 
-                src={bg.thumbnail || bg.src} 
-                alt={bg.name}
-                className="w-full h-full object-cover rounded"
-              />
-              
-              {/* Selected indicator */}
-              {currentBackground === bg.src && (
-                <div className="absolute inset-0 border-2 border-purple-500 rounded pointer-events-none" />
-              )}
-              
-              {/* Delete button */}
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setCustomBackgrounds(prev => prev.filter(b => b.id !== bg.id));
-                }}
-                className="absolute top-1 right-1 bg-red-600 text-white rounded p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-              >
-                <span className="text-xs">×</span>
-              </button>
-            </button>
-          ))}
-          
-          {/* Upload button - Only for Elite/Champion on BizarreBeasts */}
-          {collection.id === 'bizarrebeasts' && (
-            <label className={`relative bg-gray-700 rounded p-1 transition-colors aspect-video flex items-center justify-center ${
-              canUpload ? 'hover:bg-gray-600 cursor-pointer' : 'opacity-50 cursor-not-allowed'
-            }`}>
-              <input
-                type="file"
-                accept="image/*"
-                disabled={!canUpload}
-                onChange={(e) => {
-                  if (!canUpload) return;
-                  
-                  const file = e.target.files?.[0];
-                  if (file) {
-                    const reader = new FileReader();
-                    reader.onload = (event) => {
-                      const newBackground: BackgroundImage = {
-                        id: `custom-${Date.now()}`,
-                        src: event.target?.result as string,
-                        thumbnail: event.target?.result as string,
-                        name: file.name,
-                        collection: collection.id,
-                      };
-                      setCustomBackgrounds(prev => [...prev, newBackground]);
-                      // Auto-select the new background
-                      onSelectBackground('image', newBackground.src);
-                    };
-                    reader.readAsDataURL(file);
-                  }
-                  // Reset input
-                  e.target.value = '';
-                }}
-                className="hidden"
-              />
-              <div className="text-center">
-                {canUpload ? (
-                  <>
-                    <Upload className="w-6 h-6 text-gray-400 mx-auto mb-1" />
-                    <span className="text-xs text-gray-400">Upload Custom</span>
-                  </>
-                ) : (
-                  <>
-                    <Lock className="w-6 h-6 text-gray-500 mx-auto mb-1" />
-                    <span className="text-xs text-gray-500">Elite/Champion</span>
-                  </>
-                )}
-              </div>
-            </label>
-          )}
         </div>
       )}
 
