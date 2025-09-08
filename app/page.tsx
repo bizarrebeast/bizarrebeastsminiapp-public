@@ -7,11 +7,20 @@ export default function Home() {
       {/* Hero Section */}
       <section className="relative px-4 py-20 text-center">
         <div className="max-w-4xl mx-auto">
+          {/* Logo */}
+          <div className="flex justify-center mb-6">
+            <img 
+              src="/assets/page-assets/logos/bizarrebeasts-miniapp-logo.svg" 
+              alt="BizarreBeasts Logo" 
+              className="w-[250px] h-[250px] object-contain rounded-2xl"
+            />
+          </div>
+          
           <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-gem-gold via-gem-crystal to-gem-blue bg-clip-text text-transparent">
             Welcome to BizarreBeasts
           </h1>
-          <p className="text-xl text-gray-300 mb-8">
-            Create memes, play games, and join the most BIZARRE community in web3
+          <p className="text-xl text-gray-300 mb-2">
+            GO BIZARRE! Create memes, play games, swap tokens, and join the most BIZARRE community in web3!
           </p>
           
           {/* Quick Stats */}

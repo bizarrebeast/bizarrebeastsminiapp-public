@@ -13,7 +13,7 @@ const mockCollections: StickerCollection[] = [
   {
     id: 'bizarrebeasts',
     name: 'BizarreBeasts',
-    description: 'The original hand-illustrated BizarreBeasts collection featuring all the notorious BizarreBeasts. Create BIZARRE and hilarious memes and artwork with BizarreBeasts stickers and share them with the community! Greyed out stickers require a higher leaderboard tier to unlock premium content.',
+    description: 'The original hand-illustrated BizarreBeasts collection featuring all the notorious BizarreBeasts. Create BIZARRE and hilarious memes and artwork with BizarreBeasts stickers and share them with the community! Higher tier stickers are marked with badges and unlock as you climb the Empire leaderboard.',
     icon: '🦾',
     stickers: [],
     backgrounds: [],
@@ -26,7 +26,7 @@ const mockCollections: StickerCollection[] = [
   {
     id: 'treasure-quest',
     name: 'Treasure Quest',
-    description: 'Hand-illustrated sprites and treasures from BizarreBeasts: Treasure Quest! Create epic memes with heroes, enemies, legendary loot, and dungeon backgrounds straight from the game. Greyed out stickers require higher $BB token tiers to unlock premium content and rare artifacts.',
+    description: 'Hand-illustrated sprites and treasures from BizarreBeasts: Treasure Quest! Create epic memes with heroes, enemies, legendary loot, and dungeon backgrounds straight from the game. Premium content and rare artifacts unlock as you advance through Empire tiers.',
     icon: '💎',
     stickers: [],
     backgrounds: [], // Will add background images
@@ -53,7 +53,7 @@ const mockCollections: StickerCollection[] = [
   {
     id: 'ugc-memes',
     name: 'UGC Memes by @siablo.eth',
-    description: 'Siablo $BB Memes Collection - Hand-illustrated BizarreBeasts stickers and memes created by @siablo.eth for the $BB Community! Create BIZARRE content with custom artwork and characters based on the original BizarreBeasts. Greyed out stickers require a higher leaderboard tier to unlock premium content.',
+    description: 'Siablo $BB Memes Collection - Hand-illustrated BizarreBeasts stickers and memes created by @siablo.eth for the $BB Community! Create BIZARRE content with custom artwork and characters based on the original BizarreBeasts. All stickers in this collection are available to everyone!',
     icon: '🎨',
     stickers: [],
     backgrounds: [],

@@ -277,7 +277,7 @@ export default function StickerGallery({
                     <img 
                       src={sticker.thumbnail} 
                       alt={sticker.name}
-                      className={`w-full h-full object-contain ${!hasAccess ? 'grayscale opacity-60' : ''}`}
+                      className="w-full h-full object-contain"
                       loading="lazy"
                     />
                     
