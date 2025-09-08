@@ -152,7 +152,7 @@ export default function StickerGallery({
       {isExpanded && (
         <>
           {/* Collection Selector */}
-          <div className="mb-3">
+          <div className="mb-3 px-1">
         <select
           value={selectedCollection}
           onChange={(e) => {
