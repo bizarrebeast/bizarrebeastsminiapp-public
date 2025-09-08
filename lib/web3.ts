@@ -123,26 +123,32 @@ class Web3Service {
   private setupEventListeners(): void {
     if (!this.appKit) return;
 
-    // Listen for account changes
-    this.appKit.subscribeState(async (state: any) => {
-      const newAddress = state.address || null;
+    // Subscribe to all state changes
+    this.appKit.subscribeState(async (newState: any) => {
+      console.log('WalletConnect state changed:', newState);
       
-      if (newAddress !== this.currentState.address) {
-        // Address changed
+      const newAddress = newState.address || null;
+      const wasConnected = this.currentState.isConnected;
+      const isNowConnected = !!newAddress;
+      
+      // Update if connection status or address changed
+      if (wasConnected !== isNowConnected || newAddress !== this.currentState.address) {
         if (newAddress) {
           // Wallet connected - fetch Empire data
+          console.log('Wallet connected:', newAddress);
           const empireData = await empireService.getUserByAddress(newAddress);
           
           this.currentState = {
             isConnected: true,
             address: newAddress,
-            ensName: state.ensName || null,
+            ensName: newState.ensName || null,
             empireRank: empireData?.rank || null,
             empireScore: empireData?.balance || null,
             empireTier: empireService.getUserTier(empireData?.rank || null)
           };
         } else {
           // Wallet disconnected
+          console.log('Wallet disconnected');
           this.currentState = {
             isConnected: false,
             address: null,
@@ -157,6 +163,27 @@ class Web3Service {
         this.notifyStateChange();
       }
     });
+
+    // Also subscribe to account changes specifically
+    if (this.appKit.subscribeAccount) {
+      this.appKit.subscribeAccount(async (account: any) => {
+        console.log('Account changed:', account);
+        if (account?.address && account.address !== this.currentState.address) {
+          const empireData = await empireService.getUserByAddress(account.address);
+          
+          this.currentState = {
+            isConnected: true,
+            address: account.address,
+            ensName: account.ensName || null,
+            empireRank: empireData?.rank || null,
+            empireScore: empireData?.balance || null,
+            empireTier: empireService.getUserTier(empireData?.rank || null)
+          };
+          
+          this.notifyStateChange();
+        }
+      });
+    }
   }
 
   /**
@@ -168,6 +195,11 @@ class Web3Service {
     }
     
     await this.appKit.open();
+    
+    // Check connection after modal interaction
+    setTimeout(async () => {
+      await this.checkConnection();
+    }, 1000);
   }
 
   /**
@@ -261,19 +293,38 @@ class Web3Service {
   async checkConnection(): Promise<void> {
     if (!this.appKit) return;
     
+    // Get the current state from AppKit
     const state = this.appKit.getState();
+    console.log('Checking connection, current state:', state);
     
-    if (state.address) {
+    // Check if we have an active account
+    const account = this.appKit.getAccount?.() || state.account || state;
+    const address = account?.address || state?.address;
+    
+    if (address) {
+      console.log('Found connected wallet:', address);
       // Fetch Empire data for connected wallet
-      const empireData = await empireService.getUserByAddress(state.address);
+      const empireData = await empireService.getUserByAddress(address);
       
       this.currentState = {
         isConnected: true,
-        address: state.address,
-        ensName: state.ensName || null,
+        address: address,
+        ensName: account?.ensName || state?.ensName || null,
         empireRank: empireData?.rank || null,
         empireScore: empireData?.balance || null,
         empireTier: empireService.getUserTier(empireData?.rank || null)
+      };
+      
+      this.notifyStateChange();
+    } else {
+      console.log('No wallet connected');
+      this.currentState = {
+        isConnected: false,
+        address: null,
+        ensName: null,
+        empireRank: null,
+        empireScore: null,
+        empireTier: AccessTier.VISITOR
       };
       
       this.notifyStateChange();
