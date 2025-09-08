@@ -15,9 +15,9 @@ export default function ExportControls({ onExport }: ExportControlsProps) {
     quality: 1.0, // PNG doesn't use quality, always lossless
     watermark: {
       enabled: true,
-      text: 'BizarreBeasts.io',
+      text: 'BizarreBeasts ($BB)',
       position: 'bottom-right',
-      opacity: 0.7,
+      opacity: 0.5,
     },
     shareToFarcaster: false,
     downloadToDevice: true,

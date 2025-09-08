@@ -156,7 +156,7 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
       export: async (options: ExportOptions) => {
         // Add watermark if enabled
         if (options.watermark.enabled) {
-          const watermark = new FabricText(options.watermark.text || 'BizarreBeasts.io', {
+          const watermark = new FabricText(options.watermark.text || 'BizarreBeasts ($BB)', {
             fontSize: 16,
             fill: 'rgba(255, 255, 255, ' + options.watermark.opacity + ')',
             fontFamily: 'Arial',
