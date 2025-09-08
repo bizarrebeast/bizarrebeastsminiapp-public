@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { X, Crown, Zap, TrendingUp, ExternalLink, Sparkles } from 'lucide-react';
 import { AccessTier, empireService, EmpireHolder } from '@/lib/empire';
 import { useWallet } from '@/hooks/useWallet';
@@ -233,22 +234,20 @@ export default function UpgradePrompt({
             How to Upgrade:
           </h3>
           
-          {/* Buy BB Tokens */}
-          <a
-            href={SWAP_LINKS.uniswap}
-            target="_blank"
-            rel="noopener noreferrer"
+          {/* Buy BB Tokens - Link to internal swap page */}
+          <Link
+            href="/swap"
             className="w-full flex items-center justify-between p-3 bg-gradient-to-r from-gem-gold/20 to-gem-crystal/20 border border-gem-gold/30 rounded-lg hover:border-gem-gold/50 transition-all group"
           >
             <div className="flex items-center gap-3">
               <TrendingUp className="w-5 h-5 text-gem-gold" />
               <div>
                 <p className="text-sm font-semibold text-white">Buy $BB Tokens</p>
-                <p className="text-xs text-gray-400">Increase your balance on Uniswap</p>
+                <p className="text-xs text-gray-400">Swap tokens in the app</p>
               </div>
             </div>
             <ExternalLink className="w-4 h-4 text-gray-400 group-hover:text-white transition-colors" />
-          </a>
+          </Link>
 
           {/* Get Empire Boosters */}
           <a
@@ -268,7 +267,7 @@ export default function UpgradePrompt({
           </a>
 
           {/* View Empire Page */}
-          <a
+          <Link
             href="/empire"
             className="w-full flex items-center justify-between p-3 bg-gray-800/50 border border-gray-700 rounded-lg hover:border-gray-600 transition-all group"
           >
@@ -280,7 +279,7 @@ export default function UpgradePrompt({
               </div>
             </div>
             <ExternalLink className="w-4 h-4 text-gray-400 group-hover:text-white transition-colors" />
-          </a>
+          </Link>
         </div>
 
         {/* Footer note */}

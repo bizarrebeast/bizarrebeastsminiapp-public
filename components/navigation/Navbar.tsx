@@ -2,13 +2,14 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { Menu, X, Home, Palette, Gamepad2, Trophy, BookOpen, FileText, Crown } from 'lucide-react';
+import { Menu, X, Home, Palette, Gamepad2, Trophy, BookOpen, FileText, Crown, ArrowDownUp } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import { WalletButton } from '@/components/wallet/WalletButton';
 
 const navItems = [
   { href: '/', label: 'Home', icon: Home },
   { href: '/meme-generator', label: 'Meme Generator', icon: Palette },
+  { href: '/swap', label: 'Swap', icon: ArrowDownUp },
   { href: '/games', label: 'Games', icon: Gamepad2 },
   { href: '/empire', label: 'Empire', icon: Crown },
   { href: '/blog', label: 'Blog', icon: BookOpen },

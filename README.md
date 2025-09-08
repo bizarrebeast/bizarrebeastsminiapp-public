@@ -1,46 +1,201 @@
 # BizarreBeasts Miniapp 🎨
 
-A Progressive Web App (PWA) and Farcaster miniapp for the BizarreBeasts community, featuring a powerful meme generator, games hub, and community engagement tools.
+A Next.js 14 application for the BizarreBeasts ecosystem featuring advanced meme generation, games hub, Empire integration, and token swapping.
 
-## 🚀 Features
+## 🚀 Core Features
 
-### Core Features (Phase 1)
-- **🎨 Meme Generator** - Create memes with BizarreBeasts stickers
-- **🎮 Games Hub** - Access all BizarreBeasts games
-- **🏆 Leaderboard** - Track community rankings
-- **📝 Blog Integration** - Stay updated with latest news
-- **📚 Resources** - Token info and documentation
+### 🎨 Meme Generator (Fully Implemented)
+- **Multiple Sticker Collections**: BizarreBeasts, Treasure Quest, VibeCards
+- **Canvas Creation**: Powered by Fabric.js v6 with drag-and-drop interface
+- **Text Overlays**: Customizable colors, fonts, and styles
+- **Backgrounds**: Transparent (default), solid colors, or custom image uploads
+- **Smart Alignment**: Snap-to-grid feature for precise composition
+- **Export**: High-quality PNG with optional watermark
+- **Social Sharing**: Direct integration with Farcaster
+- **Empire Gating**: Features unlocked based on Empire rank (not token-gated)
 
-### Coming Soon (Phase 2)
-- **🏅 Contest System** - Community meme contests
-- **🔐 Token-Gated Features** - Exclusive content for $BB holders
-- **📱 Mobile Apps** - Native iOS/Android applications
-- **💱 Token Swap** - Built-in DEX integration
+### 🏰 Empire Integration (Active)
+- **Leaderboard Rankings**: Real-time rank based on $BB holdings
+- **Tier System**:
+  - **Elite** (Top 10): All features, no watermark, custom uploads
+  - **Champion** (Top 50): Most features, no watermark, custom uploads  
+  - **Veteran** (Top 100): Premium collections, optional watermark
+  - **Member** (Top 500): Basic collections
+  - **Visitor**: Limited access
+- **Live Updates**: Tracks boosters and multipliers in real-time
+- **Upgrade Prompts**: Smart modals guide users to unlock features
 
-## 🛠️ Tech Stack
+### 💱 Token Swap (Implemented)
+- **Uniswap Integration**: Embedded interface via iframe
+- **Default Token**: $BB pre-selected as output
+- **Quick Actions**: Add token to wallet, bridge to Base
+- **Token Info**: Contract address, charts, and BaseScan links
+- **⚠️ Note**: Wallet connection is separate - users connect within Uniswap iframe
 
-- **Framework:** Next.js 14 with TypeScript
-- **Styling:** Tailwind CSS
-- **Canvas:** Fabric.js
-- **Database:** Supabase
-- **Analytics:** PostHog
-- **Hosting:** Vercel
+### 🎮 Games Hub (Active)
+- Links to all BizarreBeasts games
+- Telegram bot integration
+- World App games
+- Empire Builder rankings
+- Clicker game
 
-## 📋 Documentation
+### 🔗 Wallet Connection (Implemented)
+- **Reown AppKit**: WalletConnect integration
+- **Base Network**: Full support
+- **User Display**: Shows Empire rank, tier, balance
+- **Live Stats**: Multipliers and boosters
 
-- [Complete Development Gameplan](./GAMEPLAN.md)
+## 🛠️ Technical Stack
 
-## 🚦 Project Status
+- **Framework**: Next.js 14 with TypeScript
+- **Styling**: Tailwind CSS (gem-themed palette)
+- **Canvas**: Fabric.js v6
+- **State**: Zustand
+- **Wallet**: Reown AppKit + Ethers v6
+- **APIs**: Empire Builder API (proxied for CORS)
+- **Hosting**: Vercel-ready
 
-**Current Phase:** Pre-Development Planning  
-**Target Launch:** Q1 2025  
-**Repository:** Active Development
+## 📁 Project Structure
 
-## 📧 Contact
+```
+/app                    # Next.js app directory
+  /api                 # API routes
+    /empire           # Empire API proxy
+  /meme-generator     # Meme creation page
+  /swap               # Token swap (Uniswap iframe)
+  /games              # Games hub
+  /empire             # Rankings page
+  /blog               # Blog/resources
+  
+/components
+  /canvas             # Meme canvas components
+    MemeCanvas.tsx   # Main canvas with snap-to-grid
+    StickerGallery.tsx # Tier-gated stickers
+    BackgroundSelector.tsx
+  /wallet             # Wallet components
+  /navigation         # Nav components
+  UpgradePrompt.tsx  # Tier upgrade modal
+  
+/lib
+  empire.ts          # Empire API service
+  empire-gating.ts   # Feature access logic
+  web3.ts           # Wallet config
+  
+/hooks
+  useWallet.ts      # Wallet state hook
+  
+/public
+  /stickers         # Sticker assets (needs population)
+  /backgrounds      # Background images
+```
 
-- **Twitter/X:** [@bizarrebeasts](https://x.com/bizarrebeasts)
-- **Farcaster:** [@bizarrebeasts](https://warpcast.com/bizarrebeasts)
+## 🚀 Development
+
+```bash
+# Install dependencies
+npm install
+
+# Run development server
+npm run dev
+
+# Build for production
+npm run build
+
+# Start production server
+npm start
+```
+
+## 🔧 Environment Variables
+
+Create `.env.local`:
+
+```env
+# Required
+NEXT_PUBLIC_REOWN_PROJECT_ID=569afd0d3f8efc1ba7a63a57045ee717
+
+# Optional (for future features)
+NEXT_PUBLIC_TELEGRAM_BOT_URL=your_bot_url
+NEXT_PUBLIC_WORLD_APP_ID=your_world_app_id
+```
+
+## 📍 Key Addresses & Links
+
+- **$BB Token**: `0x0520bf1d3cEE163407aDA79109333aB1599b4004` (Base)
+- **Empire Builder**: https://www.empirebuilder.world/empire/0x0520bf1d3cEE163407aDA79109333aB1599b4004
+- **Uniswap Swap**: https://app.uniswap.org/swap?outputCurrency=0x0520bf1d3cEE163407aDA79109333aB1599b4004&chain=base
+
+## 🏗️ Implementation Notes
+
+### Swap Page Architecture Decision
+The token swap uses an embedded Uniswap iframe instead of the widget due to dependency conflicts:
+- **Issue**: App uses ethers v6 for wallet, Uniswap widget requires v5
+- **Solution**: Iframe avoids version conflicts entirely
+- **Trade-off**: Users connect wallet twice (app + iframe)
+- **Future**: Consider Uniswap SDK v3 for native integration
+
+### Empire API Proxy
+All Empire Builder API calls route through `/api/empire/leaderboard` to handle CORS.
+
+### Feature Gating Philosophy
+Premium features check Empire tier (rank-based) rather than token balance directly, creating a competitive dynamic.
+
+## 📋 Current Status
+
+### ✅ Completed
+- Full meme generator with all controls
+- Empire integration with live data
+- Wallet connection (Reown AppKit)
+- Token swap page (iframe solution)
+- Farcaster sharing
+- Tier-based gating system
+- Upgrade prompts for all locked content
+- Snap-to-grid alignment
+- Custom background uploads (Elite/Champion)
+
+### 🔄 In Progress
+- Adding actual sticker assets
+- Contest voting system design
+
+### 📝 TODO
+- [ ] Populate `/public/stickers` with assets
+- [ ] Configure CDN for Farcaster image sharing
+- [ ] Implement Uniswap SDK for native swap (v2)
+- [ ] Add more sticker collections
+- [ ] Contest voting backend
+- [ ] Check-in/rewards system
+- [ ] Analytics integration
+
+## ⚠️ Known Issues
+
+1. **Dual Wallet Connection**: Swap page requires separate connection in iframe
+2. **Pino Warning**: Dev-only warning about pino-pretty (non-critical)
+3. **Farcaster Images**: Need proper hosting for share previews
+4. **Sticker Assets**: Currently using placeholder SVGs
+
+## 🔐 Security Notes
+
+- Empire API proxied to prevent CORS exposure
+- No private keys or sensitive data in frontend
+- Wallet connections handled by established libraries
+- Token addresses hardcoded to prevent scams
+
+## 📈 Performance
+
+- Canvas operations optimized with Fabric.js
+- Empire data cached for 5 minutes
+- Lazy loading for sticker collections
+- Responsive design for all screen sizes
+
+## 🤝 Contributing
+
+Private repository for BizarreBeasts team members.
+
+## 📄 License
+
+Proprietary - BizarreBeasts
 
 ---
 
+**Current Version**: 1.0.0-beta  
+**Last Updated**: December 2024  
 Built with ❤️ for the BizarreBeasts community

@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Palette, Gamepad2, Trophy, TrendingUp, Users, Sparkles } from 'lucide-react';
+import { Palette, Gamepad2, Trophy, TrendingUp, Users, Sparkles, ArrowDownUp } from 'lucide-react';
 
 export default function Home() {
   return (
@@ -95,16 +95,18 @@ export default function Home() {
               </div>
             </Link>
 
-            {/* Token Info */}
-            <div className="bg-dark-card border border-gem-purple/20 rounded-lg p-6 hover:border-gem-purple/40 transition-all duration-300">
-              <div className="w-12 h-12 bg-gem-purple/20 rounded-lg flex items-center justify-center mb-4">
-                <TrendingUp className="w-6 h-6 text-gem-purple" />
+            {/* Token Swap */}
+            <Link href="/swap" className="group">
+              <div className="bg-dark-card border border-gem-purple/20 rounded-lg p-6 hover:border-gem-purple/40 transition-all duration-300 cursor-pointer">
+                <div className="w-12 h-12 bg-gem-purple/20 rounded-lg flex items-center justify-center mb-4">
+                  <ArrowDownUp className="w-6 h-6 text-gem-purple" />
+                </div>
+                <h3 className="text-xl font-semibold mb-2">Token Swap</h3>
+                <p className="text-gray-400">
+                  Swap $BB and other tokens directly in the app
+                </p>
               </div>
-              <h3 className="text-xl font-semibold mb-2">$BB Token</h3>
-              <p className="text-gray-400">
-                Track price, volume, and holder stats in real-time
-              </p>
-            </div>
+            </Link>
 
             {/* Community */}
             <div className="bg-dark-card border border-gem-pink/20 rounded-lg p-6 hover:border-gem-pink/40 transition-all duration-300">
