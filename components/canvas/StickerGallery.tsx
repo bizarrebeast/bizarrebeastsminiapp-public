@@ -2,8 +2,11 @@
 
 import React, { useState } from 'react';
 import { StickerCollection, Sticker } from '@/types';
-import { Search, Lock, ChevronDown, ChevronUp, Sparkles } from 'lucide-react';
+import { Search, Lock, ChevronDown, ChevronUp, Sparkles, Crown, Star } from 'lucide-react';
 import BackgroundSelector from './BackgroundSelector';
+import { useWallet } from '@/hooks/useWallet';
+import { AccessTier } from '@/lib/empire';
+import { canAccessSticker } from '@/lib/empire-gating';
 
 interface StickerGalleryProps {
   collections: StickerCollection[];
@@ -11,6 +14,39 @@ interface StickerGalleryProps {
   onSelectCollection: (collectionId: string) => void;
   onSelectSticker: (sticker: Sticker) => void;
   onSelectBackground?: (type: 'color' | 'image' | 'transparent', value?: string) => void;
+}
+
+// Helper function to get tier badge info
+function getTierBadge(tier?: string) {
+  switch(tier) {
+    case 'all':
+      return { 
+        icon: <Crown className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-gem-gold" />, 
+        label: 'Elite',
+        color: 'text-gem-gold'
+      };
+    case 'premium':
+      return { 
+        icon: <Star className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-gem-purple" />, 
+        label: 'Champion',
+        color: 'text-gem-purple'
+      };
+    case 'rare':
+      return { 
+        icon: <Star className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-gem-blue" />, 
+        label: 'Veteran',
+        color: 'text-gem-blue'
+      };
+    case 'common':
+      return { 
+        icon: <Lock className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-gem-crystal" />, 
+        label: 'Member',
+        color: 'text-gem-crystal'
+      };
+    case 'basic':
+    default:
+      return null; // Basic tier - no badge needed
+  }
 }
 
 export default function StickerGallery({
@@ -25,7 +61,10 @@ export default function StickerGallery({
   
   const currentCollection = collections.find(c => c.id === selectedCollection);
   
-  // Sample stickers with actual SVGs
+  const { empireTier } = useWallet();
+  const userTier = empireTier || AccessTier.VISITOR;
+  
+  // Sample stickers with actual SVGs and tier requirements
   const mockStickers: Sticker[] = [
     {
       id: '1',
@@ -35,6 +74,7 @@ export default function StickerGallery({
       tags: ['happy', 'emotion', 'joy'],
       category: 'emotions',
       collection: selectedCollection,
+      tier: 'basic', // Available to all
     },
     {
       id: '2',
@@ -44,6 +84,7 @@ export default function StickerGallery({
       tags: ['sad', 'emotion', 'cry'],
       category: 'emotions',
       collection: selectedCollection,
+      tier: 'common', // Member and above
     },
     {
       id: '3',
@@ -53,6 +94,27 @@ export default function StickerGallery({
       tags: ['angry', 'emotion', 'mad'],
       category: 'emotions',
       collection: selectedCollection,
+      tier: 'rare', // Veteran and above
+    },
+    {
+      id: '4',
+      src: '/stickers/excited-beast.svg',
+      thumbnail: '/stickers/excited-beast.svg',
+      name: 'Excited Beast',
+      tags: ['excited', 'emotion', 'happy'],
+      category: 'emotions',
+      collection: selectedCollection,
+      tier: 'premium', // Champion and above
+    },
+    {
+      id: '5',
+      src: '/stickers/legendary-beast.svg',
+      thumbnail: '/stickers/legendary-beast.svg',
+      name: 'Legendary Beast',
+      tags: ['legendary', 'special', 'rare'],
+      category: 'special',
+      collection: selectedCollection,
+      tier: 'all', // Elite only
     },
   ];
 
@@ -94,8 +156,8 @@ export default function StickerGallery({
         </select>
       </div>
 
-      {/* Background Selector */}
-      {currentCollection && onSelectBackground && (
+      {/* Background Selector - Only show for collections with image backgrounds */}
+      {currentCollection && onSelectBackground && currentCollection.backgroundType === 'image' && (
         <BackgroundSelector 
           collection={currentCollection}
           onSelectBackground={onSelectBackground}
@@ -128,27 +190,52 @@ export default function StickerGallery({
       <div className="flex-1 overflow-y-auto">
         <div className="grid grid-cols-3 gap-1 sm:gap-2">
         {filteredStickers.length > 0 ? (
-          filteredStickers.map(sticker => (
-            <button
-              key={sticker.id}
-              onClick={() => onSelectSticker(sticker)}
-              className="group relative bg-gray-700 rounded p-1 sm:p-2 hover:bg-gray-600 transition-colors aspect-square"
-            >
-              {/* Sticker image */}
-              <img 
-                src={sticker.thumbnail} 
-                alt={sticker.name}
-                className="w-full h-full object-contain"
-              />
-              
-              {/* Hover overlay with name - Desktop only */}
-              <div className="hidden sm:flex absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity rounded items-end">
-                <span className="text-white text-xs p-1 w-full truncate">
-                  {sticker.name}
-                </span>
-              </div>
-            </button>
-          ))
+          filteredStickers.map(sticker => {
+            const hasAccess = !sticker.tier || canAccessSticker(userTier, sticker.tier);
+            const tierBadge = getTierBadge(sticker.tier);
+            
+            return (
+              <button
+                key={sticker.id}
+                onClick={() => {
+                  if (hasAccess) {
+                    onSelectSticker(sticker);
+                  }
+                }}
+                className={`group relative bg-gray-700 rounded p-1 sm:p-2 transition-colors aspect-square ${
+                  hasAccess ? 'hover:bg-gray-600 cursor-pointer' : 'opacity-50 cursor-not-allowed'
+                }`}
+                disabled={!hasAccess}
+              >
+                {/* Sticker image */}
+                <img 
+                  src={sticker.thumbnail} 
+                  alt={sticker.name}
+                  className={`w-full h-full object-contain ${!hasAccess ? 'grayscale' : ''}`}
+                />
+                
+                {/* Tier Badge */}
+                {!hasAccess && tierBadge && (
+                  <div className="absolute bottom-1 right-1 bg-black/80 rounded px-1 py-0.5 flex items-center gap-0.5">
+                    {tierBadge.icon}
+                    <span className="text-[8px] sm:text-[10px] font-semibold">
+                      {tierBadge.label}
+                    </span>
+                  </div>
+                )}
+                
+                {/* Hover overlay with name - Desktop only */}
+                <div className={`hidden sm:flex absolute inset-0 bg-black/70 opacity-0 ${
+                  hasAccess ? 'group-hover:opacity-100' : ''
+                } transition-opacity rounded items-end`}>
+                  <span className="text-white text-xs p-1 w-full truncate">
+                    {sticker.name}
+                    {!hasAccess && ' (Locked)'}
+                  </span>
+                </div>
+              </button>
+            );
+          })
         ) : (
           <div className="col-span-3 text-center text-gray-500 py-4 sm:py-8 text-sm">
             No stickers found

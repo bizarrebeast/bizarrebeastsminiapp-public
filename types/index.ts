@@ -78,6 +78,7 @@ export interface Sticker {
   category: string;
   collection: string;
   size?: { width: number; height: number };
+  tier?: 'basic' | 'common' | 'rare' | 'premium' | 'all'; // Empire tier requirement for this sticker
 }
 
 // Text Overlay Types

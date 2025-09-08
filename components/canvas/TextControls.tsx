@@ -174,7 +174,8 @@ export default function TextControls({ onAddText, onUpdateText }: TextControlsPr
                   setTextOptions({ ...textOptions, color: newColor });
                   if (onUpdateText) onUpdateText({ color: newColor });
                 }}
-                className="w-10 h-8 rounded cursor-pointer"
+                className="h-8 rounded cursor-pointer border border-gray-600"
+                style={{ width: '3rem' }}
               />
               <input
                 type="text"
@@ -200,7 +201,8 @@ export default function TextControls({ onAddText, onUpdateText }: TextControlsPr
                   setTextOptions({ ...textOptions, stroke: newStroke });
                   if (onUpdateText) onUpdateText({ stroke: newStroke });
                 }}
-                className="w-10 h-8 rounded cursor-pointer"
+                className="h-8 rounded cursor-pointer border border-gray-600"
+                style={{ width: '3rem' }}
               />
               <input
                 type="number"
