@@ -13,7 +13,7 @@ const mockCollections: StickerCollection[] = [
   {
     id: 'bizarrebeasts',
     name: 'BizarreBeasts',
-    description: 'The original BizarreBeasts collection featuring all your favorite bizarre characters. Create hilarious memes with our signature beasts and share them with the community!',
+    description: 'The original hand-illustrated BizarreBeasts collection featuring all the notorious BizarreBeasts. Create BIZARRE and hilarious memes and artwork with BizarreBeasts stickers and share them with the community! Greyed out stickers require a higher leaderboard tier to unlock premium content.',
     icon: '🦾',
     stickers: [],
     backgrounds: [],
