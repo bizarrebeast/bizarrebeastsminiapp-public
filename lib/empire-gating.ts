@@ -121,11 +121,11 @@ export const TIER_FEATURES: Record<AccessTier, FeatureAccess> = {
     // Backgrounds
     uploadCustomBackground: false,  // No custom uploads
     
-    // Collections - most unlocked
+    // Collections - all unlocked
     collections: {
       bizarrebeasts: true,
       'treasure-quest': true,
-      vibecards: false,  // Locked
+      vibecards: true,  // Unlocked - individual stickers are tier-gated
     },
     
     // Stickers - rare and below
@@ -156,11 +156,11 @@ export const TIER_FEATURES: Record<AccessTier, FeatureAccess> = {
     // Backgrounds
     uploadCustomBackground: false,  // No custom uploads
     
-    // Collections - basic unlocked
+    // Collections - all unlocked
     collections: {
       bizarrebeasts: true,
-      'treasure-quest': false,  // Locked
-      vibecards: false,  // Locked
+      'treasure-quest': true,  // Unlocked - individual stickers are tier-gated
+      vibecards: true,  // Unlocked - individual stickers are tier-gated
     },
     
     // Stickers - common and below
@@ -191,11 +191,11 @@ export const TIER_FEATURES: Record<AccessTier, FeatureAccess> = {
     // Backgrounds
     uploadCustomBackground: false,  // No custom uploads
     
-    // Collections - very limited
+    // Collections - all unlocked
     collections: {
-      bizarrebeasts: true,  // Basic stickers only
-      'treasure-quest': false,  // Locked
-      vibecards: false,  // Locked
+      bizarrebeasts: true,  // All collections unlocked
+      'treasure-quest': true,  // Individual stickers are tier-gated
+      vibecards: true,  // Individual stickers are tier-gated
     },
     
     // Stickers - basic only

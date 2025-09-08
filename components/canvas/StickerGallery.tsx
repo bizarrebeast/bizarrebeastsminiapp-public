@@ -18,15 +18,8 @@ interface StickerGalleryProps {
 }
 
 // Helper function to get tier name for collection
-function getTierForCollection(collectionId: string): string {
-  switch(collectionId) {
-    case 'treasure-quest':
-    case 'vibecards':
-      return 'Veteran';
-    default:
-      return 'Visitor';
-  }
-}
+// No longer needed since collections are open to all
+// Individual stickers within collections have their own tier requirements
 
 // Helper function to get tier badge info
 function getTierBadge(tier?: string) {
@@ -163,37 +156,19 @@ export default function StickerGallery({
           value={selectedCollection}
           onChange={(e) => {
             const collectionId = e.target.value;
-            // Check if user has access to this collection
-            if (hasCollectionAccess(userTier, collectionId)) {
-              onSelectCollection(collectionId);
-            } else {
-              // Show upgrade prompt for locked collection
-              const collection = collections.find(c => c.id === collectionId);
-              if (collection) {
-                setUpgradeInfo({
-                  tier: collection.requiredTier || AccessTier.VETERAN,
-                  feature: `${collection.name} Collection`
-                });
-                setShowUpgradePrompt(true);
-              }
-            }
+            // All collections are accessible - no tier checking needed
+            onSelectCollection(collectionId);
           }}
           className="w-full bg-gray-700 text-white rounded px-2 sm:px-3 py-1.5 sm:py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
         >
-          {collections.map(collection => {
-            const hasAccess = hasCollectionAccess(userTier, collection.id);
-            const tierRequired = getTierForCollection(collection.id);
-            return (
-              <option 
-                key={collection.id} 
-                value={collection.id}
-                disabled={!hasAccess}
-              >
-                {collection.icon} {collection.name}
-                {!hasAccess && ` 🔒 (${tierRequired}+)`}
-              </option>
-            );
-          })}
+          {collections.map(collection => (
+            <option 
+              key={collection.id} 
+              value={collection.id}
+            >
+              {collection.icon} {collection.name}
+            </option>
+          ))}
         </select>
       </div>
 
