@@ -171,8 +171,8 @@ export enum AnalyticsEvent {
 
 // Export Options
 export interface ExportOptions {
-  format: 'png' | 'jpg';
-  quality: number; // 0-1
+  format: 'png'; // PNG only for crisp text
+  quality: number; // Not used for PNG, kept for compatibility
   watermark: {
     enabled: boolean;
     text?: string;

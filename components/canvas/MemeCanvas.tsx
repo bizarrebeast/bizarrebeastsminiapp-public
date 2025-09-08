@@ -138,11 +138,10 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
           canvas.renderAll();
         }
 
-        // Export canvas
+        // Export canvas as PNG
         const dataURL = canvas.toDataURL({
-          format: options.format,
-          quality: options.quality,
-          multiplier: 800 / canvas.width, // Scale to 800x800 for export
+          format: 'png', // Always use PNG for crisp text
+          multiplier: 800 / canvas.width!, // Scale to 800x800 for export
         });
 
         // Remove watermark after export

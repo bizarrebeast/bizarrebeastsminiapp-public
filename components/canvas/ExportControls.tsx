@@ -12,7 +12,7 @@ export default function ExportControls({ onExport }: ExportControlsProps) {
   const [isExpanded, setIsExpanded] = useState(true);
   const [exportOptions, setExportOptions] = useState<ExportOptions>({
     format: 'png',
-    quality: 0.92,
+    quality: 1.0, // PNG doesn't use quality, always lossless
     watermark: {
       enabled: true,
       text: 'BizarreBeasts.io',
@@ -85,38 +85,9 @@ export default function ExportControls({ onExport }: ExportControlsProps) {
       {/* Advanced Options */}
       {showAdvanced && (
         <div className="mt-4 space-y-3 pt-3 border-t border-gray-700">
-          {/* Format Selection */}
-          <div>
-            <label className="text-gray-400 text-sm block mb-1">Format</label>
-            <select
-              value={exportOptions.format}
-              onChange={(e) => setExportOptions({
-                ...exportOptions,
-                format: e.target.value as 'png' | 'jpg',
-              })}
-              className="w-full bg-gray-700 text-white rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
-            >
-              <option value="png">PNG (Transparent Support)</option>
-              <option value="jpg">JPG (Smaller File)</option>
-            </select>
-          </div>
-
-          {/* Quality Slider */}
-          <div>
-            <label className="text-gray-400 text-sm block mb-1">
-              Quality: {Math.round(exportOptions.quality * 100)}%
-            </label>
-            <input
-              type="range"
-              min="50"
-              max="100"
-              value={exportOptions.quality * 100}
-              onChange={(e) => setExportOptions({
-                ...exportOptions,
-                quality: Number(e.target.value) / 100,
-              })}
-              className="w-full"
-            />
+          {/* Format Info */}
+          <div className="text-gray-400 text-sm">
+            <span className="font-semibold">Format:</span> PNG (Lossless quality, supports transparency)
           </div>
 
           {/* Watermark Settings */}
