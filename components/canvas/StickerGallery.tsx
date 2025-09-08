@@ -6,7 +6,7 @@ import { Search, Lock, ChevronDown, ChevronUp, Sparkles, Crown, Star } from 'luc
 import BackgroundSelector from './BackgroundSelector';
 import { useWallet } from '@/hooks/useWallet';
 import { AccessTier } from '@/lib/empire';
-import { canAccessSticker } from '@/lib/empire-gating';
+import { canAccessSticker, hasCollectionAccess } from '@/lib/empire-gating';
 
 interface StickerGalleryProps {
   collections: StickerCollection[];
@@ -14,6 +14,17 @@ interface StickerGalleryProps {
   onSelectCollection: (collectionId: string) => void;
   onSelectSticker: (sticker: Sticker) => void;
   onSelectBackground?: (type: 'color' | 'image' | 'transparent', value?: string) => void;
+}
+
+// Helper function to get tier name for collection
+function getTierForCollection(collectionId: string): string {
+  switch(collectionId) {
+    case 'treasure-quest':
+    case 'vibecards':
+      return 'Veteran';
+    default:
+      return 'Visitor';
+  }
 }
 
 // Helper function to get tier badge info
@@ -144,15 +155,29 @@ export default function StickerGallery({
           <div className="mb-3">
         <select
           value={selectedCollection}
-          onChange={(e) => onSelectCollection(e.target.value)}
+          onChange={(e) => {
+            const collectionId = e.target.value;
+            // Check if user has access to this collection
+            if (hasCollectionAccess(userTier, collectionId)) {
+              onSelectCollection(collectionId);
+            }
+          }}
           className="w-full bg-gray-700 text-white rounded px-2 sm:px-3 py-1.5 sm:py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
         >
-          {collections.map(collection => (
-            <option key={collection.id} value={collection.id}>
-              {collection.icon} {collection.name}
-              {collection.isTokenGated && ' 🔒'}
-            </option>
-          ))}
+          {collections.map(collection => {
+            const hasAccess = hasCollectionAccess(userTier, collection.id);
+            const tierRequired = getTierForCollection(collection.id);
+            return (
+              <option 
+                key={collection.id} 
+                value={collection.id}
+                disabled={!hasAccess}
+              >
+                {collection.icon} {collection.name}
+                {!hasAccess && ` 🔒 (${tierRequired}+)`}
+              </option>
+            );
+          })}
         </select>
       </div>
 

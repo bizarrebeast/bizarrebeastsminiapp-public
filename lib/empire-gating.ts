@@ -16,8 +16,8 @@ export interface FeatureAccess {
   // Sticker Collections Access
   collections: {
     bizarrebeasts: boolean;
-    treasureQuest: boolean;
-    vibeCards: boolean;
+    'treasure-quest': boolean;
+    vibecards: boolean;
     [key: string]: boolean;  // Allow for future collections
   };
   
@@ -54,8 +54,8 @@ export const TIER_FEATURES: Record<AccessTier, FeatureAccess> = {
     // Collections - all unlocked
     collections: {
       bizarrebeasts: true,
-      treasureQuest: true,
-      vibeCards: true,
+      'treasure-quest': true,
+      vibecards: true,
     },
     
     // Stickers - access to all tiers
@@ -89,8 +89,8 @@ export const TIER_FEATURES: Record<AccessTier, FeatureAccess> = {
     // Collections - all unlocked
     collections: {
       bizarrebeasts: true,
-      treasureQuest: true,
-      vibeCards: true,
+      'treasure-quest': true,
+      vibecards: true,
     },
     
     // Stickers - premium and below
@@ -124,8 +124,8 @@ export const TIER_FEATURES: Record<AccessTier, FeatureAccess> = {
     // Collections - most unlocked
     collections: {
       bizarrebeasts: true,
-      treasureQuest: true,
-      vibeCards: false,  // Locked
+      'treasure-quest': true,
+      vibecards: false,  // Locked
     },
     
     // Stickers - rare and below
@@ -159,8 +159,8 @@ export const TIER_FEATURES: Record<AccessTier, FeatureAccess> = {
     // Collections - basic unlocked
     collections: {
       bizarrebeasts: true,
-      treasureQuest: false,  // Locked
-      vibeCards: false,  // Locked
+      'treasure-quest': false,  // Locked
+      vibecards: false,  // Locked
     },
     
     // Stickers - common and below
@@ -194,8 +194,8 @@ export const TIER_FEATURES: Record<AccessTier, FeatureAccess> = {
     // Collections - very limited
     collections: {
       bizarrebeasts: true,  // Basic stickers only
-      treasureQuest: false,  // Locked
-      vibeCards: false,  // Locked
+      'treasure-quest': false,  // Locked
+      vibecards: false,  // Locked
     },
     
     // Stickers - basic only
