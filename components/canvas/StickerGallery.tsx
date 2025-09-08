@@ -212,8 +212,8 @@ export default function StickerGallery({
         </div>
       )}
 
-      {/* Stickers Grid */}
-      <div className="flex-1 overflow-y-auto">
+      {/* Stickers Horizontal Scroll */}
+      <div className="relative">
         {isLoadingStickers ? (
           <div className="flex items-center justify-center py-8">
             <div className="text-gray-400">
@@ -221,74 +221,75 @@ export default function StickerGallery({
               <p className="text-sm">Loading stickers...</p>
             </div>
           </div>
-        ) : (
-        <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 gap-1">
-        {filteredStickers.length > 0 ? (
-          filteredStickers.map(sticker => {
-            const hasAccess = !sticker.tier || canAccessSticker(userTier, sticker.tier);
-            const tierBadge = getTierBadge(sticker.tier);
-            
-            return (
-              <button
-                key={sticker.id}
-                onClick={() => {
-                  if (hasAccess) {
-                    onSelectSticker(sticker);
-                  } else {
-                    // Show upgrade prompt for locked sticker
-                    const requiredTier = 
-                      sticker.tier === 'all' ? AccessTier.ELITE :
-                      sticker.tier === 'premium' ? AccessTier.CHAMPION :
-                      sticker.tier === 'rare' ? AccessTier.VETERAN :
-                      sticker.tier === 'common' ? AccessTier.MEMBER :
-                      AccessTier.VISITOR;
+        ) : filteredStickers.length > 0 ? (
+          <div className="overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800">
+            <div className="flex gap-2 min-w-min">
+              {filteredStickers.map(sticker => {
+                const hasAccess = !sticker.tier || canAccessSticker(userTier, sticker.tier);
+                const tierBadge = getTierBadge(sticker.tier);
+                
+                return (
+                  <button
+                    key={sticker.id}
+                    onClick={() => {
+                      if (hasAccess) {
+                        onSelectSticker(sticker);
+                      } else {
+                        // Show upgrade prompt for locked sticker
+                        const requiredTier = 
+                          sticker.tier === 'all' ? AccessTier.ELITE :
+                          sticker.tier === 'premium' ? AccessTier.CHAMPION :
+                          sticker.tier === 'rare' ? AccessTier.VETERAN :
+                          sticker.tier === 'common' ? AccessTier.MEMBER :
+                          AccessTier.VISITOR;
+                        
+                        setUpgradeInfo({
+                          tier: requiredTier,
+                          feature: `${sticker.name} Sticker`
+                        });
+                        setShowUpgradePrompt(true);
+                      }
+                    }}
+                    className={`group relative bg-gray-700 rounded p-1 transition-all flex-shrink-0 ${
+                      hasAccess ? 'hover:bg-gray-600 hover:scale-110 cursor-pointer' : 'hover:bg-gray-600/50 cursor-pointer'
+                    }`}
+                    style={{ width: '60px', height: '60px' }}
+                    title={sticker.name}
+                  >
+                    {/* Sticker image */}
+                    <img 
+                      src={sticker.thumbnail} 
+                      alt={sticker.name}
+                      className={`w-full h-full object-contain ${!hasAccess ? 'grayscale opacity-60' : ''}`}
+                      loading="lazy"
+                    />
                     
-                    setUpgradeInfo({
-                      tier: requiredTier,
-                      feature: `${sticker.name} Sticker`
-                    });
-                    setShowUpgradePrompt(true);
-                  }
-                }}
-                className={`group relative bg-gray-700 rounded p-1 transition-all aspect-square ${
-                  hasAccess ? 'hover:bg-gray-600 hover:scale-110 cursor-pointer' : 'hover:bg-gray-600/50 cursor-pointer'
-                }`}
-                title={sticker.name}
-              >
-                {/* Sticker image */}
-                <img 
-                  src={sticker.thumbnail} 
-                  alt={sticker.name}
-                  className={`w-full h-full object-contain ${!hasAccess ? 'grayscale opacity-60' : ''}`}
-                  loading="lazy"
-                />
-                
-                {/* Tier Badge - smaller and only icon on mobile */}
-                {!hasAccess && tierBadge && (
-                  <div className="absolute bottom-0.5 right-0.5 bg-black/70 rounded p-0.5">
-                    <div className="w-3 h-3 sm:w-4 sm:h-4">
-                      {tierBadge.icon}
+                    {/* Tier Badge - smaller and only icon on mobile */}
+                    {!hasAccess && tierBadge && (
+                      <div className="absolute bottom-0.5 right-0.5 bg-black/70 rounded p-0.5">
+                        <div className="w-3 h-3">
+                          {tierBadge.icon}
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Hover overlay with name - Desktop only */}
+                    <div className={`hidden md:flex absolute inset-0 bg-black/80 opacity-0 ${
+                      hasAccess ? 'group-hover:opacity-100' : ''
+                    } transition-opacity rounded items-center justify-center`}>
+                      <span className="text-white text-[9px] px-1 text-center">
+                        {sticker.name}
+                      </span>
                     </div>
-                  </div>
-                )}
-                
-                {/* Hover overlay with name - Desktop only */}
-                <div className={`hidden md:flex absolute inset-0 bg-black/80 opacity-0 ${
-                  hasAccess ? 'group-hover:opacity-100' : ''
-                } transition-opacity rounded items-end`}>
-                  <span className="text-white text-[10px] p-1 w-full truncate">
-                    {sticker.name}
-                  </span>
-                </div>
-              </button>
-            );
-          })
+                  </button>
+                );
+              })}
+            </div>
+          </div>
         ) : (
-          <div className="col-span-full text-center text-gray-500 py-4 text-sm">
+          <div className="text-center text-gray-500 py-4 text-sm">
             No stickers found
           </div>
-        )}
-        </div>
         )}
       </div>
 

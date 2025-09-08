@@ -173,43 +173,48 @@ export default function BackgroundSelector({
         </h4>
       </div>
 
-      {/* Background Images Grid */}
+      {/* Background Images Horizontal Scroll */}
       {showBackgrounds && (
-        <div className="grid grid-cols-3 sm:grid-cols-4 gap-1 mb-3">
+        <div className="mb-3">
           {isLoadingBackgrounds ? (
-            <div className="col-span-full text-center py-4">
+            <div className="text-center py-4">
               <span className="text-gray-400 text-sm">Loading backgrounds...</span>
             </div>
           ) : backgrounds.length > 0 ? (
-            backgrounds.map(bg => (
-              <button
-                key={bg.id}
-                onClick={() => onSelectBackground('image', bg.src)}
-                className="group relative bg-gray-700 rounded p-0.5 hover:bg-gray-600 transition-all hover:scale-105 aspect-square"
-                title={bg.name}
-              >
-                <img
-                  src={bg.thumbnail}
-                  alt={bg.name}
-                  className="w-full h-full object-cover rounded"
-                  loading="lazy"
-                />
-                
-                {/* Selected indicator */}
-                {currentBackground === bg.src && (
-                  <div className="absolute inset-0 border-2 border-gem-gold rounded pointer-events-none" />
-                )}
-                
-                {/* Hover overlay with name - Desktop only */}
-                <div className="hidden sm:flex absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity rounded items-end">
-                  <span className="text-white text-[10px] p-1 w-full truncate">
-                    {bg.name}
-                  </span>
-                </div>
-              </button>
-            ))
+            <div className="overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800">
+              <div className="flex gap-2 min-w-min">
+                {backgrounds.map(bg => (
+                  <button
+                    key={bg.id}
+                    onClick={() => onSelectBackground('image', bg.src)}
+                    className="group relative bg-gray-700 rounded p-0.5 hover:bg-gray-600 transition-all hover:scale-105 flex-shrink-0"
+                    style={{ width: '80px', height: '80px' }}
+                    title={bg.name}
+                  >
+                    <img
+                      src={bg.thumbnail}
+                      alt={bg.name}
+                      className="w-full h-full object-cover rounded"
+                      loading="lazy"
+                    />
+                    
+                    {/* Selected indicator */}
+                    {currentBackground === bg.src && (
+                      <div className="absolute inset-0 border-2 border-gem-gold rounded pointer-events-none" />
+                    )}
+                    
+                    {/* Hover overlay with name - Desktop only */}
+                    <div className="hidden sm:flex absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity rounded items-center justify-center">
+                      <span className="text-white text-[9px] px-1 text-center">
+                        {bg.name}
+                      </span>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
           ) : (
-            <div className="col-span-full text-center py-4">
+            <div className="text-center py-4">
               <span className="text-gray-500 text-sm">No backgrounds available</span>
             </div>
           )}
