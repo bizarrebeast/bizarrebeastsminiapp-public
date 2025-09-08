@@ -99,10 +99,10 @@ export function WalletButton() {
       </button>
 
       {/* Dropdown Menu */}
-      <div className="absolute right-0 mt-2 w-64 bg-dark-card border border-gem-crystal/20 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
+      <div className="absolute right-0 mt-2 w-80 bg-dark-card border border-gem-crystal/20 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
         <div className="p-4 border-b border-gray-700">
           <p className="text-xs text-gray-400 mb-1">Connected Wallet</p>
-          <p className="text-white font-mono text-xs">{address}</p>
+          <p className="text-white font-mono text-xs break-all">{address}</p>
           
           {empireRank && (
             <>
