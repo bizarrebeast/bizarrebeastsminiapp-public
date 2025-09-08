@@ -2,11 +2,16 @@
 
 import React, { useState, useEffect } from 'react';
 import { BackgroundImage, StickerCollection } from '@/types';
-import { Image as ImageIcon, Palette, Upload, Lock } from 'lucide-react';
+import { Image as ImageIcon, Palette, Upload, Lock, RefreshCw, Crown, Star } from 'lucide-react';
 import { useWallet } from '@/hooks/useWallet';
 import { AccessTier } from '@/lib/empire';
-import { canUploadBackground } from '@/lib/empire-gating';
+import { canUploadBackground, canAccessSticker } from '@/lib/empire-gating';
 import UpgradePrompt from '@/components/UpgradePrompt';
+
+// Extended background type with tier
+interface TieredBackground extends BackgroundImage {
+  tier?: 'basic' | 'common' | 'rare' | 'premium' | 'all';
+}
 
 interface BackgroundSelectorProps {
   collection: StickerCollection;
@@ -20,58 +25,130 @@ export default function BackgroundSelector({
   currentBackground 
 }: BackgroundSelectorProps) {
   const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);
-  const [backgrounds, setBackgrounds] = useState<BackgroundImage[]>([]);
+  const [upgradeInfo, setUpgradeInfo] = useState<{ tier: AccessTier, feature: string }>({
+    tier: AccessTier.VETERAN,
+    feature: 'Premium Background'
+  });
+  const [backgrounds, setBackgrounds] = useState<TieredBackground[]>([]);
+  const [allBackgrounds, setAllBackgrounds] = useState<TieredBackground[]>([]);
   const [isLoadingBackgrounds, setIsLoadingBackgrounds] = useState(false);
+  const [usedIndices, setUsedIndices] = useState<Set<number>>(new Set());
+  
   const { empireTier } = useWallet();
   const userTier = empireTier || AccessTier.VISITOR;
   
   // Check if user can upload backgrounds (Elite/Champion on BizarreBeasts collection only)
   const canUpload = canUploadBackground(userTier, collection.id);
   
-  // Load backgrounds for the collection
+  // Load all backgrounds metadata once
   useEffect(() => {
-    const loadBackgrounds = async () => {
+    const loadBackgroundsMetadata = async () => {
       if (collection.id === 'bizarrebeasts') {
         // BizarreBeasts doesn't have preset backgrounds, just upload
-        setBackgrounds([]);
+        setAllBackgrounds([]);
         return;
       }
       
-      setIsLoadingBackgrounds(true);
-      
-      // For treasure-quest, we have actual backgrounds in the folder
       if (collection.id === 'treasure-quest') {
-        // Sample of available backgrounds - you can expand this list
-        const bgList = [
-          { id: 'bg-1', name: 'Crystal Cavern', file: 'treasure-quest-1.svg' },
-          { id: 'bg-2', name: 'Underground Path', file: 'treasure-quest-2.svg' },
-          { id: 'bg-3', name: 'Treasure Room', file: 'treasure-quest-3.svg' },
-          { id: 'bg-4', name: 'Dark Dungeon', file: 'treasure-quest-4.svg' },
-          { id: 'bg-5', name: 'Mystic Portal', file: 'treasure-quest-5.svg' },
-          { id: 'bg-6', name: 'Ancient Temple', file: 'treasure-quest-6.svg' },
-          { id: 'bg-7', name: 'Lava Cavern', file: 'treasure-quest-7.svg' },
-          { id: 'bg-8', name: 'Ice Palace', file: 'treasure-quest-8.svg' },
-        ];
-        
-        const loadedBackgrounds: BackgroundImage[] = bgList.map(bg => ({
-          id: bg.id,
-          src: `/assets/stickers/treasure-quest/backgrounds/${bg.file}`,
-          thumbnail: `/assets/stickers/treasure-quest/backgrounds/${bg.file}`,
-          name: bg.name,
-          collection: 'treasure-quest',
-        }));
-        
-        setBackgrounds(loadedBackgrounds);
+        try {
+          const response = await fetch('/assets/stickers/treasure-quest/backgrounds-metadata.json');
+          if (response.ok) {
+            const data = await response.json();
+            const loadedBackgrounds: TieredBackground[] = data.backgrounds.map((bg: any) => ({
+              id: bg.id,
+              src: `/assets/stickers/treasure-quest/backgrounds/${bg.file}`,
+              thumbnail: `/assets/stickers/treasure-quest/backgrounds/${bg.file}`,
+              name: bg.name,
+              collection: 'treasure-quest',
+              tier: bg.tier
+            }));
+            setAllBackgrounds(loadedBackgrounds);
+            // Load initial set
+            loadRandomBackgrounds(loadedBackgrounds, new Set());
+          }
+        } catch (error) {
+          console.error('Failed to load backgrounds metadata:', error);
+          setAllBackgrounds([]);
+        }
       } else {
-        // Mock backgrounds for other collections
-        setBackgrounds([]);
+        setAllBackgrounds([]);
       }
-      
-      setIsLoadingBackgrounds(false);
     };
     
-    loadBackgrounds();
+    loadBackgroundsMetadata();
   }, [collection.id]);
+  
+  // Function to load 5 random backgrounds
+  const loadRandomBackgrounds = (bgPool: TieredBackground[], currentUsed: Set<number>) => {
+    if (bgPool.length === 0) return;
+    
+    setIsLoadingBackgrounds(true);
+    
+    // Get available indices (not yet used)
+    const availableIndices = bgPool
+      .map((_, index) => index)
+      .filter(index => !currentUsed.has(index));
+    
+    // If we've used all backgrounds, reset
+    if (availableIndices.length < 5) {
+      currentUsed.clear();
+      availableIndices.push(...bgPool.map((_, index) => index));
+    }
+    
+    // Randomly select 5 backgrounds
+    const selected: TieredBackground[] = [];
+    const newUsed = new Set(currentUsed);
+    
+    for (let i = 0; i < Math.min(5, availableIndices.length); i++) {
+      const randomIndex = Math.floor(Math.random() * availableIndices.length);
+      const bgIndex = availableIndices[randomIndex];
+      selected.push(bgPool[bgIndex]);
+      newUsed.add(bgIndex);
+      availableIndices.splice(randomIndex, 1);
+    }
+    
+    setBackgrounds(selected);
+    setUsedIndices(newUsed);
+    setIsLoadingBackgrounds(false);
+  };
+  
+  // Load new backgrounds function
+  const loadNewBackgrounds = () => {
+    loadRandomBackgrounds(allBackgrounds, usedIndices);
+  };
+
+  // Helper function to get tier badge
+  const getTierBadge = (tier?: string) => {
+    switch(tier) {
+      case 'all':
+        return { 
+          icon: <Crown className="w-3 h-3 text-gem-gold" />, 
+          label: 'Elite',
+          color: 'text-gem-gold'
+        };
+      case 'premium':
+        return { 
+          icon: <Star className="w-3 h-3 text-gem-purple" />, 
+          label: 'Champion',
+          color: 'text-gem-purple'
+        };
+      case 'rare':
+        return { 
+          icon: <Star className="w-3 h-3 text-gem-blue" />, 
+          label: 'Veteran',
+          color: 'text-gem-blue'
+        };
+      case 'common':
+        return { 
+          icon: <Lock className="w-3 h-3 text-gem-crystal" />, 
+          label: 'Member',
+          color: 'text-gem-crystal'
+        };
+      case 'basic':
+      default:
+        return null;
+    }
+  };
 
   // BizarreBeasts doesn't show color picker here (it's in the canvas area)
   const showColorPicker = collection.id !== 'bizarrebeasts' && 
@@ -181,38 +258,93 @@ export default function BackgroundSelector({
               <span className="text-gray-400 text-sm">Loading backgrounds...</span>
             </div>
           ) : backgrounds.length > 0 ? (
-            <div className="overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800">
-              <div className="flex gap-2 min-w-min">
-                {backgrounds.map(bg => (
-                  <button
-                    key={bg.id}
-                    onClick={() => onSelectBackground('image', bg.src)}
-                    className="group relative bg-gray-700 rounded p-0.5 hover:bg-gray-600 transition-all hover:scale-105 flex-shrink-0"
-                    style={{ width: '80px', height: '80px' }}
-                    title={bg.name}
-                  >
-                    <img
-                      src={bg.thumbnail}
-                      alt={bg.name}
-                      className="w-full h-full object-cover rounded"
-                      loading="lazy"
-                    />
+            <>
+              <div className="overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800">
+                <div className="flex gap-2 min-w-min">
+                  {backgrounds.map(bg => {
+                    const hasAccess = !bg.tier || canAccessSticker(userTier, bg.tier);
+                    const tierBadge = getTierBadge(bg.tier);
                     
-                    {/* Selected indicator */}
-                    {currentBackground === bg.src && (
-                      <div className="absolute inset-0 border-2 border-gem-gold rounded pointer-events-none" />
-                    )}
+                    return (
+                      <button
+                        key={bg.id}
+                        onClick={() => {
+                          if (hasAccess) {
+                            onSelectBackground('image', bg.src);
+                          } else {
+                            // Show upgrade prompt for locked background
+                            const requiredTier = 
+                              bg.tier === 'all' ? AccessTier.ELITE :
+                              bg.tier === 'premium' ? AccessTier.CHAMPION :
+                              bg.tier === 'rare' ? AccessTier.VETERAN :
+                              bg.tier === 'common' ? AccessTier.MEMBER :
+                              AccessTier.VISITOR;
+                            
+                            setUpgradeInfo({
+                              tier: requiredTier,
+                              feature: `${bg.name} Background`
+                            });
+                            setShowUpgradePrompt(true);
+                          }
+                        }}
+                        className={`group relative bg-gradient-to-br from-gray-700 to-gray-800 rounded p-0.5 transition-all flex-shrink-0 overflow-hidden ${
+                          hasAccess ? 'hover:bg-gray-600 hover:scale-105 cursor-pointer' : 'hover:bg-gray-600/50 cursor-pointer'
+                        }`}
+                        style={{ width: '80px', height: '80px' }}
+                        title={bg.name}
+                      >
+                        {/* Placeholder text while loading */}
+                        <div className="absolute inset-0 flex items-center justify-center text-gray-500 text-[10px] font-mono">
+                          BG{bg.id.replace('bg-', '')}
+                        </div>
+                        
+                        <img
+                          src={bg.thumbnail}
+                          alt={bg.name}
+                          className={`relative w-full h-full object-cover rounded z-10 ${!hasAccess ? 'grayscale opacity-60' : ''}`}
+                          loading="lazy"
+                          onError={(e) => {
+                            console.error('Failed to load background:', bg.thumbnail);
+                            // Hide the broken image
+                            (e.target as HTMLImageElement).style.opacity = '0';
+                          }}
+                        />
+                        
+                        {/* Tier Badge */}
+                        {!hasAccess && tierBadge && (
+                          <div className="absolute bottom-0.5 right-0.5 bg-black/70 rounded p-0.5 z-20">
+                            {tierBadge.icon}
+                          </div>
+                        )}
                     
-                    {/* Hover overlay with name - Desktop only */}
-                    <div className="hidden sm:flex absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity rounded items-center justify-center">
-                      <span className="text-white text-[9px] px-1 text-center">
-                        {bg.name}
-                      </span>
-                    </div>
-                  </button>
-                ))}
+                        {/* Selected indicator */}
+                        {currentBackground === bg.src && (
+                          <div className="absolute inset-0 border-2 border-gem-gold rounded pointer-events-none z-30" />
+                        )}
+                        
+                        {/* Hover overlay with name - Desktop only */}
+                        <div className={`hidden sm:flex absolute inset-0 bg-black/70 opacity-0 ${
+                          hasAccess ? 'group-hover:opacity-100' : ''
+                        } transition-opacity rounded items-center justify-center z-20`}>
+                          <span className="text-white text-[9px] px-1 text-center">
+                            {bg.name}
+                          </span>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
+              
+              {/* Load New Backgrounds Button */}
+              <button
+                onClick={loadNewBackgrounds}
+                className="mt-2 w-full bg-gray-700 hover:bg-gray-600 text-white rounded px-3 py-1.5 text-sm flex items-center justify-center gap-2 transition-colors"
+              >
+                <RefreshCw className="w-4 h-4" />
+                Load New Backgrounds
+              </button>
+            </>
           ) : (
             <div className="text-center py-4">
               <span className="text-gray-500 text-sm">No backgrounds available</span>
@@ -246,6 +378,15 @@ export default function BackgroundSelector({
           </button>
         </div>
       )}
+      
+      {/* Upgrade Prompt Modal */}
+      <UpgradePrompt
+        isOpen={showUpgradePrompt}
+        onClose={() => setShowUpgradePrompt(false)}
+        requiredTier={upgradeInfo.tier}
+        featureName={upgradeInfo.feature}
+        currentTier={userTier}
+      />
     </div>
   );
 }
