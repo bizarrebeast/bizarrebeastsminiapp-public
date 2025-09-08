@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { StickerCollection, Sticker } from '@/types';
-import { Search, Lock, ChevronDown, ChevronUp, Sparkles, Crown, Star } from 'lucide-react';
+import { Search, ChevronDown, ChevronUp, Sparkles, Crown, Star } from 'lucide-react';
 import BackgroundSelector from './BackgroundSelector';
 import { useWallet } from '@/hooks/useWallet';
 import { AccessTier } from '@/lib/empire';
@@ -206,7 +206,7 @@ export default function StickerGallery({
       {currentCollection?.isTokenGated && (
         <div className="mb-3 p-2 sm:p-3 bg-yellow-900/30 border border-yellow-600/50 rounded">
           <div className="flex items-center gap-1 sm:gap-2 text-yellow-400 text-xs sm:text-sm">
-            <Lock className="w-3 h-3 sm:w-4 sm:h-4" />
+            <Sparkles className="w-3 h-3 sm:w-4 sm:h-4" />
             <span>Requires {currentCollection.requiredTokenAmount} $BB tokens</span>
           </div>
         </div>
