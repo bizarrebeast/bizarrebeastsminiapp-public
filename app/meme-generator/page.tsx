@@ -38,8 +38,8 @@ const mockCollections: StickerCollection[] = [
   },
   {
     id: 'vibecards',
-    name: 'Vibecards',
-    description: 'Special vibe check characters and mood expressions. Perfect for creating reaction memes! Individual cards have tier requirements.',
+    name: 'Vibecards (Coming Soon)',
+    description: 'Special vibe check characters and mood expressions. Perfect for creating reaction memes! This collection is coming soon.',
     icon: '✨',
     stickers: [],
     backgrounds: [], // Will add background images
@@ -48,6 +48,7 @@ const mockCollections: StickerCollection[] = [
     requiredTier: AccessTier.VISITOR, // Open to all
     sortOrder: 3,
     tags: ['characters', 'vibes'],
+    disabled: true, // Mark as disabled
   },
   {
     id: 'ugc-memes',

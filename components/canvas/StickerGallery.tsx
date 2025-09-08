@@ -156,7 +156,12 @@ export default function StickerGallery({
           value={selectedCollection}
           onChange={(e) => {
             const collectionId = e.target.value;
-            // All collections are accessible - no tier checking needed
+            const collection = collections.find(c => c.id === collectionId);
+            // Check if collection is disabled
+            if (collection && (collection as any).disabled) {
+              // Don't change selection if disabled
+              return;
+            }
             onSelectCollection(collectionId);
           }}
           className="w-full bg-gray-700 text-white rounded px-2 sm:px-3 py-1.5 sm:py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
@@ -165,6 +170,8 @@ export default function StickerGallery({
             <option 
               key={collection.id} 
               value={collection.id}
+              disabled={(collection as any).disabled}
+              className={(collection as any).disabled ? 'text-gray-500' : ''}
             >
               {collection.icon} {collection.name}
             </option>
@@ -178,6 +185,16 @@ export default function StickerGallery({
           <p className="text-xs text-gray-400">
             {currentCollection.description}
           </p>
+        </div>
+      )}
+      
+      {/* Coming Soon Message for Disabled Collections */}
+      {currentCollection && (currentCollection as any).disabled && (
+        <div className="mb-3 p-3 bg-yellow-900/30 border border-yellow-600/50 rounded">
+          <div className="flex items-center gap-2 text-yellow-400 text-sm">
+            <Sparkles className="w-4 h-4" />
+            <span>This collection is coming soon!</span>
+          </div>
         </div>
       )}
 
