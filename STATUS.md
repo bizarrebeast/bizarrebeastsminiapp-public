@@ -1,8 +1,8 @@
 # BizarreBeasts Miniapp - Development Status
 
-## 📅 Last Updated: January 9, 2025
+## 📅 Last Updated: September 9, 2025
 
-## 🚀 Current Status: Beta - Ready for Content & Links
+## 🚀 Current Status: Beta - Ready for Production Deployment
 
 ### ✅ Completed Features
 
@@ -26,10 +26,12 @@
 - ✅ Removed glowing/shadow effects for cleaner look
 - ✅ Button gradients matching title (gold → crystal → blue)
 - ✅ Renamed to "Stickers & Meme Creator" throughout
+- ✅ Pink hamburger menu icon
+- ✅ Dark wallet button with gradient border when connected
 
 #### **Pages Implemented**
 1. **Homepage** (`/`)
-   - Welcome message with "BIZARRE" emphasis
+   - Title: "BizarreBeasts ($BB) Miniapp"
    - BizarreBeasts banner image with rounded corners
    - Quick stats cards ($BB Token clickable to /swap, Dynamic Market Cap, 4400+ Holders, 8 Games)
    - Feature grid with links to all sections
@@ -47,7 +49,13 @@
      - Vibecards: Image backgrounds only
    - Dynamic canvas sizing based on viewport
 
-3. **Games Hub** (`/games`)
+3. **Token Swap** (`/swap`)
+   - Uniswap iframe integration
+   - Mobile detection with user-friendly message
+   - Desktop-only swap functionality
+   - $BB token pre-selected
+
+4. **Games Hub** (`/games`)
    - 8 BizarreBeasts games with real play counts (128K+ total)
    - Square banner images for each game
    - Sort by popularity or view all

@@ -30,6 +30,7 @@ A Next.js 14 application for the BizarreBeasts ecosystem featuring advanced meme
 - **Default Token**: $BB pre-selected as output
 - **Quick Actions**: Add token to wallet, bridge to Base
 - **Token Info**: Contract address, charts, and BaseScan links
+- **Mobile Support**: User-friendly message with desktop requirement
 - **⚠️ Note**: Wallet connection is separate - users connect within Uniswap iframe
 
 ### 🎮 Games Hub (Fully Implemented)
@@ -97,6 +98,8 @@ A Next.js 14 application for the BizarreBeasts ecosystem featuring advanced meme
 /public
   /stickers         # Sticker assets (needs population)
   /backgrounds      # Background images
+  /farcaster-assets # Farcaster miniapp assets (icon, splash, og-image)
+  /.well-known      # Farcaster manifest
 ```
 
 ## 🚀 Development
@@ -167,16 +170,19 @@ Premium features check Empire tier (rank-based) rather than token balance direct
 - Responsive hamburger menu across all devices
 - 4400+ holders tracking
 - Homepage banner with $BB token info
+- Farcaster miniapp integration with manifest and assets
+- Mobile detection for swap page with user guidance
 
 ### 🔄 In Progress
 - Blog and Resources pages implementation
 - Adding actual sticker assets
 - Contest voting system design
+- Production deployment to app.bizarrebeasts.io
 
 ### 📝 TODO
+- [ ] Deploy to production (app.bizarrebeasts.io)
 - [ ] Create Blog and Resources pages
 - [ ] Populate `/public/stickers` with assets
-- [ ] Configure CDN for Farcaster image sharing
 - [ ] Implement Uniswap SDK for native swap (v2)
 - [ ] Add more sticker collections
 - [ ] Contest voting backend
@@ -189,8 +195,8 @@ Premium features check Empire tier (rank-based) rather than token balance direct
 
 1. **Dual Wallet Connection**: Swap page requires separate connection in iframe
 2. **Pino Warning**: Dev-only warning about pino-pretty (non-critical)
-3. **Farcaster Images**: Need proper hosting for share previews
-4. **Sticker Assets**: Currently using placeholder SVGs
+3. **Sticker Assets**: Currently using placeholder SVGs
+4. **Production URLs**: Farcaster assets require production deployment to work
 
 ## 🔐 Security Notes
 

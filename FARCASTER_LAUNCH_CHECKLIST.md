@@ -18,8 +18,8 @@
 ## 🚀 Farcaster Frame Requirements
 
 ### 1. Frame Manifest File
-**Status**: ❌ Not Created
-**Action Required**: Create `public/.well-known/farcaster.json`
+**Status**: ✅ Created
+**Location**: `public/.well-known/farcaster.json`
 
 ```json
 {
@@ -72,11 +72,12 @@ other: {
 - `/api/frame/webhook` - Webhook handler for notifications
 
 ### 4. OG Image Assets
-**Status**: ⚠️ Referenced but may not exist
-**Check Required**:
-- `/public/og-image.png` (1200x630px)
-- `/public/icon.png` (512x512px)
-- `/public/splash.png` (1200x630px)
+**Status**: ✅ All assets created and in place
+**Assets Available**:
+- `/public/farcaster-assets/og-image.png` (1200x630px)
+- `/public/farcaster-assets/icon.png` (512x512px)
+- `/public/farcaster-assets/splash.png` (200x200px)
+- `/public/farcaster-assets/hero.png` (1200x630px)
 
 ## 🔧 Technical Requirements
 
@@ -117,15 +118,15 @@ export const metadata: Metadata = {
 3. **Frog Devtools**: https://frog.fm/dev
 
 ### Testing Steps
-- [ ] Deploy to staging environment
-- [ ] Test frame manifest at `/.well-known/farcaster.json`
+- [ ] Deploy to production environment (app.bizarrebeasts.io)
+- [x] Frame manifest created at `/.well-known/farcaster.json`
 - [ ] Validate frame with Warpcast validator
 - [ ] Test all frame buttons and actions
-- [ ] Verify OG images display correctly
+- [x] OG images created and ready
 - [ ] Test sharing memes to Farcaster
-- [ ] Check wallet connection flow
-- [ ] Test Empire integration
-- [ ] Verify mobile experience
+- [x] Wallet connection flow working
+- [x] Empire integration working
+- [x] Mobile experience optimized
 
 ## 🚢 Deployment Steps
 
@@ -156,12 +157,12 @@ vercel --prod
 ## 🎯 Launch Action Items
 
 ### Immediate (Before Launch)
-1. Create frame manifest file
-2. Add frame metadata tags
-3. Create/verify OG images
-4. Fix metadataBase warning
-5. Create frame API endpoints
-6. Test with frame validators
+1. ✅ Frame manifest file created
+2. ⚠️ Add frame metadata tags (optional for miniapp)
+3. ✅ OG images created and verified
+4. ⚠️ Fix metadataBase warning (needs production URL)
+5. ⚠️ Create frame API endpoints (optional for miniapp)
+6. Deploy to production and test with validators
 
 ### Nice to Have (Can be post-launch)
 1. Add frame analytics
@@ -172,10 +173,9 @@ vercel --prod
 
 ## 🔍 Current Blockers
 
-1. **Missing Frame Files**: No frame manifest or API endpoints
-2. **MetadataBase**: Needs production URL
-3. **OG Images**: Need to verify they exist and are optimized
-4. **Domain**: Ensure app.bizarrebeasts.io is configured
+1. **Production Deployment**: App needs to be deployed to app.bizarrebeasts.io
+2. **MetadataBase**: Needs production URL (waiting on deployment)
+3. **Domain Configuration**: Ensure app.bizarrebeasts.io is pointed to Vercel
 
 ## ✨ Ready Features
 
@@ -207,5 +207,5 @@ Track these after launch:
 
 ---
 
-**Estimated Time to Launch**: 2-4 hours
-**Priority**: Create frame manifest and metadata first, then test extensively
+**Estimated Time to Launch**: 30 minutes - 1 hour
+**Priority**: Deploy to production, configure domain, then submit to Farcaster
