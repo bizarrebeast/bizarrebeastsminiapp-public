@@ -130,7 +130,12 @@ export default function Home() {
       {/* Features Grid */}
       <section className="px-4 py-16">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-12">Features</h2>
+          <h2 className="text-5xl font-bold text-center mb-12 relative">
+            <span className="bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent">
+              Features
+            </span>
+            <div className="absolute inset-0 bg-gradient-to-r from-gem-crystal/20 via-gem-gold/20 to-gem-pink/20 blur-3xl -z-10"></div>
+          </h2>
           
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* Stickers & Meme Creator */}
@@ -145,12 +150,12 @@ export default function Home() {
                 }}
               >
                 {/* Dark overlay for text readability */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/80 to-black/30"></div>
                 
                 {/* Content */}
                 <div className="relative z-10 p-6">
-                  <h3 className="text-xl font-semibold mb-2 text-white">Stickers & Meme Creator</h3>
-                  <p className="text-gray-200">
+                  <h3 className="text-2xl font-bold mb-2 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent drop-shadow-lg">Stickers & Meme Creator</h3>
+                  <p className="text-white font-medium drop-shadow-md">
                     Create and export memes with stickers, text overlays, and custom backgrounds
                   </p>
                 </div>
@@ -169,12 +174,12 @@ export default function Home() {
                 }}
               >
                 {/* Dark overlay for text readability */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/80 to-black/30"></div>
                 
                 {/* Content */}
                 <div className="relative z-10 p-6">
-                  <h3 className="text-xl font-semibold mb-2 text-white">BizarreBeasts Games</h3>
-                  <p className="text-gray-200">
+                  <h3 className="text-2xl font-bold mb-2 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent drop-shadow-lg">BizarreBeasts Games</h3>
+                  <p className="text-white font-medium drop-shadow-md">
                     Play our collection of games with over 128K+ total plays and counting
                   </p>
                 </div>
@@ -193,12 +198,12 @@ export default function Home() {
                 }}
               >
                 {/* Dark overlay for text readability */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/80 to-black/30"></div>
                 
                 {/* Content */}
                 <div className="relative z-10 p-6">
-                  <h3 className="text-xl font-semibold mb-2 text-white">Token Swap</h3>
-                  <p className="text-gray-200">
+                  <h3 className="text-2xl font-bold mb-2 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent drop-shadow-lg">Token Swap</h3>
+                  <p className="text-white font-medium drop-shadow-md">
                     Swap $BB tokens with integrated Uniswap interface on Base
                   </p>
                 </div>
@@ -217,12 +222,12 @@ export default function Home() {
                 }}
               >
                 {/* Dark overlay for text readability */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/80 to-black/30"></div>
                 
                 {/* Content */}
                 <div className="relative z-10 p-6">
-                  <h3 className="text-xl font-semibold mb-2 text-white">Empire Leaderboard</h3>
-                  <p className="text-gray-200">
+                  <h3 className="text-2xl font-bold mb-2 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent drop-shadow-lg">Empire Leaderboard</h3>
+                  <p className="text-white font-medium drop-shadow-md">
                     Live leaderboard tracking with tiers, boosters, and multipliers
                   </p>
                 </div>
@@ -241,12 +246,12 @@ export default function Home() {
                 }}
               >
                 {/* Dark overlay for text readability */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/80 to-black/30"></div>
                 
                 {/* Content */}
                 <div className="relative z-10 p-6">
-                  <h3 className="text-xl font-semibold mb-2 text-white">Game Soundtracks</h3>
-                  <p className="text-gray-200">
+                  <h3 className="text-2xl font-bold mb-2 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent drop-shadow-lg">Game Soundtracks</h3>
+                  <p className="text-white font-medium drop-shadow-md">
                     Original music by @kateyarter for BizarreBeasts games
                   </p>
                 </div>
@@ -268,8 +273,8 @@ export default function Home() {
               
               {/* Content */}
               <div className="relative z-10 p-6">
-                <h3 className="text-xl font-semibold mb-2 text-white">Community Hub</h3>
-                <p className="text-gray-200">
+                <h3 className="text-2xl font-bold mb-2 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent drop-shadow-lg">Community Hub</h3>
+                <p className="text-white font-medium drop-shadow-md">
                   Contests, rewards, and social features coming soon
                 </p>
               </div>

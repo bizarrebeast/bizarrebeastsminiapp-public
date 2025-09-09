@@ -18,9 +18,9 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
   const [backgroundColor, setBackgroundColor] = useState('transparent');
   const [canvasSize, setCanvasSize] = useState({ width: 600, height: 600 });
   const [showInstructions, setShowInstructions] = useState(false);
-  const [isCropMode, setIsCropMode] = useState(false);
-  const historyRef = useRef<string[]>([]);
-  const historyIndexRef = useRef<number>(-1);
+  // History tracking removed since undo/redo removed
+  // const historyRef = useRef<string[]>([]);
+  // const historyIndexRef = useRef<number>(-1);
   const canvasApiRef = useRef<any>(null);
 
   // Handle responsive canvas sizing
@@ -70,22 +70,47 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
 
     fabricCanvasRef.current = canvas;
     
-    // Restore existing data if available, otherwise save initial state
+    // Restore existing data if available
     if (existingData) {
       canvas.loadFromJSON(existingData, () => {
         canvas.renderAll();
       });
-      // Keep existing history
-    } else {
-      // Save initial state
-      historyRef.current = [JSON.stringify(canvas.toJSON())];
-      historyIndexRef.current = 0;
     }
     
-    // Track changes for undo/redo
-    canvas.on('object:added', () => saveHistory());
-    canvas.on('object:removed', () => saveHistory());
-    canvas.on('object:modified', () => saveHistory());
+    // Track canvas events for debugging
+    canvas.on('object:added', (e) => {
+      console.log('➕ CANVAS EVENT: Object added:', e.target?.type);
+    });
+    canvas.on('object:removed', (e) => {
+      console.log('➖ CANVAS EVENT: Object removed:', e.target?.type);
+    });
+    canvas.on('object:modified', (e) => {
+      console.log('🔄 CANVAS EVENT: Object modified:', e.target?.type);
+    });
+    
+    // Selection events for debugging
+    canvas.on('selection:created', (e) => {
+      console.log('🔵 CANVAS EVENT: Selection created:', e.selected?.[0]?.type);
+    });
+    canvas.on('selection:cleared', () => {
+      console.log('⭕ CANVAS EVENT: Selection cleared');
+    });
+    canvas.on('selection:updated', (e) => {
+      console.log('🔄 CANVAS EVENT: Selection updated:', e.selected?.[0]?.type);
+    });
+    
+    // Enforce uniform scaling to maintain aspect ratio
+    canvas.on('object:scaling', (e) => {
+      const obj = e.target;
+      if (!obj) return;
+      
+      // Force uniform scaling by keeping scaleX and scaleY the same
+      const scale = Math.max(obj.scaleX!, obj.scaleY!);
+      obj.set({
+        scaleX: scale,
+        scaleY: scale
+      });
+    });
     
     // Add shift-based rotation snapping like Canva
     canvas.on('object:rotating', (e) => {
@@ -100,25 +125,7 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
       }
     });
     
-    const saveHistory = () => {
-      // Don't save during undo/redo operations
-      if ((canvas as any)._isUndoRedo) return;
-      
-      const state = JSON.stringify(canvas.toJSON());
-      
-      // Remove any states after current index
-      historyRef.current = historyRef.current.slice(0, historyIndexRef.current + 1);
-      
-      // Add new state
-      historyRef.current.push(state);
-      historyIndexRef.current++;
-      
-      // Limit history to 50 states
-      if (historyRef.current.length > 50) {
-        historyRef.current.shift();
-        historyIndexRef.current--;
-      }
-    };
+    // History saving removed since undo/redo removed
     
     // Add snap-to-center and edge snapping functionality
     const centerLine = canvasSize.width / 2;
@@ -202,6 +209,7 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
     // Canvas API for parent component
     const canvasApi = {
       addSticker: (sticker: Sticker) => {
+        console.log('🎨 STICKER: Adding sticker:', sticker.src);
         FabricImage.fromURL(sticker.src).then((img) => {
           // Calculate scale to make sticker 300x300
           const desiredSize = 300;
@@ -214,6 +222,7 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
             top: (canvas.height! - desiredSize) / 2,
             scaleX: scale,
             scaleY: scale,
+            uniformScaling: true, // Force uniform scaling to maintain aspect ratio
             lockScalingFlip: true, // Prevent negative scaling
             centeredRotation: true,
             hasRotatingPoint: true, // Enable rotation handle
@@ -226,10 +235,14 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
           canvas.add(img);
           canvas.setActiveObject(img);
           canvas.renderAll();
+          console.log('✅ STICKER: Added successfully at center position');
+        }).catch(error => {
+          console.error('❌ STICKER: Failed to load image:', error);
         });
       },
 
       addText: (text: string, options: TextOptions) => {
+        console.log('📝 TEXT: Adding text:', { text, options });
         const centerX = canvas.width! / 2;
         const textObj = new FabricText(text, {
           left: centerX,
@@ -246,6 +259,8 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
           originY: options.position === 'bottom' ? 'bottom' : 
                    options.position === 'custom' ? 'center' : 'top',
           editable: true,
+          uniformScaling: true, // Maintain aspect ratio for text
+          lockScalingFlip: true,
           borderColor: 'rgba(255, 255, 255, 0.9)',
           cornerColor: 'rgba(255, 255, 255, 0.9)',
           cornerSize: 12,
@@ -255,6 +270,7 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
         canvas.add(textObj);
         canvas.setActiveObject(textObj);
         canvas.renderAll();
+        console.log('✅ TEXT: Added successfully at position:', options.position);
       },
 
       updateSelectedText: (updates: Partial<TextOptions>) => {
@@ -293,84 +309,206 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
       },
 
       deleteSelected: () => {
+        console.log('🗑️ DELETE: Delete selected called');
         const activeObject = canvas.getActiveObject();
         if (activeObject) {
+          console.log('✅ DELETE: Removing object type:', activeObject.type);
           canvas.remove(activeObject);
+          canvas.discardActiveObject();
           canvas.renderAll();
+          // History will be saved by the object:removed event listener
+        } else {
+          console.log('❌ DELETE: No object selected');
         }
       },
 
+      /* Removed crop functionality
       toggleCropMode: () => {
-        const activeObject = canvas.getActiveObject();
-        if (!activeObject || activeObject.type !== 'image') {
-          alert('Please select an image to crop');
+        console.log('🔧 CROP: Toggle crop mode called. Current mode:', isCropMode, 'cropRect:', cropRect);
+        
+        // If we're in crop mode and have a crop rect, exit crop mode
+        if (isCropMode && cropRect) {
+          // EXITING CROP MODE - Apply the crop
+          console.log('✂️ CROP: Applying crop to image');
+          
+          if (croppingImage) {
+            const cropBounds = cropRect.getBoundingRect();
+            const imgBounds = croppingImage.getBoundingRect();
+            
+            console.log('📊 CROP: Crop bounds:', cropBounds);
+            console.log('📊 CROP: Image bounds:', imgBounds);
+            
+            // Calculate crop region relative to image
+            const cropLeft = Math.max(0, cropBounds.left - imgBounds.left);
+            const cropTop = Math.max(0, cropBounds.top - imgBounds.top);
+            const cropWidth = Math.min(cropBounds.width, imgBounds.width - cropLeft);
+            const cropHeight = Math.min(cropBounds.height, imgBounds.height - cropTop);
+            
+            console.log('📏 CROP: Calculated crop region:', {
+              left: cropLeft,
+              top: cropTop,
+              width: cropWidth,
+              height: cropHeight
+            });
+            
+            // Apply clip path to image
+            const clipPath = new FabricRect({
+              left: cropLeft / croppingImage.scaleX!,
+              top: cropTop / croppingImage.scaleY!,
+              width: cropWidth / croppingImage.scaleX!,
+              height: cropHeight / croppingImage.scaleY!,
+              absolutePositioned: false,
+              inverted: false,
+            });
+            
+            croppingImage.set({
+              clipPath: clipPath,
+              selectable: true,
+              evented: true,
+              lockMovementX: false,
+              lockMovementY: false,
+              uniformScaling: true, // Maintain aspect ratio after crop
+              lockScalingFlip: true,
+              lockRotation: false,
+              borderColor: 'rgba(255, 255, 255, 0.9)',
+              cornerColor: 'rgba(255, 255, 255, 0.9)',
+            });
+            
+            // Remove crop rectangle
+            canvas.remove(cropRect);
+            console.log('✅ CROP: Crop applied successfully');
+          }
+          
+          setCropRect(null);
+          setCroppingImage(null);
+          setIsCropMode(false);
+          canvas.renderAll();
           return;
         }
         
-        setIsCropMode(!isCropMode);
+        const activeObject = canvas.getActiveObject();
         
         if (!isCropMode) {
-          // Entering crop mode
+          // ENTERING CROP MODE
+          if (!activeObject || (activeObject.type !== 'image' && activeObject.type !== 'group')) {
+            alert('Please select a sticker/image to crop');
+            console.log('❌ CROP: No image/sticker selected for cropping. Type:', activeObject?.type);
+            return;
+          }
+          
+          console.log('✅ CROP: Entering crop mode for image');
+          setIsCropMode(true);
+          setCroppingImage(activeObject);
+          
+          // Lock the image in place
           activeObject.set({
-            selectable: true,
-            evented: true,
-            lockMovementX: false,
-            lockMovementY: false,
-            lockScalingX: false,
-            lockScalingY: false,
-            borderColor: 'rgba(255, 165, 0, 0.9)',
-            cornerColor: 'rgba(255, 165, 0, 0.9)',
-          });
-          canvas.renderAll();
-        } else {
-          // Exiting crop mode - apply basic crop by adjusting clipPath
-          const cropRect = new FabricRect({
-            left: 0,
-            top: 0,
-            width: activeObject.width! * activeObject.scaleX!,
-            height: activeObject.height! * activeObject.scaleY!,
-            absolutePositioned: true,
+            selectable: false,
+            evented: false,
+            lockMovementX: true,
+            lockMovementY: true,
+            lockScalingX: true,
+            lockScalingY: true,
+            lockRotation: true,
           });
           
-          activeObject.clipPath = cropRect;
-          activeObject.set({
-            borderColor: 'rgba(255, 255, 255, 0.9)',
-            cornerColor: 'rgba(255, 255, 255, 0.9)',
+          // Create crop rectangle overlay
+          const imgBounds = activeObject.getBoundingRect();
+          const rect = new FabricRect({
+            left: imgBounds.left,
+            top: imgBounds.top,
+            width: imgBounds.width,
+            height: imgBounds.height,
+            fill: 'transparent',
+            stroke: '#FF6B00',
+            strokeWidth: 2,
+            strokeDashArray: [5, 5],
+            cornerColor: '#FF6B00',
+            cornerStrokeColor: '#FF6B00',
+            borderColor: '#FF6B00',
+            cornerSize: 12,
+            transparentCorners: false,
+            hasRotatingPoint: false,
+            lockRotation: true,
+            // Keep aspect ratio locked
+            lockUniScaling: false,
           });
+          
+          console.log('📐 CROP: Created crop rectangle with dimensions:', {
+            width: imgBounds.width,
+            height: imgBounds.height,
+            left: imgBounds.left,
+            top: imgBounds.top
+          });
+          
+          canvas.add(rect);
+          canvas.setActiveObject(rect);
+          setCropRect(rect);
           canvas.renderAll();
         }
-      },
+      },*/
 
       clearCanvas: () => {
+        console.log('🧹 CLEAR: Clearing entire canvas');
         canvas.clear();
         canvas.backgroundColor = backgroundColor;
         canvas.renderAll();
-        // Reset history
-        historyRef.current = [JSON.stringify(canvas.toJSON())];
-        historyIndexRef.current = 0;
+        console.log('✅ CLEAR: Canvas cleared');
       },
       
+      /* Removed undo/redo functionality
       undo: () => {
+        console.log('↩️ UNDO: Undo called. Current index:', historyIndexRef.current, 'History length:', historyRef.current.length);
         if (historyIndexRef.current > 0) {
           historyIndexRef.current--;
+          console.log('✅ UNDO: Moving to history index:', historyIndexRef.current);
           (canvas as any)._isUndoRedo = true;
+          (canvas as any)._isLoadingFromHistory = true;
+          
+          // Clear canvas first to prevent duplicates
+          canvas.clear();
+          
           canvas.loadFromJSON(historyRef.current[historyIndexRef.current], () => {
+            canvas.backgroundColor = backgroundColor;
             canvas.renderAll();
-            (canvas as any)._isUndoRedo = false;
+            
+            // Small delay before resetting flags
+            setTimeout(() => {
+              (canvas as any)._isUndoRedo = false;
+              (canvas as any)._isLoadingFromHistory = false;
+              console.log('✅ UNDO: State restored from history');
+            }, 50);
           });
+        } else {
+          console.log('❌ UNDO: Already at the beginning of history');
         }
       },
       
       redo: () => {
+        console.log('↪️ REDO: Redo called. Current index:', historyIndexRef.current, 'History length:', historyRef.current.length);
         if (historyIndexRef.current < historyRef.current.length - 1) {
           historyIndexRef.current++;
+          console.log('✅ REDO: Moving to history index:', historyIndexRef.current);
           (canvas as any)._isUndoRedo = true;
+          (canvas as any)._isLoadingFromHistory = true;
+          
+          // Clear canvas first to prevent duplicates
+          canvas.clear();
+          
           canvas.loadFromJSON(historyRef.current[historyIndexRef.current], () => {
+            canvas.backgroundColor = backgroundColor;
             canvas.renderAll();
-            (canvas as any)._isUndoRedo = false;
+            
+            // Small delay before resetting flags
+            setTimeout(() => {
+              (canvas as any)._isUndoRedo = false;
+              (canvas as any)._isLoadingFromHistory = false;
+              console.log('✅ REDO: State restored from history');
+            }, 50);
           });
+        } else {
+          console.log('❌ REDO: Already at the end of history');
         }
-      },
+      },*/
 
       export: async (options: ExportOptions) => {
         // Add watermark if enabled
@@ -488,15 +626,6 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
       if (e.key === 'Delete' || e.key === 'Backspace') {
         canvasApi.deleteSelected();
       }
-      // Undo/Redo shortcuts
-      if ((e.metaKey || e.ctrlKey) && e.key === 'z' && !e.shiftKey) {
-        e.preventDefault();
-        canvasApi.undo();
-      }
-      if ((e.metaKey || e.ctrlKey) && (e.key === 'Z' || (e.key === 'z' && e.shiftKey))) {
-        e.preventDefault();
-        canvasApi.redo();
-      }
     };
 
     window.addEventListener('keydown', handleKeyDown);
@@ -520,60 +649,23 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
         <div className="flex gap-1 sm:gap-2">
           <button
             onClick={() => {
-              canvasApiRef.current?.undo();
-            }}
-            className="px-2 sm:px-3 py-1 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded hover:scale-105 transition-all text-xs sm:text-sm font-semibold"
-            title="Undo (Ctrl+Z)"
-          >
-            Undo
-          </button>
-          <button
-            onClick={() => {
-              canvasApiRef.current?.redo();
-            }}
-            className="px-2 sm:px-3 py-1 bg-gradient-to-r from-green-600 to-green-700 text-white rounded hover:scale-105 transition-all text-xs sm:text-sm font-semibold"
-            title="Redo (Ctrl+Shift+Z)"
-          >
-            Redo
-          </button>
-          <button
-            onClick={() => {
-              const activeObject = fabricCanvasRef.current?.getActiveObject();
-              if (activeObject && fabricCanvasRef.current) {
-                fabricCanvasRef.current.remove(activeObject);
-              }
+              console.log('🔘 BUTTON: Delete button clicked');
+              canvasApiRef.current?.deleteSelected();
             }}
             className="px-2 sm:px-3 py-1 bg-gradient-to-r from-red-600 to-pink-600 text-white rounded hover:scale-105 transition-all text-xs sm:text-sm font-semibold"
+            title="Delete selected item (or press Delete key)"
           >
             Delete
           </button>
           <button
             onClick={() => {
-              if (fabricCanvasRef.current) {
-                fabricCanvasRef.current.clear();
-                fabricCanvasRef.current.backgroundColor = backgroundColor;
-                fabricCanvasRef.current.renderAll();
-                // Reset history
-                historyRef.current = [JSON.stringify(fabricCanvasRef.current.toJSON())];
-                historyIndexRef.current = 0;
-              }
+              console.log('🔘 BUTTON: Clear button clicked');
+              canvasApiRef.current?.clearCanvas();
             }}
             className="px-2 sm:px-3 py-1 bg-gradient-to-r from-gray-600 to-gray-700 text-white rounded hover:scale-105 transition-all text-xs sm:text-sm font-semibold"
+            title="Clear entire canvas"
           >
             Clear
-          </button>
-          <button
-            onClick={() => {
-              canvasApiRef.current?.toggleCropMode();
-            }}
-            className={`px-2 sm:px-3 py-1 rounded hover:scale-105 transition-all text-xs sm:text-sm font-semibold ${
-              isCropMode 
-                ? 'bg-gradient-to-r from-orange-600 to-orange-700 text-white' 
-                : 'bg-gradient-to-r from-purple-600 to-purple-700 text-white'
-            }`}
-            title="Toggle crop mode for images (Basic implementation)"
-          >
-            {isCropMode ? 'Exit Crop' : 'Crop'}
           </button>
         </div>
         
@@ -652,12 +744,13 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
               <div>
                 <p className="text-gem-crystal font-semibold mb-1">🎨 Create Your BizarreBeasts Meme:</p>
                 <ul className="text-gray-400 space-y-1 ml-4">
-                  <li>• Click stickers to add to your canvas</li>
+                  <li>• Click stickers to add them to your canvas</li>
                   <li>• Drag to move and position anywhere</li>
-                  <li>• Drag corner handles to resize</li>
-                  <li>• Double-click text areas to edit</li>
-                  <li>• Use Delete key or trash button to remove items</li>
-                  <li>• Click Crop button to crop selected images (basic)</li>
+                  <li>• Drag corner handles to resize (maintains aspect ratio)</li>
+                  <li>• Hold Shift while rotating for 15° angle snapping</li>
+                  <li>• Double-click text to edit inline</li>
+                  <li>• Use Delete key or Delete button to remove selected items</li>
+                  <li>• Clear button removes everything and resets canvas</li>
                 </ul>
               </div>
               

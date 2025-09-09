@@ -263,21 +263,22 @@ export default function StickerGallery({
                         
                         setUpgradeInfo({
                           tier: requiredTier,
-                          feature: `${sticker.name} Sticker`
+                          feature: `Premium Sticker`
                         });
                         setShowUpgradePrompt(true);
                       }
                     }}
                     className={`group relative bg-gray-700 rounded p-1 transition-all flex-shrink-0 ${
-                      hasAccess ? 'hover:bg-gray-600 hover:scale-110 cursor-pointer' : 'hover:bg-gray-600/50 cursor-pointer'
+                      hasAccess 
+                        ? 'hover:bg-purple-600/40 hover:scale-110 hover:shadow-lg hover:shadow-purple-500/30 hover:border-purple-500 border-2 border-transparent cursor-pointer' 
+                        : 'hover:bg-gray-600/50 cursor-pointer border-2 border-transparent'
                     }`}
                     style={{ width: '60px', height: '60px' }}
-                    title={sticker.name}
                   >
                     {/* Sticker image */}
                     <img 
                       src={sticker.thumbnail} 
-                      alt={sticker.name}
+                      alt=""
                       className="w-full h-full object-contain"
                       loading="lazy"
                     />
@@ -290,15 +291,6 @@ export default function StickerGallery({
                         </div>
                       </div>
                     )}
-                    
-                    {/* Hover overlay with name - Desktop only */}
-                    <div className={`hidden md:flex absolute inset-0 bg-black/80 opacity-0 ${
-                      hasAccess ? 'group-hover:opacity-100' : ''
-                    } transition-opacity rounded items-center justify-center`}>
-                      <span className="text-white text-[9px] px-1 text-center">
-                        {sticker.name}
-                      </span>
-                    </div>
                   </button>
                 );
               })}

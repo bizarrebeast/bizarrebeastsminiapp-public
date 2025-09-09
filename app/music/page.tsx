@@ -43,8 +43,8 @@ const tracks: Track[] = [
     game: 'Treasure Quest',
     description: 'Ethereal underground adventure theme with mysterious crystal cave ambience and epic orchestral swells.',
     coverArt: '/assets/page-assets/music/album-covers/crystal-cavern-bizarrebeasts-album-cover-2.svg',
-    audioUrl: '',
-    duration: '3:45',
+    audioUrl: '/assets/page-assets/music/CRYSTAL CAVERN- MASTER 1.mp3',
+    duration: '2:40',
     links: {
       spotify: '',
       apple: '',
@@ -59,8 +59,8 @@ const tracks: Track[] = [
     game: 'Head Crush',
     description: 'High-energy action soundtrack with pounding beats and intense electronic rhythms for crushing gameplay.',
     coverArt: '/assets/page-assets/music/album-covers/head-crush-bizarrebeasts-album-cover-1.svg',
-    audioUrl: '',
-    duration: '2:30',
+    audioUrl: '/assets/page-assets/music/HEAD CRUSH- MASTER MP3 FOR GAME.mp3',
+    duration: '1:20',
     links: {
       spotify: '',
       apple: '',
@@ -74,8 +74,8 @@ const tracks: Track[] = [
     game: 'BizarreBeasts',
     description: 'Dark and mysterious theme featuring haunting melodies and atmospheric soundscapes.',
     coverArt: '/assets/page-assets/music/album-covers/night-beast-bizarrebeasts-album-cover-3.svg',
-    audioUrl: '',
-    duration: '4:12',
+    audioUrl: '/assets/page-assets/music/Night Beast- BizarreBeasts.mp3',
+    duration: '3:33',
     links: {
       spotify: '',
       apple: '',
@@ -86,23 +86,70 @@ const tracks: Track[] = [
 
 export default function MusicPage() {
   const [playingTrack, setPlayingTrack] = useState<string | null>(null);
+  const [loadedTracks, setLoadedTracks] = useState<Set<string>>(new Set());
   const audioRefs = useRef<{ [key: string]: HTMLAudioElement | null }>({});
 
-  const handlePlayPause = (trackId: string) => {
-    const audio = audioRefs.current[trackId];
-    
-    if (!audio) return;
+  // Ensure only one track plays at a time
+  React.useEffect(() => {
+    // Pause all other tracks when playingTrack changes
+    Object.keys(audioRefs.current).forEach(trackId => {
+      const audio = audioRefs.current[trackId];
+      if (audio && trackId !== playingTrack) {
+        audio.pause();
+      }
+    });
+  }, [playingTrack]);
 
+  const handlePlayPause = (trackId: string) => {
+    // If clicking the same track that's playing, pause it
     if (playingTrack === trackId) {
-      audio.pause();
-      setPlayingTrack(null);
-    } else {
-      // Pause any currently playing track
+      const audio = audioRefs.current[trackId];
+      if (audio) {
+        audio.pause();
+        setPlayingTrack(null);
+      }
+      return;
+    }
+
+    // Pause any currently playing track first
+    if (playingTrack && audioRefs.current[playingTrack]) {
+      audioRefs.current[playingTrack]?.pause();
+    }
+
+    // Lazy load audio if not already loaded
+    if (!loadedTracks.has(trackId)) {
+      // Pause current track before loading new one
       if (playingTrack && audioRefs.current[playingTrack]) {
         audioRefs.current[playingTrack]?.pause();
       }
       
-      audio.play();
+      setLoadedTracks(prev => new Set([...prev, trackId]));
+      setPlayingTrack(trackId); // Set as playing immediately
+      
+      // Small delay to ensure audio element is created
+      setTimeout(() => {
+        const audio = audioRefs.current[trackId];
+        if (audio) {
+          // Double-check no other track started playing in the meantime
+          if (playingTrack && playingTrack !== trackId && audioRefs.current[playingTrack]) {
+            audioRefs.current[playingTrack]?.pause();
+          }
+          audio.play().catch(err => {
+            console.error('Error playing audio:', err);
+            setPlayingTrack(null);
+          });
+        }
+      }, 100);
+      return;
+    }
+
+    // Track is already loaded, just play it
+    const audio = audioRefs.current[trackId];
+    if (audio) {
+      audio.play().catch(err => {
+        console.error('Error playing audio:', err);
+        setPlayingTrack(null);
+      });
       setPlayingTrack(trackId);
     }
   };
@@ -172,7 +219,7 @@ export default function MusicPage() {
               key={track.id}
               className="bg-dark-card border border-gem-crystal/20 rounded-lg overflow-hidden hover:border-gem-crystal/40 transition-all duration-300"
             >
-              {/* Cover Art with Play Button */}
+              {/* Cover Art - Clean without overlay */}
               <div className="relative aspect-square bg-gray-800 group">
                 {track.coverArt ? (
                   <img 
@@ -186,34 +233,51 @@ export default function MusicPage() {
                   </div>
                 )}
                 
-                {/* Play Button Overlay */}
-                {track.audioUrl && (
-                  <button
-                    onClick={() => handlePlayPause(track.id)}
-                    className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity"
-                  >
-                    <div className="w-16 h-16 bg-white/10 backdrop-blur rounded-full flex items-center justify-center hover:bg-white/20 transition-colors">
-                      {playingTrack === track.id ? (
-                        <Pause className="w-8 h-8 text-white" />
-                      ) : (
-                        <Play className="w-8 h-8 text-white ml-1" />
-                      )}
-                    </div>
-                  </button>
+                {/* Playing indicator - minimal overlay */}
+                {playingTrack === track.id && (
+                  <div className="absolute top-2 right-2 bg-gradient-to-r from-gem-gold to-gem-crystal text-dark-bg text-xs px-2 py-1 rounded-full flex items-center gap-1 shadow-lg font-semibold">
+                    <div className="w-2 h-2 bg-dark-bg rounded-full animate-pulse" />
+                    Now Playing
+                  </div>
                 )}
 
-                {/* Audio Element */}
-                {track.audioUrl && (
+                {/* Audio Element - Only load when user clicks play */}
+                {track.audioUrl && loadedTracks.has(track.id) && (
                   <audio
                     ref={(el) => { audioRefs.current[track.id] = el; }}
                     src={track.audioUrl}
                     onEnded={() => handleAudioEnd(track.id)}
+                    preload="none"
                   />
                 )}
               </div>
 
               {/* Track Info */}
               <div className="p-4">
+                {/* Play/Pause Button - External */}
+                {track.audioUrl && (
+                  <button
+                    onClick={() => handlePlayPause(track.id)}
+                    className={`w-full mb-3 py-2.5 rounded-lg font-semibold flex items-center justify-center gap-2 transition-all transform hover:scale-105 ${
+                      playingTrack === track.id 
+                        ? 'bg-gradient-to-r from-gem-gold to-gem-pink text-dark-bg' 
+                        : 'bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink text-dark-bg'
+                    }`}
+                  >
+                    {playingTrack === track.id ? (
+                      <>
+                        <Pause className="w-5 h-5" />
+                        Pause
+                      </>
+                    ) : (
+                      <>
+                        <Play className="w-5 h-5" />
+                        Play Track
+                      </>
+                    )}
+                  </button>
+                )}
+                
                 <h3 className="text-lg font-semibold text-white mb-1">{track.title}</h3>
                 <p className="text-sm text-gray-400 mb-2">
                   {track.game} • {track.duration}
@@ -222,69 +286,60 @@ export default function MusicPage() {
                   {track.description}
                 </p>
 
-                {/* Tags */}
-                <div className="flex flex-wrap gap-1 mb-3">
-                  {track.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="px-2 py-1 bg-gray-700/50 text-xs text-gray-300 rounded"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
 
-                {/* Streaming Links */}
-                <div className="space-y-2">
-                  <div className="flex flex-wrap gap-2">
-                    {track.links.spotify && (
+                {/* Streaming Links - Hidden for now since no links available */}
+                {(track.links.spotify || track.links.apple || track.links.amazon || track.links.mint) && (
+                  <div className="space-y-2">
+                    <div className="flex flex-wrap gap-2">
+                      {track.links.spotify && (
+                        <a
+                          href={track.links.spotify}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-1 px-3 py-1.5 bg-green-600/20 hover:bg-green-600/30 text-green-400 rounded text-sm transition-colors"
+                        >
+                          <SpotifyIcon />
+                          Spotify
+                        </a>
+                      )}
+                      {track.links.apple && (
+                        <a
+                          href={track.links.apple}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-1 px-3 py-1.5 bg-gray-600/20 hover:bg-gray-600/30 text-gray-300 rounded text-sm transition-colors"
+                        >
+                          <Apple className="w-4 h-4" />
+                          Apple
+                        </a>
+                      )}
+                      {track.links.amazon && (
+                        <a
+                          href={track.links.amazon}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-1 px-3 py-1.5 bg-orange-600/20 hover:bg-orange-600/30 text-orange-400 rounded text-sm transition-colors"
+                        >
+                          <AmazonMusicIcon />
+                          Amazon
+                        </a>
+                      )}
+                    </div>
+                    
+                    {/* Mint/Collect Button */}
+                    {track.links.mint && (
                       <a
-                        href={track.links.spotify}
+                        href={track.links.mint}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-1 px-3 py-1.5 bg-green-600/20 hover:bg-green-600/30 text-green-400 rounded text-sm transition-colors"
+                        className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-gradient-to-r from-gem-gold to-gem-crystal text-black rounded font-semibold text-sm hover:opacity-90 transition-opacity"
                       >
-                        <SpotifyIcon />
-                        Spotify
-                      </a>
-                    )}
-                    {track.links.apple && (
-                      <a
-                        href={track.links.apple}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-1 px-3 py-1.5 bg-gray-600/20 hover:bg-gray-600/30 text-gray-300 rounded text-sm transition-colors"
-                      >
-                        <Apple className="w-4 h-4" />
-                        Apple
-                      </a>
-                    )}
-                    {track.links.amazon && (
-                      <a
-                        href={track.links.amazon}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-1 px-3 py-1.5 bg-orange-600/20 hover:bg-orange-600/30 text-orange-400 rounded text-sm transition-colors"
-                      >
-                        <AmazonMusicIcon />
-                        Amazon
+                        <ShoppingBag className="w-4 h-4" />
+                        Collect as NFT
                       </a>
                     )}
                   </div>
-                  
-                  {/* Mint/Collect Button */}
-                  {track.links.mint && (
-                    <a
-                      href={track.links.mint}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-gradient-to-r from-gem-gold to-gem-crystal text-black rounded font-semibold text-sm hover:opacity-90 transition-opacity"
-                    >
-                      <ShoppingBag className="w-4 h-4" />
-                      Collect as NFT
-                    </a>
-                  )}
-                </div>
+                )}
               </div>
             </div>
           ))}

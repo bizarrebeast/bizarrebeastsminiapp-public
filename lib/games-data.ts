@@ -33,10 +33,10 @@ export const gamesData: GameData[] = [
     plays: 4000,
     genre: 'Platformer/Adventure',
     platforms: {
-      farcaster: '',
-      telegram: '',
-      worldApp: '',
-      online: ''
+      farcaster: 'https://treasure-quest.remix.gg/',
+      telegram: 'https://t.me/the_remix_bot?startapp=user_i1emcnVI6A__path_-games-d281be5d-2111-4a73-afb0-19b2a18c80a9-overview',
+      worldApp: 'https://world.org/ecosystem/app_91190f3689f2d34181e9d8495cfa5523',
+      online: 'https://treasure-quest.remix.gg/'
     },
     featured: true,
     releaseDate: 'August 27, 2024'
@@ -50,26 +50,26 @@ export const gamesData: GameData[] = [
     plays: 42000,
     genre: 'Arcade',
     platforms: {
-      farcaster: '',
-      telegram: '',
-      worldApp: '',
-      online: ''
+      farcaster: 'https://bizarre-bounce.remix.gg',
+      telegram: 'https://t.me/the_remix_bot?startapp=user_i1emcnVI6A__path_-games-6b07d2de-8a84-4da4-af76-b3c9b3a626a8-overview',
+      worldApp: 'https://world.org/mini-app?app_id=app_6205b24a7cb61a04d91557fb65d41688',
+      online: 'https://bizarre-bounce.remix.gg'
     },
     featured: true
   },
   {
-    id: 'munches-climb',
-    title: 'Munches Climb',
-    description: 'Help Munches climb to new heights in this vertical adventure! Jump from platform to platform, avoid obstacles, and collect power-ups as you ascend through the bizarre world. How high can you climb?',
-    shortDescription: 'Vertical climbing adventure with Munches',
+    id: 'munchies-climb',
+    title: 'Munchies Climb',
+    description: 'Help Munchies climb to new heights in this vertical adventure! Jump from platform to platform, avoid obstacles, and collect power-ups as you ascend through the bizarre world. How high can you climb?',
+    shortDescription: 'Vertical climbing adventure with Munchies',
     bannerImage: '/assets/page-assets/games/banners/munchies-climb-game-banner-3.svg',
     plays: 10000,
     genre: 'Platformer',
     platforms: {
-      farcaster: '',
-      telegram: '',
-      worldApp: '',
-      online: ''
+      farcaster: 'https://munchies-climb.remix.gg',
+      telegram: 'https://t.me/the_remix_bot?startapp=user_i1emcnVI6A__path_-games-41ca2b98-b47a-4cb1-a827-b210c7479f8d-overview',
+      worldApp: '', // coming soon
+      online: 'https://munchies-climb.remix.gg'
     },
     featured: false
   },
@@ -82,10 +82,10 @@ export const gamesData: GameData[] = [
     plays: 16000,
     genre: 'Action',
     platforms: {
-      farcaster: '',
-      telegram: '',
-      worldApp: '',
-      online: ''
+      farcaster: 'https://bizarrebeasts-head-crush.remix.gg',
+      telegram: 'https://t.me/the_remix_bot?startapp=user_i1emcnVI6A__path_-games-DOncF3WDMGCd-overview',
+      worldApp: 'https://world.org/mini-app?app_id=app_18a7624d2af11a2d75e516979f82acc7',
+      online: 'https://bizarrebeasts-head-crush.remix.gg'
     },
     featured: false
   },
@@ -98,10 +98,10 @@ export const gamesData: GameData[] = [
     plays: 22000,
     genre: 'Puzzle/Memory',
     platforms: {
-      farcaster: '',
-      telegram: '',
-      worldApp: '',
-      online: ''
+      farcaster: 'https://bizarrebeasts-memory-game.remix.gg/',
+      telegram: 'https://t.me/the_remix_bot?startapp=user_i1emcnVI6A__path_-games-2NrpZ0RDLl6U-overview',
+      worldApp: 'https://world.org/mini-app?app_id=app_d9b84a049359e03656317f5a866a0a53',
+      online: 'https://bizarrebeasts-memory-game.remix.gg/'
     },
     featured: false
   },
@@ -114,10 +114,10 @@ export const gamesData: GameData[] = [
     plays: 24000,
     genre: 'Strategy/Classic',
     platforms: {
-      farcaster: '',
-      telegram: '',
-      worldApp: '',
-      online: ''
+      farcaster: 'https://bizarrebeasts-tictactoe.remix.gg/',
+      telegram: 'https://t.me/the_remix_bot?startapp=user_i1emcnVI6A__path_-games-Emk1p6hBBEu5-overview',
+      worldApp: 'https://world.org/mini-app?app_id=app_3a7d1167bf2438f9af8b414b0c25759d',
+      online: 'https://bizarrebeasts-tictactoe.remix.gg/'
     },
     featured: true
   },
@@ -130,10 +130,10 @@ export const gamesData: GameData[] = [
     plays: 10000,
     genre: 'Strategy/Board',
     platforms: {
-      farcaster: '',
-      telegram: '',
-      worldApp: '',
-      online: ''
+      farcaster: 'https://bizarrebeasts-checkerz.remix.gg/',
+      telegram: 'https://t.me/the_remix_bot?startapp=user_i1emcnVI6A__path_-games-ASNmNmnu0DGJ-overview',
+      worldApp: 'https://world.org/ecosystem/app_729e6957b28ac6e0e1d192d3066f2645',
+      online: 'https://bizarrebeasts-checkerz.remix.gg/'
     },
     featured: false
   },
@@ -146,10 +146,10 @@ export const gamesData: GameData[] = [
     plays: 573,
     genre: 'Puzzle',
     platforms: {
-      farcaster: '',
-      telegram: '',
-      worldApp: '',
-      online: ''
+      farcaster: 'https://remix.gg?game=QOwHOawyLtQV',
+      telegram: 'https://t.me/the_remix_bot?startapp=user_i1emcnVI6A__path_-games-QOwHOawyLtQV-overview',
+      worldApp: '', // coming soon
+      online: 'https://remix.gg?game=QOwHOawyLtQV'
     },
     featured: false
   }

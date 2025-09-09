@@ -153,16 +153,17 @@ export default function GamesPage() {
                   </div>
 
                   {/* Platform Links */}
-                  <div className="flex gap-2 mb-4">
+                  <div className="flex flex-wrap gap-2 mb-4">
                     {game.platforms.farcaster && (
                       <a
                         href={game.platforms.farcaster}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="bg-purple-500/20 text-purple-400 p-2 rounded-lg hover:bg-purple-500/30 transition-colors"
+                        className="flex items-center gap-1 bg-purple-500/20 text-purple-400 px-3 py-1.5 rounded-lg hover:bg-purple-500/30 transition-colors text-xs font-medium"
                         title="Play on Farcaster"
                       >
-                        <MessageSquare className="w-4 h-4" />
+                        <MessageSquare className="w-3 h-3" />
+                        Farcaster
                       </a>
                     )}
                     {game.platforms.telegram && (
@@ -170,10 +171,11 @@ export default function GamesPage() {
                         href={game.platforms.telegram}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="bg-blue-500/20 text-blue-400 p-2 rounded-lg hover:bg-blue-500/30 transition-colors"
+                        className="flex items-center gap-1 bg-blue-500/20 text-blue-400 px-3 py-1.5 rounded-lg hover:bg-blue-500/30 transition-colors text-xs font-medium"
                         title="Play on Telegram"
                       >
-                        <MessageSquare className="w-4 h-4" />
+                        <MessageSquare className="w-3 h-3" />
+                        Telegram
                       </a>
                     )}
                     {game.platforms.worldApp && (
@@ -181,42 +183,32 @@ export default function GamesPage() {
                         href={game.platforms.worldApp}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="bg-green-500/20 text-green-400 p-2 rounded-lg hover:bg-green-500/30 transition-colors"
+                        className="flex items-center gap-1 bg-green-500/20 text-green-400 px-3 py-1.5 rounded-lg hover:bg-green-500/30 transition-colors text-xs font-medium"
                         title="Play on World App"
                       >
-                        <Globe className="w-4 h-4" />
+                        <Globe className="w-3 h-3" />
+                        World
                       </a>
                     )}
-                    {game.platforms.online && (
-                      <a
-                        href={game.platforms.online}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="bg-gem-crystal/20 text-gem-crystal p-2 rounded-lg hover:bg-gem-crystal/30 transition-colors"
-                        title="Play Online"
-                      >
-                        <Globe className="w-4 h-4" />
-                      </a>
+                    {!game.platforms.worldApp && game.platforms.telegram && (
+                      <span className="flex items-center gap-1 bg-gray-700/50 text-gray-500 px-3 py-1.5 rounded-lg text-xs font-medium">
+                        <Globe className="w-3 h-3" />
+                        World (Soon)
+                      </span>
                     )}
                   </div>
 
-                  {/* Play Button */}
-                  {hasLink ? (
+                  {/* Online Play Button - shown only if online link exists */}
+                  {game.platforms.online && (
                     <a
-                      href={Object.values(game.platforms).find(url => url) || '#'}
+                      href={game.platforms.online}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="w-full bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink text-dark-bg px-4 py-2 rounded-lg font-semibold hover:shadow-lg transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2"
                     >
-                      Play Now
+                      Play Online
                       <ExternalLink className="w-4 h-4" />
                     </a>
-                  ) : (
-                    <button
-                      className="w-full bg-gray-700 text-gray-400 px-4 py-2 rounded-lg font-semibold"
-                    >
-                      Links Coming Soon
-                    </button>
                   )}
                 </div>
               </div>
