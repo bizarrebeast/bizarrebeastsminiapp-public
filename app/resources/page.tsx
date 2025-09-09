@@ -6,16 +6,14 @@ import {
   BookOpen, 
   Clock, 
   Globe, 
-  ExternalLink, 
-  Check,
-  ChevronRight,
+  ExternalLink,
   Filter,
   Search,
   Star,
   Users,
   FileText
 } from 'lucide-react';
-import { resources, quickGuides, checklistItems } from '@/lib/resources-data';
+import { resources, quickGuides } from '@/lib/resources-data';
 import type { Resource } from '@/lib/resources-data';
 
 export default function ResourcesPage() {
@@ -23,25 +21,6 @@ export default function ResourcesPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>('all');
   const [selectedLanguage, setSelectedLanguage] = useState<string>('all');
-  const [completedChecklist, setCompletedChecklist] = useState<string[]>([]);
-
-  // Load checklist progress from localStorage
-  useEffect(() => {
-    const saved = localStorage.getItem('bb-checklist-progress');
-    if (saved) {
-      setCompletedChecklist(JSON.parse(saved));
-    }
-  }, []);
-
-  // Save checklist progress to localStorage
-  const toggleChecklistItem = (id: string) => {
-    const updated = completedChecklist.includes(id)
-      ? completedChecklist.filter(item => item !== id)
-      : [...completedChecklist, id];
-    
-    setCompletedChecklist(updated);
-    localStorage.setItem('bb-checklist-progress', JSON.stringify(updated));
-  };
 
   // Filter resources
   const filteredResources = resources.filter(resource => {
@@ -281,66 +260,6 @@ export default function ResourcesPage() {
           </div>
         </section>
 
-        {/* Getting Started Checklist */}
-        <section className="mb-12">
-          <div className="bg-gradient-to-br from-dark-card via-dark-card to-gem-pink/5 border border-gem-pink/20 rounded-lg p-6">
-            <h2 className="text-2xl font-bold mb-2">Getting Started Checklist</h2>
-            <p className="text-gray-400 mb-6">Track your progress as you explore the BizarreBeasts ecosystem</p>
-            
-            {/* Progress Bar */}
-            <div className="mb-6">
-              <div className="flex justify-between text-sm mb-2">
-                <span className="text-gray-400">Progress</span>
-                <span className="text-gem-pink">{completedChecklist.length}/{checklistItems.length} completed</span>
-              </div>
-              <div className="w-full bg-gray-800 rounded-full h-2">
-                <div 
-                  className="bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink h-2 rounded-full transition-all duration-300"
-                  style={{ width: `${(completedChecklist.length / checklistItems.length) * 100}%` }}
-                />
-              </div>
-            </div>
-
-            <div className="space-y-3">
-              {checklistItems.map(item => (
-                <div key={item.id} className="flex items-start gap-3">
-                  <button
-                    onClick={() => toggleChecklistItem(item.id)}
-                    className={`w-6 h-6 rounded border-2 flex items-center justify-center transition-all ${
-                      completedChecklist.includes(item.id)
-                        ? 'bg-gradient-to-r from-gem-crystal to-gem-gold border-gem-crystal'
-                        : 'border-gray-600 hover:border-gem-crystal'
-                    }`}
-                  >
-                    {completedChecklist.includes(item.id) && (
-                      <Check className="w-4 h-4 text-dark-bg" />
-                    )}
-                  </button>
-                  
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <span className={`font-semibold ${completedChecklist.includes(item.id) ? 'text-gray-500 line-through' : 'text-white'}`}>
-                        {item.text}
-                      </span>
-                      {item.link && (
-                        item.link.startsWith('http') ? (
-                          <a href={item.link} target="_blank" rel="noopener noreferrer">
-                            <ExternalLink className="w-3 h-3 text-gray-400 hover:text-gem-crystal" />
-                          </a>
-                        ) : (
-                          <Link href={item.link}>
-                            <ChevronRight className="w-3 h-3 text-gray-400 hover:text-gem-crystal" />
-                          </Link>
-                        )
-                      )}
-                    </div>
-                    <p className="text-sm text-gray-400">{item.description}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
 
         {/* Complete Documentation CTA */}
         <section className="text-center">
