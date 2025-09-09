@@ -68,7 +68,7 @@ export function WalletButton() {
     return (
       <button
         onClick={connect}
-        className="flex items-center gap-1 px-3 py-1.5 text-xs bg-gradient-to-r from-gem-gold to-gem-crystal text-black font-semibold rounded hover:opacity-90 transition-all duration-300"
+        className="flex items-center gap-1 px-3 py-1.5 text-xs bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink text-black font-semibold rounded hover:opacity-90 transition-all duration-300"
       >
         <Wallet className="w-3 h-3" />
         <span>Connect</span>

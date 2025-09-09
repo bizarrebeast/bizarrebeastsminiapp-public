@@ -35,22 +35,25 @@ export default function SwapPage() {
     <div className="min-h-[calc(100vh-64px)] bg-dark-bg">
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-white mb-2 flex items-center gap-3">
-            <ArrowDownUp className="w-8 h-8 text-gem-crystal" />
-            Token Swap
-          </h1>
-          <p className="text-gray-400">
-            Swap any token on Base. Default output is $BB token.
-          </p>
+        <div className="mb-8 flex justify-center">
+          <img 
+            src="/assets/page-assets/banners/token-swap-bb-chart-banner.png" 
+            alt="Token Swap - Swap any token on Base. Default output is $BB token."
+            className="w-full max-w-4xl object-contain rounded-2xl"
+          />
         </div>
+        
+        {/* Description */}
+        <p className="text-lg text-gray-300 mb-8 max-w-4xl mx-auto px-4 text-center">
+          Track $BB token performance and swap tokens directly in the app! View real-time price charts, trading volume, and market data for BizarreBeasts ($BB) token. Seamlessly swap $BB or any token with built-in Uniswap integration.
+        </p>
 
         {/* Main Content Grid */}
         <div className="grid lg:grid-cols-[1fr_350px] gap-6">
           {/* Left Column - Swap and Chart */}
           <div className="order-2 lg:order-1 space-y-6">
           {/* Swap Widget Container */}
-          <div className="bg-dark-card border border-gem-crystal/20 rounded-lg overflow-hidden">
+          <div className="bg-dark-card border border-gem-crystal/20 rounded-lg overflow-hidden w-full max-w-full">
             <div className="p-4 border-b border-gray-700">
               <div className="flex items-center justify-between">
                 <div>
@@ -70,16 +73,18 @@ export default function SwapPage() {
             </div>
             
             {/* Uniswap Iframe */}
-            <iframe
-              src={uniswapUrl}
-              className="w-full h-[600px] border-0"
-              title="Uniswap Swap Interface"
-              allow="clipboard-read; clipboard-write"
-            />
+            <div className="w-full overflow-x-auto">
+              <iframe
+                src={uniswapUrl}
+                className="w-full min-w-[320px] h-[600px] border-0"
+                title="Uniswap Swap Interface"
+                allow="clipboard-read; clipboard-write"
+              />
+            </div>
           </div>
           
           {/* Chart Widget */}
-          <div className="bg-dark-card border border-gem-crystal/20 rounded-lg overflow-hidden">
+          <div className="bg-dark-card border border-gem-crystal/20 rounded-lg overflow-hidden w-full max-w-full">
             <div className="p-4 border-b border-gray-700">
               <div className="flex items-center justify-between">
                 <div>
@@ -102,11 +107,13 @@ export default function SwapPage() {
             </div>
             
             {/* DexScreener Embed */}
-            <iframe
-              src={`${dexScreenerUrl}?embed=1&theme=dark&trades=0&info=0`}
-              className="w-full h-[600px] border-0"
-              title="BB Token Chart"
-            />
+            <div className="w-full overflow-x-auto">
+              <iframe
+                src={`${dexScreenerUrl}?embed=1&theme=dark&trades=0&info=0`}
+                className="w-full min-w-[320px] h-[600px] border-0"
+                title="BB Token Chart"
+              />
+            </div>
           </div>
         </div>
 

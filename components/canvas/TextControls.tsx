@@ -62,7 +62,7 @@ export default function TextControls({ onAddText, onUpdateText }: TextControlsPr
                   setTopText('');
                 }
               }}
-              className="px-3 py-2 bg-gradient-to-r from-gem-crystal to-gem-blue text-black rounded font-semibold hover:scale-105 transition-all text-sm"
+              className="px-3 py-2 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink text-black rounded font-semibold hover:scale-105 transition-all text-sm"
             >
               Add
             </button>
@@ -86,7 +86,7 @@ export default function TextControls({ onAddText, onUpdateText }: TextControlsPr
                   setBottomText('');
                 }
               }}
-              className="px-3 py-2 bg-gradient-to-r from-gem-crystal to-gem-blue text-black rounded font-semibold hover:scale-105 transition-all text-sm"
+              className="px-3 py-2 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink text-black rounded font-semibold hover:scale-105 transition-all text-sm"
             >
               Add
             </button>
@@ -110,7 +110,7 @@ export default function TextControls({ onAddText, onUpdateText }: TextControlsPr
                   setCustomText('');
                 }
               }}
-              className="px-3 py-2 bg-gradient-to-r from-gem-crystal to-gem-blue text-black rounded font-semibold hover:scale-105 transition-all text-sm"
+              className="px-3 py-2 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink text-black rounded font-semibold hover:scale-105 transition-all text-sm"
             >
               Add
             </button>

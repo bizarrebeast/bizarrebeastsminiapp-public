@@ -48,7 +48,7 @@ export function Navbar() {
                 alt="BizarreBeasts Logo" 
                 className="w-8 h-8 object-contain rounded-lg transition-all duration-300 group-hover:scale-110"
               />
-              <span className="bg-gradient-to-r from-gem-gold via-gem-crystal to-gem-blue bg-clip-text text-transparent font-bold text-xl group-hover:from-gem-crystal group-hover:via-gem-gold group-hover:to-gem-purple transition-all duration-300">
+              <span className="bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent font-bold text-xl group-hover:from-gem-gold group-hover:via-gem-pink group-hover:to-gem-crystal transition-all duration-300">
                 BizarreBeasts
               </span>
             </Link>
@@ -85,7 +85,7 @@ export function Navbar() {
                   key={item.href}
                   href={item.href}
                   onClick={() => setIsOpen(false)}
-                  className="bg-gradient-to-r from-gem-gold via-gem-crystal to-gem-blue bg-clip-text text-transparent hover:from-gem-crystal hover:via-gem-purple hover:to-gem-gold hover:bg-gem-crystal/10 block px-3 py-3 rounded-lg text-base font-medium flex items-center gap-3 transition-all duration-300"
+                  className="bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent hover:from-gem-crystal hover:via-gem-purple hover:to-gem-gold hover:bg-gem-crystal/10 block px-3 py-3 rounded-lg text-base font-medium flex items-center gap-3 transition-all duration-300"
                 >
                   <Icon className="w-5 h-5 text-gem-crystal flex-shrink-0" />
                   <span>{item.label}</span>

@@ -91,7 +91,7 @@ export const gamesData: GameData[] = [
   },
   {
     id: 'memory-game',
-    title: 'BizarreBeasts Memory',
+    title: 'Memory Game',
     description: 'Test your memory with BizarreBeasts characters! Flip cards to find matching pairs in this classic memory game with a bizarre twist. Features multiple difficulty levels and unique BizarreBeasts artwork on every card.',
     shortDescription: 'Classic memory matching game with BizarreBeasts',
     bannerImage: '/assets/page-assets/games/banners/bizarrebeasts-memory-game-banner-5.svg',

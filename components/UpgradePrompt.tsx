@@ -237,7 +237,7 @@ export default function UpgradePrompt({
           {/* Buy BB Tokens - Link to internal swap page */}
           <Link
             href="/swap"
-            className="w-full flex items-center justify-between p-3 bg-gradient-to-r from-gem-gold/20 to-gem-crystal/20 border border-gem-gold/30 rounded-lg hover:border-gem-gold/50 transition-all group"
+            className="w-full flex items-center justify-between p-3 bg-gradient-to-r from-gem-crystal/20 via-gem-gold/20 to-gem-pink/20 border border-gem-gold/30 rounded-lg hover:border-gem-gold/50 transition-all group"
           >
             <div className="flex items-center gap-3">
               <TrendingUp className="w-5 h-5 text-gem-gold" />
@@ -254,7 +254,7 @@ export default function UpgradePrompt({
             href={SWAP_LINKS.empireBoosters}
             target="_blank"
             rel="noopener noreferrer"
-            className="w-full flex items-center justify-between p-3 bg-gradient-to-r from-gem-purple/20 to-gem-blue/20 border border-gem-purple/30 rounded-lg hover:border-gem-purple/50 transition-all group"
+            className="w-full flex items-center justify-between p-3 bg-gradient-to-r from-gem-crystal/20 via-gem-gold/20 to-gem-pink/20 border border-gem-purple/30 rounded-lg hover:border-gem-purple/50 transition-all group"
           >
             <div className="flex items-center gap-3">
               <Zap className="w-5 h-5 text-gem-purple" />

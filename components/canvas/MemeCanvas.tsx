@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
-import { Canvas, FabricImage, FabricText } from 'fabric';
+import { Canvas, FabricImage, FabricText, Rect as FabricRect } from 'fabric';
 import { Sticker, TextOptions, ExportOptions, StickerCollection, BackgroundImage } from '@/types';
 import { shareMemeToFarcaster } from '@/lib/farcaster';
 import { Info, ChevronDown, ChevronUp } from 'lucide-react';
@@ -18,6 +18,7 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
   const [backgroundColor, setBackgroundColor] = useState('transparent');
   const [canvasSize, setCanvasSize] = useState({ width: 600, height: 600 });
   const [showInstructions, setShowInstructions] = useState(false);
+  const [isCropMode, setIsCropMode] = useState(false);
   const historyRef = useRef<string[]>([]);
   const historyIndexRef = useRef<number>(-1);
   const canvasApiRef = useRef<any>(null);
@@ -44,6 +45,13 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
   // Initialize canvas only when size changes
   useEffect(() => {
     if (!canvasRef.current || !canvasSize.width) return;
+    
+    // Preserve existing canvas data if canvas exists
+    let existingData = null;
+    if (fabricCanvasRef.current) {
+      existingData = JSON.stringify(fabricCanvasRef.current.toJSON());
+      fabricCanvasRef.current.dispose();
+    }
 
     // Initialize Fabric.js canvas with responsive size
     const canvas = new Canvas(canvasRef.current, {
@@ -53,13 +61,26 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
       uniformScaling: false, // Allow proportional scaling with shift key
       centeredRotation: true,
       centeredScaling: true,
+      // Improve selection visibility
+      selectionColor: 'rgba(100, 100, 255, 0.3)',
+      selectionBorderColor: 'rgba(255, 255, 255, 0.8)',
+      selectionLineWidth: 2,
+      selectionDashArray: [10, 5],
     });
 
     fabricCanvasRef.current = canvas;
     
-    // Save initial state
-    historyRef.current = [JSON.stringify(canvas.toJSON())];
-    historyIndexRef.current = 0;
+    // Restore existing data if available, otherwise save initial state
+    if (existingData) {
+      canvas.loadFromJSON(existingData, () => {
+        canvas.renderAll();
+      });
+      // Keep existing history
+    } else {
+      // Save initial state
+      historyRef.current = [JSON.stringify(canvas.toJSON())];
+      historyIndexRef.current = 0;
+    }
     
     // Track changes for undo/redo
     canvas.on('object:added', () => saveHistory());
@@ -99,7 +120,7 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
       }
     };
     
-    // Add snap-to-center functionality
+    // Add snap-to-center and edge snapping functionality
     const centerLine = canvasSize.width / 2;
     const middleLine = canvasSize.height / 2;
     const snapZone = 10; // Pixels within which to snap
@@ -108,26 +129,46 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
       const obj = e.target;
       if (!obj) return;
       
-      // Get object center
-      const objCenterX = obj.left! + (obj.width! * obj.scaleX!) / 2;
-      const objCenterY = obj.top! + (obj.height! * obj.scaleY!) / 2;
+      // Get object dimensions
+      const objWidth = obj.width! * obj.scaleX!;
+      const objHeight = obj.height! * obj.scaleY!;
+      const objCenterX = obj.left! + objWidth / 2;
+      const objCenterY = obj.top! + objHeight / 2;
       
       // Snap to vertical center
       if (Math.abs(objCenterX - centerLine) < snapZone) {
         obj.set({
-          left: centerLine - (obj.width! * obj.scaleX!) / 2,
+          left: centerLine - objWidth / 2,
         });
       }
       
       // Snap to horizontal middle
       if (Math.abs(objCenterY - middleLine) < snapZone) {
         obj.set({
-          top: middleLine - (obj.height! * obj.scaleY!) / 2,
+          top: middleLine - objHeight / 2,
         });
       }
       
-      // Remove edge snapping to allow objects to go off canvas
-      // Objects can now freely move beyond canvas boundaries
+      // Edge snapping
+      // Snap to left edge
+      if (Math.abs(obj.left!) < snapZone) {
+        obj.set({ left: 0 });
+      }
+      
+      // Snap to right edge
+      if (Math.abs(obj.left! + objWidth - canvasSize.width) < snapZone) {
+        obj.set({ left: canvasSize.width - objWidth });
+      }
+      
+      // Snap to top edge
+      if (Math.abs(obj.top!) < snapZone) {
+        obj.set({ top: 0 });
+      }
+      
+      // Snap to bottom edge
+      if (Math.abs(obj.top! + objHeight - canvasSize.height) < snapZone) {
+        obj.set({ top: canvasSize.height - objHeight });
+      }
     });
 
     // Enable text editing on double-click
@@ -149,6 +190,15 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
       }
     });
 
+    // Add click-away behavior to deselect objects
+    canvas.on('mouse:down', (e) => {
+      // If no target (clicking on empty canvas) and there's an active object
+      if (!e.target && canvas.getActiveObject()) {
+        canvas.discardActiveObject();
+        canvas.renderAll();
+      }
+    });
+
     // Canvas API for parent component
     const canvasApi = {
       addSticker: (sticker: Sticker) => {
@@ -167,6 +217,11 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
             lockScalingFlip: true, // Prevent negative scaling
             centeredRotation: true,
             hasRotatingPoint: true, // Enable rotation handle
+            borderColor: 'rgba(255, 255, 255, 0.9)',
+            cornerColor: 'rgba(255, 255, 255, 0.9)',
+            cornerSize: 12,
+            transparentCorners: false,
+            cornerStyle: 'circle',
           });
           canvas.add(img);
           canvas.setActiveObject(img);
@@ -191,6 +246,11 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
           originY: options.position === 'bottom' ? 'bottom' : 
                    options.position === 'custom' ? 'center' : 'top',
           editable: true,
+          borderColor: 'rgba(255, 255, 255, 0.9)',
+          cornerColor: 'rgba(255, 255, 255, 0.9)',
+          cornerSize: 12,
+          transparentCorners: false,
+          cornerStyle: 'circle',
         });
         canvas.add(textObj);
         canvas.setActiveObject(textObj);
@@ -236,6 +296,47 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
         const activeObject = canvas.getActiveObject();
         if (activeObject) {
           canvas.remove(activeObject);
+          canvas.renderAll();
+        }
+      },
+
+      toggleCropMode: () => {
+        const activeObject = canvas.getActiveObject();
+        if (!activeObject || activeObject.type !== 'image') {
+          alert('Please select an image to crop');
+          return;
+        }
+        
+        setIsCropMode(!isCropMode);
+        
+        if (!isCropMode) {
+          // Entering crop mode
+          activeObject.set({
+            selectable: true,
+            evented: true,
+            lockMovementX: false,
+            lockMovementY: false,
+            lockScalingX: false,
+            lockScalingY: false,
+            borderColor: 'rgba(255, 165, 0, 0.9)',
+            cornerColor: 'rgba(255, 165, 0, 0.9)',
+          });
+          canvas.renderAll();
+        } else {
+          // Exiting crop mode - apply basic crop by adjusting clipPath
+          const cropRect = new FabricRect({
+            left: 0,
+            top: 0,
+            width: activeObject.width! * activeObject.scaleX!,
+            height: activeObject.height! * activeObject.scaleY!,
+            absolutePositioned: true,
+          });
+          
+          activeObject.clipPath = cropRect;
+          activeObject.set({
+            borderColor: 'rgba(255, 255, 255, 0.9)',
+            cornerColor: 'rgba(255, 255, 255, 0.9)',
+          });
           canvas.renderAll();
         }
       },
@@ -293,10 +394,20 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
           canvas.renderAll();
         }
 
-        // Export canvas as PNG
+        // Determine export settings based on use case
+        const exportSize = 800; // Target size in pixels
+        const isSharing = options.shareToFarcaster;
+        
+        // For sharing, use JPEG with compression for smaller file size
+        // For download, use PNG for better quality (unless JPEG is specifically requested)
+        const exportFormat = isSharing ? 'jpeg' : (options.format === 'jpg' ? 'jpeg' : 'png');
+        const quality = isSharing ? 0.85 : 0.95; // Lower quality for sharing, higher for download
+        
+        // Export canvas with appropriate settings
         const dataURL = canvas.toDataURL({
-          format: 'png', // Always use PNG for crisp text
-          multiplier: 800 / canvas.width!, // Scale to 800x800 for export
+          format: exportFormat,
+          quality: exportFormat === 'jpeg' ? quality : undefined, // Quality only applies to JPEG
+          multiplier: exportSize / canvas.width!, // Scale to target size
         });
 
         // Remove watermark after export
@@ -306,11 +417,47 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
           canvas.renderAll();
         }
 
+        // Optional: Further compress if file size is still too large
+        const compressImage = async (dataUrl: string, maxSizeKB: number = 500): Promise<string> => {
+          // Check current size
+          const sizeInBytes = Math.round((dataUrl.length * 3) / 4);
+          const sizeInKB = sizeInBytes / 1024;
+          
+          if (sizeInKB <= maxSizeKB || exportFormat === 'png') {
+            return dataUrl; // Already small enough or PNG (don't recompress)
+          }
+          
+          // Progressively reduce quality for JPEG
+          let currentQuality = quality;
+          let compressedDataUrl = dataUrl;
+          
+          while (sizeInKB > maxSizeKB && currentQuality > 0.3) {
+            currentQuality -= 0.1;
+            compressedDataUrl = canvas.toDataURL({
+              format: 'jpeg',
+              quality: currentQuality,
+              multiplier: exportSize / canvas.width!,
+            });
+            
+            const newSize = Math.round((compressedDataUrl.length * 3) / 4) / 1024;
+            if (newSize <= maxSizeKB) break;
+          }
+          
+          return compressedDataUrl;
+        };
+
+        // Compress for sharing if needed
+        let finalDataURL = dataURL;
+        if (isSharing) {
+          finalDataURL = await compressImage(dataURL, 300); // Target 300KB for social sharing
+        }
+
         // Handle download
         if (options.downloadToDevice) {
           const link = document.createElement('a');
-          link.download = `meme-${Date.now()}.${options.format}`;
-          link.href = dataURL;
+          const extension = exportFormat === 'jpeg' ? 'jpg' : 'png';
+          link.download = `meme-${Date.now()}.${extension}`;
+          link.href = finalDataURL;
           link.click();
         }
 
@@ -320,16 +467,16 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
           const warpcastWindow = window.open('about:blank', '_blank');
           
           try {
-            // Prepare the share URL
-            const shareUrl = await shareMemeToFarcaster(dataURL, undefined, undefined, warpcastWindow);
-            console.log('Farcaster share initiated');
+            // Use compressed version for sharing
+            const shareUrl = await shareMemeToFarcaster(finalDataURL, undefined, undefined, warpcastWindow);
+            console.log('Farcaster share initiated with compressed image');
           } catch (error) {
             console.error('Failed to share to Farcaster:', error);
             if (warpcastWindow) warpcastWindow.close();
           }
         }
 
-        return dataURL;
+        return finalDataURL;
       },
     };
 
@@ -415,6 +562,19 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
           >
             Clear
           </button>
+          <button
+            onClick={() => {
+              canvasApiRef.current?.toggleCropMode();
+            }}
+            className={`px-2 sm:px-3 py-1 rounded hover:scale-105 transition-all text-xs sm:text-sm font-semibold ${
+              isCropMode 
+                ? 'bg-gradient-to-r from-orange-600 to-orange-700 text-white' 
+                : 'bg-gradient-to-r from-purple-600 to-purple-700 text-white'
+            }`}
+            title="Toggle crop mode for images (Basic implementation)"
+          >
+            {isCropMode ? 'Exit Crop' : 'Crop'}
+          </button>
         </div>
         
         {/* Background Color Picker - Only show if collection supports colors */}
@@ -497,6 +657,7 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
                   <li>• Drag corner handles to resize</li>
                   <li>• Double-click text areas to edit</li>
                   <li>• Use Delete key or trash button to remove items</li>
+                  <li>• Click Crop button to crop selected images (basic)</li>
                 </ul>
               </div>
               
@@ -505,7 +666,8 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
                 <ul className="text-gray-400 space-y-1 ml-4">
                   <li>• Top & bottom text work best for classic meme format</li>
                   <li>• Layer stickers to create dynamic scenes</li>
-                  <li>• Items snap to center for perfect alignment</li>
+                  <li>• Items snap to center and edges for perfect alignment</li>
+                  <li>• Click away from objects to deselect them</li>
                 </ul>
               </div>
               

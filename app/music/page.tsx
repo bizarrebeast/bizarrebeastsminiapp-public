@@ -117,17 +117,18 @@ export default function MusicPage() {
     <div className="min-h-[calc(100vh-64px)] bg-dark-bg">
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2 flex items-center gap-3">
-            <Music className="w-8 h-8 text-gem-crystal" />
-            <span className="bg-gradient-to-r from-gem-gold via-gem-crystal to-gem-blue bg-clip-text text-transparent">
-              Game Soundtracks
-            </span>
-          </h1>
-          <p className="text-gray-400">
-            Original music from BizarreBeasts games. Stream on your favorite platform or collect as NFTs.
-          </p>
+        <div className="mb-8 flex justify-center">
+          <img 
+            src="/assets/page-assets/banners/music-game-soundtracks-banner.png" 
+            alt="Game Soundtracks - Original music from BizarreBeasts games. Stream on your favorite platform or collect as NFTs."
+            className="w-full max-w-4xl object-contain rounded-2xl"
+          />
         </div>
+        
+        {/* Description */}
+        <p className="text-lg text-gray-300 mb-8 max-w-4xl mx-auto px-4 text-center">
+          Original music from BizarreBeasts games! Stream BIZARRE, original soundtracks from BizarreBeasts games on your favorite platform, or collect them as exclusive NFTs. Experience the full BIZARRE audio universe that brings the games to life.
+        </p>
 
         {/* About the Music Section */}
         <div className="mb-8 bg-gray-800/50 rounded-lg p-6 border border-gray-700">

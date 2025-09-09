@@ -46,7 +46,7 @@ export default function LeaderboardPage() {
       case 2:
         return 'text-gem-crystal';
       case 3:
-        return 'text-gem-blue';
+        return 'text-gem-pink';
       default:
         return 'text-gray-400';
     }
@@ -59,7 +59,7 @@ export default function LeaderboardPage() {
       case 2:
         return <Medal className="w-5 h-5 text-gem-crystal" />;
       case 3:
-        return <Award className="w-5 h-5 text-gem-blue" />;
+        return <Award className="w-5 h-5 text-gem-pink" />;
       default:
         return <span className="text-gray-400">#{rank}</span>;
     }
@@ -76,7 +76,7 @@ export default function LeaderboardPage() {
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-gem-gold via-gem-crystal to-gem-blue bg-clip-text text-transparent">
+          <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent">
             Leaderboard
           </h1>
           <p className="text-xl text-gray-300">
@@ -94,7 +94,7 @@ export default function LeaderboardPage() {
                   ? 'border-gem-gold/40'
                   : index === 1
                   ? 'border-gem-crystal/40'
-                  : 'border-gem-blue/40'
+                  : 'border-gem-pink/40'
               } rounded-lg p-6 text-center hover:scale-105 transition-all duration-300`}
             >
               <div className="text-4xl mb-2">{player.avatar}</div>
@@ -133,7 +133,7 @@ export default function LeaderboardPage() {
                     onClick={() => setSelectedType(type)}
                     className={`flex-1 px-4 py-2 rounded-lg font-semibold transition-all duration-300 ${
                       selectedType === type
-                        ? 'bg-gradient-to-r from-gem-gold to-gem-crystal text-dark-bg'
+                        ? 'bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink text-dark-bg'
                         : 'bg-dark-panel text-gray-400 hover:text-gem-crystal hover:border-gem-crystal/40 border border-transparent'
                     }`}
                   >
@@ -162,10 +162,10 @@ export default function LeaderboardPage() {
         </div>
 
         {/* Leaderboard Table */}
-        <div className="bg-dark-card border border-gem-purple/20 rounded-lg overflow-hidden">
+        <div className="bg-dark-card border border-gem-pink/20 rounded-lg overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-dark-panel border-b border-gem-purple/20">
+              <thead className="bg-dark-panel border-b border-gem-pink/20">
                 <tr>
                   <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Rank</th>
                   <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Player</th>
@@ -179,7 +179,7 @@ export default function LeaderboardPage() {
                 {mockLeaderboardData[selectedType].map((player) => (
                   <tr
                     key={player.rank}
-                    className="border-b border-gem-purple/10 hover:bg-gem-purple/5 transition-all duration-300"
+                    className="border-b border-gem-pink/10 hover:bg-gem-pink/5 transition-all duration-300"
                   >
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
@@ -226,7 +226,7 @@ export default function LeaderboardPage() {
         </div>
 
         {/* Your Position */}
-        <div className="mt-8 bg-gradient-to-r from-gem-crystal/20 to-gem-gold/20 rounded-lg p-6 border border-gem-crystal/30">
+        <div className="mt-8 bg-gradient-to-r from-gem-crystal/20 via-gem-gold/20 to-gem-pink/20 rounded-lg p-6 border border-gem-crystal/30">
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-xl font-bold mb-2">Your Position</h3>
@@ -240,10 +240,10 @@ export default function LeaderboardPage() {
             </div>
           </div>
           <div className="mt-4 flex gap-4">
-            <button className="flex-1 bg-gradient-to-r from-gem-gold to-gem-crystal text-dark-bg px-4 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105">
+            <button className="flex-1 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink text-dark-bg px-4 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105">
               View My Stats
             </button>
-            <button className="flex-1 bg-gradient-to-r from-gem-purple to-gem-pink text-dark-bg px-4 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105">
+            <button className="flex-1 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink text-dark-bg px-4 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105">
               Challenge Friend
             </button>
           </div>

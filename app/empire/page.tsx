@@ -50,9 +50,9 @@ export default function EmpirePage() {
       case AccessTier.ELITE:
         return 'text-gem-gold';
       case AccessTier.CHAMPION:
-        return 'text-gem-purple';
+        return 'text-gem-gold';
       case AccessTier.VETERAN:
-        return 'text-gem-blue';
+        return 'text-gem-pink';
       case AccessTier.MEMBER:
         return 'text-gem-crystal';
       default:
@@ -77,9 +77,18 @@ export default function EmpirePage() {
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl sm:text-4xl font-bold text-white mb-4">
-            Empire Leaderboard
-          </h1>
+          <div className="mb-4 flex justify-center">
+            <img 
+              src="/assets/page-assets/banners/empire-leaderboard-banner.png" 
+              alt="Empire Leaderboard"
+              className="w-full max-w-4xl object-contain rounded-2xl"
+            />
+          </div>
+          
+          {/* Description */}
+          <p className="text-lg text-gray-300 mb-8 max-w-4xl mx-auto px-4 text-center">
+            Climb the ranks and unlock exclusive features based on your $BB holdings! See where you stand among the BizarreBeasts community and discover what premium content awaits at higher Empire positions. Your leaderboard position qualifies you for treasury distributions, NFT raffles, and other BIZARRE perks! Powered by EmpireBuilder.world ($GLANKER)
+          </p>
           
           {/* Search Bar */}
           <div className="flex gap-2 mb-4">
@@ -97,16 +106,16 @@ export default function EmpirePage() {
             <button
               onClick={handleSearch}
               disabled={searching}
-              className="px-6 py-3 bg-gradient-to-r from-gem-gold to-gem-crystal text-black font-semibold rounded-lg hover:opacity-90 transition disabled:opacity-50"
+              className="px-6 py-3 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink text-black font-semibold rounded-lg hover:opacity-90 transition disabled:opacity-50"
             >
               {searching ? 'Searching...' : 'Search'}
             </button>
           </div>
 
           {/* Instructions */}
-          <div className="bg-dark-card border border-gem-purple/20 rounded-lg p-4 mb-6">
+          <div className="bg-dark-card border border-gem-pink/20 rounded-lg p-4 mb-6">
             <div className="flex items-start gap-2">
-              <Info className="w-5 h-5 text-gem-purple mt-0.5" />
+              <Info className="w-5 h-5 text-gem-pink mt-0.5" />
               <div className="text-gray-300 text-sm space-y-1">
                 <p className="font-semibold text-white">How Empire Ranking Works:</p>
                 <p>• The Empire leaderboard ranks holders based on their $BB tokens and boost multipliers</p>
@@ -119,7 +128,7 @@ export default function EmpirePage() {
 
           {/* Search Result */}
           {searchResult && (
-            <div className="bg-gradient-to-r from-gem-gold/20 to-gem-crystal/20 border border-gem-gold/40 rounded-lg p-4 mb-6">
+            <div className="bg-gradient-to-r from-gem-crystal/20 via-gem-gold/20 to-gem-pink/20 border border-gem-gold/40 rounded-lg p-4 mb-6">
               <h3 className="text-white font-semibold mb-2">Search Result:</h3>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -164,7 +173,7 @@ export default function EmpirePage() {
                   <p className="text-white font-medium truncate">
                     {holder.farcasterUsername ? `@${holder.farcasterUsername}` : empireService.formatAddress(holder.address)}
                   </p>
-                  <p className="text-2xl font-bold bg-gradient-to-r from-gem-gold to-gem-crystal bg-clip-text text-transparent">
+                  <p className="text-2xl font-bold bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent">
                     {empireService.formatScore(holder.balance)}
                   </p>
                   <p className="text-gray-400 text-sm">{holder.finalMultiplier.toFixed(1)}x multiplier</p>
@@ -180,11 +189,11 @@ export default function EmpirePage() {
             <table className="w-full">
               <thead className="bg-dark-bg border-b border-gem-crystal/20">
                 <tr>
-                  <th className="text-left px-4 py-3 text-gray-400 font-medium">Rank</th>
-                  <th className="text-left px-4 py-3 text-gray-400 font-medium">Address/Name</th>
-                  <th className="text-right px-4 py-3 text-gray-400 font-medium">Score</th>
-                  <th className="text-right px-4 py-3 text-gray-400 font-medium">Boosters</th>
-                  <th className="text-center px-4 py-3 text-gray-400 font-medium hidden sm:table-cell">Tier</th>
+                  <th className="text-left px-2 sm:px-4 py-3 text-gray-400 font-medium text-xs sm:text-sm">Rank</th>
+                  <th className="text-center px-2 sm:px-4 py-3 text-gray-400 font-medium text-xs sm:text-sm">Tier</th>
+                  <th className="text-left px-2 sm:px-4 py-3 text-gray-400 font-medium text-xs sm:text-sm">Address/Name</th>
+                  <th className="text-right px-2 sm:px-4 py-3 text-gray-400 font-medium text-xs sm:text-sm">Score</th>
+                  <th className="text-right px-2 sm:px-4 py-3 text-gray-400 font-medium text-xs sm:text-sm hidden sm:table-cell">Boosters</th>
                 </tr>
               </thead>
               <tbody>
@@ -203,14 +212,19 @@ export default function EmpirePage() {
                 ) : (
                   leaderboard.slice(0, 100).map((holder) => (
                     <tr key={holder.address} className="border-b border-gray-800 hover:bg-dark-card/50 transition">
-                      <td className="px-4 py-3">
-                        <span className={`font-bold ${getTierColor(holder.rank)}`}>
+                      <td className="px-2 sm:px-4 py-3">
+                        <span className={`font-bold text-xs sm:text-base ${getTierColor(holder.rank)}`}>
                           {getTierBadge(holder.rank)} {holder.rank}
                         </span>
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="px-2 sm:px-4 py-3 text-center">
+                        <span className={`text-[10px] sm:text-xs font-semibold uppercase ${getTierColor(holder.rank)}`}>
+                          {empireService.getUserTier(holder.rank)}
+                        </span>
+                      </td>
+                      <td className="px-2 sm:px-4 py-3">
                         <div>
-                          <p className="text-white font-medium">
+                          <p className="text-white font-medium text-xs sm:text-base truncate">
                             {holder.farcasterUsername ? (
                               <span className="text-gem-crystal">@{holder.farcasterUsername}</span>
                             ) : (
@@ -218,20 +232,15 @@ export default function EmpirePage() {
                             )}
                           </p>
                           {holder.farcasterUsername && (
-                            <p className="text-gray-500 text-xs">{empireService.formatAddress(holder.address)}</p>
+                            <p className="text-gray-500 text-[10px] sm:text-xs truncate">{empireService.formatAddress(holder.address)}</p>
                           )}
                         </div>
                       </td>
-                      <td className="px-4 py-3 text-right">
-                        <p className="text-white font-semibold">{empireService.formatScore(holder.balance)}</p>
+                      <td className="px-2 sm:px-4 py-3 text-right">
+                        <p className="text-white font-semibold text-xs sm:text-base">{empireService.formatScore(holder.balance)}</p>
                       </td>
-                      <td className="px-4 py-3 text-right">
+                      <td className="px-2 sm:px-4 py-3 text-right hidden sm:table-cell">
                         <p className="text-gray-300">{holder.finalMultiplier.toFixed(1)}x</p>
-                      </td>
-                      <td className="px-4 py-3 text-center hidden sm:table-cell">
-                        <span className={`text-xs font-semibold uppercase ${getTierColor(holder.rank)}`}>
-                          {empireService.getUserTier(holder.rank)}
-                        </span>
                       </td>
                     </tr>
                   ))
@@ -250,11 +259,11 @@ export default function EmpirePage() {
         {/* Tier Benefits */}
         <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
           {Object.values(AccessTier).map((tier) => (
-            <div key={tier} className="bg-dark-card border border-gem-purple/20 rounded-lg p-4">
+            <div key={tier} className="bg-dark-card border border-gem-pink/20 rounded-lg p-4">
               <h4 className={`font-semibold mb-2 capitalize ${
                 tier === AccessTier.ELITE ? 'text-gem-gold' :
-                tier === AccessTier.CHAMPION ? 'text-gem-purple' :
-                tier === AccessTier.VETERAN ? 'text-gem-blue' :
+                tier === AccessTier.CHAMPION ? 'text-gem-gold' :
+                tier === AccessTier.VETERAN ? 'text-gem-pink' :
                 tier === AccessTier.MEMBER ? 'text-gem-crystal' :
                 'text-gray-400'
               }`}>

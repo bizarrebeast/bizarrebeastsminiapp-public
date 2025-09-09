@@ -115,7 +115,7 @@ export function GatedFeature({
             <div className="flex flex-col gap-2">
               <Link
                 href="/empire"
-                className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-gem-gold to-gem-crystal text-black text-xs font-semibold rounded hover:opacity-90 transition"
+                className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink text-black text-xs font-semibold rounded hover:opacity-90 transition"
               >
                 <TrendingUp className="w-3 h-3" />
                 View Empire Leaderboard

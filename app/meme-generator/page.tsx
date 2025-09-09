@@ -78,10 +78,18 @@ export default function MemeGeneratorPage() {
     <div className="min-h-[calc(100vh-64px)] bg-dark-bg flex flex-col">
       <div className="flex-1 flex flex-col w-full max-w-7xl mx-auto px-2 sm:px-4 py-2 sm:py-4">
         {/* Header */}
-        <div className="mb-4">
-          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white mb-1">Meme Generator</h1>
-          <p className="text-gray-400 text-sm sm:text-base">Create epic memes with BizarreBeasts stickers</p>
+        <div className="mb-4 flex justify-center">
+          <img 
+            src="/assets/page-assets/banners/stickers-meme-creator-banner.png" 
+            alt="Meme Generator - Create epic memes with BizarreBeasts stickers"
+            className="w-full max-w-4xl object-contain rounded-2xl"
+          />
         </div>
+        
+        {/* Description */}
+        <p className="text-lg text-gray-300 mb-8 max-w-4xl mx-auto px-4 text-center">
+          Create your own memes, PFPs, and artwork with BizarreBeasts stickers from the BizarreBeasts universe! Choose from original artwork, game sprites, animations, and unique collections created by BIZARRE community members based on BizarreBeasts characters.
+        </p>
 
         {/* Sticker Library - Above everything */}
         <div className="bg-dark-card border border-gem-crystal/20 rounded-lg p-3 sm:p-4 mb-4">

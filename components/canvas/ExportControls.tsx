@@ -88,7 +88,7 @@ export default function ExportControls({ onExport }: ExportControlsProps) {
           <div className="space-y-2 mb-4">
         <button
           onClick={handleExport}
-          className="w-full bg-gradient-to-r from-gem-gold via-gem-crystal to-gem-blue text-black py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2"
+          className="w-full bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink text-black py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2"
         >
           <Download className="w-5 h-5" />
           Download Meme

@@ -21,35 +21,39 @@ export default function GamesPage() {
     <div className="min-h-[calc(100vh-64px)] px-4 py-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-gem-gold via-gem-crystal to-gem-blue bg-clip-text text-transparent">
-            BizarreBeasts Games
-          </h1>
-          <p className="text-xl text-gray-300">
-            8 Hand-crafted games with over {formatPlayCount(totalPlays)} plays!
-          </p>
+        <div className="text-center mb-12 flex justify-center">
+          <img 
+            src="/assets/page-assets/banners/bizarrebeasts-games-banner.png" 
+            alt={`BizarreBeasts Games - 8 Hand-crafted games with over ${formatPlayCount(totalPlays)} plays!`}
+            className="w-full max-w-4xl object-contain rounded-2xl"
+          />
         </div>
+        
+        {/* Description */}
+        <p className="text-lg text-gray-300 mb-8 max-w-4xl mx-auto px-4 text-center">
+          Play all 8 original BizarreBeasts games powered by Remix! Each game features original hand-illustrated BizarreBeasts artwork and characters from the universe. Jump into adventures, collect treasures, and experience the full BIZARRE gaming ecosystem. All games are playable across multiple platforms, including Farcaster, Telegram, World App, and coming soon to iOS and Android!
+        </p>
 
         {/* Quick Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
-          <div className="bg-dark-card border border-gem-gold/20 rounded-lg p-4 text-center transition-all duration-300">
+          <div className="bg-gradient-to-br from-dark-card via-dark-card to-gem-gold/5 border border-gem-gold/20 rounded-lg p-4 text-center transition-all duration-300">
             <Gamepad2 className="w-8 h-8 text-gem-gold mx-auto mb-2" />
             <div className="text-2xl font-bold text-gem-gold">8</div>
             <div className="text-sm text-gray-400">Games</div>
           </div>
-          <div className="bg-dark-card border border-gem-crystal/20 rounded-lg p-4 text-center transition-all duration-300">
+          <div className="bg-gradient-to-br from-dark-card via-dark-card to-gem-crystal/5 border border-gem-crystal/20 rounded-lg p-4 text-center transition-all duration-300">
             <PlayCircle className="w-8 h-8 text-gem-crystal mx-auto mb-2" />
-            <div className="text-2xl font-bold text-gem-crystal">{formatPlayCount(totalPlays)}</div>
+            <div className="text-2xl font-bold bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent">{formatPlayCount(totalPlays)}</div>
             <div className="text-sm text-gray-400">Total Plays</div>
           </div>
-          <div className="bg-dark-card border border-gem-blue/20 rounded-lg p-4 text-center transition-all duration-300">
-            <Trophy className="w-8 h-8 text-gem-blue mx-auto mb-2" />
-            <div className="text-2xl font-bold text-gem-blue">42K</div>
+          <div className="bg-gradient-to-br from-dark-card via-dark-card to-gem-gold/5 border border-gem-gold/20 rounded-lg p-4 text-center transition-all duration-300">
+            <Trophy className="w-8 h-8 text-gem-gold mx-auto mb-2" />
+            <div className="text-2xl font-bold bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent">42K</div>
             <div className="text-sm text-gray-400">Top Game Plays</div>
           </div>
-          <div className="bg-dark-card border border-gem-purple/20 rounded-lg p-4 text-center transition-all duration-300">
-            <Users className="w-8 h-8 text-gem-crystal mx-auto mb-2" />
-            <div className="text-2xl font-bold bg-gradient-to-r from-gem-gold via-gem-crystal to-gem-blue bg-clip-text text-transparent">10K+</div>
+          <div className="bg-gradient-to-br from-dark-card via-dark-card to-gem-pink/5 border border-gem-pink/20 rounded-lg p-4 text-center transition-all duration-300">
+            <Users className="w-8 h-8 text-gem-pink mx-auto mb-2" />
+            <div className="text-2xl font-bold bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent">10K+</div>
             <div className="text-sm text-gray-400">Players</div>
           </div>
         </div>
@@ -60,7 +64,7 @@ export default function GamesPage() {
             onClick={() => setSortBy('all')}
             className={`px-4 py-2 rounded-lg font-semibold transition-all duration-300 ${
               sortBy === 'all' 
-                ? 'bg-gradient-to-r from-gem-gold to-gem-crystal text-dark-bg' 
+                ? 'bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink text-dark-bg' 
                 : 'bg-dark-card border border-gem-crystal/20 text-gray-400 hover:text-gem-crystal'
             }`}
           >
@@ -70,7 +74,7 @@ export default function GamesPage() {
             onClick={() => setSortBy('popular')}
             className={`px-4 py-2 rounded-lg font-semibold transition-all duration-300 ${
               sortBy === 'popular' 
-                ? 'bg-gradient-to-r from-gem-gold to-gem-crystal text-dark-bg' 
+                ? 'bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink text-dark-bg' 
                 : 'bg-dark-card border border-gem-crystal/20 text-gray-400 hover:text-gem-crystal'
             }`}
           >
@@ -81,17 +85,22 @@ export default function GamesPage() {
         {/* Games Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {displayGames.map((game, index) => {
-            const gameColors = ['gem-gold', 'gem-crystal', 'gem-blue', 'gem-purple', 'gem-pink'];
-            const color = gameColors[index % gameColors.length];
-            
             // Determine if any platform link exists
             const hasLink = game.platforms.farcaster || game.platforms.telegram || 
                           game.platforms.worldApp || game.platforms.online;
             
+            // Use a rotation of gradient backgrounds for variety
+            const borderColors = [
+              'border-gem-crystal/20 hover:shadow-gem-crystal/20',
+              'border-gem-gold/20 hover:shadow-gem-gold/20',
+              'border-gem-pink/20 hover:shadow-gem-pink/20'
+            ];
+            const borderStyle = borderColors[index % borderColors.length];
+            
             return (
               <div
                 key={game.id}
-                className={`bg-dark-card border border-${color}/20 rounded-lg overflow-hidden hover:shadow-lg hover:shadow-${color}/20 transition-all duration-300 flex flex-col`}
+                className={`bg-gradient-to-br from-dark-card via-dark-card to-gem-crystal/5 border ${borderStyle} rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300 flex flex-col`}
               >
                 {/* Banner Image - Square */}
                 {game.bannerImage && (
@@ -118,7 +127,7 @@ export default function GamesPage() {
                   {/* Stats */}
                   <div className="grid grid-cols-2 gap-4 mb-4">
                     <div>
-                      <div className={`text-2xl font-bold bg-gradient-to-r from-${color} to-gem-crystal bg-clip-text text-transparent`}>
+                      <div className="text-2xl font-bold bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent">
                         {formatPlayCount(game.plays)}
                       </div>
                       <div className="text-gray-500 text-xs">Plays</div>
@@ -212,13 +221,13 @@ export default function GamesPage() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
                 href="/empire"
-                className="inline-block bg-gradient-to-r from-gem-gold via-gem-crystal to-gem-blue text-black px-8 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105"
+                className="inline-block bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink text-black px-8 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105"
               >
                 Join Empire
               </Link>
               <Link
                 href="/meme-generator"
-                className="inline-block bg-gradient-to-r from-gem-crystal to-gem-gold text-black px-8 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105"
+                className="inline-block bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink text-black px-8 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105"
               >
                 Create Memes
               </Link>
