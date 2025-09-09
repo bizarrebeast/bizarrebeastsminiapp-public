@@ -349,7 +349,7 @@ export default function ResourcesPage() {
             <h3 className="text-2xl font-bold mb-2">Complete Documentation</h3>
             <p className="text-gray-400 mb-6">Access all articles, guides, and updates on our Paragraph blog</p>
             <a
-              href="https://paragraph.xyz/@bizarrebeasts"
+              href="https://paragraph.com/@bizarrebeasts"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink text-dark-bg px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition-all duration-300 transform hover:scale-105"

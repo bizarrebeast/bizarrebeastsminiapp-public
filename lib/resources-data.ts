@@ -24,7 +24,7 @@ export const resources: Resource[] = [
     difficulty: 'beginner',
     featured: true,
     updatedDate: 'Dec 2024',
-    externalUrl: 'https://paragraph.xyz/@bizarrebeasts/bb-empire-guide',
+    externalUrl: 'https://paragraph.com/@bizarrebeasts/discover-the-bizarrebeasts-empire-everything-you-need-to-know-to-get-started',
     tags: ['empire', 'tokens', 'boosters', 'rewards']
   },
   {
@@ -37,7 +37,7 @@ export const resources: Resource[] = [
     difficulty: 'beginner',
     featured: true,
     updatedDate: 'Nov 2024',
-    externalUrl: 'https://paragraph.xyz/@bizarrebeasts/beginners-guide',
+    externalUrl: 'https://paragraph.com/@bizarrebeasts/curious-about-crypto-dive-into-bizarrebeasts-a-beginners-guide',
     tags: ['web3', 'nfts', 'getting-started', 'crypto']
   },
   {
@@ -50,7 +50,7 @@ export const resources: Resource[] = [
     difficulty: 'intermediate',
     featured: false,
     updatedDate: 'Oct 2024',
-    externalUrl: 'https://paragraph.xyz/@bizarrebeasts/bizarre-token-rewards',
+    externalUrl: 'https://paragraph.com/@bizarrebeasts/introducing-dollarbizarre',
     tags: ['bizarre', 'tokens', 'rewards']
   },
   {
@@ -63,7 +63,7 @@ export const resources: Resource[] = [
     difficulty: 'beginner',
     featured: false,
     updatedDate: 'Dec 2024',
-    externalUrl: 'https://paragraph.xyz/@bizarrebeasts/spanish-guide',
+    externalUrl: 'https://www.dropbox.com/scl/fi/t39e9axsqr051ami5enbn/Screenshot-2025-09-09-at-10.48.46-AM.png?rlkey=vjtuh68zwwp8fv4s8mngkoumo&dl=0',
     tags: ['español', 'guía', 'principiantes']
   },
   {
@@ -76,7 +76,7 @@ export const resources: Resource[] = [
     difficulty: 'beginner',
     featured: false,
     updatedDate: 'Dec 2024',
-    externalUrl: 'https://paragraph.xyz/@bizarrebeasts/korean-guide',
+    externalUrl: 'https://paragraph.com/@bizarrebeasts/bizarrebeasts-%EC%A0%9C%EA%B5%AD%EC%9D%84-%EB%B0%9C%EA%B2%AC%ED%95%98%EC%84%B8%EC%9A%94-%EC%8B%9C%EC%9E%91%EC%9D%84-%EC%9C%84%ED%95%9C-%EB%AA%A8%EB%93%A0-%EC%A0%95%EB%B3%B4',
     tags: ['한국어', '가이드', '초보자']
   }
 ];
@@ -145,7 +145,7 @@ export const checklistItems: ChecklistItem[] = [
     id: 'read-guide',
     text: 'Read the Empire Guide',
     description: 'Understand tokens, boosters, and how everything works',
-    link: 'https://paragraph.xyz/@bizarrebeasts/bb-empire-guide'
+    link: 'https://paragraph.com/@bizarrebeasts/discover-the-bizarrebeasts-empire-everything-you-need-to-know-to-get-started'
   },
   {
     id: 'get-tokens',
