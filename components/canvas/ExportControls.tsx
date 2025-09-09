@@ -97,7 +97,7 @@ export default function ExportControls({ onExport }: ExportControlsProps) {
         <button
           onClick={handleShareToFarcaster}
           disabled={isSharing}
-          className="w-full bg-gradient-to-r from-gem-crystal to-gem-gold text-black py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink text-black py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isSharing ? (
             <>
