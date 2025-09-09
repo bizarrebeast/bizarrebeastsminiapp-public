@@ -122,9 +122,11 @@ export default function SwapPage() {
             {/* BB Token Info */}
             <div className="bg-dark-card border border-gem-gold/20 rounded-lg p-6">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 bg-gradient-to-br from-gem-gold to-gem-crystal rounded-lg flex items-center justify-center">
-                  <span className="text-lg font-bold">BB</span>
-                </div>
+                <img 
+                  src="/assets/page-assets/logos/bb-token.png" 
+                  alt="$BB Token" 
+                  className="w-10 h-10 object-contain"
+                />
                 <div>
                   <h3 className="text-lg font-semibold text-white">BizarreBeasts</h3>
                   <p className="text-sm text-gray-400">$BB Token</p>
