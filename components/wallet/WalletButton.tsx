@@ -21,18 +21,8 @@ export function WalletButton() {
   } = useWallet();
 
   const getTierColor = () => {
-    switch(empireTier) {
-      case AccessTier.ELITE:
-        return 'from-gem-gold to-yellow-600';
-      case AccessTier.CHAMPION:
-        return 'from-gem-purple to-purple-600';
-      case AccessTier.VETERAN:
-        return 'from-gem-blue to-blue-600';
-      case AccessTier.MEMBER:
-        return 'from-gem-crystal to-teal-600';
-      default:
-        return 'from-gray-600 to-gray-700';
-    }
+    // Always use site gradient colors when connected
+    return 'from-gem-crystal via-gem-gold to-gem-pink';
   };
 
   const getTierBadge = () => {
@@ -79,9 +69,14 @@ export function WalletButton() {
   return (
     <div className="relative group">
       <button
-        className={`flex items-center gap-1 px-3 py-1.5 text-xs bg-gradient-to-r ${getTierColor()} text-white rounded transition-all duration-300 hover:opacity-90`}
+        className="relative flex items-center gap-1 px-3 py-1.5 text-xs bg-dark-card rounded transition-all duration-300 hover:opacity-90 overflow-hidden"
       >
-        <div className="flex items-center gap-1">
+        {/* Gradient border effect */}
+        <div className="absolute inset-0 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink rounded" />
+        <div className="absolute inset-[1px] bg-dark-card rounded" />
+        
+        {/* Content */}
+        <div className="relative flex items-center gap-1 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent font-semibold">
           {empireRank && (
             <>
               <span className="text-sm">{getTierBadge()}</span>

@@ -4,33 +4,36 @@ Place your Farcaster miniapp images in this folder. Required images:
 
 ## Required Images
 
-### 1. `hero.png` - Hero/Cover Image
+### 1. `icon.png` - App Icon (REQUIRED)
+- **Size**: 1024x1024px exactly
+- **Format**: PNG, no alpha/transparency
+- **Purpose**: App icon shown in Farcaster app directory and miniapp launcher
+- **Description**: Your main logo/icon
+- **Suggested**: Use the BizarreBeasts logo on solid background
+- **Max file size**: Keep under 1MB
+
+### 2. `splash.png` - Loading/Splash Screen (Optional)
+- **Size**: 200x200px exactly
+- **Format**: PNG
+- **Purpose**: Shown while the miniapp is loading
+- **Description**: Simple, clean loading state icon
+- **Suggested**: BizarreBeasts logo or $BB symbol
+
+## Additional Images for Marketing
+
+### 3. `hero.png` - Hero/Cover Image (Recommended)
 - **Size**: 1200x630px (1.91:1 aspect ratio)
 - **Format**: PNG
-- **Purpose**: Main preview image shown in Farcaster feeds and when shared
+- **Purpose**: Main preview image for social sharing
 - **Description**: Should showcase the app's main features or branding
 - **Suggested**: Include $BB logo, meme creator preview, and "BizarreBeasts Miniapp" text
 
-### 2. `icon.png` - App Icon
-- **Size**: 512x512px (1:1 square)
-- **Format**: PNG with transparency support
-- **Purpose**: App icon shown in Farcaster app directory and miniapp launcher
-- **Description**: Your main logo/icon
-- **Suggested**: Use the BizarreBeasts logo
-
-### 3. `og-image.png` - Open Graph Image
+### 4. `og-image.png` - Open Graph Image (Recommended)
 - **Size**: 1200x630px (1.91:1 aspect ratio)
 - **Format**: PNG
 - **Purpose**: Social media preview when sharing links
 - **Description**: Can be same as hero.png or different
 - **Suggested**: Feature key app capabilities with clear text
-
-### 4. `splash.png` - Loading/Splash Screen (Optional)
-- **Size**: 1200x630px (1.91:1 aspect ratio)
-- **Format**: PNG
-- **Purpose**: Shown while the miniapp is loading
-- **Description**: Simple, clean loading state
-- **Suggested**: BizarreBeasts logo with "Loading..." or animated feel
 
 ### 5. `preview-1.png`, `preview-2.png`, `preview-3.png` - App Screenshots (Optional)
 - **Size**: 1080x1920px (9:16 mobile) or 1920x1080px (16:9 desktop)

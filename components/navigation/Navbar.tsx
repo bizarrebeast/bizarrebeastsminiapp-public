@@ -58,10 +58,18 @@ export function Navbar() {
             <WalletButton />
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="relative p-2 text-gray-400 hover:text-gem-crystal focus:outline-none focus:text-gem-crystal transition-colors duration-300 hover:bg-gem-crystal/10 rounded-lg"
+              className="relative p-2 hover:opacity-80 focus:outline-none transition-all duration-300 rounded-lg overflow-hidden group"
               aria-label="Menu"
             >
-              {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {/* Gradient background that shows on hover */}
+              <div className="absolute inset-0 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink opacity-0 group-hover:opacity-10 transition-opacity" />
+              
+              {/* Icon with gradient color */}
+              {isOpen ? (
+                <X className="w-6 h-6 text-gem-pink relative z-10" />
+              ) : (
+                <Menu className="w-6 h-6 text-gem-pink relative z-10" />
+              )}
             </button>
           </div>
         </div>

@@ -1,13 +1,8 @@
 {
-  "frame": {
-    "version": "1",
-    "name": "BizarreBeasts Miniapp",
-    "iconUrl": "https://app.bizarrebeasts.io/icon.png",
-    "homeUrl": "https://app.bizarrebeasts.io",
-    "imageUrl": "https://app.bizarrebeasts.io/og-image.png",
-    "buttonTitle": "Launch BizarreBeasts",
-    "splashImageUrl": "https://app.bizarrebeasts.io/og-image.png",
-    "splashBackgroundColor": "#0A0A0A",
-    "webhookUrl": "https://app.bizarrebeasts.io/api/frame/webhook"
-  }
+  "version": "1",
+  "name": "BizarreBeasts Miniapp",
+  "homeUrl": "https://app.bizarrebeasts.io",
+  "iconUrl": "https://app.bizarrebeasts.io/farcaster-assets/icon.png",
+  "splashImageUrl": "https://app.bizarrebeasts.io/farcaster-assets/splash.png",
+  "splashBackgroundColor": "#0A0A0A"
 }
