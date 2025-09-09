@@ -61,13 +61,7 @@ export default function Home() {
           {/* Quick Stats */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-3xl mx-auto mb-12">
             <Link href="/swap" className="bg-gradient-to-br from-dark-card via-dark-card to-gem-crystal/5 border border-gem-crystal/20 rounded-lg p-4 transition-all duration-300 hover:border-gem-crystal/40 hover:scale-105 cursor-pointer">
-              <div className="flex justify-center mb-1">
-                <img 
-                  src="/assets/page-assets/logos/bb-token.png" 
-                  alt="$BB Token" 
-                  className="w-10 h-10 object-contain"
-                />
-              </div>
+              <div className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent">$BB</div>
               <div className="text-xs sm:text-sm text-gray-400">Token</div>
             </Link>
             <div className="bg-gradient-to-br from-dark-card via-dark-card to-gem-gold/5 border border-gem-gold/20 rounded-lg p-4 transition-all duration-300">
