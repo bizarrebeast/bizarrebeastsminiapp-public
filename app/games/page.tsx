@@ -58,6 +58,20 @@ export default function GamesPage() {
           </div>
         </div>
 
+        {/* Treasure Quest Featured Banner */}
+        <div className="mb-8">
+          <div className="relative rounded-lg overflow-hidden">
+            <img 
+              src="/assets/page-assets/banners/treasure-quest-banner.png" 
+              alt="BizarreBeasts Treasure Quest - Featured Game"
+              className="w-full h-auto object-cover rounded-lg"
+            />
+            <div className="absolute top-4 right-4 bg-gem-gold/90 text-dark-bg px-3 py-1 rounded-full text-sm font-bold">
+              FEATURED GAME
+            </div>
+          </div>
+        </div>
+
         {/* Sort Options */}
         <div className="flex justify-center gap-4 mb-8">
           <button
