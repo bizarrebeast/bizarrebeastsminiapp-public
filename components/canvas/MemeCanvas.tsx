@@ -399,8 +399,8 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
         const isSharing = options.shareToFarcaster;
         
         // For sharing, use JPEG with compression for smaller file size
-        // For download, use PNG for better quality (unless JPEG is specifically requested)
-        const exportFormat = isSharing ? 'jpeg' : (options.format === 'jpg' ? 'jpeg' : 'png');
+        // For download, use PNG for better quality
+        const exportFormat = isSharing ? 'jpeg' : 'png';
         const quality = isSharing ? 0.85 : 0.95; // Lower quality for sharing, higher for download
         
         // Export canvas with appropriate settings
