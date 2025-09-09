@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/navigation/Navbar";
+import { LayoutWrapper } from "@/components/layout/LayoutWrapper";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -44,12 +45,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.className} bg-dark-bg text-white min-h-screen antialiased`}>
-        <div className="max-w-[800px] mx-auto">
+        <LayoutWrapper>
           <Navbar />
           <main className="flex-1">
             {children}
           </main>
-        </div>
+        </LayoutWrapper>
       </body>
     </html>
   );
