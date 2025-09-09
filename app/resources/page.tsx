@@ -67,11 +67,17 @@ export default function ResourcesPage() {
   return (
     <div className="min-h-screen bg-dark-bg py-8">
       <div className="max-w-7xl mx-auto px-4">
+        {/* Banner */}
+        <div className="mb-8 flex justify-center">
+          <img 
+            src="/assets/page-assets/banners/community-resources-banner.png" 
+            alt="Community Resources - Guides, tutorials, and documentation for the BizarreBeasts universe"
+            className="w-full max-w-4xl object-contain rounded-2xl"
+          />
+        </div>
+
         {/* Hero Section */}
         <section className="text-center mb-12">
-          <h1 className="text-4xl sm:text-5xl font-bold mb-4 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent">
-            Resources
-          </h1>
           <p className="text-gray-400 text-lg mb-8 max-w-3xl mx-auto">
             Explore guides, tutorials, and documentation for the BizarreBeasts universe. 
             From beginner guides to advanced strategies, find everything you need to join our creative ecosystem.

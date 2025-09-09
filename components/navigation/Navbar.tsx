@@ -45,9 +45,9 @@ export function Navbar() {
               <img 
                 src="/assets/page-assets/logos/bizarrebeasts-miniapp-logo.svg" 
                 alt="BizarreBeasts Logo" 
-                className="w-8 h-8 object-contain rounded-lg transition-all duration-300 group-hover:scale-110"
+                className="w-10 h-10 sm:w-8 sm:h-8 object-contain rounded-lg transition-all duration-300 group-hover:scale-110"
               />
-              <span className="bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent font-bold text-xl group-hover:from-gem-gold group-hover:via-gem-pink group-hover:to-gem-crystal transition-all duration-300">
+              <span className="hidden sm:inline bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent font-bold text-xl group-hover:from-gem-gold group-hover:via-gem-pink group-hover:to-gem-crystal transition-all duration-300">
                 BizarreBeasts
               </span>
             </Link>

@@ -25,15 +25,16 @@ export default function SwapPage() {
     setTimeout(() => setCopiedAddress(false), 2000);
   };
 
-  // Create Uniswap interface URL with BB token pre-selected
+  // Create Uniswap widget URL with BB token pre-selected
   const uniswapUrl = `https://app.uniswap.org/swap?outputCurrency=${BB_TOKEN.address}&chain=base`;
+  const uniswapWidgetUrl = `https://app.uniswap.org/swap?outputCurrency=${BB_TOKEN.address}&chain=base&theme=dark`;
   
   // DexScreener chart URL for BB token
   const dexScreenerUrl = 'https://dexscreener.com/base/0x49e35c372ee285d22a774f8a415f8bf3ad6456c2';
 
   return (
-    <div className="min-h-[calc(100vh-64px)] bg-dark-bg">
-      <div className="max-w-7xl mx-auto px-4 py-8">
+    <div className="min-h-[calc(100vh-64px)] bg-dark-bg overflow-x-hidden">
+      <div className="max-w-7xl mx-auto px-4 py-8 overflow-x-hidden">
         {/* Header */}
         <div className="mb-8 flex justify-center">
           <img 
@@ -53,7 +54,7 @@ export default function SwapPage() {
           {/* Left Column - Swap and Chart */}
           <div className="order-2 lg:order-1 space-y-6">
           {/* Swap Widget Container */}
-          <div className="bg-dark-card border border-gem-crystal/20 rounded-lg overflow-hidden w-full max-w-full">
+          <div className="bg-dark-card border border-gem-crystal/20 rounded-lg overflow-hidden">
             <div className="p-4 border-b border-gray-700">
               <div className="flex items-center justify-between">
                 <div>
@@ -72,11 +73,12 @@ export default function SwapPage() {
               </div>
             </div>
             
-            {/* Uniswap Iframe */}
-            <div className="w-full overflow-x-auto">
+            {/* Uniswap Iframe - Responsive */}
+            <div className="w-full overflow-x-auto overflow-y-hidden">
               <iframe
                 src={uniswapUrl}
-                className="w-full min-w-[320px] h-[600px] border-0"
+                className="w-full border-0"
+                style={{ height: '600px', minWidth: '100%' }}
                 title="Uniswap Swap Interface"
                 allow="clipboard-read; clipboard-write"
               />
@@ -84,7 +86,7 @@ export default function SwapPage() {
           </div>
           
           {/* Chart Widget */}
-          <div className="bg-dark-card border border-gem-crystal/20 rounded-lg overflow-hidden w-full max-w-full">
+          <div className="bg-dark-card border border-gem-crystal/20 rounded-lg overflow-hidden">
             <div className="p-4 border-b border-gray-700">
               <div className="flex items-center justify-between">
                 <div>
@@ -106,11 +108,12 @@ export default function SwapPage() {
               </div>
             </div>
             
-            {/* DexScreener Embed */}
-            <div className="w-full overflow-x-auto">
+            {/* DexScreener Embed - Responsive */}
+            <div className="w-full overflow-x-auto overflow-y-hidden">
               <iframe
                 src={`${dexScreenerUrl}?embed=1&theme=dark&trades=0&info=0`}
-                className="w-full min-w-[320px] h-[600px] border-0"
+                className="w-full border-0"
+                style={{ height: '600px', minWidth: '100%' }}
                 title="BB Token Chart"
               />
             </div>
@@ -136,13 +139,13 @@ export default function SwapPage() {
               <div className="space-y-3">
                 <div>
                   <p className="text-xs text-gray-400 mb-1">Contract Address:</p>
-                  <div className="flex items-center gap-2">
-                    <code className="text-xs font-mono text-gem-crystal bg-gray-800 px-2 py-1 rounded flex-1 overflow-hidden text-ellipsis">
+                  <div className="flex items-start gap-2">
+                    <code className="text-xs font-mono text-gem-crystal bg-gray-800 px-2 py-1 rounded flex-1 break-all">
                       {BB_TOKEN.address}
                     </code>
                     <button
                       onClick={handleCopyAddress}
-                      className="p-1 hover:bg-gray-700 rounded transition-colors"
+                      className="p-1 hover:bg-gray-700 rounded transition-colors flex-shrink-0"
                     >
                       {copiedAddress ? (
                         <Check className="w-4 h-4 text-green-500" />
