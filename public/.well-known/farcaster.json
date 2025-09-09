@@ -1,8 +1,8 @@
 {
   "version": "1",
   "name": "BizarreBeasts Miniapp",
-  "homeUrl": "https://fcminiapp.bizarrebeasts.io",
-  "iconUrl": "https://fcminiapp.bizarrebeasts.io/farcaster-assets/icon.png",
-  "splashImageUrl": "https://fcminiapp.bizarrebeasts.io/farcaster-assets/splash.png",
+  "homeUrl": "https://bbapp.bizarrebeasts.io",
+  "iconUrl": "https://bbapp.bizarrebeasts.io/farcaster-assets/icon.png",
+  "splashImageUrl": "https://bbapp.bizarrebeasts.io/farcaster-assets/splash.png",
   "splashBackgroundColor": "#0A0A0A"
 }
