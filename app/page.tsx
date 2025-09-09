@@ -54,6 +54,11 @@ export default function Home() {
             />
           </div>
           
+          {/* Welcome Title */}
+          <h1 className="text-4xl sm:text-5xl font-bold mb-6 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent">
+            Welcome to BizarreBeasts
+          </h1>
+          
           <p className="text-xl text-gray-300 mb-8">
             Create memes, play games, swap $BB tokens, collect art, win contests, and join the most BIZARRE community in web3!
           </p>
