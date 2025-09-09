@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
-import { TrendingUp, Info, ArrowDownUp, ExternalLink, Copy, Check, BarChart3, ChevronDown, ChevronUp, Lightbulb } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { TrendingUp, Info, ArrowDownUp, ExternalLink, Copy, Check, BarChart3, ChevronDown, ChevronUp, Lightbulb, Monitor, Smartphone } from 'lucide-react';
 import { useWallet } from '@/hooks/useWallet';
 
 // BB Token on Base
@@ -18,6 +18,19 @@ export default function SwapPage() {
   const [copiedAddress, setCopiedAddress] = useState(false);
   const [showInstructions, setShowInstructions] = useState(false);
   const [showTips, setShowTips] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    // Check if user is on mobile device
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const handleCopyAddress = () => {
     navigator.clipboard.writeText(BB_TOKEN.address);
@@ -73,16 +86,64 @@ export default function SwapPage() {
               </div>
             </div>
             
-            {/* Uniswap Iframe - Responsive */}
-            <div className="w-full overflow-x-auto overflow-y-hidden">
-              <iframe
-                src={uniswapUrl}
-                className="w-full border-0"
-                style={{ height: '600px', minWidth: '100%' }}
-                title="Uniswap Swap Interface"
-                allow="clipboard-read; clipboard-write"
-              />
-            </div>
+            {/* Uniswap Interface - Mobile vs Desktop */}
+            {isMobile ? (
+              // Mobile Message
+              <div className="p-8 text-center bg-gradient-to-b from-gray-800/50 to-gray-900/50">
+                <div className="max-w-sm mx-auto space-y-6">
+                  <div className="flex justify-center">
+                    <div className="relative">
+                      <Monitor className="w-20 h-20 text-gem-crystal" />
+                      <div className="absolute -bottom-2 -right-2 bg-gem-gold rounded-full p-2">
+                        <ArrowDownUp className="w-4 h-4 text-dark-bg" />
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-3">
+                    <h3 className="text-xl font-bold text-white">Desktop Required for Swapping</h3>
+                    <p className="text-gray-400">
+                      The Uniswap swap interface requires a desktop browser for the best trading experience.
+                    </p>
+                  </div>
+
+                  <div className="bg-gray-800/50 rounded-lg p-4 border border-gem-crystal/20">
+                    <div className="flex items-center gap-2 text-gem-gold mb-2">
+                      <Smartphone className="w-5 h-5" />
+                      <span className="font-semibold">Mobile App Coming Soon!</span>
+                    </div>
+                    <p className="text-sm text-gray-400">
+                      We're working on native mobile support. In the meantime, you can still view charts and token info below.
+                    </p>
+                  </div>
+
+                  <div className="space-y-3">
+                    <p className="text-sm text-gray-500">Or open Uniswap directly:</p>
+                    <a
+                      href={uniswapUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink text-dark-bg px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition-all duration-300"
+                    >
+                      <ArrowDownUp className="w-5 h-5" />
+                      Open Uniswap App
+                      <ExternalLink className="w-4 h-4" />
+                    </a>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              // Desktop Iframe
+              <div className="w-full overflow-x-auto overflow-y-hidden">
+                <iframe
+                  src={uniswapUrl}
+                  className="w-full border-0"
+                  style={{ height: '600px', minWidth: '100%' }}
+                  title="Uniswap Swap Interface"
+                  allow="clipboard-read; clipboard-write"
+                />
+              </div>
+            )}
           </div>
           
           {/* Chart Widget */}
