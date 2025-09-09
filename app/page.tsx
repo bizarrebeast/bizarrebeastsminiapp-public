@@ -56,7 +56,7 @@ export default function Home() {
           
           {/* Welcome Title */}
           <h1 className="text-4xl sm:text-5xl font-bold mb-6 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent">
-            Welcome to BizarreBeasts
+            BizarreBeasts ($BB) Miniapp
           </h1>
           
           <p className="text-xl text-gray-300 mb-8">
