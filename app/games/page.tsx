@@ -192,7 +192,7 @@ export default function GamesPage() {
                       href={Object.values(game.platforms).find(url => url) || '#'}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className={`w-full bg-gradient-to-r from-${color} to-${color === 'gem-gold' ? 'gem-crystal' : 'gem-gold'} text-dark-bg px-4 py-2 rounded-lg font-semibold hover:shadow-lg transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2`}
+                      className="w-full bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink text-dark-bg px-4 py-2 rounded-lg font-semibold hover:shadow-lg transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2"
                     >
                       Play Now
                       <ExternalLink className="w-4 h-4" />
