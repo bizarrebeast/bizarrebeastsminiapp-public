@@ -2,19 +2,18 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
-import { Menu, X, Palette, Gamepad2, BookOpen, FileText, Crown, ArrowDownUp, Music } from 'lucide-react';
+import { Menu, X, Palette, Gamepad2, FileText, Crown, ArrowDownUp, Music } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import { WalletButton } from '@/components/wallet/WalletButton';
 
 // Navigation items in order
 const navItems = [
   { href: '/meme-generator', label: 'Stickers & Meme Creator', icon: Palette },
-  { href: '/games', label: 'Games', icon: Gamepad2 },
-  { href: '/swap', label: 'Swap', icon: ArrowDownUp },
-  { href: '/empire', label: 'Empire', icon: Crown },
-  { href: '/music', label: 'Music', icon: Music },
-  { href: '/blog', label: 'Blog', icon: BookOpen },
-  { href: '/resources', label: 'Resources', icon: FileText },
+  { href: '/games', label: 'BizarreBeasts Games', icon: Gamepad2 },
+  { href: '/swap', label: 'Token Swap', icon: ArrowDownUp },
+  { href: '/empire', label: 'Empire Leaderboard', icon: Crown },
+  { href: '/music', label: 'Music & Soundtracks', icon: Music },
+  { href: '/resources', label: 'Community Resources', icon: FileText },
 ];
 
 export function Navbar() {
