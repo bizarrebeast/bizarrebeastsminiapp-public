@@ -58,6 +58,83 @@ export default function GamesPage() {
           </div>
         </div>
 
+        {/* Featured Game Banner - Treasure Quest */}
+        <div className="mb-12">
+          <div className="bg-gradient-to-br from-dark-card via-dark-card to-gem-gold/10 border border-gem-gold/30 rounded-2xl overflow-hidden hover:border-gem-gold/50 transition-all duration-300">
+            <div className="relative">
+              <img 
+                src="/assets/page-assets/banners/treasure-quest-banner.png" 
+                alt="BizarreBeasts Treasure Quest"
+                className="w-full h-auto object-cover"
+              />
+              <div className="absolute top-4 right-4 bg-gem-gold/90 text-dark-bg px-3 py-1 rounded-full text-sm font-bold">
+                FEATURED GAME
+              </div>
+            </div>
+            
+            <div className="p-8">
+              <div className="flex flex-col lg:flex-row gap-8">
+                {/* Game Info */}
+                <div className="flex-1">
+                  <h2 className="text-3xl font-bold mb-4 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent">
+                    BizarreBeasts: Treasure Quest
+                  </h2>
+                  
+                  <p className="text-gray-300 mb-4 text-lg">
+                    Climb endless crystal caverns as BizBe in this retro arcade platformer! Jump on enemies, collect gems, and discover treasure chests through 5 chapters, 50+ levels, and endless BEAST MODE with progressive difficulty. How high can you ascend and how many gems can you collect?
+                  </p>
+                  
+                  <div className="bg-dark-bg/50 rounded-lg p-4 mb-4">
+                    <p className="text-gray-400 italic">
+                      "I poured over 300 hours into building the entire game, including all of the art, animations, and game logic, to make it as fun, BIZARRE, and creative as possible. The game includes an original character, BizBe, 9 enemies, 5 chapters with 10 levels each, bonus levels, over 70 original backgrounds, and Level 51+ becomes BEAST MODE!"
+                    </p>
+                    <p className="text-gem-gold text-sm mt-2">— Creator</p>
+                  </div>
+
+                  {/* Game Features */}
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-gem-crystal">50+</div>
+                      <div className="text-xs text-gray-400">Levels</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-gem-gold">5</div>
+                      <div className="text-xs text-gray-400">Chapters</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-gem-pink">9</div>
+                      <div className="text-xs text-gray-400">Enemies</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-2xl font-bold bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent">∞</div>
+                      <div className="text-xs text-gray-400">Beast Mode</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Call to Action */}
+                <div className="lg:w-80 flex flex-col justify-center">
+                  <div className="bg-gradient-to-br from-dark-bg via-dark-bg to-gem-crystal/5 border border-gem-crystal/20 rounded-lg p-6">
+                    <h3 className="text-xl font-bold mb-3">Player's Guide</h3>
+                    <p className="text-gray-400 text-sm mb-4">
+                      This guide is your ultimate companion to navigating the BIZARRE and treasure-filled crystal caverns of BizarreBeasts: Treasure Quest. Inside, you'll learn everything you need to know to become a BIZARRE treasure quester.
+                    </p>
+                    <a
+                      href="https://paragraph.com/@bizarrebeasts/the-official-players-guide-bizarrebeasts-treasure-quest"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink text-dark-bg px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2"
+                    >
+                      Read Player's Guide
+                      <ExternalLink className="w-4 h-4" />
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Sort Options */}
         <div className="flex justify-center gap-4 mb-8">
           <button
