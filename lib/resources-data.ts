@@ -63,7 +63,7 @@ export const resources: Resource[] = [
     difficulty: 'beginner',
     featured: false,
     updatedDate: 'Dec 2024',
-    externalUrl: 'https://www.dropbox.com/scl/fi/t39e9axsqr051ami5enbn/Screenshot-2025-09-09-at-10.48.46-AM.png?rlkey=vjtuh68zwwp8fv4s8mngkoumo&dl=0',
+    externalUrl: 'https://paragraph.com/@bizarrebeasts/primeros-pasos-con-bizarrebeasts',
     tags: ['español', 'guía', 'principiantes']
   },
   {
