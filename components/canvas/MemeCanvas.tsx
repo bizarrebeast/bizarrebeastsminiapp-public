@@ -636,7 +636,7 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
           
           try {
             const { sdk } = await import('@farcaster/miniapp-sdk');
-            isInMiniApp = sdk.isInMiniApp();
+            isInMiniApp = await sdk.isInMiniApp();
             
             if (isInMiniApp) {
               const context = await sdk.context;

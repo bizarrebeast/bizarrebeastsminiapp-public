@@ -27,7 +27,8 @@ export default function ExportControls({ onExport }: ExportControlsProps) {
     const checkPlatform = async () => {
       try {
         const { sdk } = await import('@farcaster/miniapp-sdk');
-        if (sdk.isInMiniApp()) {
+        const isInMiniApp = await sdk.isInMiniApp();
+        if (isInMiniApp) {
           const context = await sdk.context;
           setIsMobileFarcaster(context?.client?.platformType === 'mobile');
         }

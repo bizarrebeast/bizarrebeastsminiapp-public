@@ -27,7 +27,7 @@ export function FarcasterProvider({ children }: { children: React.ReactNode }) {
     const checkEnvironment = async () => {
       try {
         // Use official SDK detection method
-        const inMiniApp = sdk.isInMiniApp();
+        const inMiniApp = await sdk.isInMiniApp();
         console.log('SDK isInMiniApp():', inMiniApp);
         
         if (inMiniApp) {
