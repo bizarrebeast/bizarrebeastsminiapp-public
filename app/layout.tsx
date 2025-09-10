@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+// Initialize SDK immediately on app load
+import "@/lib/sdk-init";
 import { Navbar } from "@/components/navigation/Navbar";
 import { LayoutWrapper } from "@/components/layout/LayoutWrapper";
 import { FarcasterSDK } from "@/components/FarcasterSDK";

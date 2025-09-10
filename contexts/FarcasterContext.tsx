@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { sdk } from '@farcaster/miniapp-sdk';
+import { sdk, withSDKRetry } from '@/lib/sdk-init';
 import { useFarcasterSDK } from './SDKContext';
 
 interface FarcasterContextType {
@@ -34,15 +34,15 @@ export function FarcasterProvider({ children }: { children: React.ReactNode }) {
     // Check if we're in Farcaster using official SDK methods
     const checkEnvironment = async () => {
       try {
-        // Use official SDK detection method
-        const inMiniApp = await sdk.isInMiniApp();
+        // Use official SDK detection method with retry
+        const inMiniApp = await withSDKRetry(async () => await sdk.isInMiniApp());
         console.log('SDK isInMiniApp():', inMiniApp);
         
         if (inMiniApp) {
           setIsInFarcaster(true);
           
-          // Get context for platform and user info
-          const context = await sdk.context;
+          // Get context for platform and user info with retry
+          const context = await withSDKRetry(async () => await sdk.context);
           console.log('SDK context:', context);
           
           if (context) {
@@ -102,12 +102,14 @@ export function FarcasterProvider({ children }: { children: React.ReactNode }) {
     
     if (isInFarcaster) {
       try {
-        // Use composeCast for native Farcaster sharing
-        const result = await sdk.actions.composeCast({
-          text: shareText,
-          embeds: [imageUrl],
-          channelKey: 'bizarrebeasts'
-        });
+        // Use composeCast for native Farcaster sharing with retry
+        const result = await withSDKRetry(async () => 
+          await sdk.actions.composeCast({
+            text: shareText,
+            embeds: [imageUrl],
+            channelKey: 'bizarrebeasts'
+          })
+        );
         
         if (result?.cast) {
           console.log('Cast created successfully:', result.cast.hash);

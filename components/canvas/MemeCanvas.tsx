@@ -7,6 +7,7 @@ import { shareMemeToFarcaster } from '@/lib/farcaster';
 import { downloadImageMobile, isMobileDevice } from '@/lib/mobile-utils';
 import { useFarcaster } from '@/contexts/FarcasterContext';
 import { useFarcasterSDK } from '@/contexts/SDKContext';
+import { withSDKRetry, sdk } from '@/lib/sdk-init';
 import { Info, ChevronDown, ChevronUp } from 'lucide-react';
 
 interface MemeCanvasProps {
@@ -547,12 +548,7 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
       },*/
 
       export: async (options: ExportOptions) => {
-        // Check if SDK is ready for Farcaster operations
-        if ((options.shareToFarcaster || isInFarcaster) && !isSDKReady) {
-          console.error('SDK not ready yet, please wait a moment and try again');
-          alert('Please wait a moment for the app to fully load and try again');
-          return;
-        }
+        // SDK retry logic will handle initialization timing
         
         // Add watermark if enabled
         if (options.watermark.enabled) {
@@ -644,11 +640,11 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
           let platformType = 'unknown';
           
           try {
-            const { sdk } = await import('@farcaster/miniapp-sdk');
-            isInMiniApp = await sdk.isInMiniApp();
+            // Use retry wrapper for SDK operations
+            isInMiniApp = await withSDKRetry(async () => await sdk.isInMiniApp());
             
             if (isInMiniApp) {
-              const context = await sdk.context;
+              const context = await withSDKRetry(async () => await sdk.context);
               platformType = context?.client?.platformType || 'unknown';
             }
           } catch (error) {
@@ -790,11 +786,11 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
             let platformType = 'unknown';
             
             try {
-              const { sdk } = await import('@farcaster/miniapp-sdk');
-              isInMiniApp = await sdk.isInMiniApp();
+              // Use retry wrapper for SDK operations
+              isInMiniApp = await withSDKRetry(async () => await sdk.isInMiniApp());
               
               if (isInMiniApp) {
-                const context = await sdk.context;
+                const context = await withSDKRetry(async () => await sdk.context);
                 platformType = context?.client?.platformType || 'unknown';
               }
             } catch (error) {
@@ -814,14 +810,14 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
               console.log('Farcaster miniapp share - using composeCast API');
               
               try {
-                const { sdk } = await import('@farcaster/miniapp-sdk');
-                
-                // Use composeCast for native sharing
-                const result = await sdk.actions.composeCast({
-                  text: shareText,
-                  embeds: [imageUrl],
-                  channelKey: 'bizarrebeasts'
-                });
+                // Use composeCast with retry wrapper for native sharing
+                const result = await withSDKRetry(async () => 
+                  await sdk.actions.composeCast({
+                    text: shareText,
+                    embeds: [imageUrl],
+                    channelKey: 'bizarrebeasts'
+                  })
+                );
                 
                 if (result?.cast) {
                   console.log('Cast created successfully:', result.cast.hash);
