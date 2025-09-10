@@ -200,14 +200,25 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
       }
     });
 
-    // Add click-away behavior to deselect objects (but prevent on mobile touch)
+    // Add click-away behavior to deselect objects (DESKTOP ONLY)
     canvas.on('mouse:down', (e) => {
-      // Skip on mobile/touch to prevent accidental deselection and sticker loss
-      const isTouchEvent = e.e && (e.e.type === 'touchstart' || e.e.type === 'pointerdown');
-      const isMobileDevice = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      // Completely skip deselection on ANY mobile/touch device
+      // Check multiple indicators for mobile
+      const isTouchDevice = 'ontouchstart' in window || 
+                           navigator.maxTouchPoints > 0 ||
+                           /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
       
-      if (isTouchEvent || isMobileDevice) {
-        // Don't deselect on mobile - preserve stickers
+      // Also check if this is a touch event
+      const isTouchEvent = e.e && (
+        e.e.type === 'touchstart' || 
+        e.e.type === 'touchend' || 
+        e.e.type === 'touchmove' ||
+        e.e.pointerType === 'touch'
+      );
+      
+      if (isTouchDevice || isTouchEvent) {
+        // NEVER deselect on mobile/touch - preserve all objects
+        console.log('Mobile touch detected - preserving selection');
         return;
       }
       
@@ -611,37 +622,35 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
           // Enhanced Farcaster and mobile detection
           const inFarcasterApp = isInFarcaster || 
                                 window.location !== window.parent.location ||
-                                window.self !== window.top ||
-                                /Farcaster/i.test(navigator.userAgent);
+                                window.self !== window.top;
           
           if (inFarcasterApp || isMobileDevice()) {
-            console.log('Mobile/Farcaster download detected');
+            console.log('Mobile/Farcaster download - using simplified approach');
             
-            // Try native share first (works best in Farcaster)
-            if (navigator.share) {
-              try {
-                const blob = await (await fetch(finalDataURL)).blob();
-                const file = new File([blob], filename, { type: `image/${extension}` });
-                await navigator.share({
-                  files: [file],
-                  title: 'BizarreBeasts Meme',
-                });
-                console.log('Downloaded via native share');
-                return finalDataURL;
-              } catch (shareErr) {
-                console.log('Native share failed:', shareErr);
-              }
-            }
+            // For Farcaster app and mobile, use a simpler approach
+            // Create a temporary link and trigger download
+            const link = document.createElement('a');
+            link.download = filename;
+            link.href = finalDataURL;
+            link.style.display = 'none';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
             
-            // Fallback to mobile download methods
-            const success = await downloadImageMobile(finalDataURL, filename);
-            if (!success) {
-              // Last resort: open image in new tab
-              const newTab = window.open(finalDataURL, '_blank');
-              if (newTab) {
-                alert('Long press the image and select "Save Image" to download');
+            // If that doesn't work, try mobile download utils
+            setTimeout(async () => {
+              // Check if download worked by trying mobile methods
+              if (inFarcasterApp || isMobileDevice()) {
+                const success = await downloadImageMobile(finalDataURL, filename);
+                if (!success) {
+                  // Last resort: open in new tab
+                  const newTab = window.open(finalDataURL, '_blank');
+                  if (newTab) {
+                    alert('Long press the image and select "Save Image" to download');
+                  }
+                }
               }
-            }
+            }, 100);
           } else {
             // Desktop download
             console.log('Desktop download');
@@ -656,79 +665,84 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
 
         // Handle Farcaster share
         if (options.shareToFarcaster) {
+          console.log('Starting Farcaster share process');
+          
+          // Check environment
+          const inFarcasterApp = isInFarcaster || 
+                                window.location !== window.parent.location ||
+                                window.self !== window.top;
+          const isMobileBrowser = isMobileDevice() && !inFarcasterApp;
+          
           try {
-            // Upload image to temporary storage
+            // Always upload image first for consistent URL
+            console.log('Uploading image to temporary storage');
             const uploadResponse = await fetch('/api/upload-temp', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ imageData: finalDataURL }),
             });
 
-            if (uploadResponse.ok) {
-              const { imageUrl } = await uploadResponse.json();
-              
-              // Updated prepopulated text as requested
-              const shareText = `...\n\nCheck out BizarreBeasts ($BB) and hold 25M tokens to join /bizarrebeasts! 🚀 👹\n\nCC @bizarrebeast\n\nhttps://bbapp.bizarrebeasts.io`;
-              
-              // Create the Warpcast compose URL
-              const baseUrl = 'https://warpcast.com/~/compose';
-              const params = new URLSearchParams();
-              params.append('text', shareText);
-              params.append('embeds[]', imageUrl);
-              params.append('channelKey', 'bizarrebeasts');
-              
-              const shareUrl = `${baseUrl}?${params.toString()}`;
-              
-              // Better Farcaster detection using multiple methods
-              const inFarcasterApp = isInFarcaster || 
-                                    window.location !== window.parent.location ||
-                                    window.self !== window.top ||
-                                    /Farcaster/i.test(navigator.userAgent);
-              
-              if (inFarcasterApp) {
-                // In Farcaster app: Try SDK first, then fallbacks
-                if (shareImage && typeof shareImage === 'function') {
-                  await shareImage(imageUrl, shareText);
-                } else {
-                  // Fallback: Direct navigation in Farcaster
-                  window.location.href = shareUrl;
-                }
-              } else if (isMobile) {
-                // Mobile browser: Direct navigation
-                window.location.href = shareUrl;
-              } else {
-                // Desktop: Open in new window
-                window.open(shareUrl, '_blank');
-              }
-              
-              console.log('Farcaster share initiated with uploaded image:', imageUrl);
-            } else {
+            if (!uploadResponse.ok) {
               throw new Error('Failed to upload image');
             }
-          } catch (error) {
-            console.error('Failed to share to Farcaster:', error);
             
-            // Fallback: Download and show instructions
-            const inFarcasterApp = isInFarcaster || 
-                                  window.location !== window.parent.location ||
-                                  window.self !== window.top;
+            const { imageUrl } = await uploadResponse.json();
+            console.log('Image uploaded successfully:', imageUrl);
+            
+            // Prepopulated text
+            const shareText = `...\n\nCheck out BizarreBeasts ($BB) and hold 25M tokens to join /bizarrebeasts! 🚀 👹\n\nCC @bizarrebeast\n\nhttps://bbapp.bizarrebeasts.io`;
+            
+            // Create compose URL
+            const baseUrl = 'https://warpcast.com/~/compose';
+            const params = new URLSearchParams();
+            params.append('text', shareText);
+            params.append('embeds[]', imageUrl);
+            params.append('channelKey', 'bizarrebeasts');
+            const shareUrl = `${baseUrl}?${params.toString()}`;
+            
+            if (inFarcasterApp) {
+              console.log('In Farcaster app - using direct navigation');
+              // In Farcaster: Always use direct navigation (most reliable)
+              window.location.href = shareUrl;
+            } else if (isMobileBrowser) {
+              console.log('Mobile browser detected');
+              // Mobile browser: Download first, then offer to open Farcaster
+              const extension = exportFormat === 'jpeg' ? 'jpg' : 'png';
+              const filename = `meme-${Date.now()}.${extension}`;
+              
+              // Try to download the image
+              const downloadSuccess = await downloadImageMobile(finalDataURL, filename);
+              
+              // After download, ask if they want to open Farcaster
+              setTimeout(() => {
+                if (confirm('Image saved! Open Farcaster to share your meme?')) {
+                  // Try to open Farcaster app if installed, otherwise web
+                  window.location.href = shareUrl;
+                }
+              }, 500);
+            } else {
+              console.log('Desktop browser - opening in new window');
+              // Desktop: Open in new window
+              window.open(shareUrl, '_blank');
+            }
+            
+          } catch (error) {
+            console.error('Share failed:', error);
+            
+            // Fallback: Just download the image
+            const extension = exportFormat === 'jpeg' ? 'jpg' : 'png';
+            const filename = `meme-${Date.now()}.${extension}`;
             
             if (isMobileDevice() || inFarcasterApp) {
-              await downloadImageMobile(finalDataURL, `meme-${Date.now()}.png`);
-              alert('Image saved! You can now share it manually on Farcaster.');
+              await downloadImageMobile(finalDataURL, filename);
+              alert('Image saved! Share it manually on Farcaster.');
             } else {
-              // Desktop fallback: Open Warpcast without image
-              const shareText = `...\n\nCheck out BizarreBeasts ($BB) and hold 25M tokens to join /bizarrebeasts! 🚀 👹\n\nCC @bizarrebeast\n\nhttps://bbapp.bizarrebeasts.io`;
-              const shareUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}&channelKey=bizarrebeasts`;
-              window.open(shareUrl, '_blank');
-              
-              // Also download the image
+              // Desktop fallback
               const link = document.createElement('a');
-              link.download = `meme-${Date.now()}.png`;
+              link.download = filename;
               link.href = finalDataURL;
               link.click();
-              
-              alert('Image downloaded! You can attach it to your cast manually.');
+              alert('Image downloaded! You can share it on Farcaster.');
             }
           }
         }
