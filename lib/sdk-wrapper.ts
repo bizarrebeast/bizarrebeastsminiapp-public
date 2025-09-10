@@ -229,8 +229,23 @@ export const shareToFarcaster = async (params: {
     await new Promise(resolve => setTimeout(resolve, 100 * (i + 1)));
   }
   
+  // Convert embeds array to tuple format required by SDK
+  const composeCastParams: any = {
+    text: params.text,
+    channelKey: params.channelKey,
+  };
+  
+  // Handle embeds as tuple type
+  if (params.embeds && params.embeds.length > 0) {
+    if (params.embeds.length === 1) {
+      composeCastParams.embeds = [params.embeds[0]] as [string];
+    } else if (params.embeds.length >= 2) {
+      composeCastParams.embeds = [params.embeds[0], params.embeds[1]] as [string, string];
+    }
+  }
+  
   // Use the retry wrapper with the composeCast operation
   return withSDKRetry(async () => {
-    return await farcasterSDK.actions.composeCast(params);
+    return await farcasterSDK.actions.composeCast(composeCastParams);
   }, 3, 200);
 };
