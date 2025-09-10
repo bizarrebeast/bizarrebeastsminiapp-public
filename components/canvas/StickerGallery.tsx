@@ -8,6 +8,8 @@ import { useWallet } from '@/hooks/useWallet';
 import { AccessTier } from '@/lib/empire';
 import { canAccessSticker, hasCollectionAccess } from '@/lib/empire-gating';
 import UpgradePrompt from '@/components/UpgradePrompt';
+import { TouchSafeButton } from '@/components/ui/TouchSafeButton';
+import { preventEventDefaults } from '@/utils/mobile';
 
 interface StickerGalleryProps {
   collections: StickerCollection[];
@@ -247,10 +249,14 @@ export default function StickerGallery({
                 const tierBadge = getTierBadge(sticker.tier);
                 
                 return (
-                  <button
+                  <TouchSafeButton
                     key={sticker.id}
-                    onClick={() => {
+                    onClick={(e) => {
+                      // Extra safety: prevent event propagation
+                      preventEventDefaults(e);
+                      
                       if (hasAccess) {
+                        console.log('Adding sticker:', sticker.id);
                         onSelectSticker(sticker);
                       } else {
                         // Show upgrade prompt for locked sticker
@@ -274,6 +280,7 @@ export default function StickerGallery({
                         : 'hover:bg-gray-600/50 cursor-pointer border-2 border-transparent'
                     }`}
                     style={{ width: '64px', height: '64px' }}
+                    preventDoubleTap={true}
                   >
                     {/* Sticker image */}
                     <img 
@@ -291,7 +298,7 @@ export default function StickerGallery({
                         </div>
                       </div>
                     )}
-                  </button>
+                  </TouchSafeButton>
                 );
               })}
             </div>

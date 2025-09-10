@@ -9,6 +9,7 @@ import { useFarcaster } from '@/contexts/FarcasterContext';
 import { useFarcasterSDK } from '@/contexts/SDKContext';
 import { withSDKRetry, sdk } from '@/lib/sdk-init';
 import { Info, ChevronDown, ChevronUp } from 'lucide-react';
+import { isMobileTouch, preventEventDefaults } from '@/utils/mobile';
 
 interface MemeCanvasProps {
   onCanvasReady: (canvasApi: any) => void;
@@ -208,11 +209,14 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
 
     // Add click-away behavior to deselect objects (DESKTOP ONLY)
     canvas.on('mouse:down', (e) => {
+      // Check if event originated from canvas itself
+      if (e.e && e.e.target !== canvas.upperCanvasEl && e.e.target !== canvas.lowerCanvasEl) {
+        console.log('Event not from canvas, ignoring');
+        return;
+      }
+      
       // Completely skip deselection on ANY mobile/touch device
-      // Check multiple indicators for mobile
-      const isTouchDevice = 'ontouchstart' in window || 
-                           navigator.maxTouchPoints > 0 ||
-                           /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      const isTouchDevice = isMobileTouch();
       
       // Also check if this is a touch event
       const isTouchEvent = e.e && (
@@ -224,12 +228,13 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
       
       if (isTouchDevice || isTouchEvent) {
         // NEVER deselect on mobile/touch - preserve all objects
-        console.log('Mobile touch detected - preserving selection');
+        console.log('Mobile touch detected - preserving selection and objects');
         return;
       }
       
       // Desktop only: deselect when clicking empty canvas
       if (!e.target && canvas.getActiveObject()) {
+        console.log('Desktop: Deselecting object');
         canvas.discardActiveObject();
         canvas.renderAll();
       }
@@ -239,7 +244,23 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
     const canvasApi = {
       addSticker: (sticker: Sticker) => {
         console.log('🎨 STICKER: Adding sticker:', sticker.src);
+        
+        // Guard against invalid canvas state
+        if (!canvas || !fabricCanvasRef.current) {
+          console.warn('Canvas not ready for sticker');
+          return;
+        }
+        
+        // Log current canvas state for debugging
+        const currentObjects = canvas.getObjects();
+        console.log(`Canvas has ${currentObjects.length} objects before adding sticker`);
+        
         FabricImage.fromURL(sticker.src).then((img) => {
+          // Double-check canvas still exists after async load
+          if (!canvas || !fabricCanvasRef.current) {
+            console.warn('Canvas lost during image load');
+            return;
+          }
           // Calculate scale to make sticker 300x300
           const desiredSize = 300;
           const scaleX = desiredSize / (img.width || 100);
@@ -268,7 +289,10 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
           canvas.add(img);
           canvas.setActiveObject(img);
           canvas.renderAll();
-          console.log('✅ STICKER: Added successfully at center position');
+          
+          // Verify sticker was added
+          const newObjectCount = canvas.getObjects().length;
+          console.log(`✅ STICKER: Added successfully. Canvas now has ${newObjectCount} objects`);
         }).catch(error => {
           console.error('❌ STICKER: Failed to load image:', error);
         });
@@ -485,6 +509,19 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
       },*/
 
       clearCanvas: () => {
+        console.log('🧹 CLEAR: Clear canvas requested');
+        
+        // On mobile, require confirmation
+        if (isMobileTouch() || isMobileDevice()) {
+          const objectCount = canvas.getObjects().length;
+          if (objectCount > 0) {
+            if (!confirm(`Clear all ${objectCount} items from canvas?`)) {
+              console.log('❌ CLEAR: User cancelled clear operation');
+              return;
+            }
+          }
+        }
+        
         console.log('🧹 CLEAR: Clearing entire canvas');
         canvas.clear();
         canvas.backgroundColor = backgroundColor;
@@ -960,11 +997,28 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
               ? `repeating-conic-gradient(#e0e0e0 0% 25%, #ffffff 0% 50%) 50% / 20px 20px`
               : backgroundColor
           }}
+          onTouchStart={(e) => {
+            // Prevent touch events from bubbling up from canvas container
+            e.stopPropagation();
+          }}
+          onTouchMove={(e) => {
+            e.stopPropagation();
+          }}
+          onTouchEnd={(e) => {
+            e.stopPropagation();
+          }}
         >
           <canvas
             ref={canvasRef}
             className="rounded mx-auto block relative z-10"
-            style={{ maxWidth: '100%', height: 'auto' }}
+            style={{ 
+              maxWidth: '100%', 
+              height: 'auto',
+              touchAction: 'none',
+              WebkitTouchCallout: 'none',
+              WebkitUserSelect: 'none',
+              userSelect: 'none'
+            }}
           />
         </div>
       </div>
