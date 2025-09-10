@@ -680,13 +680,8 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
                   console.log('Mobile Farcaster - opening image in new tab for save');
                   const newWindow = window.open(httpUrl, '_blank');
                   
-                  // Show instruction after brief delay
                   if (newWindow) {
-                    setTimeout(() => {
-                      if (onExportSuccess) {
-                        onExportSuccess('Image opened! Long-press to save to your photos.');
-                      }
-                    }, 500);
+                    console.log('Image opened! User can long-press to save to photos.');
                   }
                 } else {
                   // Desktop Farcaster: Normal download
@@ -821,9 +816,6 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
                 
                 if (result?.cast) {
                   console.log('Cast created successfully:', result.cast.hash);
-                  if (onExportSuccess) {
-                    onExportSuccess('Cast created successfully!');
-                  }
                 } else {
                   console.log('User cancelled cast');
                 }
