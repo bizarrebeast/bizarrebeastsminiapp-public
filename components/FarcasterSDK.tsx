@@ -34,9 +34,9 @@ export function FarcasterSDK() {
           
           await Promise.race([readyPromise, timeoutPromise]);
           console.log('Farcaster SDK ready');
-        } catch (error) {
+        } catch (error: any) {
           // Silently fail - SDK is optional
-          console.log('SDK init skipped:', error.message);
+          console.log('SDK init skipped:', error?.message || 'Unknown error');
         }
       };
       
