@@ -842,28 +842,26 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
               userAgent: navigator.userAgent
             });
             
-            // Check if this is likely a cold start scenario
-            const isLikelyColdStart = platformType === 'mobile' && 
-                                      !window.sessionStorage.getItem('farcaster_sdk_warmed');
-            
-            // Handle Farcaster miniapp specially using composeCast
-            if (isInMiniApp && !isLikelyColdStart) {
-              console.log('Farcaster miniapp share - using bulletproof composeCast API with fallback');
+            // Handle Farcaster miniapp - always try SDK first for miniapps
+            if (isInMiniApp) {
+              console.log('Farcaster miniapp share - using enhanced composeCast API');
               
               try {
                 // Ensure SDK is ready before sharing
                 await ensureSDKReady();
                 
-                // Use the bulletproof shareToFarcaster function with fallback URL
+                // Use the bulletproof shareToFarcaster function
+                // It will handle SDK readiness and fallback internally
                 const result = await shareToFarcaster({
                   text: shareText,
                   embeds: [imageUrl],
                   channelKey: 'bizarrebeasts',
-                  fallbackUrl: shareUrl // Provide fallback URL for cold start scenarios
+                  fallbackUrl: shareUrl // Provide fallback URL just in case
                 });
                 
                 if (result?.fallback) {
-                  console.log('Used fallback URL method due to SDK not ready');
+                  console.log('SDK not ready - used fallback method');
+                  // Don't navigate away for miniapps - the fallback is handled internally
                 } else if (result?.cast) {
                   console.log('Cast created successfully:', result.cast.hash);
                   // Mark SDK as warmed for future shares
@@ -872,18 +870,28 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
                   console.log('User cancelled cast');
                 }
               } catch (error) {
-                console.error('composeCast failed:', error);
-                // Final fallback to URL method
-                window.location.href = shareUrl;
+                console.error('Share completely failed:', error);
+                // Only use URL navigation as absolute last resort for miniapps
+                if (platformType !== 'mobile') {
+                  // Desktop miniapp - open in new window
+                  window.open(shareUrl, '_blank');
+                } else {
+                  // Mobile miniapp - try one more time with SDK
+                  try {
+                    await ensureSDKReady();
+                    const finalResult = await shareToFarcaster({
+                      text: shareText,
+                      embeds: [imageUrl],
+                      channelKey: 'bizarrebeasts',
+                      fallbackUrl: shareUrl
+                    });
+                    console.log('Final attempt result:', finalResult);
+                  } catch (finalError) {
+                    console.error('Final attempt failed:', finalError);
+                    alert('Unable to share. Please try again.');
+                  }
+                }
               }
-            } else if (isInMiniApp && isLikelyColdStart) {
-              console.log('Cold start detected on mobile - using URL method directly');
-              // For cold starts on mobile, go straight to URL method
-              window.location.href = shareUrl;
-              // Mark as warmed for next time
-              setTimeout(() => {
-                window.sessionStorage.setItem('farcaster_sdk_warmed', 'true');
-              }, 2000);
             } else if (isMobileDevice()) {
               console.log('Mobile browser - using direct navigation');
               // Mobile browser: Direct navigation opens Farcaster app if installed

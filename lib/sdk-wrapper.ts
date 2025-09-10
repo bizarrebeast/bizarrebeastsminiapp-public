@@ -266,19 +266,16 @@ export const shareToFarcaster = async (params: {
   if (!finalCheck) {
     console.log('❌ SDK still not ready after all attempts');
     
-    // If we have a fallback URL and SDK isn't ready, use URL method
+    // Don't use URL navigation for miniapps - it breaks the experience
+    // Instead, return a fallback indicator and let the caller handle it
     if (params.fallbackUrl) {
-      console.log('📱 Using fallback URL method for sharing');
-      
-      // For mobile, use location.href to trigger app open
-      if (typeof window !== 'undefined' && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-        window.location.href = params.fallbackUrl;
-      } else {
-        // Desktop: open in new window
-        window.open(params.fallbackUrl, '_blank');
-      }
-      
-      return { fallback: true, url: params.fallbackUrl };
+      console.log('📱 SDK not ready, returning fallback indicator');
+      return { 
+        fallback: true, 
+        sdkNotReady: true,
+        url: params.fallbackUrl,
+        message: 'SDK initialization in progress. Please try again.' 
+      };
     }
     
     throw new Error('SDK not ready and no fallback URL provided');
@@ -310,17 +307,16 @@ export const shareToFarcaster = async (params: {
   } catch (error) {
     console.error('❌ SDK share failed:', error);
     
-    // Last resort: use fallback URL if available
+    // Return error info without navigating away
     if (params.fallbackUrl) {
-      console.log('📱 Falling back to URL method after SDK failure');
-      
-      if (typeof window !== 'undefined' && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-        window.location.href = params.fallbackUrl;
-      } else {
-        window.open(params.fallbackUrl, '_blank');
-      }
-      
-      return { fallback: true, url: params.fallbackUrl, error: error };
+      console.log('📱 SDK failed, returning error indicator');
+      return { 
+        fallback: true, 
+        sdkError: true,
+        url: params.fallbackUrl, 
+        error: error,
+        message: 'Share failed. Please try again.'
+      };
     }
     
     throw error;
