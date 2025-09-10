@@ -10,9 +10,10 @@ const getImageStore = () => {
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
+    const params = await context.params;
     const imageStore = getImageStore();
     const image = imageStore.get(params.id);
 
