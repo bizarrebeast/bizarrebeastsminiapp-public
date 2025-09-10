@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { sdk } from '@farcaster/miniapp-sdk';
+import { useFarcasterSDK } from './SDKContext';
 
 interface FarcasterContextType {
   isInFarcaster: boolean;
@@ -21,8 +22,15 @@ export function FarcasterProvider({ children }: { children: React.ReactNode }) {
   const [isInFarcaster, setIsInFarcaster] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [farcasterUser, setFarcasterUser] = useState<any>(null);
+  const { isSDKReady } = useFarcasterSDK();
 
   useEffect(() => {
+    // Only check environment after SDK is ready
+    if (!isSDKReady) {
+      console.log('Waiting for SDK to be ready before checking environment...');
+      return;
+    }
+
     // Check if we're in Farcaster using official SDK methods
     const checkEnvironment = async () => {
       try {
@@ -87,7 +95,7 @@ export function FarcasterProvider({ children }: { children: React.ReactNode }) {
     };
 
     checkEnvironment();
-  }, []);
+  }, [isSDKReady]); // Re-run when SDK becomes ready
 
   const shareImage = async (imageUrl: string, text?: string) => {
     const shareText = text || `...\n\nCheck out BizarreBeasts ($BB) and hold 25M tokens to join /bizarrebeasts! 🚀 👹\n\nCC @bizarrebeast\n\nhttps://bbapp.bizarrebeasts.io`;

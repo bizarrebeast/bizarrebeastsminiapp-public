@@ -7,6 +7,7 @@ import { useWallet } from '@/hooks/useWallet';
 import { AccessTier } from '@/lib/empire';
 import { canRemoveWatermark } from '@/lib/empire-gating';
 import UpgradePrompt from '@/components/UpgradePrompt';
+import { useFarcasterSDK } from '@/contexts/SDKContext';
 
 interface ExportControlsProps {
   onExport: (options: ExportOptions) => void | Promise<void>;
@@ -21,6 +22,7 @@ export default function ExportControls({ onExport }: ExportControlsProps) {
   const [currentImageData, setCurrentImageData] = useState<string | null>(null);
   const [isMobileFarcaster, setIsMobileFarcaster] = useState(false);
   const { empireTier } = useWallet();
+  const { isSDKReady } = useFarcasterSDK();
   
   // Check if we're in mobile Farcaster
   useEffect(() => {
@@ -191,15 +193,29 @@ export default function ExportControls({ onExport }: ExportControlsProps) {
             </div>
           </div>
 
+          {/* SDK Loading Notice */}
+          {!isSDKReady && isMobileFarcaster && (
+            <div className="bg-yellow-900/30 border border-yellow-500/50 rounded-lg p-3 mb-4 flex items-center gap-2">
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-yellow-400" />
+              <span className="text-sm text-yellow-300">Loading Farcaster features...</span>
+            </div>
+          )}
+
           {/* Step 1: Download */}
           <div className="space-y-2 mb-4">
             <div className="text-xs text-gray-400 uppercase tracking-wider mb-1">Step 1</div>
             <button
               onClick={handleExport}
-              className="w-full bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink text-black py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2"
+              disabled={isMobileFarcaster && !isSDKReady}
+              className={`w-full py-3 rounded-lg font-semibold transition-all duration-300 flex items-center justify-center gap-2 ${
+                isMobileFarcaster && !isSDKReady
+                  ? 'bg-gray-700 text-gray-400 cursor-not-allowed'
+                  : 'bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink text-black transform hover:scale-105'
+              }`}
+              title={isMobileFarcaster && !isSDKReady ? 'Please wait for app to fully load' : ''}
             >
               <Download className="w-5 h-5" />
-              Download Meme
+              {isMobileFarcaster && !isSDKReady ? 'Loading...' : 'Download Meme'}
             </button>
             
             {/* Success Message */}
@@ -216,12 +232,13 @@ export default function ExportControls({ onExport }: ExportControlsProps) {
             <div className="text-xs text-gray-400 uppercase tracking-wider mb-1">Step 2</div>
             <button
               onClick={handleShareToFarcaster}
-              disabled={isSharing || !hasDownloaded}
+              disabled={isSharing || !hasDownloaded || (isMobileFarcaster && !isSDKReady)}
               className={`w-full py-3 rounded-lg font-semibold transition-all duration-300 flex items-center justify-center gap-2 ${
-                hasDownloaded 
+                hasDownloaded && (!isMobileFarcaster || isSDKReady)
                   ? 'bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink text-black transform hover:scale-105' 
                   : 'bg-gray-700 text-gray-400 cursor-not-allowed'
               } disabled:opacity-50`}
+              title={isMobileFarcaster && !isSDKReady ? 'Please wait for app to fully load' : ''}
             >
               {isSharing ? (
                 <>

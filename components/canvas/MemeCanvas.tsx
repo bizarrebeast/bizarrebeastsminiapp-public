@@ -6,6 +6,7 @@ import { Sticker, TextOptions, ExportOptions, StickerCollection, BackgroundImage
 import { shareMemeToFarcaster } from '@/lib/farcaster';
 import { downloadImageMobile, isMobileDevice } from '@/lib/mobile-utils';
 import { useFarcaster } from '@/contexts/FarcasterContext';
+import { useFarcasterSDK } from '@/contexts/SDKContext';
 import { Info, ChevronDown, ChevronUp } from 'lucide-react';
 
 interface MemeCanvasProps {
@@ -21,27 +22,11 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
   const [canvasSize, setCanvasSize] = useState({ width: 600, height: 600 });
   const [showInstructions, setShowInstructions] = useState(false);
   const { isInFarcaster, isMobile, shareImage } = useFarcaster();
+  const { isSDKReady } = useFarcasterSDK();
   // History tracking removed since undo/redo removed
   // const historyRef = useRef<string[]>([]);
   // const historyIndexRef = useRef<number>(-1);
   const canvasApiRef = useRef<any>(null);
-  const sdkRef = useRef<any>(null);
-  const [sdkLoaded, setSdkLoaded] = useState(false);
-  
-  // Pre-load SDK on component mount to avoid first-click errors
-  useEffect(() => {
-    const preloadSDK = async () => {
-      try {
-        const { sdk } = await import('@farcaster/miniapp-sdk');
-        sdkRef.current = sdk;
-        setSdkLoaded(true);
-        console.log('SDK pre-loaded and ready');
-      } catch (error) {
-        console.log('SDK pre-load failed (will try on demand):', error);
-      }
-    };
-    preloadSDK();
-  }, []);
 
   // Handle responsive canvas sizing
   useEffect(() => {
@@ -562,17 +547,11 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
       },*/
 
       export: async (options: ExportOptions) => {
-        // Ensure SDK is loaded for Farcaster operations
-        if ((options.shareToFarcaster || isInFarcaster) && !sdkRef.current) {
-          console.log('SDK not yet loaded, loading now...');
-          try {
-            const { sdk } = await import('@farcaster/miniapp-sdk');
-            sdkRef.current = sdk;
-            setSdkLoaded(true);
-            console.log('SDK loaded successfully on first use');
-          } catch (error) {
-            console.log('Failed to load SDK:', error);
-          }
+        // Check if SDK is ready for Farcaster operations
+        if ((options.shareToFarcaster || isInFarcaster) && !isSDKReady) {
+          console.error('SDK not ready yet, please wait a moment and try again');
+          alert('Please wait a moment for the app to fully load and try again');
+          return;
         }
         
         // Add watermark if enabled
@@ -665,10 +644,7 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
           let platformType = 'unknown';
           
           try {
-            // Use pre-loaded SDK or load on demand
-            const sdk = sdkRef.current || (await import('@farcaster/miniapp-sdk')).sdk;
-            if (!sdkRef.current) sdkRef.current = sdk;
-            
+            const { sdk } = await import('@farcaster/miniapp-sdk');
             isInMiniApp = await sdk.isInMiniApp();
             
             if (isInMiniApp) {
@@ -814,10 +790,7 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
             let platformType = 'unknown';
             
             try {
-              // Use pre-loaded SDK or load on demand
-              const sdk = sdkRef.current || (await import('@farcaster/miniapp-sdk')).sdk;
-              if (!sdkRef.current) sdkRef.current = sdk;
-              
+              const { sdk } = await import('@farcaster/miniapp-sdk');
               isInMiniApp = await sdk.isInMiniApp();
               
               if (isInMiniApp) {
@@ -841,9 +814,7 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
               console.log('Farcaster miniapp share - using composeCast API');
               
               try {
-                // Use pre-loaded SDK or load on demand
-                const sdk = sdkRef.current || (await import('@farcaster/miniapp-sdk')).sdk;
-                if (!sdkRef.current) sdkRef.current = sdk;
+                const { sdk } = await import('@farcaster/miniapp-sdk');
                 
                 // Use composeCast for native sharing
                 const result = await sdk.actions.composeCast({
