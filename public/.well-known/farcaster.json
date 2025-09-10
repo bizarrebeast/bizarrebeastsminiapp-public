@@ -1,4 +1,7 @@
 {
+  "baseBuilder": {
+    "allowedAddresses": ["0xd35dA0C9824ce664b106Ac5a526221e5fA66F433"]
+  },
   "frame": {
     "name": "BizarreBeasts ($BB)",
     "version": "1",
