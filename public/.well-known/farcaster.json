@@ -1,8 +1,36 @@
 {
-  "version": "1",
-  "name": "BizarreBeasts Miniapp",
-  "homeUrl": "https://bbapp.bizarrebeasts.io",
-  "iconUrl": "https://bbapp.bizarrebeasts.io/farcaster-assets/icon.png",
-  "splashImageUrl": "https://bbapp.bizarrebeasts.io/farcaster-assets/splash.png",
-  "splashBackgroundColor": "#0A0A0A"
+  "frame": {
+    "name": "BizarreBeasts ($BB)",
+    "version": "1",
+    "iconUrl": "https://bbapp.bizarrebeasts.io/farcaster-assets/icon.png",
+    "homeUrl": "https://bbapp.bizarrebeasts.io",
+    "imageUrl": "https://bbapp.bizarrebeasts.io/farcaster-assets/hero.png",
+    "buttonTitle": "BizarreBeasts ($BB)",
+    "splashImageUrl": "https://bbapp.bizarrebeasts.io/farcaster-assets/splash.png",
+    "splashBackgroundColor": "#f967c6",
+    "subtitle": "Create BizarreBeasts memes, play games, and climb the $BB leaderboard!",
+    "description": "The OFFICIAL BizarreBeasts app! Create BizarreBeasts memes, play games, swap $BB tokens, collect art, win contests, and join the most BIZARRE community in web3!",
+    "primaryCategory": "art-creativity",
+    "heroImageUrl": "https://bbapp.bizarrebeasts.io/farcaster-assets/hero.png",
+    "tags": [
+      "memes",
+      "games",
+      "art",
+      "bizarrebeasts",
+      "community"
+    ],
+    "tagline": "GO BIZARRE. GET BANK.",
+    "ogTitle": "BizarreBeasts",
+    "ogDescription": "Create memes, play games, swap, collect art, and win contests in web3's most BIZARRE community!",
+    "ogImageUrl": "https://bbapp.bizarrebeasts.io/farcaster-assets/hero.png",
+    "castShareUrl": " https://warpcast.com/~/compose?text=(your%20text%20here)%0A%0ACheck%20out%20BizarreBeasts%20(%24BB)%20and%20hold%2025M%20tokens%20to%20join%20%2Fbizarrebeasts!%20%F0%9F%9A%80%20%F0%9F%91%B9%0A%0ACC%20%40bizarrebeast%0Ahttps%3A%2F%2Fbbapp.bizarrebeasts.io&channelKey=bizarrebeasts",
+    "screenshotUrls": [
+      "https://bbapp.bizarrebeasts.io/farcaster-assets/screenshots.png"
+    ]
+  },
+  "accountAssociation": {
+    "header": "eyJmaWQiOjM1Nzg5NywidHlwZSI6ImF1dGgiLCJrZXkiOiIweDkzZEIxYjBhZDczNjVlYkFiODVmM0VEOThCMDU1QWY1NzlBNTg5YzIifQ",
+    "payload": "eyJkb21haW4iOiJiYmFwcC5iaXphcnJlYmVhc3RzLmlvIn0",
+    "signature": "/ptYmDqID8NLWoSyxA0KqXOInBQIGiDa1r5bqtd5nSZ1kI1ajl5xO6WB3/5fN5Xj0YBLFlvShN7A2EzFlOAXzxw="
+  }
 }
