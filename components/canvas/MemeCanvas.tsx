@@ -630,24 +630,49 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
           const extension = exportFormat === 'jpeg' ? 'jpg' : 'png';
           const filename = `meme-${Date.now()}.${extension}`;
           
+          // Local Farcaster detection (doesn't rely on SDK context)
+          const localIsInFarcaster = window.self !== window.top || 
+                                     /Farcaster/i.test(navigator.userAgent) ||
+                                     window.location !== window.parent.location;
+          
           // Enhanced environment detection
           console.log('Download Environment:', { 
             isInFarcaster,
+            localIsInFarcaster,
             isMobile: isMobileDevice(),
             userAgent: navigator.userAgent 
           });
           
-          if (isInFarcaster) {
+          if (localIsInFarcaster) {
             console.log('Farcaster miniapp download - using special handling');
             
             // Check if mobile or desktop Farcaster - use user agent only, not window width
             const isMobileFarcaster = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
             
             if (isMobileFarcaster) {
-              console.log('Mobile Farcaster detected - using simplified approach');
+              console.log('Mobile Farcaster detected - using multi-method approach');
               
-              // For mobile Farcaster, create a download link and trigger it
-              // This should work in most WebView environments
+              // Method 1: Try Web Share API for mobile (works in many WebViews)
+              if (navigator.share && window.isSecureContext) {
+                try {
+                  // Convert to blob for sharing
+                  const response = await fetch(finalDataURL);
+                  const blob = await response.blob();
+                  const file = new File([blob], filename, { type: blob.type });
+                  
+                  await navigator.share({
+                    files: [file],
+                    title: 'BizarreBeasts Meme',
+                    text: 'Check out my BizarreBeasts meme!'
+                  });
+                  console.log('Shared via Web Share API');
+                  return;
+                } catch (shareError) {
+                  console.log('Web Share API failed:', shareError);
+                }
+              }
+              
+              // Method 2: Traditional download link
               const link = document.createElement('a');
               link.download = filename;
               link.href = finalDataURL;
@@ -760,41 +785,46 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
               userAgent: navigator.userAgent 
             });
             
+            // Local Farcaster detection for share (doesn't rely on SDK context)
+            const localIsInFarcaster = window.self !== window.top || 
+                                      /Farcaster/i.test(navigator.userAgent) ||
+                                      window.location !== window.parent.location;
+            
             // Handle Farcaster miniapp specially
-            if (isInFarcaster) {
+            if (localIsInFarcaster) {
               // Use user agent only for accurate mobile detection
               const isMobileFarcaster = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
               
               if (isMobileFarcaster) {
-                console.log('Mobile Farcaster share - using optimized approach');
+                console.log('Mobile Farcaster share - using multi-method approach');
                 
                 // For mobile Farcaster, try multiple methods in order
                 try {
                   // Method 1: Try SDK openUrl with the share URL
-                  const { default: sdk } = await import('@farcaster/frame-sdk');
-                  if (sdk.actions && sdk.actions.openUrl) {
-                    console.log('Attempting SDK openUrl');
-                    await sdk.actions.openUrl(shareUrl);
-                    console.log('SDK openUrl succeeded');
-                    return;
+                  let sdk: any;
+                  try {
+                    sdk = await import('@farcaster/frame-sdk').then(m => m.default);
+                    console.log('SDK imported successfully');
+                  } catch (importError) {
+                    console.log('SDK import failed:', importError);
+                  }
+                  
+                  if (sdk && sdk.actions && sdk.actions.openUrl) {
+                    console.log('Attempting SDK openUrl with URL:', shareUrl);
+                    try {
+                      await sdk.actions.openUrl(shareUrl);
+                      console.log('SDK openUrl succeeded');
+                      return;
+                    } catch (openUrlError) {
+                      console.log('SDK openUrl failed:', openUrlError);
+                    }
                   }
                 } catch (sdkError) {
                   console.log('SDK method failed:', sdkError);
                 }
                 
-                // Method 2: Try opening in a new window (might open in-app browser)
-                try {
-                  const newWindow = window.open(shareUrl, '_blank');
-                  if (newWindow) {
-                    console.log('Opened in new window/tab');
-                    return;
-                  }
-                } catch (windowError) {
-                  console.log('Window.open failed:', windowError);
-                }
-                
-                // Method 3: Direct navigation as last resort
-                console.log('Using direct navigation as fallback');
+                // Method 2: Direct navigation (most reliable for Farcaster app)
+                console.log('Using direct navigation for mobile Farcaster');
                 window.location.href = shareUrl;
               } else {
                 // Desktop Farcaster: Always open in new browser tab
