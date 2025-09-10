@@ -630,25 +630,36 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
           const extension = exportFormat === 'jpeg' ? 'jpg' : 'png';
           const filename = `meme-${Date.now()}.${extension}`;
           
-          // Local Farcaster detection (doesn't rely on SDK context)
-          // Check multiple conditions for mobile Farcaster app
-          const isInFrame = window.self !== window.top;
-          const hasFarcasterUA = /Farcaster/i.test(navigator.userAgent);
-          const isDifferentLocation = window.location !== window.parent.location;
-          const localIsInFarcaster = isInFrame || hasFarcasterUA || isDifferentLocation || isInFarcaster;
+          // Use official SDK detection
+          let isInMiniApp = false;
+          let platformType = 'unknown';
           
-          // Enhanced environment detection
+          try {
+            const { sdk } = await import('@farcaster/miniapp-sdk');
+            isInMiniApp = sdk.isInMiniApp();
+            
+            if (isInMiniApp) {
+              const context = await sdk.context;
+              platformType = context?.client?.platformType || 'unknown';
+            }
+          } catch (error) {
+            console.log('SDK detection failed, using fallback');
+            // Fallback detection
+            isInMiniApp = isInFarcaster || window.self !== window.top;
+          }
+          
+          const isMobileFarcaster = isInMiniApp && platformType === 'mobile';
+          
           console.log('Download Environment:', { 
-            isInFarcaster,
-            localIsInFarcaster,
-            isInFrame,
-            hasFarcasterUA,
-            isDifferentLocation,
+            isInMiniApp,
+            platformType,
+            isMobileFarcaster,
+            contextIsInFarcaster: isInFarcaster,
             isMobile: isMobileDevice(),
             userAgent: navigator.userAgent 
           });
           
-          if (localIsInFarcaster) {
+          if (isInMiniApp) {
             console.log('Farcaster miniapp download - uploading to server for HTTP URL');
             
             // Upload to server to get HTTP URL (required for WebView downloads)
@@ -664,15 +675,21 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
                 const httpUrl = `${window.location.origin}/api/image/${id}`;
                 console.log('Image uploaded, HTTP URL:', httpUrl);
                 
-                // Check if mobile or desktop Farcaster
-                const isMobileFarcaster = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-                
                 if (isMobileFarcaster) {
-                  // Mobile: Open HTTP URL which triggers download
-                  console.log('Mobile Farcaster - opening HTTP URL for download');
-                  window.open(httpUrl, '_blank');
+                  // Mobile Farcaster: Open in new tab for long-press save
+                  console.log('Mobile Farcaster - opening image in new tab for save');
+                  const newWindow = window.open(httpUrl, '_blank');
+                  
+                  // Show instruction after brief delay
+                  if (newWindow) {
+                    setTimeout(() => {
+                      if (onExportSuccess) {
+                        onExportSuccess('Image opened! Long-press to save to your photos.');
+                      }
+                    }, 500);
+                  }
                 } else {
-                  // Desktop: Create download link with HTTP URL
+                  // Desktop Farcaster: Normal download
                   console.log('Desktop Farcaster - downloading via HTTP URL');
                   const link = document.createElement('a');
                   link.download = filename;
@@ -683,7 +700,7 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
                   setTimeout(() => document.body.removeChild(link), 100);
                 }
                 
-                console.log('Download initiated successfully');
+                console.log('Download handled successfully');
               } else {
                 throw new Error('Failed to upload image');
               }
@@ -764,28 +781,35 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
               userAgent: navigator.userAgent 
             });
             
-            // Local Farcaster detection for share (doesn't rely on SDK context)
-            // Check multiple conditions for mobile Farcaster app
-            const isInFrame = window.self !== window.top;
-            const hasFarcasterUA = /Farcaster/i.test(navigator.userAgent);
-            const isDifferentLocation = window.location !== window.parent.location;
-            const localIsInFarcaster = isInFrame || hasFarcasterUA || isDifferentLocation || isInFarcaster;
+            // Use official SDK detection for share
+            let isInMiniApp = false;
+            let platformType = 'unknown';
+            
+            try {
+              const { sdk } = await import('@farcaster/miniapp-sdk');
+              isInMiniApp = sdk.isInMiniApp();
+              
+              if (isInMiniApp) {
+                const context = await sdk.context;
+                platformType = context?.client?.platformType || 'unknown';
+              }
+            } catch (error) {
+              console.log('SDK detection failed for share, using fallback');
+              isInMiniApp = isInFarcaster || window.self !== window.top;
+            }
             
             console.log('Share Detection:', {
-              localIsInFarcaster,
-              isInFrame,
-              hasFarcasterUA,
-              isDifferentLocation,
+              isInMiniApp,
+              platformType,
               contextIsInFarcaster: isInFarcaster,
               userAgent: navigator.userAgent
             });
             
             // Handle Farcaster miniapp specially using composeCast
-            if (localIsInFarcaster || isInFarcaster) {
+            if (isInMiniApp) {
               console.log('Farcaster miniapp share - using composeCast API');
               
               try {
-                // Import the new miniapp SDK
                 const { sdk } = await import('@farcaster/miniapp-sdk');
                 
                 // Use composeCast for native sharing
@@ -797,6 +821,9 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
                 
                 if (result?.cast) {
                   console.log('Cast created successfully:', result.cast.hash);
+                  if (onExportSuccess) {
+                    onExportSuccess('Cast created successfully!');
+                  }
                 } else {
                   console.log('User cancelled cast');
                 }

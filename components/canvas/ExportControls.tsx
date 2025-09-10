@@ -19,7 +19,24 @@ export default function ExportControls({ onExport }: ExportControlsProps) {
   const [hasDownloaded, setHasDownloaded] = useState(false);
   const [downloadSuccess, setDownloadSuccess] = useState(false);
   const [currentImageData, setCurrentImageData] = useState<string | null>(null);
+  const [isMobileFarcaster, setIsMobileFarcaster] = useState(false);
   const { empireTier } = useWallet();
+  
+  // Check if we're in mobile Farcaster
+  useEffect(() => {
+    const checkPlatform = async () => {
+      try {
+        const { sdk } = await import('@farcaster/miniapp-sdk');
+        if (sdk.isInMiniApp()) {
+          const context = await sdk.context;
+          setIsMobileFarcaster(context?.client?.platformType === 'mobile');
+        }
+      } catch (error) {
+        // Not in miniapp
+      }
+    };
+    checkPlatform();
+  }, []);
   
   // Check if user can remove watermark (Elite or Champion only)
   const canToggleWatermark = canRemoveWatermark(empireTier || AccessTier.VISITOR);
@@ -152,7 +169,11 @@ export default function ExportControls({ onExport }: ExportControlsProps) {
                   </div>
                   <div>
                     <p className="text-white font-semibold text-sm">Download First</p>
-                    <p className="text-gray-400 text-xs">Save your meme to your device</p>
+                    <p className="text-gray-400 text-xs">
+                      {isMobileFarcaster 
+                        ? "Opens image - long-press to save" 
+                        : "Save your meme to your device"}
+                    </p>
                   </div>
                 </div>
                 

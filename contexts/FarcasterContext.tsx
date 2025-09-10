@@ -23,34 +23,51 @@ export function FarcasterProvider({ children }: { children: React.ReactNode }) {
   const [farcasterUser, setFarcasterUser] = useState<any>(null);
 
   useEffect(() => {
-    // Check if we're in Farcaster
+    // Check if we're in Farcaster using official SDK methods
     const checkEnvironment = async () => {
-      // First, do immediate detection
-      const isInFrame = window.location !== window.parent.location || window.self !== window.top;
-      const hasFarcasterUA = /Farcaster/i.test(navigator.userAgent);
-      
-      // Set initial state immediately based on basic checks
-      if (isInFrame || hasFarcasterUA) {
-        setIsInFarcaster(true);
-        console.log('Farcaster detected immediately via frame/UA check');
-      }
-      
-      // Then try to get SDK context for additional info
       try {
-        // Get context with the new miniapp SDK
-        const context = await sdk.context;
-        console.log('SDK context received:', context);
+        // Use official SDK detection method
+        const inMiniApp = sdk.isInMiniApp();
+        console.log('SDK isInMiniApp():', inMiniApp);
         
-        if (context) {
+        if (inMiniApp) {
           setIsInFarcaster(true);
-          if (context.user) {
-            setFarcasterUser(context.user);
+          
+          // Get context for platform and user info
+          const context = await sdk.context;
+          console.log('SDK context:', context);
+          
+          if (context) {
+            if (context.user) {
+              setFarcasterUser(context.user);
+            }
+            
+            // Check platform type for mobile/desktop
+            const platformType = context.client?.platformType;
+            console.log('Platform type:', platformType);
+            
+            // Set mobile state based on platform
+            if (platformType === 'mobile') {
+              setIsMobile(true);
+            }
           }
-          console.log('Farcaster confirmed via SDK, platform:', context.client?.platformType || 'unknown');
+        } else {
+          // Fallback detection for browsers
+          const isInFrame = window.location !== window.parent.location || window.self !== window.top;
+          const hasFarcasterUA = /Farcaster/i.test(navigator.userAgent);
+          
+          if (isInFrame || hasFarcasterUA) {
+            setIsInFarcaster(true);
+            console.log('Farcaster detected via fallback');
+          }
         }
       } catch (error) {
-        console.log('SDK context not available (this is okay):', error);
-        // We already set isInFarcaster based on frame/UA detection
+        console.log('Environment check error:', error);
+        // Fallback to frame detection
+        const isInFrame = window.self !== window.top;
+        if (isInFrame) {
+          setIsInFarcaster(true);
+        }
       }
 
       // Check if mobile
