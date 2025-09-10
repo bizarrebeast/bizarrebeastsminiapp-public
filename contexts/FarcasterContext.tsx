@@ -1,6 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import sdk from '@farcaster/frame-sdk';
 
 interface FarcasterContextType {
   isInFarcaster: boolean;
@@ -22,64 +23,54 @@ export function FarcasterProvider({ children }: { children: React.ReactNode }) {
   const [farcasterUser, setFarcasterUser] = useState<any>(null);
 
   useEffect(() => {
-    // Non-blocking Farcaster environment check
-    const checkEnvironment = () => {
-      // Immediate detection using simple checks
-      const isInFrame = window.location !== window.parent.location || window.self !== window.top;
-      const hasFarcasterUA = /Farcaster/i.test(navigator.userAgent);
-      
-      // Set initial state based on quick checks
-      if (isInFrame || hasFarcasterUA) {
-        setIsInFarcaster(true);
-        console.log('Farcaster detected via quick check');
-      }
-      
-      // Then try SDK context asynchronously without blocking
-      const checkSDK = async () => {
-        try {
-          // Import SDK and check context
-          const { default: sdkImport } = await import('@farcaster/frame-sdk');
-          
-          // Add timeout to prevent hanging
-          const contextPromise = sdkImport.context;
-          const timeoutPromise = new Promise((resolve) => 
-            setTimeout(() => resolve(null), 500)
-          );
-          
-          const context = await Promise.race([contextPromise, timeoutPromise]) as any;
-          if (context && context.client) {
-            setIsInFarcaster(true);
-            setFarcasterUser(context.user);
-            console.log('Farcaster SDK context loaded, platform:', context.client.platformType);
-          }
-        } catch (error) {
-          // Silently fail - we already have fallback detection
-          console.log('SDK context check skipped');
+    // Check if we're in Farcaster
+    const checkEnvironment = async () => {
+      try {
+        // Multiple detection methods for reliability
+        const isInFrame = window.location !== window.parent.location || window.self !== window.top;
+        const hasFarcasterUA = /Farcaster/i.test(navigator.userAgent);
+        
+        // Check if SDK is available and we're in a frame/miniapp
+        const context = await sdk.context;
+        if (context && context.client) {
+          setIsInFarcaster(true);
+          setFarcasterUser(context.user);
+          console.log('Farcaster detected via SDK, platform:', context.client.platformType);
+        } else if (isInFrame || hasFarcasterUA) {
+          // Fallback detection
+          setIsInFarcaster(true);
+          console.log('Farcaster detected via frame/UA');
         }
+      } catch (error) {
+        // Additional fallback checks
+        const isInFrame = window.location !== window.parent.location;
+        const hasFarcasterUA = /Farcaster/i.test(navigator.userAgent);
+        
+        if (isInFrame || hasFarcasterUA) {
+          setIsInFarcaster(true);
+          console.log('Farcaster detected via fallback');
+        } else {
+          setIsInFarcaster(false);
+        }
+      }
+
+      // Check if mobile
+      const checkMobile = () => {
+        const userAgent = navigator.userAgent || navigator.vendor;
+        const isMobileDevice = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(
+          userAgent.toLowerCase()
+        );
+        const isMobileWidth = window.innerWidth < 768;
+        setIsMobile(isMobileDevice || isMobileWidth);
       };
+
+      checkMobile();
+      window.addEventListener('resize', checkMobile);
       
-      // Run SDK check asynchronously with delay to not interfere with ready() call
-      setTimeout(() => checkSDK(), 100);
+      return () => window.removeEventListener('resize', checkMobile);
     };
 
-    // Check if mobile
-    const checkMobile = () => {
-      const userAgent = navigator.userAgent || navigator.vendor;
-      const isMobileDevice = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(
-        userAgent.toLowerCase()
-      );
-      const isMobileWidth = window.innerWidth < 768;
-      setIsMobile(isMobileDevice || isMobileWidth);
-    };
-
-    // Run checks immediately
     checkEnvironment();
-    checkMobile();
-    
-    // Add resize listener for mobile check
-    window.addEventListener('resize', checkMobile);
-    
-    return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
   const shareImage = async (imageUrl: string, text?: string) => {
@@ -89,7 +80,6 @@ export function FarcasterProvider({ children }: { children: React.ReactNode }) {
     if (isInFarcaster) {
       try {
         // Try using SDK's openUrl first
-        const { default: sdk } = await import('@farcaster/frame-sdk');
         if (sdk.actions && sdk.actions.openUrl) {
           await sdk.actions.openUrl(shareUrl);
           console.log('Shared via SDK openUrl');
