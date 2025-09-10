@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { ExportOptions } from '@/types';
-import { Download, Share2, Settings, ChevronDown, ChevronUp, Lock } from 'lucide-react';
+import { Download, Share2, Settings, ChevronDown, ChevronUp, Lock, CheckCircle, Info } from 'lucide-react';
 import { useWallet } from '@/hooks/useWallet';
 import { AccessTier } from '@/lib/empire';
 import { canRemoveWatermark } from '@/lib/empire-gating';
@@ -16,6 +16,9 @@ export default function ExportControls({ onExport }: ExportControlsProps) {
   const [isExpanded, setIsExpanded] = useState(true);
   const [isSharing, setIsSharing] = useState(false);
   const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);
+  const [hasDownloaded, setHasDownloaded] = useState(false);
+  const [downloadSuccess, setDownloadSuccess] = useState(false);
+  const [currentImageData, setCurrentImageData] = useState<string | null>(null);
   const { empireTier } = useWallet();
   
   // Check if user can remove watermark (Elite or Champion only)
@@ -50,22 +53,44 @@ export default function ExportControls({ onExport }: ExportControlsProps) {
     }
   }, [canToggleWatermark]);
 
-  const handleExport = () => {
+  const handleExport = async () => {
     console.log('Download button clicked, exportOptions:', exportOptions);
-    onExport({
+    setDownloadSuccess(false);
+    
+    // Export and store the image data
+    const result = await onExport({
       ...exportOptions,
       downloadToDevice: true,
       shareToFarcaster: false
     });
+    
+    // Store image data for sharing
+    if (typeof result === 'string') {
+      setCurrentImageData(result);
+    }
+    
+    // Show success message
+    setHasDownloaded(true);
+    setDownloadSuccess(true);
+    
+    // Hide success message after 3 seconds
+    setTimeout(() => {
+      setDownloadSuccess(false);
+    }, 3000);
   };
 
   const handleShareToFarcaster = async () => {
+    if (!hasDownloaded) {
+      alert('Please download your meme first!');
+      return;
+    }
+    
     setIsSharing(true);
     try {
       await onExport({
         ...exportOptions,
         shareToFarcaster: true,
-        downloadToDevice: true, // Also download so user has the file
+        downloadToDevice: false, // Don't download again
       });
     } finally {
       setIsSharing(false);
@@ -89,34 +114,76 @@ export default function ExportControls({ onExport }: ExportControlsProps) {
       {/* Collapsible Content */}
       {isExpanded && (
         <>
-          {/* Quick Actions */}
-          <div className="space-y-2 mb-4">
-        <button
-          onClick={handleExport}
-          className="w-full bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink text-black py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2"
-        >
-          <Download className="w-5 h-5" />
-          Download Meme
-        </button>
+          {/* Two-Step Instructions */}
+          <div className="bg-gray-800 rounded-lg p-3 mb-4 border border-gray-700">
+            <div className="flex items-start gap-2">
+              <Info className="w-4 h-4 text-gem-crystal mt-0.5 flex-shrink-0" />
+              <div className="text-xs text-gray-300">
+                <p className="font-semibold text-white mb-1">Two-Step Process:</p>
+                <ol className="space-y-1">
+                  <li className="flex items-start gap-1">
+                    <span className="text-gem-crystal">1.</span>
+                    <span>Download your meme to save it</span>
+                  </li>
+                  <li className="flex items-start gap-1">
+                    <span className="text-gem-crystal">2.</span>
+                    <span>Share to Farcaster with auto-attached image</span>
+                  </li>
+                </ol>
+              </div>
+            </div>
+          </div>
 
-        <button
-          onClick={handleShareToFarcaster}
-          disabled={isSharing}
-          className="w-full bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink text-black py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {isSharing ? (
-            <>
-              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
-              Preparing share...
-            </>
-          ) : (
-            <>
-              <Share2 className="w-5 h-5" />
-              Share to Farcaster
-            </>
-          )}
-        </button>
-      </div>
+          {/* Step 1: Download */}
+          <div className="space-y-2 mb-4">
+            <div className="text-xs text-gray-400 uppercase tracking-wider mb-1">Step 1</div>
+            <button
+              onClick={handleExport}
+              className="w-full bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink text-black py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2"
+            >
+              <Download className="w-5 h-5" />
+              Download Meme
+            </button>
+            
+            {/* Success Message */}
+            {downloadSuccess && (
+              <div className="bg-green-900/30 border border-green-500/50 rounded-lg p-2 flex items-center gap-2 animate-fade-in">
+                <CheckCircle className="w-4 h-4 text-green-400" />
+                <span className="text-sm text-green-300">Meme saved to your device!</span>
+              </div>
+            )}
+          </div>
+
+          {/* Step 2: Share */}
+          <div className="space-y-2 mb-4">
+            <div className="text-xs text-gray-400 uppercase tracking-wider mb-1">Step 2</div>
+            <button
+              onClick={handleShareToFarcaster}
+              disabled={isSharing || !hasDownloaded}
+              className={`w-full py-3 rounded-lg font-semibold transition-all duration-300 flex items-center justify-center gap-2 ${
+                hasDownloaded 
+                  ? 'bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink text-black transform hover:scale-105' 
+                  : 'bg-gray-700 text-gray-400 cursor-not-allowed'
+              } disabled:opacity-50`}
+            >
+              {isSharing ? (
+                <>
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
+                  Preparing share...
+                </>
+              ) : (
+                <>
+                  <Share2 className="w-5 h-5" />
+                  {hasDownloaded ? 'Share to Farcaster' : 'Download First to Share'}
+                </>
+              )}
+            </button>
+            {hasDownloaded && !isSharing && (
+              <p className="text-xs text-gray-400 text-center">
+                Your meme will be automatically attached to the cast
+              </p>
+            )}
+          </div>
 
       {/* Advanced Options Toggle */}
       <button
