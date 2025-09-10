@@ -115,21 +115,50 @@ export default function ExportControls({ onExport }: ExportControlsProps) {
       {isExpanded && (
         <>
           {/* Two-Step Instructions */}
-          <div className="bg-gray-800 rounded-lg p-3 mb-4 border border-gray-700">
-            <div className="flex items-start gap-2">
-              <Info className="w-4 h-4 text-gem-crystal mt-0.5 flex-shrink-0" />
-              <div className="text-xs text-gray-300">
-                <p className="font-semibold text-white mb-1">Two-Step Process:</p>
-                <ol className="space-y-1">
-                  <li className="flex items-start gap-1">
-                    <span className="text-gem-crystal">1.</span>
-                    <span>Download your meme to save it</span>
-                  </li>
-                  <li className="flex items-start gap-1">
-                    <span className="text-gem-crystal">2.</span>
-                    <span>Share to Farcaster with auto-attached image</span>
-                  </li>
-                </ol>
+          <div className="relative rounded-lg p-4 mb-4 overflow-hidden">
+            {/* Gradient background */}
+            <div className="absolute inset-0 bg-gradient-to-br from-gem-crystal/20 via-gem-gold/10 to-gem-pink/20" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+            
+            {/* Animated border gradient */}
+            <div className="absolute inset-0 rounded-lg" style={{
+              background: 'linear-gradient(90deg, #44D0A7, #F9AA00, #F967C6, #44D0A7)',
+              backgroundSize: '200% 100%',
+              animation: 'gradient-shift 3s ease infinite',
+              padding: '1px',
+            }}>
+              <div className="absolute inset-[1px] bg-black/90 rounded-lg" />
+            </div>
+            
+            {/* Content */}
+            <div className="relative z-10">
+              <div className="flex items-center gap-2 mb-3">
+                <div className="p-1.5 bg-gradient-to-br from-gem-crystal to-gem-gold rounded-lg">
+                  <Info className="w-4 h-4 text-black" />
+                </div>
+                <h3 className="font-bold text-white text-sm tracking-wide">EXPORT YOUR MEME</h3>
+              </div>
+              
+              <div className="space-y-2">
+                <div className="flex items-center gap-3 group">
+                  <div className="flex-shrink-0 w-8 h-8 bg-gradient-to-br from-gem-crystal to-gem-crystal/50 rounded-full flex items-center justify-center font-bold text-black">
+                    1
+                  </div>
+                  <div>
+                    <p className="text-white font-semibold text-sm">Download First</p>
+                    <p className="text-gray-400 text-xs">Save your meme to your device</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-center gap-3 group">
+                  <div className="flex-shrink-0 w-8 h-8 bg-gradient-to-br from-gem-pink to-gem-pink/50 rounded-full flex items-center justify-center font-bold text-black">
+                    2
+                  </div>
+                  <div>
+                    <p className="text-white font-semibold text-sm">Share to Farcaster</p>
+                    <p className="text-gray-400 text-xs">Auto-attaches your meme to the cast</p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
