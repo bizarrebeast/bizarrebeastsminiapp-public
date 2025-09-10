@@ -240,8 +240,8 @@ export default function StickerGallery({
             </div>
           </div>
         ) : filteredStickers.length > 0 ? (
-          <div className="overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800 max-w-full">
-            <div className="flex gap-2">
+          <div className="overflow-x-auto overflow-y-visible pb-3 pt-2 px-1 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800 max-w-full">
+            <div className="flex gap-3">
               {filteredStickers.map(sticker => {
                 const hasAccess = !sticker.tier || canAccessSticker(userTier, sticker.tier);
                 const tierBadge = getTierBadge(sticker.tier);
@@ -268,12 +268,12 @@ export default function StickerGallery({
                         setShowUpgradePrompt(true);
                       }
                     }}
-                    className={`group relative bg-gray-700 rounded p-1 transition-all flex-shrink-0 ${
+                    className={`group relative bg-gray-700 rounded p-1 transition-all transform flex-shrink-0 ${
                       hasAccess 
-                        ? 'hover:bg-purple-600/40 hover:scale-110 hover:shadow-lg hover:shadow-purple-500/30 hover:border-purple-500 border-2 border-transparent cursor-pointer' 
+                        ? 'hover:bg-purple-600/40 hover:scale-110 hover:shadow-lg hover:shadow-purple-500/30 hover:border-purple-500 hover:z-10 border-2 border-transparent cursor-pointer' 
                         : 'hover:bg-gray-600/50 cursor-pointer border-2 border-transparent'
                     }`}
-                    style={{ width: '60px', height: '60px' }}
+                    style={{ width: '64px', height: '64px' }}
                   >
                     {/* Sticker image */}
                     <img 
