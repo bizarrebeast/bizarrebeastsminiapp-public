@@ -25,6 +25,23 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
   // const historyRef = useRef<string[]>([]);
   // const historyIndexRef = useRef<number>(-1);
   const canvasApiRef = useRef<any>(null);
+  const sdkRef = useRef<any>(null);
+  const [sdkLoaded, setSdkLoaded] = useState(false);
+  
+  // Pre-load SDK on component mount to avoid first-click errors
+  useEffect(() => {
+    const preloadSDK = async () => {
+      try {
+        const { sdk } = await import('@farcaster/miniapp-sdk');
+        sdkRef.current = sdk;
+        setSdkLoaded(true);
+        console.log('SDK pre-loaded and ready');
+      } catch (error) {
+        console.log('SDK pre-load failed (will try on demand):', error);
+      }
+    };
+    preloadSDK();
+  }, []);
 
   // Handle responsive canvas sizing
   useEffect(() => {
@@ -545,6 +562,19 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
       },*/
 
       export: async (options: ExportOptions) => {
+        // Ensure SDK is loaded for Farcaster operations
+        if ((options.shareToFarcaster || isInFarcaster) && !sdkRef.current) {
+          console.log('SDK not yet loaded, loading now...');
+          try {
+            const { sdk } = await import('@farcaster/miniapp-sdk');
+            sdkRef.current = sdk;
+            setSdkLoaded(true);
+            console.log('SDK loaded successfully on first use');
+          } catch (error) {
+            console.log('Failed to load SDK:', error);
+          }
+        }
+        
         // Add watermark if enabled
         if (options.watermark.enabled) {
           const watermark = new FabricText(options.watermark.text || 'BizarreBeasts ($BB)', {
@@ -635,7 +665,10 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
           let platformType = 'unknown';
           
           try {
-            const { sdk } = await import('@farcaster/miniapp-sdk');
+            // Use pre-loaded SDK or load on demand
+            const sdk = sdkRef.current || (await import('@farcaster/miniapp-sdk')).sdk;
+            if (!sdkRef.current) sdkRef.current = sdk;
+            
             isInMiniApp = await sdk.isInMiniApp();
             
             if (isInMiniApp) {
@@ -781,7 +814,10 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
             let platformType = 'unknown';
             
             try {
-              const { sdk } = await import('@farcaster/miniapp-sdk');
+              // Use pre-loaded SDK or load on demand
+              const sdk = sdkRef.current || (await import('@farcaster/miniapp-sdk')).sdk;
+              if (!sdkRef.current) sdkRef.current = sdk;
+              
               isInMiniApp = await sdk.isInMiniApp();
               
               if (isInMiniApp) {
@@ -805,7 +841,9 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
               console.log('Farcaster miniapp share - using composeCast API');
               
               try {
-                const { sdk } = await import('@farcaster/miniapp-sdk');
+                // Use pre-loaded SDK or load on demand
+                const sdk = sdkRef.current || (await import('@farcaster/miniapp-sdk')).sdk;
+                if (!sdkRef.current) sdkRef.current = sdk;
                 
                 // Use composeCast for native sharing
                 const result = await sdk.actions.composeCast({
