@@ -629,8 +629,8 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
           if (isInFarcaster) {
             console.log('Farcaster miniapp download - using special handling');
             
-            // Check if mobile or desktop Farcaster
-            const isMobileFarcaster = isMobileDevice();
+            // Check if mobile or desktop Farcaster - use user agent only, not window width
+            const isMobileFarcaster = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
             
             if (isMobileFarcaster) {
               // Mobile Farcaster: Try Web Share API first
@@ -744,7 +744,8 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
             
             // Handle Farcaster miniapp specially
             if (isInFarcaster) {
-              const isMobileFarcaster = isMobileDevice();
+              // Use user agent only for accurate mobile detection
+              const isMobileFarcaster = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
               
               if (isMobileFarcaster) {
                 // Mobile Farcaster: Use SDK or direct navigation
