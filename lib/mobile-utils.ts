@@ -50,12 +50,16 @@ export async function downloadImageMobile(dataURL: string, filename: string) {
   } catch (error) {
     console.error('Mobile download failed:', error);
     
-    // Last resort - open in new tab
-    const newTab = window.open(dataURL, '_blank');
-    if (newTab) {
-      // Show instruction to user
-      alert('Long press the image and select "Save Image" to download');
-      return true;
+    // Only open in new tab for actual mobile devices, not desktop
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    if (isMobile) {
+      // Last resort for mobile - open in new tab
+      const newTab = window.open(dataURL, '_blank');
+      if (newTab) {
+        // Show instruction to user
+        alert('Long press the image and select "Save Image" to download');
+        return true;
+      }
     }
     
     return false;

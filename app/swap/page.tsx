@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { TrendingUp, Info, ArrowDownUp, ExternalLink, Copy, Check, BarChart3, ChevronDown, ChevronUp, Lightbulb, Monitor, Smartphone } from 'lucide-react';
 import { useWallet } from '@/hooks/useWallet';
+import { useFarcaster } from '@/contexts/FarcasterContext';
 
 // BB Token on Base
 const BB_TOKEN = {
@@ -16,6 +17,7 @@ const BB_TOKEN = {
 export default function SwapPage() {
   const { address } = useWallet();
   const [copiedAddress, setCopiedAddress] = useState(false);
+  const { isInFarcaster } = useFarcaster();
   const [showInstructions, setShowInstructions] = useState(false);
   const [showTips, setShowTips] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -78,6 +80,13 @@ export default function SwapPage() {
                   href={uniswapUrl}
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={(e) => {
+                    // For Farcaster desktop, ensure it opens in new browser tab
+                    if (isInFarcaster && !isMobile) {
+                      e.preventDefault();
+                      window.open(uniswapUrl, '_blank', 'noopener,noreferrer');
+                    }
+                  }}
                   className="text-gem-crystal hover:text-gem-gold transition-colors flex items-center gap-1 text-sm"
                 >
                   Open in new tab
@@ -109,6 +118,13 @@ export default function SwapPage() {
                     href={uniswapUrl}
                     target="_blank"
                     rel="noopener noreferrer"
+                    onClick={(e) => {
+                      // For Farcaster, ensure it opens in new browser tab
+                      if (isInFarcaster) {
+                        e.preventDefault();
+                        window.open(uniswapUrl, '_blank', 'noopener,noreferrer');
+                      }
+                    }}
                     className="block w-full"
                   >
                     <button className="w-full px-6 py-4 bg-gradient-to-r from-gem-gold via-gem-crystal to-gem-pink text-dark-bg font-bold rounded-lg hover:opacity-90 transition-opacity flex items-center justify-center gap-2 text-lg">
