@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@farcaster/auth-kit": "^0.8.1",
+    "@farcaster/frame-sdk": "^0.1.10",
     "@radix-ui/react-dialog": "^1.1.15",
     "@radix-ui/react-dropdown-menu": "^2.1.16",
     "@reown/appkit": "^1.8.2",

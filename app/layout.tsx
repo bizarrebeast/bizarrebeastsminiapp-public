@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/navigation/Navbar";
 import { LayoutWrapper } from "@/components/layout/LayoutWrapper";
+import { FarcasterSDK } from "@/components/FarcasterSDK";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -45,6 +46,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.className} bg-dark-bg text-white min-h-screen antialiased`}>
+        <FarcasterSDK />
         <LayoutWrapper>
           <Navbar />
           <main className="flex-1">
