@@ -1,7 +1,6 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import sdk from '@farcaster/frame-sdk';
 
 interface FarcasterContextType {
   isInFarcaster: boolean;
@@ -38,10 +37,13 @@ export function FarcasterProvider({ children }: { children: React.ReactNode }) {
       // Then try SDK context asynchronously without blocking
       const checkSDK = async () => {
         try {
+          // Import SDK and check context
+          const { default: sdkImport } = await import('@farcaster/frame-sdk');
+          
           // Add timeout to prevent hanging
-          const contextPromise = sdk.context;
+          const contextPromise = sdkImport.context;
           const timeoutPromise = new Promise((resolve) => 
-            setTimeout(() => resolve(null), 1000)
+            setTimeout(() => resolve(null), 500)
           );
           
           const context = await Promise.race([contextPromise, timeoutPromise]) as any;
@@ -52,12 +54,12 @@ export function FarcasterProvider({ children }: { children: React.ReactNode }) {
           }
         } catch (error) {
           // Silently fail - we already have fallback detection
-          console.log('SDK context not available');
+          console.log('SDK context check skipped');
         }
       };
       
-      // Run SDK check asynchronously
-      checkSDK();
+      // Run SDK check asynchronously with delay to not interfere with ready() call
+      setTimeout(() => checkSDK(), 100);
     };
 
     // Check if mobile
@@ -87,6 +89,7 @@ export function FarcasterProvider({ children }: { children: React.ReactNode }) {
     if (isInFarcaster) {
       try {
         // Try using SDK's openUrl first
+        const { default: sdk } = await import('@farcaster/frame-sdk');
         if (sdk.actions && sdk.actions.openUrl) {
           await sdk.actions.openUrl(shareUrl);
           console.log('Shared via SDK openUrl');
