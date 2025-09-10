@@ -69,6 +69,9 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
       selectionBorderColor: 'rgba(255, 255, 255, 0.8)',
       selectionLineWidth: 2,
       selectionDashArray: [10, 5],
+      // Add padding for controls to prevent clipping
+      controlsAboveOverlay: true,
+      preserveObjectStacking: true,
     });
 
     fabricCanvasRef.current = canvas;
@@ -249,11 +252,15 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
             lockScalingFlip: true, // Prevent negative scaling
             centeredRotation: true,
             hasRotatingPoint: true, // Enable rotation handle
-            borderColor: 'rgba(255, 255, 255, 0.9)',
-            cornerColor: 'rgba(255, 255, 255, 0.9)',
-            cornerSize: 12,
+            borderColor: 'rgba(147, 51, 234, 1)', // Purple border
+            cornerColor: 'rgba(147, 51, 234, 1)', // Purple corners
+            cornerStrokeColor: 'rgba(255, 255, 255, 1)', // White outline on corners
+            cornerSize: 14,
             transparentCorners: false,
             cornerStyle: 'circle',
+            borderScaleFactor: 2, // Thicker border
+            padding: 10, // Add padding around object for controls
+            borderOpacityWhenMoving: 1,
           });
           canvas.add(img);
           canvas.setActiveObject(img);
@@ -284,11 +291,15 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
           editable: true,
           uniformScaling: true, // Maintain aspect ratio for text
           lockScalingFlip: true,
-          borderColor: 'rgba(255, 255, 255, 0.9)',
-          cornerColor: 'rgba(255, 255, 255, 0.9)',
-          cornerSize: 12,
+          borderColor: 'rgba(147, 51, 234, 1)', // Purple border
+          cornerColor: 'rgba(147, 51, 234, 1)', // Purple corners
+          cornerStrokeColor: 'rgba(255, 255, 255, 1)', // White outline
+          cornerSize: 14,
           transparentCorners: false,
           cornerStyle: 'circle',
+          borderScaleFactor: 2,
+          padding: 10, // Add padding for controls
+          borderOpacityWhenMoving: 1,
         });
         canvas.add(textObj);
         canvas.setActiveObject(textObj);
