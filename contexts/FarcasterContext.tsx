@@ -37,7 +37,7 @@ export function FarcasterProvider({ children }: { children: React.ReactNode }) {
           setTimeout(() => resolve(null), 2000)
         );
         
-        const context = await Promise.race([contextPromise, timeoutPromise]);
+        const context = await Promise.race([contextPromise, timeoutPromise]) as any;
         if (context && context.client) {
           setIsInFarcaster(true);
           setFarcasterUser(context.user);
