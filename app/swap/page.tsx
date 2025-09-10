@@ -88,47 +88,61 @@ export default function SwapPage() {
             
             {/* Uniswap Interface - Mobile vs Desktop */}
             {isMobile ? (
-              // Mobile Message
-              <div className="p-8 text-center bg-gradient-to-b from-gray-800/50 to-gray-900/50">
-                <div className="max-w-sm mx-auto space-y-6">
-                  <div className="flex justify-center">
-                    <div className="relative">
-                      <Monitor className="w-20 h-20 text-gem-crystal" />
-                      <div className="absolute -bottom-2 -right-2 bg-gem-gold rounded-full p-2">
-                        <ArrowDownUp className="w-4 h-4 text-dark-bg" />
+              // Mobile Experience - Better UX for Farcaster users
+              <div className="p-6 bg-gradient-to-b from-gray-800/50 to-gray-900/50">
+                <div className="space-y-6">
+                  <div className="text-center space-y-3">
+                    <div className="flex justify-center mb-4">
+                      <div className="relative">
+                        <ArrowDownUp className="w-16 h-16 text-gem-gold" />
                       </div>
                     </div>
-                  </div>
-                  
-                  <div className="space-y-3">
-                    <h3 className="text-xl font-bold text-white">Desktop Required for Swapping</h3>
+                    
+                    <h3 className="text-2xl font-bold text-white">Swap $BB Tokens</h3>
                     <p className="text-gray-400">
-                      The Uniswap swap interface requires a desktop browser for the best trading experience.
+                      Trade BizarreBeasts tokens on Uniswap
                     </p>
                   </div>
 
+                  {/* Primary CTA - Open Uniswap */}
+                  <a
+                    href={uniswapUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block w-full"
+                  >
+                    <button className="w-full px-6 py-4 bg-gradient-to-r from-gem-gold via-gem-crystal to-gem-pink text-dark-bg font-bold rounded-lg hover:opacity-90 transition-opacity flex items-center justify-center gap-2 text-lg">
+                      <ArrowDownUp className="w-6 h-6" />
+                      Open Uniswap to Swap
+                      <ExternalLink className="w-5 h-5" />
+                    </button>
+                  </a>
+
+                  {/* Mobile Tips */}
                   <div className="bg-gray-800/50 rounded-lg p-4 border border-gem-crystal/20">
-                    <div className="flex items-center gap-2 text-gem-gold mb-2">
+                    <div className="flex items-center gap-2 text-gem-crystal mb-3">
                       <Smartphone className="w-5 h-5" />
-                      <span className="font-semibold">Mobile App Coming Soon!</span>
+                      <span className="font-semibold">Mobile Trading</span>
                     </div>
-                    <p className="text-sm text-gray-400">
-                      We're working on native mobile support. In the meantime, you can still view charts and token info below.
-                    </p>
+                    <ul className="space-y-2 text-sm text-gray-300">
+                      <li className="flex items-start gap-2">
+                        <span className="text-gem-gold mt-0.5">✓</span>
+                        <span>$BB is pre-selected as output token</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-gem-gold mt-0.5">✓</span>
+                        <span>Connect your wallet in Uniswap</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-gem-gold mt-0.5">✓</span>
+                        <span>View live charts below</span>
+                      </li>
+                    </ul>
                   </div>
 
-                  <div className="space-y-3">
-                    <p className="text-sm text-gray-500">Or open Uniswap directly:</p>
-                    <a
-                      href={uniswapUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink text-dark-bg px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition-all duration-300"
-                    >
-                      <ArrowDownUp className="w-5 h-5" />
-                      Open Uniswap App
-                      <ExternalLink className="w-4 h-4" />
-                    </a>
+                  {/* Navigation Help */}
+                  <div className="text-center text-sm text-gray-500">
+                    <p>Swipe back or use your browser's back button to return</p>
                   </div>
                 </div>
               </div>

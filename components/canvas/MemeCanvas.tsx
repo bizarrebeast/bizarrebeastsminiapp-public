@@ -4,6 +4,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Canvas, FabricImage, FabricText, Rect as FabricRect } from 'fabric';
 import { Sticker, TextOptions, ExportOptions, StickerCollection, BackgroundImage } from '@/types';
 import { shareMemeToFarcaster } from '@/lib/farcaster';
+import { downloadImageMobile, isMobileDevice } from '@/lib/mobile-utils';
+import { useFarcaster } from '@/contexts/FarcasterContext';
 import { Info, ChevronDown, ChevronUp } from 'lucide-react';
 
 interface MemeCanvasProps {
@@ -18,6 +20,7 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
   const [backgroundColor, setBackgroundColor] = useState('transparent');
   const [canvasSize, setCanvasSize] = useState({ width: 600, height: 600 });
   const [showInstructions, setShowInstructions] = useState(false);
+  const { isInFarcaster, isMobile, shareImage } = useFarcaster();
   // History tracking removed since undo/redo removed
   // const historyRef = useRef<string[]>([]);
   // const historyIndexRef = useRef<number>(-1);
@@ -592,25 +595,51 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
 
         // Handle download
         if (options.downloadToDevice) {
-          const link = document.createElement('a');
           const extension = exportFormat === 'jpeg' ? 'jpg' : 'png';
-          link.download = `meme-${Date.now()}.${extension}`;
-          link.href = finalDataURL;
-          link.click();
+          const filename = `meme-${Date.now()}.${extension}`;
+          
+          // Use mobile-friendly download for mobile devices
+          if (isMobileDevice()) {
+            await downloadImageMobile(finalDataURL, filename);
+          } else {
+            // Desktop download
+            const link = document.createElement('a');
+            link.download = filename;
+            link.href = finalDataURL;
+            link.click();
+          }
         }
 
         // Handle Farcaster share
         if (options.shareToFarcaster) {
-          // Share to Farcaster - open window immediately to avoid popup blocker
-          const warpcastWindow = window.open('about:blank', '_blank');
-          
-          try {
-            // Use compressed version for sharing
-            const shareUrl = await shareMemeToFarcaster(finalDataURL, undefined, undefined, warpcastWindow);
-            console.log('Farcaster share initiated with compressed image');
-          } catch (error) {
-            console.error('Failed to share to Farcaster:', error);
-            if (warpcastWindow) warpcastWindow.close();
+          if (isInFarcaster || isMobile) {
+            // For mobile/Farcaster, we need to handle sharing differently
+            try {
+              // TODO: Upload image to a service first (IPFS, Cloudinary, etc.)
+              // For now, use the shareImage function with a placeholder
+              const shareText = `Check out my BizarreBeasts meme! 🎨\n\nCreate your own at https://bbapp.bizarrebeasts.io`;
+              await shareImage(finalDataURL, shareText);
+              console.log('Farcaster share initiated for mobile');
+            } catch (error) {
+              console.error('Failed to share on mobile:', error);
+              // Fallback: Download the image and show instructions
+              if (isMobileDevice()) {
+                await downloadImageMobile(finalDataURL, `meme-${Date.now()}.png`);
+                alert('Image downloaded! Share it manually on Farcaster.');
+              }
+            }
+          } else {
+            // Desktop: Open window immediately to avoid popup blocker
+            const warpcastWindow = window.open('about:blank', '_blank');
+            
+            try {
+              // Use compressed version for sharing
+              const shareUrl = await shareMemeToFarcaster(finalDataURL, undefined, undefined, warpcastWindow);
+              console.log('Farcaster share initiated with compressed image');
+            } catch (error) {
+              console.error('Failed to share to Farcaster:', error);
+              if (warpcastWindow) warpcastWindow.close();
+            }
           }
         }
 
