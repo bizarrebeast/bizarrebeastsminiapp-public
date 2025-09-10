@@ -38,14 +38,6 @@ export const metadata: Metadata = {
     description: "Create memes, play games, swap, collect art, and win contests in web3's most BIZARRE community!",
     images: ["https://bbapp.bizarrebeasts.io/farcaster-assets/hero.png"],
   },
-  other: {
-    'fc:frame': 'vNext',
-    'fc:frame:image': 'https://bbapp.bizarrebeasts.io/farcaster-assets/hero.png',
-    'fc:frame:image:aspect_ratio': '1.91:1',
-    'fc:frame:button:1': 'Launch App',
-    'fc:frame:button:1:action': 'link',
-    'fc:frame:button:1:target': 'https://bbapp.bizarrebeasts.io',
-  },
 };
 
 export default function RootLayout({
