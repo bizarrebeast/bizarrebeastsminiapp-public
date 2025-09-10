@@ -17,6 +17,12 @@ export const metadata: Metadata = {
   description: "The OFFICIAL BizarreBeasts app! Create BizarreBeasts memes, play games, swap BB tokens, collect art, win contests, and join the most BIZARRE community in web3!",
   keywords: "BizarreBeasts, meme generator, Farcaster, Base, Web3",
   viewport: 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0',
+  manifest: '/manifest.json',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: 'BizarreBeasts',
+  },
   icons: {
     icon: '/favicon.svg',
     shortcut: '/favicon.svg',

@@ -1,0 +1,42 @@
+{
+  "name": "BizarreBeasts ($BB)",
+  "short_name": "BizarreBeasts",
+  "description": "The OFFICIAL BizarreBeasts app! Create memes, play games, swap BB tokens, and join the most BIZARRE community in web3!",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#FFD700",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/farcaster-assets/icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/farcaster-assets/splash.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "categories": ["entertainment", "games", "social"],
+  "screenshots": [
+    {
+      "src": "/farcaster-assets/hero.png",
+      "sizes": "1200x630",
+      "type": "image/png",
+      "label": "BizarreBeasts Meme Creator"
+    }
+  ],
+  "prefer_related_applications": false,
+  "related_applications": []
+}
