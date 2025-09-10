@@ -51,7 +51,12 @@ export default function ExportControls({ onExport }: ExportControlsProps) {
   }, [canToggleWatermark]);
 
   const handleExport = () => {
-    onExport(exportOptions);
+    console.log('Download button clicked, exportOptions:', exportOptions);
+    onExport({
+      ...exportOptions,
+      downloadToDevice: true,
+      shareToFarcaster: false
+    });
   };
 
   const handleShareToFarcaster = async () => {
