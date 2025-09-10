@@ -644,27 +644,34 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
             const isMobileFarcaster = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
             
             if (isMobileFarcaster) {
-              // Mobile Farcaster: Try Web Share API first
-              if (navigator.share) {
-                try {
-                  const blob = await (await fetch(finalDataURL)).blob();
-                  const file = new File([blob], filename, { type: `image/${extension}` });
-                  await navigator.share({
-                    files: [file],
-                    title: 'Save BizarreBeasts Meme',
-                  });
-                  console.log('Downloaded via Web Share API');
-                  return finalDataURL;
-                } catch (err) {
-                  console.log('Web Share failed, trying other methods');
-                }
-              }
+              console.log('Mobile Farcaster detected - using simplified approach');
               
-              // Mobile fallback: Open in new tab
-              const newTab = window.open(finalDataURL, '_blank');
-              if (newTab) {
-                alert('Your meme opened in a new tab. Long press to save the image.');
-              }
+              // For mobile Farcaster, create a download link and trigger it
+              // This should work in most WebView environments
+              const link = document.createElement('a');
+              link.download = filename;
+              link.href = finalDataURL;
+              link.style.display = 'none';
+              document.body.appendChild(link);
+              
+              // Try to trigger download
+              link.click();
+              
+              // Clean up
+              setTimeout(() => {
+                document.body.removeChild(link);
+              }, 100);
+              
+              // Show success message
+              console.log('Download triggered for mobile Farcaster');
+              
+              // If download doesn't work, provide fallback instruction
+              setTimeout(() => {
+                // Only show this if we're still on the same page (download didn't navigate away)
+                if (document.body.contains(link.parentElement || link)) {
+                  alert('If download didn\'t start, try the Share button to save your meme.');
+                }
+              }, 2000);
             } else {
               // Desktop Farcaster: Create download link without opening tab
               console.log('Desktop Farcaster - creating download link');
@@ -759,20 +766,36 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
               const isMobileFarcaster = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
               
               if (isMobileFarcaster) {
-                // Mobile Farcaster: Use SDK or direct navigation
-                console.log('Mobile Farcaster - using SDK openUrl or navigation');
+                console.log('Mobile Farcaster share - using optimized approach');
+                
+                // For mobile Farcaster, try multiple methods in order
                 try {
+                  // Method 1: Try SDK openUrl with the share URL
                   const { default: sdk } = await import('@farcaster/frame-sdk');
                   if (sdk.actions && sdk.actions.openUrl) {
+                    console.log('Attempting SDK openUrl');
                     await sdk.actions.openUrl(shareUrl);
-                    console.log('Opened via SDK openUrl');
-                  } else {
-                    window.location.href = shareUrl;
+                    console.log('SDK openUrl succeeded');
+                    return;
                   }
-                } catch (error) {
-                  console.error('SDK failed, using direct navigation:', error);
-                  window.location.href = shareUrl;
+                } catch (sdkError) {
+                  console.log('SDK method failed:', sdkError);
                 }
+                
+                // Method 2: Try opening in a new window (might open in-app browser)
+                try {
+                  const newWindow = window.open(shareUrl, '_blank');
+                  if (newWindow) {
+                    console.log('Opened in new window/tab');
+                    return;
+                  }
+                } catch (windowError) {
+                  console.log('Window.open failed:', windowError);
+                }
+                
+                // Method 3: Direct navigation as last resort
+                console.log('Using direct navigation as fallback');
+                window.location.href = shareUrl;
               } else {
                 // Desktop Farcaster: Always open in new browser tab
                 console.log('Desktop Farcaster - opening in new browser tab');
