@@ -38,6 +38,30 @@ export const metadata: Metadata = {
     description: "Create memes, play games, swap, collect art, and win contests in web3's most BIZARRE community!",
     images: ["https://bbapp.bizarrebeasts.io/farcaster-assets/hero.png"],
   },
+  other: {
+    'fc:miniapp': JSON.stringify({
+      version: "1",
+      imageUrl: "https://bbapp.bizarrebeasts.io/farcaster-assets/hero.png",
+      button: {
+        title: "BizarreBeasts ($BB)",
+        action: {
+          type: "launch_miniapp",
+          url: "https://bbapp.bizarrebeasts.io"
+        }
+      }
+    }),
+    'fc:frame': JSON.stringify({
+      version: "1",
+      imageUrl: "https://bbapp.bizarrebeasts.io/farcaster-assets/hero.png",
+      button: {
+        title: "BizarreBeasts ($BB)",
+        action: {
+          type: "launch_miniapp",
+          url: "https://bbapp.bizarrebeasts.io"
+        }
+      }
+    }),
+  },
 };
 
 export default function RootLayout({
