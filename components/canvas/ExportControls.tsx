@@ -81,16 +81,17 @@ export default function ExportControls({ onExport }: ExportControlsProps) {
 
   const handleShareToFarcaster = async () => {
     if (!hasDownloaded) {
-      alert('Please download your meme first!');
+      alert('Please download your meme first (Step 1) before sharing!');
       return;
     }
     
     setIsSharing(true);
     try {
+      // Only share, no download
       await onExport({
         ...exportOptions,
         shareToFarcaster: true,
-        downloadToDevice: false, // Don't download again
+        downloadToDevice: false, // Step 2 only shares, doesn't download
       });
     } finally {
       setIsSharing(false);

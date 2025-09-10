@@ -700,28 +700,25 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
             params.append('channelKey', 'bizarrebeasts');
             const shareUrl = `${baseUrl}?${params.toString()}`;
             
-            if (inFarcasterApp) {
-              console.log('In Farcaster app - using direct navigation');
-              // In Farcaster: Always use direct navigation (most reliable)
+            // Simplified share logic - just open the URL appropriately
+            console.log('Environment:', { 
+              inFarcasterApp, 
+              isMobileBrowser, 
+              isMobile, 
+              isInFarcaster,
+              userAgent: navigator.userAgent 
+            });
+            
+            // For mobile (both Farcaster app and browser), use direct navigation
+            // For desktop, open in new window
+            if (isMobileDevice() || inFarcasterApp || isInFarcaster) {
+              console.log('Mobile/Farcaster - using direct navigation');
+              // This works for:
+              // - Farcaster app (opens composer within app)
+              // - Mobile browser (opens Farcaster app if installed, otherwise web)
               window.location.href = shareUrl;
-            } else if (isMobileBrowser) {
-              console.log('Mobile browser detected');
-              // Mobile browser: Download first, then offer to open Farcaster
-              const extension = exportFormat === 'jpeg' ? 'jpg' : 'png';
-              const filename = `meme-${Date.now()}.${extension}`;
-              
-              // Try to download the image
-              const downloadSuccess = await downloadImageMobile(finalDataURL, filename);
-              
-              // After download, ask if they want to open Farcaster
-              setTimeout(() => {
-                if (confirm('Image saved! Open Farcaster to share your meme?')) {
-                  // Try to open Farcaster app if installed, otherwise web
-                  window.location.href = shareUrl;
-                }
-              }, 500);
             } else {
-              console.log('Desktop browser - opening in new window');
+              console.log('Desktop - opening in new window');
               // Desktop: Open in new window
               window.open(shareUrl, '_blank');
             }
