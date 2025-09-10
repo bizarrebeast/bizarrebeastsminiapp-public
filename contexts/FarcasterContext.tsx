@@ -26,15 +26,32 @@ export function FarcasterProvider({ children }: { children: React.ReactNode }) {
     // Check if we're in Farcaster
     const checkEnvironment = async () => {
       try {
+        // Multiple detection methods for reliability
+        const isInFrame = window.location !== window.parent.location || window.self !== window.top;
+        const hasFarcasterUA = /Farcaster/i.test(navigator.userAgent);
+        
         // Check if SDK is available and we're in a frame/miniapp
         const context = await sdk.context;
-        if (context) {
+        if (context && context.client) {
           setIsInFarcaster(true);
           setFarcasterUser(context.user);
+          console.log('Farcaster detected via SDK, platform:', context.client.platformType);
+        } else if (isInFrame || hasFarcasterUA) {
+          // Fallback detection
+          setIsInFarcaster(true);
+          console.log('Farcaster detected via frame/UA');
         }
       } catch (error) {
-        // Not in Farcaster
-        setIsInFarcaster(false);
+        // Additional fallback checks
+        const isInFrame = window.location !== window.parent.location;
+        const hasFarcasterUA = /Farcaster/i.test(navigator.userAgent);
+        
+        if (isInFrame || hasFarcasterUA) {
+          setIsInFarcaster(true);
+          console.log('Farcaster detected via fallback');
+        } else {
+          setIsInFarcaster(false);
+        }
       }
 
       // Check if mobile
@@ -57,29 +74,31 @@ export function FarcasterProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const shareImage = async (imageUrl: string, text?: string) => {
+    const shareText = text || `...\n\nCheck out BizarreBeasts ($BB) and hold 25M tokens to join /bizarrebeasts! 🚀 👹\n\nCC @bizarrebeast\n\nhttps://bbapp.bizarrebeasts.io`;
+    const shareUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}&embeds[]=${encodeURIComponent(imageUrl)}&channelKey=bizarrebeasts`;
+    
     if (isInFarcaster) {
       try {
-        // Use Farcaster SDK to open composer
-        await sdk.actions.openUrl({
-          url: `https://warpcast.com/~/compose?text=${encodeURIComponent(
-            text || 'Check out my BizarreBeasts meme!'
-          )}&embeds[]=${encodeURIComponent(imageUrl)}`,
-        });
+        // Try using SDK's openUrl first
+        if (sdk.actions && sdk.actions.openUrl) {
+          await sdk.actions.openUrl(shareUrl);
+          console.log('Shared via SDK openUrl');
+        } else {
+          // Fallback to direct navigation in Farcaster
+          window.location.href = shareUrl;
+          console.log('Shared via location.href');
+        }
       } catch (error) {
         console.error('Failed to share via Farcaster SDK:', error);
         // Fallback to window.location
-        window.location.href = `https://warpcast.com/~/compose?text=${encodeURIComponent(
-          text || 'Check out my BizarreBeasts meme!'
-        )}`;
+        window.location.href = shareUrl;
       }
+    } else if (isMobile) {
+      // Mobile browser - navigate directly
+      window.location.href = shareUrl;
     } else {
-      // Regular browser - open in new tab
-      window.open(
-        `https://warpcast.com/~/compose?text=${encodeURIComponent(
-          text || 'Check out my BizarreBeasts meme!'
-        )}&embeds[]=${encodeURIComponent(imageUrl)}`,
-        '_blank'
-      );
+      // Desktop browser - open in new tab
+      window.open(shareUrl, '_blank');
     }
   };
 
