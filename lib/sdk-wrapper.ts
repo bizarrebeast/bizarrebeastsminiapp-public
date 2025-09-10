@@ -215,18 +215,73 @@ export const forceSDKReinit = () => initializeSDK(true);
 // Export the SDK instance
 export { farcasterSDK as sdk };
 
+// Check if SDK is truly ready by making a test call
+const verifySDKReady = async (): Promise<boolean> => {
+  try {
+    // Try to check if we're in a miniapp - this is a lightweight call
+    const result = await Promise.race([
+      farcasterSDK.isInMiniApp(),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 500))
+    ]);
+    console.log('✅ SDK verification successful:', result);
+    return true;
+  } catch (error) {
+    console.log('❌ SDK not ready yet:', error);
+    return false;
+  }
+};
+
 // Composite function for share operations with extra safety
 export const shareToFarcaster = async (params: {
   text: string;
   embeds?: string[];
   channelKey?: string;
+  fallbackUrl?: string; // URL to use if SDK fails
 }): Promise<any> => {
   console.log('📤 Starting Farcaster share with params:', params);
   
-  // Multiple initialization attempts
-  for (let i = 0; i < 3; i++) {
-    await initializeSDK(true);
-    await new Promise(resolve => setTimeout(resolve, 100 * (i + 1)));
+  // First, check if SDK is actually ready with a quick test
+  const isReady = await verifySDKReady();
+  
+  if (!isReady) {
+    console.log('⚠️ SDK not ready on first attempt, attempting aggressive initialization...');
+    
+    // Try aggressive initialization
+    for (let i = 0; i < 5; i++) {
+      await initializeSDK(true);
+      await new Promise(resolve => setTimeout(resolve, 200 * (i + 1)));
+      
+      // Check if ready now
+      const ready = await verifySDKReady();
+      if (ready) {
+        console.log(`✅ SDK ready after ${i + 1} initialization attempts`);
+        break;
+      }
+    }
+  }
+  
+  // Final readiness check
+  const finalCheck = await verifySDKReady();
+  
+  if (!finalCheck) {
+    console.log('❌ SDK still not ready after all attempts');
+    
+    // If we have a fallback URL and SDK isn't ready, use URL method
+    if (params.fallbackUrl) {
+      console.log('📱 Using fallback URL method for sharing');
+      
+      // For mobile, use location.href to trigger app open
+      if (typeof window !== 'undefined' && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+        window.location.href = params.fallbackUrl;
+      } else {
+        // Desktop: open in new window
+        window.open(params.fallbackUrl, '_blank');
+      }
+      
+      return { fallback: true, url: params.fallbackUrl };
+    }
+    
+    throw new Error('SDK not ready and no fallback URL provided');
   }
   
   // Convert embeds array to tuple format required by SDK
@@ -245,7 +300,29 @@ export const shareToFarcaster = async (params: {
   }
   
   // Use the retry wrapper with the composeCast operation
-  return withSDKRetry(async () => {
-    return await farcasterSDK.actions.composeCast(composeCastParams);
-  }, 3, 200);
+  try {
+    const result = await withSDKRetry(async () => {
+      return await farcasterSDK.actions.composeCast(composeCastParams);
+    }, 2, 300);
+    
+    console.log('✅ Share successful via SDK');
+    return result;
+  } catch (error) {
+    console.error('❌ SDK share failed:', error);
+    
+    // Last resort: use fallback URL if available
+    if (params.fallbackUrl) {
+      console.log('📱 Falling back to URL method after SDK failure');
+      
+      if (typeof window !== 'undefined' && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+        window.location.href = params.fallbackUrl;
+      } else {
+        window.open(params.fallbackUrl, '_blank');
+      }
+      
+      return { fallback: true, url: params.fallbackUrl, error: error };
+    }
+    
+    throw error;
+  }
 };

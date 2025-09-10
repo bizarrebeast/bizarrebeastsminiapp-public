@@ -842,31 +842,48 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
               userAgent: navigator.userAgent
             });
             
+            // Check if this is likely a cold start scenario
+            const isLikelyColdStart = platformType === 'mobile' && 
+                                      !window.sessionStorage.getItem('farcaster_sdk_warmed');
+            
             // Handle Farcaster miniapp specially using composeCast
-            if (isInMiniApp) {
-              console.log('Farcaster miniapp share - using bulletproof composeCast API');
+            if (isInMiniApp && !isLikelyColdStart) {
+              console.log('Farcaster miniapp share - using bulletproof composeCast API with fallback');
               
               try {
                 // Ensure SDK is ready before sharing
                 await ensureSDKReady();
                 
-                // Use the bulletproof shareToFarcaster function
+                // Use the bulletproof shareToFarcaster function with fallback URL
                 const result = await shareToFarcaster({
                   text: shareText,
                   embeds: [imageUrl],
-                  channelKey: 'bizarrebeasts'
+                  channelKey: 'bizarrebeasts',
+                  fallbackUrl: shareUrl // Provide fallback URL for cold start scenarios
                 });
                 
-                if (result?.cast) {
+                if (result?.fallback) {
+                  console.log('Used fallback URL method due to SDK not ready');
+                } else if (result?.cast) {
                   console.log('Cast created successfully:', result.cast.hash);
+                  // Mark SDK as warmed for future shares
+                  window.sessionStorage.setItem('farcaster_sdk_warmed', 'true');
                 } else {
                   console.log('User cancelled cast');
                 }
               } catch (error) {
                 console.error('composeCast failed:', error);
-                // Fallback to URL method
+                // Final fallback to URL method
                 window.location.href = shareUrl;
               }
+            } else if (isInMiniApp && isLikelyColdStart) {
+              console.log('Cold start detected on mobile - using URL method directly');
+              // For cold starts on mobile, go straight to URL method
+              window.location.href = shareUrl;
+              // Mark as warmed for next time
+              setTimeout(() => {
+                window.sessionStorage.setItem('farcaster_sdk_warmed', 'true');
+              }, 2000);
             } else if (isMobileDevice()) {
               console.log('Mobile browser - using direct navigation');
               // Mobile browser: Direct navigation opens Farcaster app if installed
