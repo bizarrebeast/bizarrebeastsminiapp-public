@@ -8,8 +8,9 @@ import { FarcasterSDK } from "@/components/FarcasterSDK";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "BizarreBeasts Miniapp",
-  description: "Create memes, play games, and join the BizarreBeasts community",
+  metadataBase: new URL('https://bbapp.bizarrebeasts.io'),
+  title: "BizarreBeasts ($BB)",
+  description: "The OFFICIAL BizarreBeasts app! Create BizarreBeasts memes, play games, swap BB tokens, collect art, win contests, and join the most BIZARRE community in web3!",
   keywords: "BizarreBeasts, meme generator, Farcaster, Base, Web3",
   icons: {
     icon: '/favicon.svg',
@@ -17,24 +18,33 @@ export const metadata: Metadata = {
     apple: '/favicon.svg',
   },
   openGraph: {
-    title: "BizarreBeasts Miniapp",
-    description: "Create memes, play games, and join the BizarreBeasts community",
+    title: "BizarreBeasts",
+    description: "Create memes, play games, swap, collect art, and win contests in web3's most BIZARRE community!",
     type: "website",
-    url: "https://app.bizarrebeasts.io",
+    url: "https://bbapp.bizarrebeasts.io",
+    siteName: "BizarreBeasts",
     images: [
       {
-        url: "/og-image.png",
+        url: "https://bbapp.bizarrebeasts.io/farcaster-assets/hero.png",
         width: 1200,
         height: 630,
-        alt: "BizarreBeasts Miniapp",
+        alt: "BizarreBeasts",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "BizarreBeasts Miniapp",
-    description: "Create memes, play games, and join the BizarreBeasts community",
-    images: ["/og-image.png"],
+    title: "BizarreBeasts",
+    description: "Create memes, play games, swap, collect art, and win contests in web3's most BIZARRE community!",
+    images: ["https://bbapp.bizarrebeasts.io/farcaster-assets/hero.png"],
+  },
+  other: {
+    'fc:frame': 'vNext',
+    'fc:frame:image': 'https://bbapp.bizarrebeasts.io/farcaster-assets/hero.png',
+    'fc:frame:image:aspect_ratio': '1.91:1',
+    'fc:frame:button:1': 'Launch App',
+    'fc:frame:button:1:action': 'link',
+    'fc:frame:button:1:target': 'https://bbapp.bizarrebeasts.io',
   },
 };
 
