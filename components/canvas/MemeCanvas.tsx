@@ -213,7 +213,7 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
         e.e.type === 'touchstart' || 
         e.e.type === 'touchend' || 
         e.e.type === 'touchmove' ||
-        e.e.pointerType === 'touch'
+        (e.e as any).pointerType === 'touch'
       );
       
       if (isTouchDevice || isTouchEvent) {
