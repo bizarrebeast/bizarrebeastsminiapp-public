@@ -644,73 +644,47 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
           });
           
           if (localIsInFarcaster) {
-            console.log('Farcaster miniapp download - using special handling');
+            console.log('Farcaster miniapp download - uploading to server for HTTP URL');
             
-            // Check if mobile or desktop Farcaster - use user agent only, not window width
-            const isMobileFarcaster = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-            
-            if (isMobileFarcaster) {
-              console.log('Mobile Farcaster detected - using multi-method approach');
+            // Upload to server to get HTTP URL (required for WebView downloads)
+            try {
+              const uploadResponse = await fetch('/api/upload-temp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ imageData: finalDataURL })
+              });
               
-              // Method 1: Try Web Share API for mobile (works in many WebViews)
-              if (navigator.share && window.isSecureContext) {
-                try {
-                  // Convert to blob for sharing
-                  const response = await fetch(finalDataURL);
-                  const blob = await response.blob();
-                  const file = new File([blob], filename, { type: blob.type });
-                  
-                  await navigator.share({
-                    files: [file],
-                    title: 'BizarreBeasts Meme',
-                    text: 'Check out my BizarreBeasts meme!'
-                  });
-                  console.log('Shared via Web Share API');
-                  return;
-                } catch (shareError) {
-                  console.log('Web Share API failed:', shareError);
+              if (uploadResponse.ok) {
+                const { id } = await uploadResponse.json();
+                const httpUrl = `${window.location.origin}/api/image/${id}`;
+                console.log('Image uploaded, HTTP URL:', httpUrl);
+                
+                // Check if mobile or desktop Farcaster
+                const isMobileFarcaster = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+                
+                if (isMobileFarcaster) {
+                  // Mobile: Open HTTP URL which triggers download
+                  console.log('Mobile Farcaster - opening HTTP URL for download');
+                  window.open(httpUrl, '_blank');
+                } else {
+                  // Desktop: Create download link with HTTP URL
+                  console.log('Desktop Farcaster - downloading via HTTP URL');
+                  const link = document.createElement('a');
+                  link.download = filename;
+                  link.href = httpUrl;
+                  link.style.display = 'none';
+                  document.body.appendChild(link);
+                  link.click();
+                  setTimeout(() => document.body.removeChild(link), 100);
                 }
+                
+                console.log('Download initiated successfully');
+              } else {
+                throw new Error('Failed to upload image');
               }
-              
-              // Method 2: Traditional download link
-              const link = document.createElement('a');
-              link.download = filename;
-              link.href = finalDataURL;
-              link.style.display = 'none';
-              document.body.appendChild(link);
-              
-              // Try to trigger download
-              link.click();
-              
-              // Clean up
-              setTimeout(() => {
-                document.body.removeChild(link);
-              }, 100);
-              
-              // Show success message
-              console.log('Download triggered for mobile Farcaster');
-              
-              // If download doesn't work, provide fallback instruction
-              setTimeout(() => {
-                // Only show this if we're still on the same page (download didn't navigate away)
-                if (document.body.contains(link.parentElement || link)) {
-                  alert('If download didn\'t start, try the Share button to save your meme.');
-                }
-              }, 2000);
-            } else {
-              // Desktop Farcaster: Create download link without opening tab
-              console.log('Desktop Farcaster - creating download link');
-              const link = document.createElement('a');
-              link.download = filename;
-              link.href = finalDataURL;
-              link.style.display = 'none';
-              document.body.appendChild(link);
-              link.click();
-              document.body.removeChild(link);
-              
-              // Show success notification instead of alert
-              console.log('Download initiated for:', filename);
-              // Return success - the parent component will show the success message
+            } catch (error) {
+              console.error('Download failed:', error);
+              alert('Download failed. Please try again.');
             }
             
           } else if (isMobileDevice()) {
@@ -790,46 +764,30 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
                                       /Farcaster/i.test(navigator.userAgent) ||
                                       window.location !== window.parent.location;
             
-            // Handle Farcaster miniapp specially
+            // Handle Farcaster miniapp specially using composeCast
             if (localIsInFarcaster) {
-              // Use user agent only for accurate mobile detection
-              const isMobileFarcaster = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+              console.log('Farcaster miniapp share - using composeCast API');
               
-              if (isMobileFarcaster) {
-                console.log('Mobile Farcaster share - using multi-method approach');
+              try {
+                // Import the new miniapp SDK
+                const { sdk } = await import('@farcaster/miniapp-sdk');
                 
-                // For mobile Farcaster, try multiple methods in order
-                try {
-                  // Method 1: Try SDK openUrl with the share URL
-                  let sdk: any;
-                  try {
-                    sdk = await import('@farcaster/frame-sdk').then(m => m.default);
-                    console.log('SDK imported successfully');
-                  } catch (importError) {
-                    console.log('SDK import failed:', importError);
-                  }
-                  
-                  if (sdk && sdk.actions && sdk.actions.openUrl) {
-                    console.log('Attempting SDK openUrl with URL:', shareUrl);
-                    try {
-                      await sdk.actions.openUrl(shareUrl);
-                      console.log('SDK openUrl succeeded');
-                      return;
-                    } catch (openUrlError) {
-                      console.log('SDK openUrl failed:', openUrlError);
-                    }
-                  }
-                } catch (sdkError) {
-                  console.log('SDK method failed:', sdkError);
+                // Use composeCast for native sharing
+                const result = await sdk.actions.composeCast({
+                  text: shareText,
+                  embeds: [uploadedImageUrl],
+                  channelKey: 'bizarrebeasts'
+                });
+                
+                if (result?.cast) {
+                  console.log('Cast created successfully:', result.cast.hash);
+                } else {
+                  console.log('User cancelled cast');
                 }
-                
-                // Method 2: Direct navigation (most reliable for Farcaster app)
-                console.log('Using direct navigation for mobile Farcaster');
+              } catch (error) {
+                console.error('composeCast failed:', error);
+                // Fallback to URL method
                 window.location.href = shareUrl;
-              } else {
-                // Desktop Farcaster: Always open in new browser tab
-                console.log('Desktop Farcaster - opening in new browser tab');
-                window.open(shareUrl, '_blank', 'noopener,noreferrer');
               }
             } else if (isMobileDevice()) {
               console.log('Mobile browser - using direct navigation');

@@ -1,22 +1,16 @@
 'use client';
 
 import { useEffect } from 'react';
-import sdk from '@farcaster/frame-sdk';
+import { sdk } from '@farcaster/miniapp-sdk';
 
 export function FarcasterSDK() {
   useEffect(() => {
-    // Initialize the SDK and call ready when the app is loaded
-    const initSDK = async () => {
-      try {
-        // Initialize the SDK
-        await sdk.actions.ready();
-        console.log('Farcaster SDK initialized and ready');
-      } catch (error) {
-        console.error('Failed to initialize Farcaster SDK:', error);
-      }
-    };
-
-    initSDK();
+    // Initialize the miniapp SDK and dismiss splash screen
+    sdk.actions.ready().then(() => {
+      console.log('Farcaster miniapp SDK ready - splash dismissed');
+    }).catch((error: any) => {
+      console.error('Failed to initialize miniapp SDK:', error);
+    });
   }, []);
 
   return null; // This component doesn't render anything

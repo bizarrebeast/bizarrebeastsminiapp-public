@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import sdk from '@farcaster/frame-sdk';
+import { sdk } from '@farcaster/miniapp-sdk';
 
 interface FarcasterContextType {
   isInFarcaster: boolean;
@@ -75,30 +75,38 @@ export function FarcasterProvider({ children }: { children: React.ReactNode }) {
 
   const shareImage = async (imageUrl: string, text?: string) => {
     const shareText = text || `...\n\nCheck out BizarreBeasts ($BB) and hold 25M tokens to join /bizarrebeasts! 🚀 👹\n\nCC @bizarrebeast\n\nhttps://bbapp.bizarrebeasts.io`;
-    const shareUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}&embeds[]=${encodeURIComponent(imageUrl)}&channelKey=bizarrebeasts`;
     
     if (isInFarcaster) {
       try {
-        // Try using SDK's openUrl first
-        if (sdk.actions && sdk.actions.openUrl) {
-          await sdk.actions.openUrl(shareUrl);
-          console.log('Shared via SDK openUrl');
+        // Use composeCast for native Farcaster sharing
+        const result = await sdk.actions.composeCast({
+          text: shareText,
+          embeds: [imageUrl],
+          channelKey: 'bizarrebeasts'
+        });
+        
+        if (result?.cast) {
+          console.log('Cast created successfully:', result.cast.hash);
         } else {
-          // Fallback to direct navigation in Farcaster
-          window.location.href = shareUrl;
-          console.log('Shared via location.href');
+          console.log('User cancelled cast');
         }
       } catch (error) {
-        console.error('Failed to share via Farcaster SDK:', error);
-        // Fallback to window.location
+        console.error('Failed to compose cast:', error);
+        // Fallback to URL method
+        const shareUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}&embeds[]=${encodeURIComponent(imageUrl)}&channelKey=bizarrebeasts`;
         window.location.href = shareUrl;
       }
-    } else if (isMobile) {
-      // Mobile browser - navigate directly
-      window.location.href = shareUrl;
     } else {
-      // Desktop browser - open in new tab
-      window.open(shareUrl, '_blank');
+      // Outside Farcaster - use URL method
+      const shareUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}&embeds[]=${encodeURIComponent(imageUrl)}&channelKey=bizarrebeasts`;
+      
+      if (isMobile) {
+        // Mobile browser - navigate directly
+        window.location.href = shareUrl;
+      } else {
+        // Desktop browser - open in new tab
+        window.open(shareUrl, '_blank');
+      }
     }
   };
 
