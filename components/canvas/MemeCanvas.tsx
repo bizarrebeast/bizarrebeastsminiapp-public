@@ -629,37 +629,45 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
           if (isInFarcaster) {
             console.log('Farcaster miniapp download - using special handling');
             
-            // In Farcaster miniapp, try multiple methods
-            // Method 1: Try native Web Share API (works in some Farcaster clients)
-            if (navigator.share) {
-              try {
-                const blob = await (await fetch(finalDataURL)).blob();
-                const file = new File([blob], filename, { type: `image/${extension}` });
-                await navigator.share({
-                  files: [file],
-                  title: 'Save BizarreBeasts Meme',
-                });
-                console.log('Downloaded via Web Share API');
-                return finalDataURL;
-              } catch (err) {
-                console.log('Web Share failed, trying other methods');
-              }
-            }
+            // Check if mobile or desktop Farcaster
+            const isMobileFarcaster = isMobileDevice();
             
-            // Method 2: Open in new tab for manual save
-            const newTab = window.open(finalDataURL, '_blank');
-            if (newTab) {
-              alert('Your meme opened in a new tab. Long press to save the image.');
+            if (isMobileFarcaster) {
+              // Mobile Farcaster: Try Web Share API first
+              if (navigator.share) {
+                try {
+                  const blob = await (await fetch(finalDataURL)).blob();
+                  const file = new File([blob], filename, { type: `image/${extension}` });
+                  await navigator.share({
+                    files: [file],
+                    title: 'Save BizarreBeasts Meme',
+                  });
+                  console.log('Downloaded via Web Share API');
+                  return finalDataURL;
+                } catch (err) {
+                  console.log('Web Share failed, trying other methods');
+                }
+              }
+              
+              // Mobile fallback: Open in new tab
+              const newTab = window.open(finalDataURL, '_blank');
+              if (newTab) {
+                alert('Your meme opened in a new tab. Long press to save the image.');
+              }
             } else {
-              // Method 3: Create download link
+              // Desktop Farcaster: Create download link without opening tab
+              console.log('Desktop Farcaster - creating download link');
               const link = document.createElement('a');
               link.download = filename;
               link.href = finalDataURL;
-              link.target = '_blank';
+              link.style.display = 'none';
               document.body.appendChild(link);
               link.click();
               document.body.removeChild(link);
-              alert('Download started. Check your downloads folder.');
+              
+              // Show success notification instead of alert
+              console.log('Download initiated for:', filename);
+              // Return success - the parent component will show the success message
             }
             
           } else if (isMobileDevice()) {
@@ -736,28 +744,27 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
             
             // Handle Farcaster miniapp specially
             if (isInFarcaster) {
-              console.log('In Farcaster miniapp - using SDK openUrl or fallback');
-              try {
-                // Try using the Farcaster SDK's openUrl if available
-                const { default: sdk } = await import('@farcaster/frame-sdk');
-                if (sdk.actions && sdk.actions.openUrl) {
-                  await sdk.actions.openUrl(shareUrl);
-                  console.log('Opened via SDK openUrl');
-                } else {
-                  // Fallback: Try opening in parent window
-                  if (window.parent !== window) {
-                    window.parent.postMessage({ 
-                      type: 'open-url', 
-                      url: shareUrl 
-                    }, '*');
+              const isMobileFarcaster = isMobileDevice();
+              
+              if (isMobileFarcaster) {
+                // Mobile Farcaster: Use SDK or direct navigation
+                console.log('Mobile Farcaster - using SDK openUrl or navigation');
+                try {
+                  const { default: sdk } = await import('@farcaster/frame-sdk');
+                  if (sdk.actions && sdk.actions.openUrl) {
+                    await sdk.actions.openUrl(shareUrl);
+                    console.log('Opened via SDK openUrl');
                   } else {
-                    window.open(shareUrl, '_blank');
+                    window.location.href = shareUrl;
                   }
+                } catch (error) {
+                  console.error('SDK failed, using direct navigation:', error);
+                  window.location.href = shareUrl;
                 }
-              } catch (error) {
-                console.error('SDK openUrl failed:', error);
-                // Last resort: Try direct navigation
-                window.open(shareUrl, '_blank');
+              } else {
+                // Desktop Farcaster: Always open in new browser tab
+                console.log('Desktop Farcaster - opening in new browser tab');
+                window.open(shareUrl, '_blank', 'noopener,noreferrer');
               }
             } else if (isMobileDevice()) {
               console.log('Mobile browser - using direct navigation');

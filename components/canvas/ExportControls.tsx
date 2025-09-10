@@ -57,26 +57,31 @@ export default function ExportControls({ onExport }: ExportControlsProps) {
     console.log('Download button clicked, exportOptions:', exportOptions);
     setDownloadSuccess(false);
     
-    // Export and store the image data
-    const result = await onExport({
-      ...exportOptions,
-      downloadToDevice: true,
-      shareToFarcaster: false
-    });
-    
-    // Store image data for sharing
-    if (typeof result === 'string') {
-      setCurrentImageData(result);
+    try {
+      // Export and store the image data
+      const result = await onExport({
+        ...exportOptions,
+        downloadToDevice: true,
+        shareToFarcaster: false
+      });
+      
+      // Store image data for sharing
+      if (typeof result === 'string') {
+        setCurrentImageData(result);
+      }
+      
+      // Always show success message (even for Farcaster desktop)
+      setHasDownloaded(true);
+      setDownloadSuccess(true);
+      
+      // Hide success message after 4 seconds
+      setTimeout(() => {
+        setDownloadSuccess(false);
+      }, 4000);
+    } catch (error) {
+      console.error('Download failed:', error);
+      alert('Failed to download meme. Please try again.');
     }
-    
-    // Show success message
-    setHasDownloaded(true);
-    setDownloadSuccess(true);
-    
-    // Hide success message after 3 seconds
-    setTimeout(() => {
-      setDownloadSuccess(false);
-    }, 3000);
   };
 
   const handleShareToFarcaster = async () => {
