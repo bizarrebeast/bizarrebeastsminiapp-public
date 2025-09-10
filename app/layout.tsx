@@ -13,6 +13,7 @@ export const metadata: Metadata = {
   title: "BizarreBeasts ($BB)",
   description: "The OFFICIAL BizarreBeasts app! Create BizarreBeasts memes, play games, swap BB tokens, collect art, win contests, and join the most BIZARRE community in web3!",
   keywords: "BizarreBeasts, meme generator, Farcaster, Base, Web3",
+  viewport: 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0',
   icons: {
     icon: '/favicon.svg',
     shortcut: '/favicon.svg',
@@ -78,9 +79,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
-      </head>
       <body className={`${inter.className} bg-dark-bg text-white min-h-screen antialiased`}>
         <FarcasterSDK />
         <FarcasterProvider>

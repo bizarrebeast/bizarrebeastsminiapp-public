@@ -31,7 +31,13 @@ export function FarcasterProvider({ children }: { children: React.ReactNode }) {
         const hasFarcasterUA = /Farcaster/i.test(navigator.userAgent);
         
         // Check if SDK is available and we're in a frame/miniapp
-        const context = await sdk.context;
+        // Add timeout to prevent hanging
+        const contextPromise = sdk.context;
+        const timeoutPromise = new Promise((resolve) => 
+          setTimeout(() => resolve(null), 2000)
+        );
+        
+        const context = await Promise.race([contextPromise, timeoutPromise]);
         if (context && context.client) {
           setIsInFarcaster(true);
           setFarcasterUser(context.user);
