@@ -775,7 +775,7 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
                 // Use composeCast for native sharing
                 const result = await sdk.actions.composeCast({
                   text: shareText,
-                  embeds: [uploadedImageUrl],
+                  embeds: [imageUrl],
                   channelKey: 'bizarrebeasts'
                 });
                 
