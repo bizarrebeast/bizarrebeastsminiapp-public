@@ -46,7 +46,10 @@ export const metadata: Metadata = {
         title: "BizarreBeasts ($BB)",
         action: {
           type: "launch_miniapp",
-          url: "https://bbapp.bizarrebeasts.io"
+          name: "BizarreBeasts",
+          url: "https://bbapp.bizarrebeasts.io",
+          splashImageUrl: "https://bbapp.bizarrebeasts.io/farcaster-assets/splash.png",
+          splashBackgroundColor: "#f967c6"
         }
       }
     }),
@@ -57,7 +60,10 @@ export const metadata: Metadata = {
         title: "BizarreBeasts ($BB)",
         action: {
           type: "launch_miniapp",
-          url: "https://bbapp.bizarrebeasts.io"
+          name: "BizarreBeasts",
+          url: "https://bbapp.bizarrebeasts.io",
+          splashImageUrl: "https://bbapp.bizarrebeasts.io/farcaster-assets/splash.png",
+          splashBackgroundColor: "#f967c6"
         }
       }
     }),
