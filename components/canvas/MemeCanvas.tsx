@@ -7,7 +7,7 @@ import { shareMemeToFarcaster } from '@/lib/farcaster';
 import { downloadImageMobile, isMobileDevice } from '@/lib/mobile-utils';
 import { useFarcaster } from '@/contexts/FarcasterContext';
 import { useFarcasterSDK } from '@/contexts/SDKContext';
-import { withSDKRetry, sdk } from '@/lib/sdk-init';
+import { sdk, withSDKRetry, shareToFarcaster, ensureSDKReady } from '@/lib/sdk-wrapper';
 import { Info, ChevronDown, ChevronUp } from 'lucide-react';
 import { isMobileTouch, preventEventDefaults } from '@/utils/mobile';
 
@@ -844,17 +844,18 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
             
             // Handle Farcaster miniapp specially using composeCast
             if (isInMiniApp) {
-              console.log('Farcaster miniapp share - using composeCast API');
+              console.log('Farcaster miniapp share - using bulletproof composeCast API');
               
               try {
-                // Use composeCast with retry wrapper for native sharing
-                const result = await withSDKRetry(async () => 
-                  await sdk.actions.composeCast({
-                    text: shareText,
-                    embeds: [imageUrl],
-                    channelKey: 'bizarrebeasts'
-                  })
-                );
+                // Ensure SDK is ready before sharing
+                await ensureSDKReady();
+                
+                // Use the bulletproof shareToFarcaster function
+                const result = await shareToFarcaster({
+                  text: shareText,
+                  embeds: [imageUrl],
+                  channelKey: 'bizarrebeasts'
+                });
                 
                 if (result?.cast) {
                   console.log('Cast created successfully:', result.cast.hash);
