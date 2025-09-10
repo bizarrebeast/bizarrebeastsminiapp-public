@@ -1,45 +1,12 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import dynamic from 'next/dynamic';
-import { 
-  CanvasSkeleton, 
-  StickerGallerySkeleton, 
-  TextControlsSkeleton, 
-  ExportControlsSkeleton 
-} from '@/components/ui/LoadingSkeletons';
+import MemeCanvas from '@/components/canvas/MemeCanvas';
+import StickerGallery from '@/components/canvas/StickerGallery';
+import TextControls from '@/components/canvas/TextControls';
+import ExportControls from '@/components/canvas/ExportControls';
 import { StickerCollection } from '@/types';
 import { AccessTier } from '@/lib/empire';
-
-// Lazy load all heavy components
-const MemeCanvas = dynamic(
-  () => import('@/components/canvas/MemeCanvas'),
-  {
-    loading: () => <CanvasSkeleton />,
-    ssr: false // Fabric.js doesn't support SSR
-  }
-);
-
-const StickerGallery = dynamic(
-  () => import('@/components/canvas/StickerGallery'),
-  {
-    loading: () => <StickerGallerySkeleton />
-  }
-);
-
-const TextControls = dynamic(
-  () => import('@/components/canvas/TextControls'),
-  {
-    loading: () => <TextControlsSkeleton />
-  }
-);
-
-const ExportControls = dynamic(
-  () => import('@/components/canvas/ExportControls'),
-  {
-    loading: () => <ExportControlsSkeleton />
-  }
-);
 
 // Collections with Empire tier requirements
 const mockCollections: StickerCollection[] = [
@@ -116,7 +83,6 @@ export default function MemeGeneratorPage() {
             src="/assets/page-assets/banners/stickers-meme-creator-banner.png" 
             alt="Meme Generator - Create epic memes with BizarreBeasts stickers"
             className="w-full max-w-4xl object-contain rounded-2xl"
-            loading="eager" // Keep banner eager since it's above the fold
           />
         </div>
         
