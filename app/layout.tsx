@@ -49,7 +49,7 @@ export const metadata: Metadata = {
           name: "BizarreBeasts",
           url: "https://bbapp.bizarrebeasts.io",
           splashImageUrl: "https://bbapp.bizarrebeasts.io/farcaster-assets/splash.png",
-          splashBackgroundColor: "#f967c6"
+          splashBackgroundColor: "#000000"
         }
       }
     }),
@@ -63,7 +63,7 @@ export const metadata: Metadata = {
           name: "BizarreBeasts",
           url: "https://bbapp.bizarrebeasts.io",
           splashImageUrl: "https://bbapp.bizarrebeasts.io/farcaster-assets/splash.png",
-          splashBackgroundColor: "#f967c6"
+          splashBackgroundColor: "#000000"
         }
       }
     }),
