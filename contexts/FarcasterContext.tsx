@@ -25,33 +25,32 @@ export function FarcasterProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     // Check if we're in Farcaster
     const checkEnvironment = async () => {
+      // First, do immediate detection
+      const isInFrame = window.location !== window.parent.location || window.self !== window.top;
+      const hasFarcasterUA = /Farcaster/i.test(navigator.userAgent);
+      
+      // Set initial state immediately based on basic checks
+      if (isInFrame || hasFarcasterUA) {
+        setIsInFarcaster(true);
+        console.log('Farcaster detected immediately via frame/UA check');
+      }
+      
+      // Then try to get SDK context for additional info
       try {
-        // Multiple detection methods for reliability
-        const isInFrame = window.location !== window.parent.location || window.self !== window.top;
-        const hasFarcasterUA = /Farcaster/i.test(navigator.userAgent);
-        
-        // Check if SDK is available and we're in a frame/miniapp
+        // Get context with the new miniapp SDK
         const context = await sdk.context;
-        if (context && context.client) {
+        console.log('SDK context received:', context);
+        
+        if (context) {
           setIsInFarcaster(true);
-          setFarcasterUser(context.user);
-          console.log('Farcaster detected via SDK, platform:', context.client.platformType);
-        } else if (isInFrame || hasFarcasterUA) {
-          // Fallback detection
-          setIsInFarcaster(true);
-          console.log('Farcaster detected via frame/UA');
+          if (context.user) {
+            setFarcasterUser(context.user);
+          }
+          console.log('Farcaster confirmed via SDK, platform:', context.client?.platformType || 'unknown');
         }
       } catch (error) {
-        // Additional fallback checks
-        const isInFrame = window.location !== window.parent.location;
-        const hasFarcasterUA = /Farcaster/i.test(navigator.userAgent);
-        
-        if (isInFrame || hasFarcasterUA) {
-          setIsInFarcaster(true);
-          console.log('Farcaster detected via fallback');
-        } else {
-          setIsInFarcaster(false);
-        }
+        console.log('SDK context not available (this is okay):', error);
+        // We already set isInFarcaster based on frame/UA detection
       }
 
       // Check if mobile

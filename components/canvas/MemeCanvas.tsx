@@ -631,14 +631,19 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
           const filename = `meme-${Date.now()}.${extension}`;
           
           // Local Farcaster detection (doesn't rely on SDK context)
-          const localIsInFarcaster = window.self !== window.top || 
-                                     /Farcaster/i.test(navigator.userAgent) ||
-                                     window.location !== window.parent.location;
+          // Check multiple conditions for mobile Farcaster app
+          const isInFrame = window.self !== window.top;
+          const hasFarcasterUA = /Farcaster/i.test(navigator.userAgent);
+          const isDifferentLocation = window.location !== window.parent.location;
+          const localIsInFarcaster = isInFrame || hasFarcasterUA || isDifferentLocation || isInFarcaster;
           
           // Enhanced environment detection
           console.log('Download Environment:', { 
             isInFarcaster,
             localIsInFarcaster,
+            isInFrame,
+            hasFarcasterUA,
+            isDifferentLocation,
             isMobile: isMobileDevice(),
             userAgent: navigator.userAgent 
           });
@@ -760,12 +765,23 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
             });
             
             // Local Farcaster detection for share (doesn't rely on SDK context)
-            const localIsInFarcaster = window.self !== window.top || 
-                                      /Farcaster/i.test(navigator.userAgent) ||
-                                      window.location !== window.parent.location;
+            // Check multiple conditions for mobile Farcaster app
+            const isInFrame = window.self !== window.top;
+            const hasFarcasterUA = /Farcaster/i.test(navigator.userAgent);
+            const isDifferentLocation = window.location !== window.parent.location;
+            const localIsInFarcaster = isInFrame || hasFarcasterUA || isDifferentLocation || isInFarcaster;
+            
+            console.log('Share Detection:', {
+              localIsInFarcaster,
+              isInFrame,
+              hasFarcasterUA,
+              isDifferentLocation,
+              contextIsInFarcaster: isInFarcaster,
+              userAgent: navigator.userAgent
+            });
             
             // Handle Farcaster miniapp specially using composeCast
-            if (localIsInFarcaster) {
+            if (localIsInFarcaster || isInFarcaster) {
               console.log('Farcaster miniapp share - using composeCast API');
               
               try {
