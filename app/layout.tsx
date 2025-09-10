@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-// Initialize SDK immediately on app load with bulletproof wrapper
-import "@/lib/sdk-wrapper";
+// Initialize SDK immediately on app load with ultimate solution
+import "@/lib/sdk-ultimate";
 import { Navbar } from "@/components/navigation/Navbar";
 import { LayoutWrapper } from "@/components/layout/LayoutWrapper";
 import { FarcasterSDK } from "@/components/FarcasterSDK";

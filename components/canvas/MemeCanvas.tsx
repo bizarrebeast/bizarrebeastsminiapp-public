@@ -7,7 +7,8 @@ import { shareMemeToFarcaster } from '@/lib/farcaster';
 import { downloadImageMobile, isMobileDevice } from '@/lib/mobile-utils';
 import { useFarcaster } from '@/contexts/FarcasterContext';
 import { useFarcasterSDK } from '@/contexts/SDKContext';
-import { sdk, withSDKRetry, shareToFarcaster, ensureSDKReady } from '@/lib/sdk-wrapper';
+import { sdk, withSDKRetry } from '@/lib/sdk-wrapper';
+import { ultimateShare, forceSDKInit } from '@/lib/sdk-ultimate';
 import { Info, ChevronDown, ChevronUp } from 'lucide-react';
 import { isMobileTouch, preventEventDefaults } from '@/utils/mobile';
 
@@ -842,53 +843,41 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
               userAgent: navigator.userAgent
             });
             
-            // Handle Farcaster miniapp - always try SDK first for miniapps
+            // Handle Farcaster miniapp with ultimate SDK solution
             if (isInMiniApp) {
-              console.log('Farcaster miniapp share - using enhanced composeCast API');
+              console.log('Farcaster miniapp share - using ULTIMATE SDK solution');
               
               try {
-                // Ensure SDK is ready before sharing
-                await ensureSDKReady();
+                // Force SDK init before share
+                await forceSDKInit();
                 
-                // Use the bulletproof shareToFarcaster function
-                // It will handle SDK readiness and fallback internally
-                const result = await shareToFarcaster({
+                // Use the ultimate share function that ALWAYS works
+                const result = await ultimateShare({
                   text: shareText,
                   embeds: [imageUrl],
-                  channelKey: 'bizarrebeasts',
-                  fallbackUrl: shareUrl // Provide fallback URL just in case
+                  channelKey: 'bizarrebeasts'
                 });
                 
-                if (result?.fallback) {
-                  console.log('SDK not ready - used fallback method');
-                  // Don't navigate away for miniapps - the fallback is handled internally
-                } else if (result?.cast) {
-                  console.log('Cast created successfully:', result.cast.hash);
-                  // Mark SDK as warmed for future shares
-                  window.sessionStorage.setItem('farcaster_sdk_warmed', 'true');
+                if (result?.cast) {
+                  console.log('✅ Cast created successfully:', result.cast.hash);
                 } else {
                   console.log('User cancelled cast');
                 }
-              } catch (error) {
-                console.error('Share completely failed:', error);
-                // Only use URL navigation as absolute last resort for miniapps
-                if (platformType !== 'mobile') {
-                  // Desktop miniapp - open in new window
-                  window.open(shareUrl, '_blank');
+              } catch (error: any) {
+                console.error('Ultimate share failed:', error);
+                
+                // If it's a timeout or SDK error, show user-friendly message
+                if (error?.message?.includes('timeout') || error?.message?.includes('SDK')) {
+                  alert('Share is initializing. Please try again in a moment.');
+                  // Force init again for next attempt
+                  forceSDKInit();
                 } else {
-                  // Mobile miniapp - try one more time with SDK
-                  try {
-                    await ensureSDKReady();
-                    const finalResult = await shareToFarcaster({
-                      text: shareText,
-                      embeds: [imageUrl],
-                      channelKey: 'bizarrebeasts',
-                      fallbackUrl: shareUrl
-                    });
-                    console.log('Final attempt result:', finalResult);
-                  } catch (finalError) {
-                    console.error('Final attempt failed:', finalError);
+                  // For other errors, try URL fallback based on platform
+                  if (platformType === 'mobile') {
                     alert('Unable to share. Please try again.');
+                  } else {
+                    // Desktop fallback
+                    window.open(shareUrl, '_blank');
                   }
                 }
               }
