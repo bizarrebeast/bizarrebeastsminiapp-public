@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { ExternalLink, Check, Share2 } from 'lucide-react';
+import { ExternalLink, Check, Share2, Share } from 'lucide-react';
 
 interface Ritual {
   id: number;
@@ -19,7 +19,7 @@ const rituals: Ritual[] = [
     description: "Create BB art and memes with the Sticker & Meme Creator!",
     actionText: "Create Meme",
     actionUrl: "/meme-generator",
-    image: "/assets/page-assets/banners/stickers-meme-creator-banner.png"
+    image: "/assets/page-assets/banners/rituals-boxes/memes-ritual-banner.png"
   },
   {
     id: 2,
@@ -27,31 +27,31 @@ const rituals: Ritual[] = [
     description: "Support $BB on Dexscreener by hitting \"🚀\" and \"🔥\"!",
     actionText: "Open Dexscreener",
     actionUrl: "https://dexscreener.com/base/0x49e35c372ee285d22a774f8a415f8bf3ad6456c2",
-    image: "/assets/page-assets/banners/token-swap-bb-chart-banner.png"
+    image: "/assets/page-assets/banners/rituals-boxes/dexscreener-ritual-banner.png"
   },
   {
     id: 3,
     title: "Create your $BRND podium! 🏆",
     description: "Create your @brnd podium with $BB in 🥇 and share!",
     actionText: "Create Podium",
-    actionUrl: "https://brnd.land",
-    image: "/assets/page-assets/banners/empire-leaderboard-banner.png"
+    actionUrl: "https://farcaster.xyz/brnd?launchFrameUrl=https%3A%2F%2Fbrnd.land%2F",
+    image: "/assets/page-assets/banners/rituals-boxes/brnd-ritual-banner.png"
   },
   {
     id: 4,
     title: "Send a #create GIVE! 🎨",
     description: "Send @bizarrebeast a #create GIVE in the Based Creator's Directory!",
     actionText: "Send GIVE",
-    actionUrl: "https://dir.coordinape.com/creators/bizarrebeasts.base.eth",
-    image: "/assets/page-assets/banners/community-resources-banner.png"
+    actionUrl: "https://farcaster.xyz/~/compose?text=%40givebot%20%40bizarrebeast%20%23create%20-%20I%27m%20sending%20you%20%23create%20GIVE%20for%20being%20a%20great%20creator.%0A%0Ahttps%3A%2F%2Fdir.coordinape.com%2Fcreators%2Fbizarrebeasts.base.eth&embeds[]=https://dir.coordinape.com/creators/bizarrebeasts.base.eth",
+    image: "/assets/page-assets/banners/rituals-boxes/create-give-ritual-banner.png"
   },
   {
     id: 5,
     title: "Believe in BizarreBeasts! 💎",
     description: "\"Believe\" in BizarreBeasts ($BB) on @productclank",
     actionText: "Believe Now",
-    actionUrl: "https://farcaster.xyz/miniapps/X_DQ70cYHoX0/product-clank",
-    image: "/assets/page-assets/banners/home-page-banner.png"
+    actionUrl: "https://farcaster.xyz/miniapps/X_DQ70cYHoX0/productclank",
+    image: "/assets/page-assets/banners/rituals-boxes/productclank-ritual-banner.png"
   },
   {
     id: 6,
@@ -59,15 +59,15 @@ const rituals: Ritual[] = [
     description: "Play BizarreBeasts games powered by /remix",
     actionText: "Play Games",
     actionUrl: "/games",
-    image: "/assets/page-assets/banners/bizarrebeasts-games-banner.png"
+    image: "/assets/page-assets/banners/rituals-boxes/games-ritual-banner.png"
   },
   {
     id: 7,
     title: "Rip a pack of cards! 🃏",
     description: "Rip a pack of BizarreBeasts ($BBCP) cards on @vibemarket",
     actionText: "Rip Pack",
-    actionUrl: "https://vibechain.com/market?ref=BJT4EJBY0SJP",
-    image: "/assets/page-assets/games/banners/treasure-quest-game-banner-1.svg"
+    actionUrl: "https://farcaster.xyz/~/compose?text=Grab%20your%20BizarreBeasts%20(%24BBCP)%20packs%20on%20%40vibemarket%20%E2%99%A6%EF%B8%8F&embeds[]=https%3A%2F%2Fvibechain.com%2Fmarket%2Fbizarrebeasts%3Fref%3DBJT4EJBY0SJP",
+    image: "/assets/page-assets/banners/rituals-boxes/rip-cards-ritual-banner.png"
   },
   {
     id: 8,
@@ -75,11 +75,39 @@ const rituals: Ritual[] = [
     description: "Grow your BizarreBeasts ($BB) bag and increase your rank on the empire leaderboard",
     actionText: "Buy $BB",
     actionUrl: "/swap",
-    image: "/assets/page-assets/banners/token-swap-bb-chart-banner.png"
+    image: "/assets/page-assets/banners/rituals-boxes/swap-bb-ritual-banner.png"
   }
 ];
 
+interface FeaturedRitual {
+  title: string;
+  description: string;
+  actionText: string;
+  actionUrl: string;
+  image: string;
+  expiresAt?: string; // Optional expiration date
+}
+
+// Featured ritual - can be easily updated or removed
+const featuredRitual: FeaturedRitual | null = {
+  title: "Vote for BizarreBeasts for the DCP Base Creators Award! 🏆",
+  description: `There's less than 48 hours left to vote for BizarreBeasts ($BB) to receive the DCP Onchain Creators Award from @dcpfoundation! 🤯
+
+This is a huge opportunity to bring BizarreBeasts to life as animated shorts, with potential funding and exposure from @dcpfoundation and @zora.
+
+We are up to 171 votes, and YOUR VOTE is absolutely crucial and makes a direct impact for the BIZARRE future!
+
+❓Have questions about the BizarreBeasts submission or voting process? Check out the @paragraph article for more details and screenshots!`,
+  actionText: "Vote Now on DCP",
+  actionUrl: "https://app.decentralized.pictures/project/68694bbba0073d7cf1048a2b",
+  image: "/assets/page-assets/banners/rituals-boxes/featured-ritual-banner.png",
+  expiresAt: "2025-01-13" // Optional: auto-hide after this date
+};
+
 export default function RitualsPage() {
+  // Track featured ritual completion separately
+  const [featuredCompleted, setFeaturedCompleted] = useState<boolean>(false);
+  
   // Try to load from localStorage on mount, with daily reset
   const [completedRituals, setCompletedRituals] = useState<Set<number>>(() => {
     try {
@@ -118,6 +146,8 @@ export default function RitualsPage() {
   }, [completedRituals]);
 
   const handleRitualAction = (ritual: Ritual) => {
+    console.log('Ritual action clicked:', ritual.title);
+    
     // Mark as completed (now persists to localStorage)
     setCompletedRituals(prev => new Set([...prev, ritual.id]));
     
@@ -125,6 +155,8 @@ export default function RitualsPage() {
     const url = ritual.actionUrl.startsWith('/') 
       ? `${window.location.origin}${ritual.actionUrl}`
       : ritual.actionUrl;
+    
+    console.log('Opening URL:', url);
     
     // Always open in new tab
     window.open(url, '_blank');
@@ -150,6 +182,49 @@ export default function RitualsPage() {
     window.open(shareUrl, '_blank');
   };
 
+  const handleShareRitual = (ritual: Ritual) => {
+    console.log('Share ritual clicked:', ritual.title);
+    
+    // Build the action URL (same logic as handleRitualAction)
+    let actionUrl = ritual.actionUrl.startsWith('/') 
+      ? `https://bbapp.bizarrebeasts.io${ritual.actionUrl}`
+      : ritual.actionUrl;
+    
+    // Clean text without URLs (Farcaster will add them as embeds)
+    const shareText = `Daily BIZARRE Ritual #${ritual.id}: ${ritual.title}\n\n${ritual.description}\n\nJoin me in completing daily $BIZARRE rituals in the BizarreBeasts ($BB) Community! 👹\n\n#BizarreBeasts #BBRituals`;
+    
+    // Build URL with embeds[] parameters for proper link previews
+    const baseUrl = 'https://warpcast.com/~/compose';
+    const params = new URLSearchParams();
+    params.append('text', shareText);
+    
+    // Handle special cases for embed URLs
+    if (ritual.id === 3) {
+      // BRND Podium - use the direct brnd.land URL for the embed
+      params.append('embeds[]', 'https://brnd.land');
+      params.append('embeds[]', 'https://bbapp.bizarrebeasts.io/rituals');
+    } else if (ritual.id === 4) {
+      // Create GIVE - add the coordinape link as embed
+      params.append('embeds[]', 'https://dir.coordinape.com/creators/bizarrebeasts.base.eth');
+      params.append('embeds[]', 'https://bbapp.bizarrebeasts.io/rituals');
+    } else if (ritual.id === 1 || ritual.id === 6 || ritual.id === 8) {
+      // Meme Generator, Games, Swap - these are on our site, only add the specific page URL
+      params.append('embeds[]', actionUrl);
+      // Don't add the main rituals page for these (avoid duplicate)
+    } else if (!actionUrl.includes('~/compose')) {
+      // For other rituals (Dexscreener, Believe), add both URLs
+      params.append('embeds[]', actionUrl);
+      params.append('embeds[]', 'https://bbapp.bizarrebeasts.io/rituals');
+    } else {
+      // For compose URLs (like rip pack), just add the rituals page
+      params.append('embeds[]', 'https://bbapp.bizarrebeasts.io/rituals');
+    }
+    
+    const shareUrl = `${baseUrl}?${params.toString()}`;
+    console.log('Opening share URL with embeds');
+    window.open(shareUrl, '_blank');
+  };
+
   return (
     <div className="min-h-[calc(100vh-64px)] px-4 py-8">
       <div className="max-w-4xl mx-auto">
@@ -161,6 +236,113 @@ export default function RitualsPage() {
             className="w-full max-w-4xl object-contain rounded-2xl"
           />
         </div>
+
+        {/* Featured Ritual */}
+        {featuredRitual && (
+          <div className="mb-12">
+            <div className="bg-gradient-to-br from-gem-gold/20 via-dark-card to-gem-crystal/10 border-2 border-gem-gold rounded-2xl overflow-hidden shadow-xl hover:shadow-gem-gold/30 transition-all duration-300">
+              <div className="bg-gradient-to-r from-gem-gold/30 to-gem-crystal/30 px-6 py-2">
+                <h2 className="text-lg font-bold flex items-center gap-2">
+                  <span className="text-xl">⭐</span>
+                  FEATURED RITUAL
+                  <span className="text-xl">⭐</span>
+                </h2>
+              </div>
+              
+              <div className="flex flex-col md:flex-row">
+                {/* Image */}
+                <div className="md:w-48 h-48 md:h-auto bg-gradient-to-br from-gray-800 to-gray-900 relative overflow-hidden flex-shrink-0">
+                  <img 
+                    src={featuredRitual.image} 
+                    alt={featuredRitual.title}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      // Fallback to placeholder on error
+                      const target = e.target as HTMLImageElement;
+                      target.style.display = 'none';
+                      const parent = target.parentElement;
+                      if (parent && !parent.querySelector('.fallback-icon')) {
+                        const fallback = document.createElement('div');
+                        fallback.className = 'fallback-icon w-full h-full flex items-center justify-center';
+                        fallback.innerHTML = '<span class="text-4xl opacity-50">🏆</span>';
+                        parent.appendChild(fallback);
+                      }
+                    }}
+                  />
+                  {featuredCompleted && (
+                    <div className="absolute inset-0 bg-gem-gold/20 flex items-center justify-center">
+                      <Check className="w-12 h-12 text-gem-gold" />
+                    </div>
+                  )}
+                </div>
+                
+                {/* Content */}
+                <div className="flex-1 p-4 md:p-5">
+                  <h3 className="text-lg font-bold mb-2 bg-gradient-to-r from-gem-gold to-gem-crystal bg-clip-text text-transparent flex items-center gap-2">
+                    {featuredRitual.title}
+                    {featuredCompleted && (
+                      <Check className="w-5 h-5 text-gem-gold inline" />
+                    )}
+                  </h3>
+                  
+                  <div className="text-gray-300 mb-3 text-xs leading-relaxed line-clamp-2 md:line-clamp-none">
+                    {featuredRitual.description.split('\n\n')[0]} {/* Show just first paragraph */}
+                    <span className="text-gray-400"> • Less than 48 hours left!</span>
+                  </div>
+                  
+                  <div className="flex gap-2 flex-wrap">
+                    <button
+                      onClick={() => {
+                        setFeaturedCompleted(true);
+                        window.open(featuredRitual.actionUrl, '_blank');
+                      }}
+                      className={`inline-flex items-center gap-1 px-4 py-1.5 rounded-lg font-semibold text-sm transition-all duration-300 transform ${
+                        featuredCompleted
+                          ? 'bg-gem-gold/20 text-gem-gold border border-gem-gold/40'
+                          : 'bg-gradient-to-r from-gem-gold to-gem-crystal text-dark-bg hover:scale-105 hover:shadow-lg'
+                      }`}
+                    >
+                      {featuredCompleted ? (
+                        <>
+                          <Check className="w-3 h-3" />
+                          Voted
+                        </>
+                      ) : (
+                        <>
+                          {featuredRitual.actionText}
+                          <ExternalLink className="w-3 h-3" />
+                        </>
+                      )}
+                    </button>
+                    
+                    <button
+                      onClick={() => window.open('https://paragraph.com/@bizarrebeasts/bizarrebeasts-applies-for-dcps-onchain-creators-award', '_blank')}
+                      className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg font-semibold text-sm transition-all duration-300 bg-dark-card border border-gem-crystal/50 text-gem-crystal hover:bg-gem-crystal/20"
+                    >
+                      Learn More
+                      <ExternalLink className="w-3 h-3" />
+                    </button>
+                    
+                    <button
+                      onClick={() => {
+                        const shareText = `🚨 FEATURED RITUAL ALERT! 🚨\n\nVote for BizarreBeasts for the DCP @dcpfoundation Base Creators Award! 🏆\n\nLess than 48 hours left to support BizarreBeasts ($BB) for potential funding and exposure from @dcpfoundation and @zora!\n\nYour vote makes a direct impact for the BIZARRE future! 👹\n\n#BizarreBeasts #BBRituals #BBFeaturedRitual`;
+                        const params = new URLSearchParams();
+                        params.append('text', shareText);
+                        params.append('embeds[]', featuredRitual.actionUrl); // DCP project page
+                        params.append('embeds[]', 'https://bbapp.bizarrebeasts.io/rituals'); // BB rituals page
+                        window.open(`https://warpcast.com/~/compose?${params.toString()}`, '_blank');
+                      }}
+                      className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg font-semibold text-sm transition-all duration-300 bg-dark-card border border-gem-gold/50 text-gem-gold hover:bg-gem-gold/20"
+                    >
+                      <Share className="w-3 h-3" />
+                      Share
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
         
         {/* Description */}
         <div className="text-center mb-12">
@@ -255,26 +437,37 @@ export default function RitualsPage() {
                     
                     <p className="text-gray-400 mb-4">{ritual.description}</p>
                     
-                    <button
-                      onClick={() => handleRitualAction(ritual)}
-                      className={`inline-flex items-center gap-2 px-6 py-2 rounded-lg font-semibold transition-all duration-300 ${
-                        isCompleted
-                          ? 'bg-gem-gold/20 text-gem-gold border border-gem-gold/40'
-                          : 'bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink text-dark-bg hover:shadow-lg transform hover:scale-105'
-                      }`}
-                    >
-                      {isCompleted ? (
-                        <>
-                          <Check className="w-4 h-4" />
-                          Completed
-                        </>
-                      ) : (
-                        <>
-                          {ritual.actionText}
-                          <ExternalLink className="w-4 h-4" />
-                        </>
-                      )}
-                    </button>
+                    <div className="flex gap-2 flex-wrap">
+                      <button
+                        onClick={() => handleRitualAction(ritual)}
+                        className={`inline-flex items-center gap-2 px-6 py-2 rounded-lg font-semibold transition-all duration-300 ${
+                          isCompleted
+                            ? 'bg-gem-gold/20 text-gem-gold border border-gem-gold/40'
+                            : 'bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink text-dark-bg hover:shadow-lg transform hover:scale-105'
+                        }`}
+                      >
+                        {isCompleted ? (
+                          <>
+                            <Check className="w-4 h-4" />
+                            Completed
+                          </>
+                        ) : (
+                          <>
+                            {ritual.actionText}
+                            <ExternalLink className="w-4 h-4" />
+                          </>
+                        )}
+                      </button>
+                      
+                      <button
+                        onClick={() => handleShareRitual(ritual)}
+                        className="inline-flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-all duration-300 bg-dark-card border border-gray-700 text-gray-300 hover:border-gem-crystal/50 hover:text-gem-crystal"
+                        title="Share this ritual on Farcaster"
+                      >
+                        <Share className="w-4 h-4" />
+                        Share
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
