@@ -115,12 +115,36 @@ if (typeof window !== 'undefined') {
   // Start initialization immediately
   initSDK().then(() => startWarmup());
   
-  // Single backup initialization after a delay
-  setTimeout(() => {
-    if (!state.ready) {
-      initSDK().then(() => startWarmup());
+  // Check if we're likely on mobile (browser detection as early hint)
+  const mightBeMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  
+  if (mightBeMobile) {
+    // MOBILE: Keep ALL the aggressive initialization that fixed the issues
+    const initOnEvent = () => {
+      if (!state.ready) {
+        initSDK().then(() => startWarmup());
+      }
+    };
+    
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initOnEvent);
+    } else {
+      // DOM already loaded
+      setTimeout(initOnEvent, 0);
     }
-  }, 1000);
+    
+    // All the backup attempts that fixed cold start issues
+    setTimeout(initOnEvent, 500);
+    setTimeout(initOnEvent, 1500);
+    setTimeout(initOnEvent, 3000);
+  } else {
+    // DESKTOP: Minimal initialization to avoid compose trigger
+    setTimeout(() => {
+      if (!state.ready) {
+        initSDK().then(() => startWarmup());
+      }
+    }, 1000);
+  }
 }
 
 // Wait for SDK with timeout
