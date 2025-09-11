@@ -76,6 +76,14 @@ const rituals: Ritual[] = [
     actionText: "Buy $BB",
     actionUrl: "/swap",
     image: "/assets/page-assets/banners/rituals-boxes/swap-bb-ritual-banner.png"
+  },
+  {
+    id: 9,
+    title: "Share your Leaderboard rank! 🏆",
+    description: "Show off your BizarreBeasts leaderboard rank and tier to the community, powered by $GLANKER!",
+    actionText: "Check & Share",
+    actionUrl: "/empire",
+    image: "/assets/page-assets/banners/rituals-boxes/leaderboard-rank-rituals-bannker.png"
   }
 ];
 
@@ -175,10 +183,14 @@ export default function RitualsPage() {
       })
       .join('\n');
     
-    const shareText = `I've completed ${completedCount} of 8 Daily BIZARRE Rituals! 👹\n\n${completedRitualsList}\n\nJoin me in the BizarreBeasts ($BB) Community and complete your daily $BIZARRE rituals!\n\n#BizarreBeasts #BBRituals\nhttps://bbapp.bizarrebeasts.io/rituals`;
+    const shareText = `I've completed ${completedCount} of 9 Daily BIZARRE Rituals! 👹\n\n${completedRitualsList}\n\nJoin me in the BizarreBeasts ($BB) Community and complete your daily $BIZARRE rituals!\n\n#BizarreBeasts #BBRituals`;
     
-    // Always use web share URL for consistency
-    const shareUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}`;
+    // Build URL with embeds[] parameter for proper link preview
+    const params = new URLSearchParams();
+    params.append('text', shareText);
+    params.append('embeds[]', 'https://bbapp.bizarrebeasts.io/rituals');
+    
+    const shareUrl = `https://warpcast.com/~/compose?${params.toString()}`;
     window.open(shareUrl, '_blank');
   };
 
@@ -354,7 +366,7 @@ export default function RitualsPage() {
             <div className="bg-dark-bg rounded-lg px-4 py-2 flex items-center gap-2">
               <span className="bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent font-bold text-xl">{completedRituals.size}</span>
               <span className="text-gray-400">of</span>
-              <span className="bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent font-bold text-xl">8</span>
+              <span className="bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent font-bold text-xl">9</span>
               <span className="text-gray-400">Rituals Complete</span>
             </div>
           </div>
@@ -480,12 +492,12 @@ export default function RitualsPage() {
           <div className="mt-12 text-center">
             <div className="bg-gradient-to-br from-dark-card via-dark-card to-gem-gold/5 border border-gem-gold/20 rounded-lg p-8">
               <h2 className="text-2xl font-bold mb-4">
-                {completedRituals.size === 8 
+                {completedRituals.size === 9 
                   ? "🏆 All Rituals Complete!" 
                   : `👹 ${completedRituals.size} Ritual${completedRituals.size > 1 ? 's' : ''} Complete!`}
               </h2>
               <p className="text-gray-300 mb-6">
-                {completedRituals.size === 8
+                {completedRituals.size === 9
                   ? "You've completed all BIZARRE Rituals! Share your achievement with the community!"
                   : "Great progress! Share your ritual journey with the BizarreBeasts community!"}
               </p>

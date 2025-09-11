@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Search, Trophy, Zap, Users, Info } from 'lucide-react';
+import { Search, Trophy, Zap, Users, Info, Share2 } from 'lucide-react';
 import { empireService, EmpireHolder, AccessTier } from '@/lib/empire';
 
 export default function EmpirePage() {
@@ -41,6 +41,55 @@ export default function EmpirePage() {
       console.error('Search failed:', error);
     } finally {
       setSearching(false);
+    }
+  };
+
+  const handleShareRank = (holder: EmpireHolder) => {
+    const tier = empireService.getUserTier(holder.rank);
+    const tierEmoji = 
+      tier === AccessTier.ELITE ? '👑' :
+      tier === AccessTier.CHAMPION ? '🏆' :
+      tier === AccessTier.VETERAN ? '🎖️' :
+      tier === AccessTier.MEMBER ? '⭐' : '🌟';
+    
+    const tierName = 
+      tier === AccessTier.ELITE ? 'Elite' :
+      tier === AccessTier.CHAMPION ? 'Champion' :
+      tier === AccessTier.VETERAN ? 'Veteran' :
+      tier === AccessTier.MEMBER ? 'Member' : 'Visitor';
+
+    const formattedBalance = empireService.formatScore(holder.balance);
+    
+    const shareText = `I'm ranked #${holder.rank} in the BizarreBeasts ($BB) Empire! 🏆\n\nTier: ${tierName} ${tierEmoji}\nScore: ${formattedBalance}\n${holder.finalMultiplier > 1 ? `Boost: ${holder.finalMultiplier.toFixed(1)}x 🚀\n` : ''}\nJoin the Empire and climb the ranks! 👹\n\nPowered by $GLANKER\n\n#BizarreBeasts #BBEmpire`;
+    
+    // Build URL with embeds
+    const params = new URLSearchParams();
+    params.append('text', shareText);
+    params.append('embeds[]', 'https://empire.bizarrebeasts.io');
+    params.append('embeds[]', 'https://bbapp.bizarrebeasts.io/empire');
+    
+    const shareUrl = `https://warpcast.com/~/compose?${params.toString()}`;
+    window.open(shareUrl, '_blank');
+    
+    // Mark ritual 9 as completed
+    const today = new Date().toDateString();
+    const stored = localStorage.getItem('bizarreRitualsData');
+    let completedRituals: number[] = [];
+    
+    if (stored) {
+      const data = JSON.parse(stored);
+      if (data.date === today) {
+        completedRituals = data.rituals || [];
+      }
+    }
+    
+    // Add ritual 9 if not already completed
+    if (!completedRituals.includes(9)) {
+      completedRituals.push(9);
+      localStorage.setItem('bizarreRitualsData', JSON.stringify({
+        date: today,
+        rituals: completedRituals
+      }));
     }
   };
 
@@ -112,6 +161,56 @@ export default function EmpirePage() {
             </button>
           </div>
 
+          {/* Share Your Rank Section - Always Visible */}
+          <div className="bg-gradient-to-r from-gem-crystal/20 via-gem-gold/20 to-gem-pink/20 border border-gem-gold/40 rounded-lg p-4 mb-6">
+            {searchResult ? (
+              <>
+                <h3 className="text-white font-semibold mb-3 flex items-center gap-2">
+                  <Share2 className="w-5 h-5 text-gem-gold" />
+                  Your Leaderboard Rank
+                </h3>
+                <div className="flex flex-col gap-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <span className={`text-2xl font-bold ${getTierColor(searchResult.rank)}`}>
+                        #{searchResult.rank}
+                      </span>
+                      <div>
+                        <p className="text-white font-medium">
+                          {searchResult.farcasterUsername ? `@${searchResult.farcasterUsername}` : empireService.formatAddress(searchResult.address)}
+                        </p>
+                        {searchResult.farcasterUsername && (
+                          <p className="text-gray-400 text-sm">{empireService.formatAddress(searchResult.address)}</p>
+                        )}
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-white font-bold">{empireService.formatScore(searchResult.balance)}</p>
+                      <p className="text-gray-400 text-sm">{searchResult.finalMultiplier.toFixed(1)}x boost</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => handleShareRank(searchResult)}
+                    className="w-full sm:w-auto px-6 py-2 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink text-black font-semibold rounded-lg hover:opacity-90 transition flex items-center justify-center gap-2"
+                  >
+                    <Share2 className="w-4 h-4" />
+                    Share Your Rank
+                  </button>
+                </div>
+              </>
+            ) : (
+              <div>
+                <h3 className="text-white font-semibold mb-2 flex items-center gap-2">
+                  <Share2 className="w-5 h-5 text-gem-gold" />
+                  Share Your Leaderboard Rank
+                </h3>
+                <p className="text-gray-300 text-sm">
+                  Search for your wallet or @username above to discover your rank and share it with the community! Powered by $GLANKER
+                </p>
+              </div>
+            )}
+          </div>
+
           {/* Instructions */}
           <div className="bg-dark-card border border-gem-pink/20 rounded-lg p-4 mb-6">
             <div className="flex items-start gap-2">
@@ -125,32 +224,6 @@ export default function EmpirePage() {
               </div>
             </div>
           </div>
-
-          {/* Search Result */}
-          {searchResult && (
-            <div className="bg-gradient-to-r from-gem-crystal/20 via-gem-gold/20 to-gem-pink/20 border border-gem-gold/40 rounded-lg p-4 mb-6">
-              <h3 className="text-white font-semibold mb-2">Search Result:</h3>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <span className={`text-2xl font-bold ${getTierColor(searchResult.rank)}`}>
-                    #{searchResult.rank}
-                  </span>
-                  <div>
-                    <p className="text-white font-medium">
-                      {searchResult.farcasterUsername ? `@${searchResult.farcasterUsername}` : empireService.formatAddress(searchResult.address)}
-                    </p>
-                    {searchResult.farcasterUsername && (
-                      <p className="text-gray-400 text-sm">{empireService.formatAddress(searchResult.address)}</p>
-                    )}
-                  </div>
-                </div>
-                <div className="text-right">
-                  <p className="text-white font-bold">{empireService.formatScore(searchResult.balance)}</p>
-                  <p className="text-gray-400 text-sm">{searchResult.finalMultiplier.toFixed(1)}x boost</p>
-                </div>
-              </div>
-            </div>
-          )}
         </div>
 
         {/* Top 3 Showcase */}
