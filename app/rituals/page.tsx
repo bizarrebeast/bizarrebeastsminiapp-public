@@ -80,13 +80,23 @@ const rituals: Ritual[] = [
 ];
 
 export default function RitualsPage() {
-  // Try to load from localStorage on mount
+  // Try to load from localStorage on mount, with daily reset
   const [completedRituals, setCompletedRituals] = useState<Set<number>>(() => {
     try {
-      const stored = localStorage.getItem('bizarreRituals');
+      const stored = localStorage.getItem('bizarreRitualsData');
       if (stored) {
-        const parsed = JSON.parse(stored);
-        return new Set(parsed);
+        const data = JSON.parse(stored);
+        const today = new Date().toDateString();
+        
+        // Check if it's a new day - if so, reset
+        if (data.date === today) {
+          console.log('Loading rituals from today');
+          return new Set(data.rituals);
+        } else {
+          console.log('New day detected - resetting rituals');
+          // It's a new day, start fresh
+          return new Set();
+        }
       }
     } catch (e) {
       console.log('Could not load rituals from localStorage:', e);
@@ -94,10 +104,14 @@ export default function RitualsPage() {
     return new Set();
   });
 
-  // Save to localStorage whenever rituals change
+  // Save to localStorage whenever rituals change, with date
   useEffect(() => {
     try {
-      localStorage.setItem('bizarreRituals', JSON.stringify(Array.from(completedRituals)));
+      const data = {
+        rituals: Array.from(completedRituals),
+        date: new Date().toDateString() // Save today's date
+      };
+      localStorage.setItem('bizarreRitualsData', JSON.stringify(data));
     } catch (e) {
       console.log('Could not save rituals to localStorage:', e);
     }
@@ -284,7 +298,7 @@ export default function RitualsPage() {
         {/* Bottom Info */}
         <div className="mt-12 text-center text-gray-400 text-sm">
           <p>Complete rituals daily to engage with the BizarreBeasts ecosystem!</p>
-          <p className="mt-2">Progress resets each session • No data is stored</p>
+          <p className="mt-2">Progress resets daily at midnight • Come back tomorrow for fresh rituals!</p>
         </div>
       </div>
     </div>
