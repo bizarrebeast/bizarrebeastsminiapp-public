@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { ExternalLink, Check, Share2, Share } from 'lucide-react';
+import { ultimateShare } from '@/lib/sdk-ultimate';
+import { sdk } from '@/lib/sdk-init';
 
 interface Ritual {
   id: number;
@@ -170,7 +172,7 @@ export default function RitualsPage() {
     window.open(url, '_blank');
   };
 
-  const handleShare = () => {
+  const handleShare = async () => {
     const completedCount = completedRituals.size;
     
     // Get the names of completed rituals (without emojis for cleaner share text)
@@ -190,11 +192,34 @@ export default function RitualsPage() {
     params.append('text', shareText);
     params.append('embeds[]', 'https://bbapp.bizarrebeasts.io/rituals');
     
-    const shareUrl = `https://warpcast.com/~/compose?${params.toString()}`;
-    window.open(shareUrl, '_blank');
+    
+    // Check if we're in Farcaster miniapp and use SDK if available
+    try {
+      const isInMiniApp = await sdk.isInMiniApp();
+      
+      if (isInMiniApp) {
+        // Use SDK for native sharing in Farcaster (works on mobile!)
+        await ultimateShare({
+          text: shareText,
+          embeds: ['https://bbapp.bizarrebeasts.io/rituals'],
+          channelKey: 'bizarrebeasts'
+        });
+      } else {
+        // Browser fallback
+        params.append('channelKey', 'bizarrebeasts');
+        const shareUrl = `https://warpcast.com/~/compose?${params.toString()}`;
+        window.open(shareUrl, '_blank');
+      }
+    } catch (error) {
+      console.error('Share failed:', error);
+      // Fallback
+      params.append('channelKey', 'bizarrebeasts');
+      const shareUrl = `https://warpcast.com/~/compose?${params.toString()}`;
+      window.open(shareUrl, '_blank');
+    }
   };
 
-  const handleShareRitual = (ritual: Ritual) => {
+  const handleShareRitual = async (ritual: Ritual) => {
     console.log('Share ritual clicked:', ritual.title);
     
     // Build the action URL (same logic as handleRitualAction)
@@ -232,9 +257,37 @@ export default function RitualsPage() {
       params.append('embeds[]', 'https://bbapp.bizarrebeasts.io/rituals');
     }
     
-    const shareUrl = `${baseUrl}?${params.toString()}`;
-    console.log('Opening share URL with embeds');
-    window.open(shareUrl, '_blank');
+    
+    // Build embeds array for SDK
+    const embeds: string[] = [];
+    params.getAll('embeds[]').forEach(embed => embeds.push(embed));
+    
+    // Check if we're in Farcaster miniapp and use SDK if available
+    try {
+      const isInMiniApp = await sdk.isInMiniApp();
+      
+      if (isInMiniApp) {
+        console.log('Using SDK for native sharing');
+        // Use SDK for native sharing in Farcaster (works on mobile!)
+        await ultimateShare({
+          text: shareText,
+          embeds: embeds,
+          channelKey: 'bizarrebeasts'
+        });
+      } else {
+        // Browser fallback
+        console.log('Using browser fallback');
+        params.append('channelKey', 'bizarrebeasts');
+        const shareUrl = `${baseUrl}?${params.toString()}`;
+        window.open(shareUrl, '_blank');
+      }
+    } catch (error) {
+      console.error('Share failed:', error);
+      // Fallback
+      params.append('channelKey', 'bizarrebeasts');
+      const shareUrl = `${baseUrl}?${params.toString()}`;
+      window.open(shareUrl, '_blank');
+    }
   };
 
   return (

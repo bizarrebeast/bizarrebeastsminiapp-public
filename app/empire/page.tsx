@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import { Search, Trophy, Zap, Users, Info, Share2 } from 'lucide-react';
 import { empireService, EmpireHolder, AccessTier } from '@/lib/empire';
+import { ultimateShare } from '@/lib/sdk-ultimate';
+import { sdk } from '@/lib/sdk-init';
 
 export default function EmpirePage() {
   const [leaderboard, setLeaderboard] = useState<EmpireHolder[]>([]);
@@ -44,7 +46,7 @@ export default function EmpirePage() {
     }
   };
 
-  const handleShareRank = (holder: EmpireHolder) => {
+  const handleShareRank = async (holder: EmpireHolder) => {
     const tier = empireService.getUserTier(holder.rank);
     const tierEmoji = 
       tier === AccessTier.ELITE ? '👑' :
@@ -68,8 +70,31 @@ export default function EmpirePage() {
     params.append('embeds[]', 'https://empire.bizarrebeasts.io');
     params.append('embeds[]', 'https://bbapp.bizarrebeasts.io/empire');
     
-    const shareUrl = `https://warpcast.com/~/compose?${params.toString()}`;
-    window.open(shareUrl, '_blank');
+    
+    // Check if we're in Farcaster miniapp and use SDK if available
+    try {
+      const isInMiniApp = await sdk.isInMiniApp();
+      
+      if (isInMiniApp) {
+        // Use SDK for native sharing in Farcaster (works on mobile!)
+        await ultimateShare({
+          text: shareText,
+          embeds: ['https://empire.bizarrebeasts.io', 'https://bbapp.bizarrebeasts.io/empire'],
+          channelKey: 'bizarrebeasts'
+        });
+      } else {
+        // Browser fallback
+        params.append('channelKey', 'bizarrebeasts');
+        const shareUrl = `https://warpcast.com/~/compose?${params.toString()}`;
+        window.open(shareUrl, '_blank');
+      }
+    } catch (error) {
+      console.error('Share failed:', error);
+      // Fallback
+      params.append('channelKey', 'bizarrebeasts');
+      const shareUrl = `https://warpcast.com/~/compose?${params.toString()}`;
+      window.open(shareUrl, '_blank');
+    }
     
     // Mark ritual 9 as completed
     const today = new Date().toDateString();
