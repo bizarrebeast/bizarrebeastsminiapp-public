@@ -254,7 +254,7 @@ export default function RitualsPage() {
           <div className="mb-12">
             <div className="bg-gradient-to-br from-gem-gold/20 via-dark-card to-gem-crystal/10 border-2 border-gem-gold rounded-2xl overflow-hidden shadow-xl hover:shadow-gem-gold/30 transition-all duration-300">
               <div className="bg-gradient-to-r from-gem-gold/30 to-gem-crystal/30 px-6 py-2">
-                <h2 className="text-lg font-bold flex items-center gap-2">
+                <h2 className="text-lg font-bold flex items-center justify-center gap-2 text-center">
                   <span className="text-xl">⭐</span>
                   FEATURED RITUAL
                   <span className="text-xl">⭐</span>
