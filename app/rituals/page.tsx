@@ -290,7 +290,7 @@ export default function RitualsPage() {
                 
                 {/* Content */}
                 <div className="flex-1 p-4 md:p-5">
-                  <h3 className="text-lg font-bold mb-2 bg-gradient-to-r from-gem-gold to-gem-crystal bg-clip-text text-transparent flex items-center gap-2">
+                  <h3 className="text-lg font-bold mb-2 bg-gradient-to-r from-gem-gold to-gem-crystal bg-clip-text text-transparent flex items-center justify-center gap-2 text-center">
                     {featuredRitual.title}
                     {featuredCompleted && (
                       <Check className="w-5 h-5 text-gem-gold inline" />
