@@ -57,6 +57,14 @@ export function FarcasterProvider({ children }: { children: React.ReactNode }) {
             // Set mobile state based on platform
             if (platformType === 'mobile') {
               setIsMobile(true);
+            } else if (platformType === 'web') {
+              // 'web' means desktop Farcaster
+              setIsMobile(false);
+            }
+            
+            // If we got a platform type from SDK, don't override with browser detection
+            if (platformType) {
+              return;
             }
           }
         } else {
@@ -78,20 +86,23 @@ export function FarcasterProvider({ children }: { children: React.ReactNode }) {
         }
       }
 
-      // Check if mobile
-      const checkMobile = () => {
-        const userAgent = navigator.userAgent || navigator.vendor;
-        const isMobileDevice = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(
-          userAgent.toLowerCase()
-        );
-        const isMobileWidth = window.innerWidth < 768;
-        setIsMobile(isMobileDevice || isMobileWidth);
-      };
+      // Only check mobile if we're NOT in Farcaster miniapp (platform type wasn't set)
+      if (!isInFarcaster) {
+        // Check if mobile browser
+        const checkMobile = () => {
+          const userAgent = navigator.userAgent || navigator.vendor;
+          const isMobileDevice = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(
+            userAgent.toLowerCase()
+          );
+          const isMobileWidth = window.innerWidth < 768;
+          setIsMobile(isMobileDevice || isMobileWidth);
+        };
 
-      checkMobile();
-      window.addEventListener('resize', checkMobile);
-      
-      return () => window.removeEventListener('resize', checkMobile);
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        
+        return () => window.removeEventListener('resize', checkMobile);
+      }
     };
 
     checkEnvironment();
