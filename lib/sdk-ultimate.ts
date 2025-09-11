@@ -21,30 +21,20 @@ const state: SDKState = {
 // Keep SDK warm with periodic checks
 let warmupInterval: NodeJS.Timeout | null = null;
 
-// Initialize SDK with maximum aggression
+// Initialize SDK with platform-specific approach
 const initSDK = async (): Promise<boolean> => {
   state.initCount++;
   console.log(`🚀 SDK init attempt ${state.initCount}`);
   
   try {
-    // Multiple ready calls to ensure connection
-    for (let i = 0; i < 2; i++) {
-      try {
-        await farcasterSDK.actions.ready();
-      } catch (e) {
-        console.log(`Ready call ${i + 1} failed:`, e);
-      }
-      await new Promise(r => setTimeout(r, 10));
-    }
-    
-    // Verify it's actually working
+    // First check if we're in the miniapp
     const isInApp = await Promise.race([
       farcasterSDK.isInMiniApp(),
       new Promise<boolean>(resolve => setTimeout(() => resolve(false), 300))
     ]);
     
     if (isInApp) {
-      // Cache context for faster access
+      // Get context to determine platform
       try {
         state.context = await Promise.race([
           farcasterSDK.context,
@@ -52,6 +42,38 @@ const initSDK = async (): Promise<boolean> => {
         ]);
       } catch (e) {
         console.log('Context fetch failed:', e);
+      }
+      
+      // Platform-specific ready() calls
+      const isMobileFarcaster = state.context?.client?.platformType === 'mobile';
+      console.log(`Platform detected: ${isMobileFarcaster ? 'mobile' : 'desktop'}`);
+      
+      if (isMobileFarcaster) {
+        // MOBILE: Use aggressive initialization to prevent first-click error
+        console.log('Using aggressive mobile initialization');
+        for (let i = 0; i < 2; i++) {
+          try {
+            await farcasterSDK.actions.ready();
+          } catch (e) {
+            console.log(`Mobile ready call ${i + 1} failed:`, e);
+          }
+          await new Promise(r => setTimeout(r, 10));
+        }
+      } else {
+        // DESKTOP: Single ready call to avoid triggering compose
+        console.log('Using minimal desktop initialization');
+        try {
+          await farcasterSDK.actions.ready();
+        } catch (e) {
+          console.log('Desktop ready call failed:', e);
+        }
+      }
+    } else {
+      // Not in miniapp, just try a single ready
+      try {
+        await farcasterSDK.actions.ready();
+      } catch (e) {
+        console.log('Ready call failed (not in miniapp):', e);
       }
     }
     
@@ -93,22 +115,12 @@ if (typeof window !== 'undefined') {
   // Start initialization immediately
   initSDK().then(() => startWarmup());
   
-  // Also init on these events as backup
-  const initOnEvent = () => {
-    initSDK().then(() => startWarmup());
-  };
-  
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initOnEvent);
-  } else {
-    // DOM already loaded
-    setTimeout(initOnEvent, 0);
-  }
-  
-  // Final backup after delay
-  setTimeout(initOnEvent, 500);
-  setTimeout(initOnEvent, 1500);
-  setTimeout(initOnEvent, 3000);
+  // Single backup initialization after a delay
+  setTimeout(() => {
+    if (!state.ready) {
+      initSDK().then(() => startWarmup());
+    }
+  }, 1000);
 }
 
 // Wait for SDK with timeout
