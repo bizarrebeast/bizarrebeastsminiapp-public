@@ -50,12 +50,27 @@ const initializeSDK = async (force = false): Promise<void> => {
     try {
       console.log(`🚀 SDK initialization attempt ${initAttempts}/${MAX_INIT_ATTEMPTS}...`);
       
-      // Step 1: Call ready() multiple times with delays
-      for (let i = 0; i < 3; i++) {
+      // First, check platform to determine initialization strategy
+      let platformType = 'unknown';
+      try {
+        const context = await farcasterSDK.context;
+        platformType = context?.client?.platformType || 'unknown';
+        console.log(`🎯 Platform detected in sdk-wrapper: ${platformType}`);
+      } catch (e) {
+        console.log('Could not detect platform yet');
+      }
+      
+      // Step 1: Call ready() - multiple times for mobile, once for desktop
+      const readyCalls = platformType === 'mobile' ? 3 : 1;
+      console.log(`📞 Will make ${readyCalls} ready() call(s) for ${platformType}`);
+      
+      for (let i = 0; i < readyCalls; i++) {
         try {
           await farcasterSDK.actions.ready();
           console.log(`✅ SDK ready() call ${i + 1} succeeded`);
-          await new Promise(resolve => setTimeout(resolve, 50)); // Small delay between calls
+          if (readyCalls > 1) {
+            await new Promise(resolve => setTimeout(resolve, 50)); // Small delay between calls
+          }
         } catch (error) {
           console.log(`⚠️ SDK ready() call ${i + 1} failed:`, error);
         }
@@ -86,10 +101,13 @@ const initializeSDK = async (force = false): Promise<void> => {
       if (isReady) {
         try {
           const context = await farcasterSDK.context;
-          console.log('✅ SDK context fetched:', context?.client?.platformType);
+          const platformType = context?.client?.platformType;
+          console.log('✅ SDK context fetched:', platformType);
           
-          // Pre-warm the composeCast API
-          if (isInFarcasterContext()) {
+          // ONLY warm up composeCast on mobile to prevent desktop compose trigger
+          // Desktop shows "web", mobile shows "mobile"
+          if (isInFarcasterContext() && platformType === 'mobile') {
+            console.log('📱 Mobile detected - warming up composeCast API');
             // Make a dummy call to warm up the API (will be cancelled immediately)
             const controller = new AbortController();
             const warmupPromise = farcasterSDK.actions.composeCast({
@@ -105,6 +123,8 @@ const initializeSDK = async (force = false): Promise<void> => {
             ]);
             
             console.log('✅ SDK composeCast API warmed up');
+          } else if (platformType === 'web') {
+            console.log('🖥️ Desktop detected - SKIPPING composeCast warmup to prevent compose trigger');
           }
         } catch (error) {
           console.log('⚠️ SDK warmup failed (non-critical):', error);
