@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { ExternalLink, Check, Share2 } from 'lucide-react';
-import { useFarcaster } from '@/contexts/FarcasterContext';
 
 interface Ritual {
   id: number;
@@ -82,7 +81,6 @@ const rituals: Ritual[] = [
 
 export default function RitualsPage() {
   const [completedRituals, setCompletedRituals] = useState<Set<number>>(new Set());
-  const { isInMiniApp, shareToFarcaster } = useFarcaster();
 
   const handleRitualAction = (ritual: Ritual) => {
     // Mark as completed (session only)
@@ -112,13 +110,9 @@ export default function RitualsPage() {
     
     const shareText = `I've completed ${completedCount} of 8 Daily BIZARRE Rituals! 👹\n\n${completedRitualsList}\n\nJoin me in the BizarreBeasts ($BB) Community and complete your daily $BIZARRE rituals!\n\n#BizarreBeasts #BBRituals\nhttps://bbapp.bizarrebeasts.io/rituals`;
     
-    if (isInMiniApp) {
-      shareToFarcaster(shareText, 'https://bbapp.bizarrebeasts.io/rituals');
-    } else {
-      // Fallback to web share or copy
-      const shareUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}`;
-      window.open(shareUrl, '_blank');
-    }
+    // Always use web share URL for consistency
+    const shareUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}`;
+    window.open(shareUrl, '_blank');
   };
 
   return (
