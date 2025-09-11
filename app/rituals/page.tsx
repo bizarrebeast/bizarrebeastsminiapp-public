@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ExternalLink, Check, Share2 } from 'lucide-react';
 
 interface Ritual {
@@ -80,10 +80,31 @@ const rituals: Ritual[] = [
 ];
 
 export default function RitualsPage() {
-  const [completedRituals, setCompletedRituals] = useState<Set<number>>(new Set());
+  // Try to load from localStorage on mount
+  const [completedRituals, setCompletedRituals] = useState<Set<number>>(() => {
+    try {
+      const stored = localStorage.getItem('bizarreRituals');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        return new Set(parsed);
+      }
+    } catch (e) {
+      console.log('Could not load rituals from localStorage:', e);
+    }
+    return new Set();
+  });
+
+  // Save to localStorage whenever rituals change
+  useEffect(() => {
+    try {
+      localStorage.setItem('bizarreRituals', JSON.stringify(Array.from(completedRituals)));
+    } catch (e) {
+      console.log('Could not save rituals to localStorage:', e);
+    }
+  }, [completedRituals]);
 
   const handleRitualAction = (ritual: Ritual) => {
-    // Mark as completed (session only)
+    // Mark as completed (now persists to localStorage)
     setCompletedRituals(prev => new Set([...prev, ritual.id]));
     
     // For internal routes, prepend the full URL

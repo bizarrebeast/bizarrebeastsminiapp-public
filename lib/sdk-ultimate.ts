@@ -24,48 +24,63 @@ let warmupInterval: NodeJS.Timeout | null = null;
 // Initialize SDK with platform-specific approach
 const initSDK = async (): Promise<boolean> => {
   state.initCount++;
-  console.log(`🚀 SDK init attempt ${state.initCount}`);
+  console.log(`🚀 SDK init attempt ${state.initCount} at ${new Date().toISOString()}`);
+  console.log(`📍 Current URL: ${window.location.href}`);
+  console.log(`📱 User Agent: ${navigator.userAgent}`);
   
   try {
     // First check if we're in the miniapp
+    console.log('🔍 Checking if in miniapp...');
     const isInApp = await Promise.race([
       farcasterSDK.isInMiniApp(),
       new Promise<boolean>(resolve => setTimeout(() => resolve(false), 300))
     ]);
+    console.log(`✅ In miniapp: ${isInApp}`);
     
     if (isInApp) {
       // Get context to determine platform
+      console.log('🔍 Fetching SDK context...');
       try {
         state.context = await Promise.race([
           farcasterSDK.context,
           new Promise(resolve => setTimeout(() => resolve(null), 300))
         ]);
+        console.log('📋 Full SDK context:', JSON.stringify(state.context, null, 2));
       } catch (e) {
-        console.log('Context fetch failed:', e);
+        console.log('❌ Context fetch failed:', e);
       }
       
       // Platform-specific ready() calls
-      const isMobileFarcaster = state.context?.client?.platformType === 'mobile';
-      console.log(`Platform detected: ${isMobileFarcaster ? 'mobile' : 'desktop'}`);
+      const platformType = state.context?.client?.platformType;
+      const isMobileFarcaster = platformType === 'mobile';
+      console.log(`🖥️ Platform type from SDK: "${platformType}"`);
+      console.log(`📱 Is mobile Farcaster: ${isMobileFarcaster}`);
       
       if (isMobileFarcaster) {
         // MOBILE: Use aggressive initialization to prevent first-click error
-        console.log('Using aggressive mobile initialization');
+        console.log('📱 === MOBILE INITIALIZATION ===');
+        console.log('📱 Using aggressive mobile initialization (2x ready calls)');
         for (let i = 0; i < 2; i++) {
           try {
+            console.log(`📱 Calling ready() ${i + 1}/2...`);
             await farcasterSDK.actions.ready();
+            console.log(`📱 Ready call ${i + 1} succeeded`);
           } catch (e) {
-            console.log(`Mobile ready call ${i + 1} failed:`, e);
+            console.log(`📱 Ready call ${i + 1} failed:`, e);
           }
           await new Promise(r => setTimeout(r, 10));
         }
       } else {
         // DESKTOP: Single ready call to avoid triggering compose
-        console.log('Using minimal desktop initialization');
+        console.log('🖥️ === DESKTOP INITIALIZATION ===');
+        console.log('🖥️ Using minimal desktop initialization (1x ready call)');
+        console.log('⚠️ If compose opens, it\'s happening here:');
         try {
+          console.log('🖥️ Calling ready() once...');
           await farcasterSDK.actions.ready();
+          console.log('🖥️ Ready call succeeded');
         } catch (e) {
-          console.log('Desktop ready call failed:', e);
+          console.log('🖥️ Ready call failed:', e);
         }
       }
     } else {
@@ -112,36 +127,56 @@ const startWarmup = () => {
 
 // Initialize immediately on import
 if (typeof window !== 'undefined') {
+  console.log('🎯 === SDK ULTIMATE INITIALIZATION STARTING ===');
+  console.log(`🎯 Window location: ${window.location.href}`);
+  
   // Start initialization immediately
-  initSDK().then(() => startWarmup());
+  console.log('🎯 Starting immediate SDK init...');
+  initSDK().then(() => {
+    console.log('🎯 Initial SDK init complete, starting warmup');
+    startWarmup();
+  });
   
   // Check if we're likely on mobile (browser detection as early hint)
   const mightBeMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  console.log(`🎯 Browser detection - might be mobile: ${mightBeMobile}`);
   
   if (mightBeMobile) {
     // MOBILE: Keep ALL the aggressive initialization that fixed the issues
+    console.log('📱 Detected possible mobile - using AGGRESSIVE initialization schedule');
     const initOnEvent = () => {
       if (!state.ready) {
+        console.log('📱 Running scheduled mobile init...');
         initSDK().then(() => startWarmup());
+      } else {
+        console.log('📱 Skipping scheduled init - already ready');
       }
     };
     
     if (document.readyState === 'loading') {
+      console.log('📱 Document still loading - adding DOMContentLoaded listener');
       document.addEventListener('DOMContentLoaded', initOnEvent);
     } else {
       // DOM already loaded
+      console.log('📱 DOM already loaded - scheduling immediate init');
       setTimeout(initOnEvent, 0);
     }
     
     // All the backup attempts that fixed cold start issues
+    console.log('📱 Scheduling backup inits at 500ms, 1500ms, 3000ms');
     setTimeout(initOnEvent, 500);
     setTimeout(initOnEvent, 1500);
     setTimeout(initOnEvent, 3000);
   } else {
     // DESKTOP: Minimal initialization to avoid compose trigger
+    console.log('🖥️ Detected possible desktop - using MINIMAL initialization');
+    console.log('🖥️ Scheduling single backup init at 1000ms');
     setTimeout(() => {
       if (!state.ready) {
+        console.log('🖥️ Running scheduled desktop backup init...');
         initSDK().then(() => startWarmup());
+      } else {
+        console.log('🖥️ Skipping backup init - already ready');
       }
     }, 1000);
   }
