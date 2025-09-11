@@ -48,6 +48,15 @@ A Next.js 14 application for the BizarreBeasts ecosystem featuring advanced meme
 - NFT collection options
 - Track details and descriptions
 
+### 🎯 Daily BIZARRE Rituals (Implemented)
+- **9 Daily Rituals**: Interactive tasks to engage with the ecosystem
+- **Progress Tracking**: localStorage with daily reset at midnight
+- **Featured Rituals**: Temporary/sponsored rituals with expiration dates
+- **Individual Sharing**: Share each ritual completion on Farcaster
+- **Empire Integration**: Ritual #9 syncs with Empire rank sharing
+- **Visual Progress**: Checkmarks and progress counter
+- **Responsive Design**: Optimized for mobile and desktop
+
 ### 🔗 Wallet Connection (Implemented)
 - **Reown AppKit**: WalletConnect integration
 - **Base Network**: Full support
@@ -73,10 +82,11 @@ A Next.js 14 application for the BizarreBeasts ecosystem featuring advanced meme
   /meme-generator     # Meme creation page
   /swap               # Token swap (Uniswap iframe)
   /games              # Games hub with 8 games
-  /empire             # Rankings page
+  /empire             # Rankings page with share functionality
   /music              # Game soundtracks
-  /blog               # Blog (planned)
-  /resources          # Resources (planned)
+  /rituals            # Daily BIZARRE Rituals page
+  /leaderboard        # Legacy leaderboard (redirects to /empire)
+  /resources          # Resources page with links
   
 /components
   /canvas             # Meme canvas components
@@ -156,10 +166,10 @@ Premium features check Empire tier (rank-based) rather than token balance direct
 
 ### ✅ Completed
 - Full meme generator with all controls
-- Empire integration with live data
+- Empire integration with live data and rank sharing
 - Wallet connection (Reown AppKit)
 - Token swap page (iframe solution)
-- Farcaster sharing
+- Farcaster sharing with proper embeds[] for link previews
 - Tier-based gating system
 - Upgrade prompts for all locked content
 - Snap-to-grid alignment
@@ -172,17 +182,25 @@ Premium features check Empire tier (rank-based) rather than token balance direct
 - Homepage banner with $BB token info
 - Farcaster miniapp integration with manifest and assets
 - Mobile detection for swap page with user guidance
+- Daily BIZARRE Rituals page with 9 rituals
+- Featured ritual system for temporary/sponsored content
+- Individual ritual sharing on Farcaster
+- Empire rank sharing integration
+- Resources page with key links
+- PWA support with manifest and icons
+- Fixed mobile browser sticker clearing bug
+- Fixed first-click error in Farcaster mobile app
+- Proper SDK initialization for all platforms
 
 ### 🔄 In Progress
-- Blog and Resources pages implementation
-- Adding actual sticker assets
-- Contest voting system design
 - Production deployment to app.bizarrebeasts.io
+- Adding more actual sticker assets
+- Contest voting system design
 
 ### 📝 TODO
 - [ ] Deploy to production (app.bizarrebeasts.io)
-- [ ] Create Blog and Resources pages
-- [ ] Populate `/public/stickers` with assets
+- [ ] Create Blog page with articles
+- [ ] Populate `/public/stickers` with more assets
 - [ ] Implement Uniswap SDK for native swap (v2)
 - [ ] Add more sticker collections
 - [ ] Contest voting backend

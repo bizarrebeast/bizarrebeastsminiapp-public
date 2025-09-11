@@ -15,12 +15,14 @@
 We're thrilled to announce the official launch of the BizarreBeasts Miniapp - your ultimate destination for creating BIZARRE memes, collecting digital assets, and joining the most vibrant community in web3!
 
 **🎯 What's New:**
+- **Daily BIZARRE Rituals**: Complete 9 daily tasks to engage with the ecosystem
 - **Native Farcaster Integration**: Share your creations directly to Farcaster without leaving the app
 - **Meme Generator 2.0**: Create epic memes with hand-illustrated BizarreBeasts stickers
-- **Empire Leaderboard**: Climb the ranks and unlock exclusive content
+- **Empire Leaderboard**: Climb the ranks, share your position, and unlock exclusive content
 - **$BB Token Integration**: Seamless swapping and rewards
 - **Mobile-First Design**: Perfect experience on any device
 - **Treasure Quest Collection**: Game sprites and assets for next-level memes
+- **Featured Rituals**: Limited-time special tasks and campaigns
 
 **🔗 Access the App:**
 - **Farcaster Users**: Open directly in Farcaster at [bbapp.bizarrebeasts.io](https://bbapp.bizarrebeasts.io)
@@ -36,11 +38,12 @@ We're thrilled to announce the official launch of the BizarreBeasts Miniapp - yo
 ## Table of Contents
 1. [Getting Started](#getting-started)
 2. [Core Features](#core-features)
-3. [Meme Generator Guide](#meme-generator-guide)
-4. [Empire System](#empire-system)
-5. [Token Features](#token-features)
-6. [Tips & Tricks](#tips--tricks)
-7. [FAQ](#faq)
+3. [Daily BIZARRE Rituals](#daily-bizarre-rituals)
+4. [Meme Generator Guide](#meme-generator-guide)
+5. [Empire System](#empire-system)
+6. [Token Features](#token-features)
+7. [Tips & Tricks](#tips--tricks)
+8. [FAQ](#faq)
 
 ---
 
@@ -83,13 +86,55 @@ We're thrilled to announce the official launch of the BizarreBeasts Miniapp - yo
 - **Announcements**: Stay updated with community news
 
 ### **2. Navigation**
-The app features six main sections accessible from the navigation bar:
+The app features eight main sections accessible from the navigation bar:
 - 🏠 **Home**: Your dashboard and quick access
 - 🎨 **Meme Generator**: Create BIZARRE content
-- 🏰 **Empire**: View ranks and unlock tiers
-- 🎮 **Games**: Play and earn (Coming Soon)
+- 🏰 **Empire**: View ranks and share achievements
+- 🎯 **Rituals**: Complete daily BIZARRE tasks (NEW!)
+- 🎮 **Games**: Play 8 BizarreBeasts games
+- 🎵 **Music**: Original game soundtracks
 - 💱 **Swap**: Trade $BB tokens
 - 📚 **Resources**: Learn and connect
+
+---
+
+## Daily BIZARRE Rituals
+
+### **Complete Your Daily Tasks!**
+
+The Rituals page features 9 daily tasks to engage with the BizarreBeasts ecosystem:
+
+#### The 9 Rituals:
+1. **Create a BIZARRE Meme** - Use the meme generator
+2. **Check Dexscreener** - View $BB charts
+3. **Vote on BRND Podium** - Support BizarreBeasts
+4. **Create a GIVE** - Use Coordinape
+5. **Believe in BizarreBeasts** - Join the belief system
+6. **Play BizarreBeasts Games** - Powered by /remix
+7. **Rip a Fresh Pack** - Digital card collecting
+8. **Buy 1M $BB Tokens** - Grow your holdings
+9. **Share Your Leaderboard Rank** - Powered by $GLANKER
+
+#### How It Works:
+- **Daily Reset**: Progress resets at midnight UTC
+- **Track Progress**: Visual checkmarks show completion
+- **Individual Sharing**: Share each ritual completion on Farcaster
+- **Share All Progress**: Share your total daily progress
+- **Cross-Page Integration**: Completing ritual #9 from Empire page counts
+
+#### Featured Rituals:
+- **Limited-Time Tasks**: Special campaigns with expiration dates
+- **Community Events**: Participate in time-sensitive activities
+- **Visual Indicators**: Featured box shows current special ritual
+- **Direct Links**: Quick access to complete featured tasks
+
+#### Tips:
+- Complete all 9 rituals daily for maximum engagement
+- Share individual rituals to show specific achievements
+- Featured rituals offer limited-time opportunities
+- Your Empire rank sharing automatically completes ritual #9
+- Progress persists across page refreshes
+- Check back daily as progress resets at midnight
 
 ---
 
@@ -98,17 +143,22 @@ The app features six main sections accessible from the navigation bar:
 ### **Creating Your First Meme**
 
 #### Step 1: Choose a Collection
-- **BizarreBeasts**: Original hand-illustrated characters
-- **Treasure Quest**: Game sprites and items
-- **UGC by @siablo.eth**: Community-created content
-- **Vibecards**: Coming soon!
+- **BizarreBeasts** 👹: Original hand-illustrated characters with tier-locked premium stickers
+- **Treasure Quest** 💎: Game sprites and items from the BizarreBeasts game
+- **UGC by @siablo.eth** 🐐: Community-created content available to all
+- **Vibecards** 🃏: Coming soon!
 
 #### Step 2: Add Stickers
 1. Browse the sticker gallery
-2. Click any sticker to add it to your canvas
-3. Drag to position
-4. Resize using corner handles
-5. Delete with the DEL key or delete button
+2. Look for tier badges on premium stickers:
+   - ⭐ Member tier required
+   - 🌟 Veteran tier required  
+   - 👑 Champion tier required
+   - 💎 Elite tier required
+3. Click any unlocked sticker to add it to your canvas
+4. Drag to position
+5. Resize using corner handles
+6. Delete with the DEL key or delete button
 
 #### Step 3: Add Text
 1. Click "Add Text" in the controls panel
@@ -158,6 +208,13 @@ The app features six main sections accessible from the navigation bar:
 
 The Empire system rewards active community members with exclusive access:
 
+#### Share Your Rank:
+- **Always Visible**: Share section appears at top of Empire page
+- **Search Options**: Find yourself by wallet address or @username
+- **$GLANKER Powered**: Rank sharing includes $GLANKER branding
+- **Ritual Integration**: Sharing automatically completes ritual #9
+- **Rich Previews**: Shares include embedded link previews
+
 #### Tier Structure:
 1. **👤 Visitor** (0 $BB)
    - Basic features
@@ -190,6 +247,9 @@ The Empire system rewards active community members with exclusive access:
 2. **Stay Active**: Engagement boosts visibility
 3. **Create Content**: Share memes to gain recognition
 4. **Join Events**: Participate in community challenges
+
+---
+
 
 ---
 
@@ -228,6 +288,13 @@ The Empire system rewards active community members with exclusive access:
 - **Less is More**: Don't overcrowd your canvas
 - **Test Sharing**: Preview before posting
 - **Save Drafts**: Download works-in-progress
+- **Check Tier Access**: Look for tier badges on premium stickers
+
+#### Rituals Completion:
+- **Daily Habit**: Check rituals page each day
+- **Share Progress**: Use individual share buttons
+- **Featured First**: Complete time-limited rituals before they expire
+- **Cross-Page**: Empire rank sharing counts for ritual #9
 
 #### Performance:
 - **Clear Cache**: If app feels slow
@@ -282,6 +349,15 @@ A: Ensure you're on Base network and wallet is unlocked.
 
 **Q: How often do tiers update?**
 A: Real-time based on your wallet balance.
+
+**Q: How do rituals work?**
+A: Complete 9 daily tasks, progress resets at midnight UTC.
+
+**Q: Can I share individual rituals?**
+A: Yes! Each ritual has its own share button.
+
+**Q: What are featured rituals?**
+A: Limited-time special tasks with expiration dates.
 
 **Q: Where to buy $BB?**
 A: Use the built-in swap or any Base DEX.
@@ -347,6 +423,13 @@ A: Hold 25M+ $BB tokens in your connected wallet.
 ---
 
 ## Roadmap Highlights
+
+### **Recently Added**
+- ✅ **Daily Rituals**: 9 tasks to complete each day
+- ✅ **Featured Rituals**: Time-limited special campaigns
+- ✅ **Rank Sharing**: Share your Empire position with $GLANKER branding
+- ✅ **Tier-Locked Stickers**: Premium content for higher tiers
+- ✅ **Cross-Page Integration**: Ritual completion syncs between pages
 
 ### **Coming Soon**
 - 🎮 **Mini-Games**: Play to earn
@@ -442,7 +525,7 @@ A: Hold 25M+ $BB tokens in your connected wallet.
 
 ---
 
-*Last Updated: January 10, 2025*
-*Version: 1.0.0 - Production Release*
+*Last Updated: January 11, 2025*
+*Version: 1.1.0 - Rituals & Empire Update*
 
 **Welcome to the BIZARRE revolution! 🦾**

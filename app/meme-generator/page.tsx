@@ -14,7 +14,7 @@ const mockCollections: StickerCollection[] = [
     id: 'bizarrebeasts',
     name: 'BizarreBeasts',
     description: 'The original hand-illustrated BizarreBeasts collection featuring all the notorious BizarreBeasts. Create BIZARRE and hilarious memes and artwork with BizarreBeasts stickers and share them with the community! Higher tier stickers are marked with badges and unlock as you climb the Empire leaderboard.',
-    icon: '🦾',
+    icon: '👹',
     stickers: [],
     backgrounds: [],
     backgroundType: 'image', // Upload only for Elite/Champion (color picker is in canvas)
@@ -40,7 +40,7 @@ const mockCollections: StickerCollection[] = [
     id: 'vibecards',
     name: 'Vibecards (Coming Soon)',
     description: 'Special vibe check characters and mood expressions. Perfect for creating reaction memes! This collection is coming soon.',
-    icon: '✨',
+    icon: '🃏',
     stickers: [],
     backgrounds: [], // Will add background images
     backgroundType: 'image', // Background images only (no upload)
@@ -54,7 +54,7 @@ const mockCollections: StickerCollection[] = [
     id: 'ugc-memes',
     name: 'UGC Memes by @siablo.eth',
     description: 'Siablo $BB Memes Collection - Hand-illustrated BizarreBeasts stickers and memes created by @siablo.eth for the $BB Community! Create BIZARRE content with custom artwork and characters based on the original BizarreBeasts. All stickers in this collection are available to everyone!',
-    icon: '🎨',
+    icon: '🐐',
     stickers: [],
     backgrounds: [],
     backgroundType: 'color', // Color picker only (no background images)
