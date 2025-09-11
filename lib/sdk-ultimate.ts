@@ -233,15 +233,25 @@ export const ultimateShare = async (params: {
     }
   }
   
-  // Try to share with multiple attempts
+  // Check if we're on mobile platform
+  const platformType = state.context?.client?.platformType;
+  const isMobile = platformType === 'mobile';
+  
+  // Mobile: Only 1 attempt (no retries to prevent multiple compose windows)
+  // Desktop: 3 attempts with retries
+  const maxAttempts = isMobile ? 1 : 3;
+  
+  console.log(`Platform: ${platformType}, Using ${maxAttempts} attempt(s)`);
+  
+  // Try to share with configured attempts
   let lastError: any = null;
   
-  for (let attempt = 1; attempt <= 3; attempt++) {
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     try {
-      console.log(`Share attempt ${attempt}`);
+      console.log(`Share attempt ${attempt}/${maxAttempts}`);
       
-      // Extra init attempt before each try
-      if (!state.ready) {
+      // Extra init attempt before each try (only on desktop with retries)
+      if (!state.ready && !isMobile) {
         await initSDK();
         await new Promise(r => setTimeout(r, 100 * attempt));
       }
@@ -263,17 +273,19 @@ export const ultimateShare = async (params: {
       lastError = error;
       console.log(`Share attempt ${attempt} failed:`, error);
       
-      // Force re-init on error
-      state.ready = false;
+      // Only force re-init on desktop (not mobile)
+      if (!isMobile) {
+        state.ready = false;
+      }
       
-      if (attempt < 3) {
+      if (attempt < maxAttempts) {
         await new Promise(r => setTimeout(r, 200 * attempt));
       }
     }
   }
   
   // All attempts failed
-  console.error('❌ All share attempts failed:', lastError);
+  console.error(`❌ All ${maxAttempts} share attempt(s) failed:`, lastError);
   throw lastError;
 };
 
