@@ -237,9 +237,9 @@ export const ultimateShare = async (params: {
   const platformType = state.context?.client?.platformType;
   const isMobile = platformType === 'mobile';
   
-  // Mobile: Only 1 attempt (no retries to prevent multiple compose windows)
-  // Desktop: 3 attempts with retries
-  const maxAttempts = isMobile ? 1 : 3;
+  // Only 1 attempt for all platforms to prevent duplicate compose windows
+  // Since we're using manual attachment, we don't need retries
+  const maxAttempts = 1;
   
   console.log(`Platform: ${platformType}, Using ${maxAttempts} attempt(s)`);
   
@@ -250,11 +250,8 @@ export const ultimateShare = async (params: {
     try {
       console.log(`Share attempt ${attempt}/${maxAttempts}`);
       
-      // Extra init attempt before each try (only on desktop with retries)
-      if (!state.ready && !isMobile) {
-        await initSDK();
-        await new Promise(r => setTimeout(r, 100 * attempt));
-      }
+      // Skip extra init since we only do 1 attempt now
+      // This prevents duplicate initialization
       
       // Try the share
       const result = await Promise.race([

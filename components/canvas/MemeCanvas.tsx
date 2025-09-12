@@ -932,8 +932,7 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
                 // If it's a timeout or SDK error, show user-friendly message
                 if (error?.message?.includes('timeout') || error?.message?.includes('SDK')) {
                   alert('Share is initializing. Please try again in a moment.');
-                  // Force init again for next attempt
-                  forceSDKInit();
+                  // Don't force init here - it can cause duplicate share attempts
                 } else {
                   // For other errors, try URL fallback based on platform
                   if (platformType === 'mobile') {
