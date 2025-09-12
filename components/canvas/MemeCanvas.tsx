@@ -764,7 +764,7 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
                   // Desktop Farcaster: Sandboxed environment blocks downloads
                   console.log('Desktop Farcaster - showing download modal');
                   
-                  // Create modal overlay
+                  // Create modal overlay with dark theme
                   const modal = document.createElement('div');
                   modal.style.cssText = `
                     position: fixed;
@@ -772,7 +772,8 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
                     left: 0;
                     right: 0;
                     bottom: 0;
-                    background: rgba(0, 0, 0, 0.9);
+                    background: linear-gradient(135deg, rgba(10, 10, 14, 0.95), rgba(20, 20, 28, 0.98));
+                    backdrop-filter: blur(10px);
                     z-index: 10000;
                     display: flex;
                     flex-direction: column;
@@ -781,83 +782,121 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
                     padding: 20px;
                   `;
                   
+                  // Create content container with gem styling
+                  const contentContainer = document.createElement('div');
+                  contentContainer.style.cssText = `
+                    background: rgba(17, 24, 39, 0.9);
+                    border: 1px solid rgba(251, 191, 36, 0.3);
+                    border-radius: 16px;
+                    padding: 24px;
+                    max-width: 90%;
+                    box-shadow: 0 0 40px rgba(251, 191, 36, 0.2), 0 0 80px rgba(147, 51, 234, 0.1);
+                  `;
+                  
                   // Create image container
                   const imgContainer = document.createElement('div');
                   imgContainer.style.cssText = `
-                    max-width: 90%;
-                    max-height: 70vh;
                     position: relative;
+                    display: flex;
+                    justify-content: center;
                   `;
                   
-                  // Create image element
+                  // Create image element with gem border
                   const img = document.createElement('img');
                   img.src = httpUrl;
                   img.style.cssText = `
                     max-width: 100%;
-                    max-height: 70vh;
-                    border: 2px solid #fbbf24;
-                    border-radius: 8px;
+                    max-height: 60vh;
+                    border: 3px solid transparent;
+                    background: linear-gradient(#0a0a0e, #0a0a0e) padding-box,
+                                linear-gradient(135deg, #fbbf24, #9333ea, #3b82f6) border-box;
+                    border-radius: 12px;
+                    box-shadow: 0 4px 20px rgba(251, 191, 36, 0.3);
                   `;
                   
-                  // Create instruction text
+                  // Create instruction text with BizarreBeasts branding
                   const instructions = document.createElement('div');
                   instructions.style.cssText = `
                     color: white;
                     text-align: center;
-                    margin-top: 20px;
+                    margin-top: 24px;
                     font-family: system-ui, -apple-system, sans-serif;
                     font-size: 16px;
                     line-height: 1.5;
                   `;
                   instructions.innerHTML = `
-                    <p style="margin: 0 0 10px 0; color: #fbbf24; font-weight: bold;">
-                      ✨ Your meme is ready!
+                    <p style="margin: 0 0 12px 0; font-size: 24px; font-weight: bold; 
+                              background: linear-gradient(135deg, #fbbf24, #f59e0b, #fbbf24);
+                              -webkit-background-clip: text;
+                              -webkit-text-fill-color: transparent;
+                              background-clip: text;">
+                      ✨ Your BizarreBeasts creation is ready!
                     </p>
-                    <p style="margin: 0 0 20px 0;">
+                    <p style="margin: 0 0 24px 0; color: #9ca3af;">
                       Right-click the image and select "Save Image As..." to download
                     </p>
                   `;
                   
-                  // Create button container
+                  // Create button container - centered
                   const buttonContainer = document.createElement('div');
                   buttonContainer.style.cssText = `
                     display: flex;
-                    gap: 15px;
-                    margin-top: 10px;
+                    gap: 16px;
+                    justify-content: center;
+                    margin: 0 auto;
                   `;
                   
-                  // Create "Open in Browser" button (fallback)
+                  // Create "Open in Browser" button with gem styling
                   const openButton = document.createElement('button');
-                  openButton.textContent = 'Open in Browser';
+                  openButton.textContent = '🌐 Open in Browser';
                   openButton.style.cssText = `
-                    padding: 12px 24px;
+                    padding: 14px 28px;
                     background: linear-gradient(135deg, #fbbf24, #f59e0b);
-                    color: #1a1a1a;
+                    color: #0a0a0e;
                     border: none;
-                    border-radius: 8px;
+                    border-radius: 10px;
                     font-weight: bold;
                     cursor: pointer;
                     font-size: 16px;
                     font-family: system-ui, -apple-system, sans-serif;
+                    transition: all 0.3s ease;
+                    box-shadow: 0 4px 15px rgba(251, 191, 36, 0.3);
                   `;
+                  openButton.onmouseover = () => {
+                    openButton.style.transform = 'translateY(-2px)';
+                    openButton.style.boxShadow = '0 6px 20px rgba(251, 191, 36, 0.4)';
+                  };
+                  openButton.onmouseout = () => {
+                    openButton.style.transform = 'translateY(0)';
+                    openButton.style.boxShadow = '0 4px 15px rgba(251, 191, 36, 0.3)';
+                  };
                   openButton.onclick = () => {
                     window.open(httpUrl, '_blank');
                   };
                   
-                  // Create close button
+                  // Create close button with dark styling
                   const closeButton = document.createElement('button');
-                  closeButton.textContent = 'Close';
+                  closeButton.textContent = '✕ Close';
                   closeButton.style.cssText = `
-                    padding: 12px 24px;
-                    background: #374151;
-                    color: white;
-                    border: none;
-                    border-radius: 8px;
+                    padding: 14px 28px;
+                    background: linear-gradient(135deg, #374151, #1f2937);
+                    color: #d1d5db;
+                    border: 1px solid rgba(156, 163, 175, 0.2);
+                    border-radius: 10px;
                     font-weight: bold;
                     cursor: pointer;
                     font-size: 16px;
                     font-family: system-ui, -apple-system, sans-serif;
+                    transition: all 0.3s ease;
                   `;
+                  closeButton.onmouseover = () => {
+                    closeButton.style.transform = 'translateY(-2px)';
+                    closeButton.style.borderColor = 'rgba(156, 163, 175, 0.4)';
+                  };
+                  closeButton.onmouseout = () => {
+                    closeButton.style.transform = 'translateY(0)';
+                    closeButton.style.borderColor = 'rgba(156, 163, 175, 0.2)';
+                  };
                   closeButton.onclick = () => {
                     document.body.removeChild(modal);
                   };
@@ -869,13 +908,14 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
                     }
                   };
                   
-                  // Assemble modal
+                  // Assemble modal with proper structure
                   imgContainer.appendChild(img);
                   buttonContainer.appendChild(openButton);
                   buttonContainer.appendChild(closeButton);
                   instructions.appendChild(buttonContainer);
-                  modal.appendChild(imgContainer);
-                  modal.appendChild(instructions);
+                  contentContainer.appendChild(imgContainer);
+                  contentContainer.appendChild(instructions);
+                  modal.appendChild(contentContainer);
                   
                   // Add to page
                   document.body.appendChild(modal);
