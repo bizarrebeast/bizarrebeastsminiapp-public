@@ -201,16 +201,19 @@ class Web3Service {
    */
   async connectSmartWallet(): Promise<void> {
     try {
+      console.log('Initializing Smart Wallet...');
+      
       // Initialize Coinbase Wallet SDK with Smart Wallet preference
       const coinbaseWallet = new CoinbaseWalletSDK({
         appName: 'BizarreBeasts Miniapp',
-        appChainIds: [8453], // Base chain ID
-        // Enable Smart Wallet
-        enableMobileWalletLink: true,
+        appLogoUrl: 'https://bizarrebeastsminiapp.vercel.app/icon.png',
+        darkMode: true,
       });
 
-      // Create provider
-      this.smartWalletProvider = coinbaseWallet.makeWeb3Provider();
+      // Create provider with Base as default chain
+      this.smartWalletProvider = coinbaseWallet.makeWeb3Provider('https://mainnet.base.org', 8453);
+      
+      console.log('Provider created, requesting accounts...');
       
       // Request account access
       const accounts = await this.smartWalletProvider.request({
@@ -278,8 +281,13 @@ class Web3Service {
           }
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to connect Smart Wallet:', error);
+      console.error('Error details:', {
+        message: error?.message,
+        code: error?.code,
+        stack: error?.stack
+      });
       throw error;
     }
   }

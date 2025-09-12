@@ -81,9 +81,9 @@ export function WalletButton() {
             className="flex items-center gap-1 px-3 py-1.5 text-xs bg-dark-card border border-gem-crystal/30 text-gem-crystal font-semibold rounded hover:bg-gem-crystal/10 transition-all duration-300"
             title="Use Base Smart Wallet (no app needed)"
           >
-            <svg className="w-3 h-3" viewBox="0 0 24 24" fill="currentColor">
-              <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" fill="none"/>
-              <path d="M12 7v5l3 3" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+            <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none">
+              <rect x="6" y="6" width="12" height="12" rx="2" stroke="currentColor" strokeWidth="2"/>
+              <path d="M10 10h4v4h-4z" fill="currentColor"/>
             </svg>
             <span className="hidden sm:inline">Smart Wallet</span>
           </button>
