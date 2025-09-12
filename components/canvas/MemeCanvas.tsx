@@ -761,51 +761,126 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
                   uploadedImageUrl = httpUrl;
                   return httpUrl;
                 } else {
-                  // Desktop Farcaster: Try multiple download methods
-                  console.log('Desktop Farcaster - attempting download with HTTP URL');
+                  // Desktop Farcaster: Sandboxed environment blocks downloads
+                  console.log('Desktop Farcaster - showing download modal');
                   
-                  // Method 1: Try anchor element with HTTP URL
-                  const link = document.createElement('a');
-                  link.href = httpUrl;
-                  link.download = filename;
-                  link.style.display = 'none';
-                  document.body.appendChild(link);
+                  // Create modal overlay
+                  const modal = document.createElement('div');
+                  modal.style.cssText = `
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background: rgba(0, 0, 0, 0.9);
+                    z-index: 10000;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    padding: 20px;
+                  `;
                   
-                  // Try to trigger download
-                  link.click();
-                  console.log('Triggered anchor click for download');
+                  // Create image container
+                  const imgContainer = document.createElement('div');
+                  imgContainer.style.cssText = `
+                    max-width: 90%;
+                    max-height: 70vh;
+                    position: relative;
+                  `;
                   
-                  // Clean up
-                  setTimeout(() => {
-                    document.body.removeChild(link);
-                  }, 100);
+                  // Create image element
+                  const img = document.createElement('img');
+                  img.src = httpUrl;
+                  img.style.cssText = `
+                    max-width: 100%;
+                    max-height: 70vh;
+                    border: 2px solid #fbbf24;
+                    border-radius: 8px;
+                  `;
                   
-                  // Method 2: Also try fetching and creating blob URL
-                  setTimeout(async () => {
-                    try {
-                      console.log('Attempting blob download as fallback');
-                      const response = await fetch(httpUrl);
-                      const blob = await response.blob();
-                      const blobUrl = URL.createObjectURL(blob);
-                      
-                      const blobLink = document.createElement('a');
-                      blobLink.href = blobUrl;
-                      blobLink.download = filename;
-                      document.body.appendChild(blobLink);
-                      blobLink.click();
-                      document.body.removeChild(blobLink);
-                      
-                      setTimeout(() => URL.revokeObjectURL(blobUrl), 100);
-                      console.log('Blob download triggered');
-                    } catch (err) {
-                      console.log('Blob download failed:', err);
-                      // Final fallback: Open in new tab
-                      const newWindow = window.open(httpUrl, '_blank');
-                      if (newWindow) {
-                        alert('If download didn\'t start, right-click the image and select "Save Image As..."');
-                      }
+                  // Create instruction text
+                  const instructions = document.createElement('div');
+                  instructions.style.cssText = `
+                    color: white;
+                    text-align: center;
+                    margin-top: 20px;
+                    font-family: system-ui, -apple-system, sans-serif;
+                    font-size: 16px;
+                    line-height: 1.5;
+                  `;
+                  instructions.innerHTML = `
+                    <p style="margin: 0 0 10px 0; color: #fbbf24; font-weight: bold;">
+                      ✨ Your meme is ready!
+                    </p>
+                    <p style="margin: 0 0 20px 0;">
+                      Right-click the image and select "Save Image As..." to download
+                    </p>
+                  `;
+                  
+                  // Create button container
+                  const buttonContainer = document.createElement('div');
+                  buttonContainer.style.cssText = `
+                    display: flex;
+                    gap: 15px;
+                    margin-top: 10px;
+                  `;
+                  
+                  // Create "Open in Browser" button (fallback)
+                  const openButton = document.createElement('button');
+                  openButton.textContent = 'Open in Browser';
+                  openButton.style.cssText = `
+                    padding: 12px 24px;
+                    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+                    color: #1a1a1a;
+                    border: none;
+                    border-radius: 8px;
+                    font-weight: bold;
+                    cursor: pointer;
+                    font-size: 16px;
+                    font-family: system-ui, -apple-system, sans-serif;
+                  `;
+                  openButton.onclick = () => {
+                    window.open(httpUrl, '_blank');
+                  };
+                  
+                  // Create close button
+                  const closeButton = document.createElement('button');
+                  closeButton.textContent = 'Close';
+                  closeButton.style.cssText = `
+                    padding: 12px 24px;
+                    background: #374151;
+                    color: white;
+                    border: none;
+                    border-radius: 8px;
+                    font-weight: bold;
+                    cursor: pointer;
+                    font-size: 16px;
+                    font-family: system-ui, -apple-system, sans-serif;
+                  `;
+                  closeButton.onclick = () => {
+                    document.body.removeChild(modal);
+                  };
+                  
+                  // Also close on backdrop click
+                  modal.onclick = (e) => {
+                    if (e.target === modal) {
+                      document.body.removeChild(modal);
                     }
-                  }, 500); // Small delay to not conflict with first attempt
+                  };
+                  
+                  // Assemble modal
+                  imgContainer.appendChild(img);
+                  buttonContainer.appendChild(openButton);
+                  buttonContainer.appendChild(closeButton);
+                  instructions.appendChild(buttonContainer);
+                  modal.appendChild(imgContainer);
+                  modal.appendChild(instructions);
+                  
+                  // Add to page
+                  document.body.appendChild(modal);
+                  
+                  console.log('Download modal displayed');
                 }
                 
                 console.log('Download handled successfully');
