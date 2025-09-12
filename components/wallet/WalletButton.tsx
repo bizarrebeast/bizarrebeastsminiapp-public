@@ -55,14 +55,40 @@ export function WalletButton() {
   }
 
   if (!isConnected) {
+    // Check if we're in a PWA or mobile browser
+    const isPWA = typeof window !== 'undefined' && window.matchMedia('(display-mode: standalone)').matches;
+    const isMobileBrowser = typeof window !== 'undefined' && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    const showSmartWallet = isPWA || isMobileBrowser;
+
     return (
-      <button
-        onClick={connect}
-        className="flex items-center gap-1 px-3 py-1.5 text-xs bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink text-black font-semibold rounded hover:opacity-90 transition-all duration-300"
-      >
-        <Wallet className="w-3 h-3" />
-        <span>Connect</span>
-      </button>
+      <div className="flex items-center gap-2">
+        <button
+          onClick={connect}
+          className="flex items-center gap-1 px-3 py-1.5 text-xs bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink text-black font-semibold rounded hover:opacity-90 transition-all duration-300"
+        >
+          <Wallet className="w-3 h-3" />
+          <span>Connect</span>
+        </button>
+        {showSmartWallet && (
+          <button
+            onClick={async () => {
+              try {
+                await (window as any).web3Service?.connectSmartWallet();
+              } catch (error) {
+                console.error('Failed to connect Smart Wallet:', error);
+              }
+            }}
+            className="flex items-center gap-1 px-3 py-1.5 text-xs bg-dark-card border border-gem-crystal/30 text-gem-crystal font-semibold rounded hover:bg-gem-crystal/10 transition-all duration-300"
+            title="Use Base Smart Wallet (no app needed)"
+          >
+            <svg className="w-3 h-3" viewBox="0 0 24 24" fill="currentColor">
+              <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" fill="none"/>
+              <path d="M12 7v5l3 3" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+            </svg>
+            <span className="hidden sm:inline">Smart Wallet</span>
+          </button>
+        )}
+      </div>
     );
   }
 

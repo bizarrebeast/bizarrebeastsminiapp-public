@@ -8,6 +8,7 @@ import { mainnet, base, arbitrum, polygon } from '@reown/appkit/networks';
 import { EthersAdapter } from '@reown/appkit-adapter-ethers';
 import { ethers } from 'ethers';
 import { empireService, AccessTier } from './empire';
+import CoinbaseWalletSDK from '@coinbase/wallet-sdk';
 
 // Reown Project ID
 const PROJECT_ID = '569afd0d3f8efc1ba7a63a57045ee717';
@@ -25,6 +26,7 @@ class Web3Service {
   private static instance: Web3Service;
   private appKit: any = null;
   private ethersAdapter: any = null;
+  private smartWalletProvider: any = null;
   private isInitialized: boolean = false;
   private currentState: WalletState = {
     isConnected: false,
@@ -195,12 +197,111 @@ class Web3Service {
 
 
   /**
+   * Connect using Coinbase Smart Wallet
+   */
+  async connectSmartWallet(): Promise<void> {
+    try {
+      // Initialize Coinbase Wallet SDK with Smart Wallet preference
+      const coinbaseWallet = new CoinbaseWalletSDK({
+        appName: 'BizarreBeasts Miniapp',
+        appChainIds: [8453], // Base chain ID
+        // Enable Smart Wallet
+        enableMobileWalletLink: true,
+      });
+
+      // Create provider
+      this.smartWalletProvider = coinbaseWallet.makeWeb3Provider();
+      
+      // Request account access
+      const accounts = await this.smartWalletProvider.request({
+        method: 'eth_requestAccounts'
+      });
+
+      if (accounts && accounts.length > 0) {
+        const address = accounts[0];
+        
+        // Switch to Base network
+        try {
+          await this.smartWalletProvider.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: '0x2105' }], // Base chain ID in hex
+          });
+        } catch (switchError: any) {
+          // Chain not added, add it
+          if (switchError.code === 4902) {
+            await this.smartWalletProvider.request({
+              method: 'wallet_addEthereumChain',
+              params: [{
+                chainId: '0x2105',
+                chainName: 'Base',
+                nativeCurrency: {
+                  name: 'Ethereum',
+                  symbol: 'ETH',
+                  decimals: 18
+                },
+                rpcUrls: ['https://mainnet.base.org'],
+                blockExplorerUrls: ['https://basescan.org']
+              }]
+            });
+          }
+        }
+
+        // Fetch Empire data
+        const empireData = await empireService.getUserByAddress(address);
+        
+        this.currentState = {
+          isConnected: true,
+          address: address,
+          ensName: null,
+          empireRank: empireData?.rank || null,
+          empireScore: empireData?.balance || null,
+          empireTier: empireService.getUserTier(empireData?.rank || null)
+        };
+        
+        this.notifyStateChange();
+        
+        // Listen for account changes
+        this.smartWalletProvider.on('accountsChanged', async (accounts: string[]) => {
+          if (accounts.length === 0) {
+            await this.disconnect();
+          } else if (accounts[0] !== this.currentState.address) {
+            const empireData = await empireService.getUserByAddress(accounts[0]);
+            this.currentState = {
+              isConnected: true,
+              address: accounts[0],
+              ensName: null,
+              empireRank: empireData?.rank || null,
+              empireScore: empireData?.balance || null,
+              empireTier: empireService.getUserTier(empireData?.rank || null)
+            };
+            this.notifyStateChange();
+          }
+        });
+      }
+    } catch (error) {
+      console.error('Failed to connect Smart Wallet:', error);
+      throw error;
+    }
+  }
+
+  /**
    * Disconnect wallet
    */
   async disconnect(): Promise<void> {
-    if (!this.appKit) return;
+    // Disconnect from Smart Wallet if connected
+    if (this.smartWalletProvider) {
+      try {
+        await this.smartWalletProvider.disconnect();
+      } catch (e) {
+        console.log('Smart wallet disconnect error:', e);
+      }
+      this.smartWalletProvider = null;
+    }
     
-    await this.appKit.disconnect();
+    // Disconnect from AppKit if connected
+    if (this.appKit) {
+      await this.appKit.disconnect();
+    }
     
     this.currentState = {
       isConnected: false,
