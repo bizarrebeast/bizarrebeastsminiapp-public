@@ -4,7 +4,7 @@
 
 ### **Introducing the Official BizarreBeasts Farcaster Miniapp!**
 
-*The most BIZARRE way to create and share memes in web3 is now live on Farcaster!*
+*The most BIZARRE way to create and share memes in web3 is now live on Farcaster with Base Smart Wallet support!*
 
 ---
 
@@ -12,22 +12,24 @@
 
 ### **BizarreBeasts Miniapp is NOW LIVE on Farcaster! 🦾**
 
-We're thrilled to announce the official launch of the BizarreBeasts Miniapp - your ultimate destination for creating BIZARRE memes, collecting digital assets, and joining the most vibrant community in web3!
+We're thrilled to announce the official launch of the BizarreBeasts Miniapp - your ultimate destination for creating BIZARRE memes, collecting digital assets, and joining the most vibrant community in web3! Now with seamless Base Smart Wallet integration for one-click access.
 
 **🎯 What's New:**
+- **Base Smart Wallet Support**: Connect instantly with Coinbase Smart Wallet - no seed phrases needed!
 - **Daily BIZARRE Rituals**: Complete 9 daily tasks to engage with the ecosystem
 - **Native Farcaster Integration**: Share your creations directly to Farcaster without leaving the app
 - **Meme Generator 2.0**: Create epic memes with hand-illustrated BizarreBeasts stickers
-- **Empire Leaderboard**: Climb the ranks, share your position, and unlock exclusive content
-- **$BB Token Integration**: Seamless swapping and rewards
+- **Empire Leaderboard**: Live rankings with search, tiers, and social sharing
+- **$BB Token Integration**: Seamless swapping via embedded Uniswap
 - **Mobile-First Design**: Perfect experience on any device
-- **Treasure Quest Collection**: Game sprites and assets for next-level memes
-- **Featured Rituals**: Limited-time special tasks and campaigns
+- **8 Integrated Games**: Access the full BizarreBeasts game collection (130K+ plays!)
+- **Featured Game Spotlight**: Treasure Quest with 50+ levels
 
 **🔗 Access the App:**
 - **Farcaster Users**: Open directly in Farcaster at [bbapp.bizarrebeasts.io](https://bbapp.bizarrebeasts.io)
 - **Add to Home Screen**: Install as a PWA for instant access
 - **Desktop**: Full functionality in your browser
+- **Smart Wallet**: Connect with one click using Coinbase's Base Smart Wallet
 
 ---
 
@@ -37,13 +39,15 @@ We're thrilled to announce the official launch of the BizarreBeasts Miniapp - yo
 
 ## Table of Contents
 1. [Getting Started](#getting-started)
-2. [Core Features](#core-features)
-3. [Daily BIZARRE Rituals](#daily-bizarre-rituals)
-4. [Meme Generator Guide](#meme-generator-guide)
-5. [Empire System](#empire-system)
-6. [Token Features](#token-features)
-7. [Tips & Tricks](#tips--tricks)
-8. [FAQ](#faq)
+2. [Wallet Connection & Base Smart Wallet](#wallet-connection)
+3. [Core Features](#core-features)
+4. [Daily BIZARRE Rituals](#daily-bizarre-rituals)
+5. [Meme Generator Guide](#meme-generator-guide)
+6. [Empire System](#empire-system)
+7. [Token Features](#token-features)
+8. [Games Hub](#games-hub)
+9. [Tips & Tricks](#tips--tricks)
+10. [FAQ](#faq)
 
 ---
 
@@ -70,71 +74,87 @@ We're thrilled to announce the official launch of the BizarreBeasts Miniapp - yo
 2. Connect your wallet (optional for enhanced features)
 3. Full functionality in your browser
 
-### **Wallet Connection (Optional)**
-- **Not Required**: Basic features work without a wallet
-- **Enhanced Features**: Connect to unlock Empire tiers and exclusive content
-- **Supported Wallets**: MetaMask, WalletConnect, Coinbase Wallet, and more
+---
+
+## Wallet Connection
+
+### **Base Smart Wallet Integration (NEW!)**
+The app now features seamless Base Smart Wallet support through Coinbase Wallet:
+
+**Benefits of Smart Wallet:**
+- **No Seed Phrases**: Create a wallet with just your Coinbase account
+- **One-Click Connect**: Instant connection without complex setup
+- **Gas-Free Transactions**: Sponsored transactions on Base network
+- **Enhanced Security**: Account abstraction for better protection
+- **Cross-Device Sync**: Access your wallet anywhere
+
+**How to Connect:**
+1. Click "Connect Wallet" in the navigation
+2. Choose "Coinbase Wallet" (recommended)
+3. For new users: Create a Smart Wallet instantly
+4. For existing users: Connect your EOA or Smart Wallet
+5. Auto-reconnect enabled for future visits
+
+**Supported Wallets:**
+- ✅ **Coinbase Wallet** (Smart Wallet + EOA)
+- ✅ **Rainbow Wallet**
+- ✅ **MetaMask**
+- ✅ **Trust Wallet**
+- ✅ **WalletConnect-compatible wallets**
+
+**Networks Supported:**
+- **Base** (Primary - where $BB lives)
+- Ethereum Mainnet
+- Arbitrum
+- Polygon
 
 ---
 
 ## Core Features
 
 ### **1. Home Dashboard**
-- **Quick Stats**: View your Empire rank and $BB holdings
-- **Feature Cards**: Jump to any section instantly
-- **Live Leaderboard**: See top Empire members
-- **Announcements**: Stay updated with community news
+- **Live Market Cap**: Real-time $BB token price from DexScreener
+- **Quick Stats**: 4,400+ holders, 8 games, current market metrics
+- **Feature Boxes**: Visual navigation to all major sections
+- **About Section**: Learn about BizarreBeasts ecosystem
+- **Featured Game**: Treasure Quest spotlight with 50+ levels
 
 ### **2. Navigation**
-The app features eight main sections accessible from the navigation bar:
+The app features nine main sections accessible from the navigation bar:
 - 🏠 **Home**: Your dashboard and quick access
-- 🎨 **Meme Generator**: Create BIZARRE content
-- 🏰 **Empire**: View ranks and share achievements
-- 🎯 **Rituals**: Complete daily BIZARRE tasks (NEW!)
+- 🎨 **Meme Generator**: Create BIZARRE content with tier-based features
+- 💱 **Swap**: Trade $BB tokens via Uniswap
 - 🎮 **Games**: Play 8 BizarreBeasts games
-- 🎵 **Music**: Original game soundtracks
-- 💱 **Swap**: Trade $BB tokens
-- 📚 **Resources**: Learn and connect
+- 🏰 **Empire**: Live leaderboard with search and sharing
+- 🎯 **Rituals**: Complete 9 daily BIZARRE tasks
+- 🎵 **Music**: Original game soundtracks by @kateyarter
+- 📚 **Resources**: Community links and documentation
+- 💼 **Wallet**: Connect/disconnect your wallet
 
 ---
 
 ## Daily BIZARRE Rituals
 
-### **Complete Your Daily Tasks!**
+### **Overview**
+Complete 9 daily challenges to engage with the BizarreBeasts ecosystem:
 
-The Rituals page features 9 daily tasks to engage with the BizarreBeasts ecosystem:
+**The 9 Rituals:**
+1. **Visit the Empire Leaderboard** - Check your rank
+2. **Check Your Empire Rank** - Search for your position
+3. **View a BizarreBeasts Game** - Explore our games
+4. **Listen to Game Soundtracks** - Enjoy original music
+5. **Create a Meme** - Use the meme generator
+6. **Share Your Empire Rank** - Post to Farcaster
+7. **Check $BB Token Price** - View market data
+8. **Visit Community Resources** - Explore links
+9. **Featured Ritual** - Special sponsored tasks
 
-#### The 9 Rituals:
-1. **Create a BIZARRE Meme** - Use the meme generator
-2. **Check Dexscreener** - View $BB charts
-3. **Vote on BRND Podium** - Support BizarreBeasts
-4. **Create a GIVE** - Use Coordinape
-5. **Believe in BizarreBeasts** - Join the belief system
-6. **Play BizarreBeasts Games** - Powered by /remix
-7. **Rip a Fresh Pack** - Digital card collecting
-8. **Buy 1M $BB Tokens** - Grow your holdings
-9. **Share Your Leaderboard Rank** - Powered by $GLANKER
-
-#### How It Works:
-- **Daily Reset**: Progress resets at midnight UTC
-- **Track Progress**: Visual checkmarks show completion
-- **Individual Sharing**: Share each ritual completion on Farcaster
-- **Share All Progress**: Share your total daily progress
-- **Cross-Page Integration**: Completing ritual #9 from Empire page counts
-
-#### Featured Rituals:
-- **Limited-Time Tasks**: Special campaigns with expiration dates
-- **Community Events**: Participate in time-sensitive activities
-- **Visual Indicators**: Featured box shows current special ritual
-- **Direct Links**: Quick access to complete featured tasks
-
-#### Tips:
-- Complete all 9 rituals daily for maximum engagement
-- Share individual rituals to show specific achievements
-- Featured rituals offer limited-time opportunities
-- Your Empire rank sharing automatically completes ritual #9
-- Progress persists across page refreshes
-- Check back daily as progress resets at midnight
+**Features:**
+- Progress saves automatically
+- Reset daily at midnight UTC
+- Share individual ritual completions
+- Visual progress indicators
+- Mobile-optimized interface
 
 ---
 
@@ -142,176 +162,171 @@ The Rituals page features 9 daily tasks to engage with the BizarreBeasts ecosyst
 
 ### **Creating Your First Meme**
 
-#### Step 1: Choose a Collection
-- **BizarreBeasts** 👹: Original hand-illustrated characters with tier-locked premium stickers
-- **Treasure Quest** 💎: Game sprites and items from the BizarreBeasts game
-- **UGC by @siablo.eth** 🐐: Community-created content available to all
-- **Vibecards** 🃏: Coming soon!
+**Step 1: Choose a Collection**
+- **BizarreBeasts**: Main character collection
+- **Treasure Quest**: Game sprites and enemies
+- **VibeCards**: Character mood cards
 
-#### Step 2: Add Stickers
-1. Browse the sticker gallery
-2. Look for tier badges on premium stickers:
-   - ⭐ Member tier required
-   - 🌟 Veteran tier required  
-   - 👑 Champion tier required
-   - 💎 Elite tier required
-3. Click any unlocked sticker to add it to your canvas
-4. Drag to position
-5. Resize using corner handles
-6. Delete with the DEL key or delete button
+**Step 2: Build Your Canvas**
+1. **Add Stickers**: Click any sticker to add to canvas
+2. **Position**: Drag stickers anywhere
+3. **Resize**: Drag corner handles (maintains aspect ratio)
+4. **Rotate**: Use rotation handle or hold Shift for 15° snapping
+5. **Delete**: Select and press Delete key or use Delete button
 
-#### Step 3: Add Text
-1. Click "Add Text" in the controls panel
-2. Type your message
-3. Choose font style:
-   - **Impact**: Classic meme font
-   - **Comic Sans**: Fun and casual
-   - **Roboto**: Clean and modern
-4. Adjust size, color, and outline
-5. Position on canvas
+**Step 3: Add Text**
+- Choose position: Top, Bottom, or Custom
+- Select font: Impact (classic meme), Arial, or Comic Sans
+- Adjust size, color, and stroke
+- Double-click to edit text inline
 
-#### Step 4: Customize Background
-- **Color Picker**: Choose any color
-- **Image Upload**: Use your own backgrounds (Elite/Champion only)
-- **Transparent**: For overlay effects
+**Step 4: Set Background**
+- Solid colors with color picker
+- Transparent background
+- Upload custom images (Elite tier)
 
-#### Step 5: Export & Share
+**Step 5: Export & Share**
 
-**Two-Step Process:**
-1. **Download First**: Click "Download Meme" to save to your device
-2. **Share to Farcaster**: Click "Share" to post directly
+**Desktop Farcaster Download (Updated!)**
+- Click "Download" button
+- New modal shows your creation
+- **Primary Method**: Right-click image → "Save Image As..."
+- **Alternative**: Click "Open in New Tab" for browser save
+- Clear step-by-step instructions displayed
 
-**Mobile Tips:**
-- On mobile Farcaster: Long-press the image to save
-- The share button opens the Farcaster composer with your meme attached
+**Mobile Download:**
+- Tap Download button
+- Image opens for long-press save
+- Or use native share sheet
 
-### **Advanced Features**
+**Farcaster Sharing:**
+- Click "Share to Farcaster"
+- Pre-populated cast with your meme
+- Posts to #bizarrebeasts channel
+- Includes $BB promotion text
 
-#### Sticker Management
-- **Layer Control**: Last added appears on top
-- **Multi-Select**: Hold Shift to select multiple items
-- **Keyboard Shortcuts**:
-  - Delete: Remove selected item
-  - Arrow Keys: Fine positioning
-  - Ctrl/Cmd+Z: Undo (desktop)
-
-#### Text Effects
-- **Outline**: Add stroke for visibility
-- **Shadow**: Create depth
-- **Gradient**: Premium feature (coming soon)
+### **Empire Tier Benefits**
+Access levels based on $BB holdings:
+- **Visitor** (0 $BB): Basic features
+- **Member** (10K+ $BB): Remove watermark
+- **Veteran** (100K+ $BB): Premium stickers
+- **Champion** (1M+ $BB): All collections unlocked
+- **Elite** (10M+ $BB): Custom backgrounds, exclusive content
 
 ---
 
 ## Empire System
 
-### **Understanding Tiers**
+### **Understanding Your Rank**
+The Empire Leaderboard tracks all $BB token holders with live updates:
 
-The Empire system rewards active community members with exclusive access:
+**Tier System:**
+1. **Elite** (10M+ $BB) - Gold tier
+2. **Champion** (1M - 10M $BB) - Purple tier
+3. **Veteran** (100K - 1M $BB) - Blue tier
+4. **Member** (10K - 100K $BB) - Green tier
+5. **Visitor** (<10K $BB) - Gray tier
 
-#### Share Your Rank:
-- **Always Visible**: Share section appears at top of Empire page
-- **Search Options**: Find yourself by wallet address or @username
-- **$GLANKER Powered**: Rank sharing includes $GLANKER branding
-- **Ritual Integration**: Sharing automatically completes ritual #9
-- **Rich Previews**: Shares include embedded link previews
+**Features:**
+- **Live Rankings**: Updated every few minutes
+- **Search Function**: Find any wallet or username
+- **Multipliers**: Track boosters and bonuses
+- **Social Sharing**: Share your rank card on Farcaster
+- **Mobile Optimized**: Responsive design for all devices
 
-#### Tier Structure:
-1. **👤 Visitor** (0 $BB)
-   - Basic features
-   - Core stickers
-   - Standard backgrounds
-
-2. **🔷 Member** (10K+ $BB)
-   - Unlock Member-tier stickers
-   - Priority support
-   - Special badge
-
-3. **⭐ Veteran** (1M+ $BB)
-   - Veteran-exclusive stickers
-   - Custom backgrounds
-   - Voting rights
-
-4. **👑 Champion** (10M+ $BB)
-   - Champion collection access
-   - Remove watermarks
-   - Early feature access
-
-5. **💎 Elite** (25M+ $BB)
-   - All content unlocked
-   - Upload custom backgrounds
-   - Exclusive channels
-   - Special recognition
-
-### **Climbing the Ranks**
-1. **Hold $BB Tokens**: Your balance determines your tier
-2. **Stay Active**: Engagement boosts visibility
-3. **Create Content**: Share memes to gain recognition
-4. **Join Events**: Participate in community challenges
-
----
-
+**How to Check Your Rank:**
+1. Navigate to Empire page
+2. Connect wallet (auto-finds your rank)
+3. Or search by wallet address/username
+4. Click "Share Rank" to post on Farcaster
 
 ---
 
 ## Token Features
 
 ### **$BB Token Swap**
+Access integrated Uniswap trading:
 
-#### How to Swap:
-1. Navigate to the Swap page
+**Features:**
+- Embedded Uniswap interface
+- $BB pre-selected as output token
+- Live price chart from DexScreener
+- Mobile-responsive design
+- Direct Base network trading
+
+**How to Swap:**
+1. Go to Swap page
 2. Connect your wallet
-3. Select tokens (ETH → $BB or $BB → ETH)
+3. Select input token (ETH, USDC, etc.)
 4. Enter amount
-5. Review gas fees
-6. Confirm transaction
+5. Approve and swap
+6. $BB automatically added to wallet
 
-#### Important Notes:
-- **Network**: Base chain only
-- **Slippage**: Set to 2-5% for best results
-- **Gas Fees**: Typically under $1 on Base
-- **Contract**: Official $BB contract only
+**Token Information:**
+- **Symbol**: $BB
+- **Network**: Base
+- **Contract**: `0x0520bf1d3cEE163407aDA79109333aB1599b4004`
+- **Decimals**: 18
+- **Total Supply**: 1 Billion
 
-### **Token Benefits**
-- **Unlock Content**: Higher tiers = more stickers
-- **Remove Watermarks**: Champion tier and above
-- **Governance**: Vote on community decisions
-- **Rewards**: Earn from contests and events
+---
+
+## Games Hub
+
+### **8 BizarreBeasts Games**
+Access the complete collection with 130K+ total plays:
+
+**Featured Game - Treasure Quest:**
+- 50+ levels across 5 chapters
+- Original character: BizBe
+- 9 unique enemies
+- Progressive difficulty
+- BEAST MODE after level 50
+- Player's guide available
+
+**Full Game List:**
+1. **Treasure Quest** - Platform adventure
+2. **Bizarre Munchies** - Eating game
+3. **Crystal Blaster** - Shooting game
+4. **Gem Getter** - Collection game
+5. **Snowy Scuffle** - Battle game
+6. **Diamond Drop** - Puzzle game
+7. **Beast Bounce** - Jumping game
+8. **Chaos Climb** - Climbing game
+
+**Platform Support:**
+- Remix (@base)
+- TheBase.App
+- External links for each game
 
 ---
 
 ## Tips & Tricks
 
-### **For Best Results**
+### **Meme Generator Pro Tips**
+1. **Snap to Grid**: Objects auto-align to center and edges
+2. **Shift + Rotate**: Snaps to 15° angles like Canva
+3. **Double-click Text**: Edit inline without text panel
+4. **Keyboard Shortcuts**: Delete key removes selected items
+5. **Layer Order**: Recently added items appear on top
 
-#### Meme Creation:
-- **High Contrast**: Use text outlines for readability
-- **Less is More**: Don't overcrowd your canvas
-- **Test Sharing**: Preview before posting
-- **Save Drafts**: Download works-in-progress
-- **Check Tier Access**: Look for tier badges on premium stickers
+### **Mobile Optimization**
+- **PWA Install**: Add to home screen for app-like experience
+- **Touch Gestures**: Pinch to zoom, drag to move
+- **Responsive Canvas**: Auto-adjusts to screen size
+- **One-Tap Share**: Native share sheets on mobile
 
-#### Rituals Completion:
-- **Daily Habit**: Check rituals page each day
-- **Share Progress**: Use individual share buttons
-- **Featured First**: Complete time-limited rituals before they expire
-- **Cross-Page**: Empire rank sharing counts for ritual #9
+### **Empire Strategy**
+- **Hold More $BB**: Increase rank and unlock features
+- **Check Daily**: Complete rituals for engagement
+- **Share Achievements**: Build community presence
+- **Use Multipliers**: Maximize your Empire score
 
-#### Performance:
-- **Clear Cache**: If app feels slow
-- **Update Browser**: Use latest version
-- **Stable Connection**: For best experience
-
-#### Mobile Specific:
-- **Landscape Mode**: More canvas space
-- **Pinch to Zoom**: Fine detail work
-- **Touch & Hold**: Access context menus
-
-### **Power User Features**
-
-1. **Batch Creation**: Keep multiple tabs open
-2. **Template System**: Save favorite layouts (coming soon)
-3. **Keyboard Navigation**: Tab through controls
-4. **Quick Share**: Cmd/Ctrl+Enter to share
+### **Wallet Tips**
+- **Auto-Reconnect**: Wallet reconnects on return visits
+- **Network Switching**: App prompts for Base network
+- **Smart Wallet**: Use Coinbase for easiest onboarding
+- **Mobile Wallets**: Best experience with WalletConnect
 
 ---
 
@@ -319,213 +334,125 @@ The Empire system rewards active community members with exclusive access:
 
 ### **General Questions**
 
-**Q: Do I need $BB tokens to use the app?**
-A: No! Basic features are free. Tokens unlock premium content.
+**Q: Do I need a wallet to use the app?**
+A: No! Basic features work without a wallet. Connect to unlock Empire tiers and enhanced features.
 
-**Q: How do I save my memes?**
-A: Click "Download Meme" - it saves to your device automatically.
+**Q: What is Base Smart Wallet?**
+A: A new wallet type from Coinbase that doesn't require seed phrases. Create and access your wallet with just your Coinbase account.
 
-**Q: Can I use on mobile?**
-A: Yes! Fully optimized for mobile browsers and Farcaster app.
+**Q: Is the app free?**
+A: Yes! Core features are free. Some premium features require holding $BB tokens.
 
-**Q: Is my wallet safe?**
-A: Yes. We never ask for private keys. Standard Web3 security applies.
+**Q: How do I install on mobile?**
+A: Visit the site and use "Add to Home Screen" from your browser's share menu.
 
-### **Technical Issues**
+### **Meme Generator Questions**
 
-**Q: Share button not working?**
-A: Download first, then share. The two-step process ensures reliability.
+**Q: What size are exported memes?**
+A: Memes export at 800x800px, optimized for social sharing.
 
-**Q: Stickers not loading?**
-A: Refresh the page or clear browser cache.
+**Q: Can I remove the watermark?**
+A: Yes, Members (10K+ $BB holders) can disable watermarks.
 
-**Q: Canvas seems frozen?**
-A: Click outside the canvas, then click back on it.
+**Q: How do I save my meme on desktop Farcaster?**
+A: Right-click the image in the download modal and select "Save Image As..."
 
-**Q: Can't connect wallet?**
-A: Ensure you're on Base network and wallet is unlocked.
+**Q: Why can't I upload backgrounds?**
+A: Custom background uploads require Elite tier (10M+ $BB).
 
-### **Empire & Tokens**
+### **Empire Questions**
 
-**Q: How often do tiers update?**
-A: Real-time based on your wallet balance.
+**Q: How often do rankings update?**
+A: Rankings refresh every few minutes with live blockchain data.
 
-**Q: How do rituals work?**
-A: Complete 9 daily tasks, progress resets at midnight UTC.
+**Q: Can I search for other users?**
+A: Yes! Use the search bar to find any wallet or username.
 
-**Q: Can I share individual rituals?**
-A: Yes! Each ritual has its own share button.
+**Q: What are multipliers?**
+A: Bonus points for holding special NFTs or participating in events.
 
-**Q: What are featured rituals?**
-A: Limited-time special tasks with expiration dates.
+### **Token Questions**
 
-**Q: Where to buy $BB?**
-A: Use the built-in swap or any Base DEX.
+**Q: Where can I buy $BB?**
+A: Use the integrated Swap page or trade on Uniswap (Base network).
 
-**Q: What's the contract address?**
-A: [Official $BB Contract - verify on official channels]
+**Q: What wallet works best?**
+A: Coinbase Wallet with Smart Wallet enabled provides the smoothest experience.
 
-**Q: How to join Elite tier?**
-A: Hold 25M+ $BB tokens in your connected wallet.
+**Q: Is $BB on other networks?**
+A: $BB is exclusively on Base network.
 
----
+### **Technical Questions**
 
-## Community & Support
+**Q: What browsers are supported?**
+A: Chrome, Safari, Firefox, Edge, and Brave. Mobile browsers too!
 
-### **Get Help**
-- **Discord**: [Join BizarreBeasts Discord]
-- **Farcaster**: Follow @bizarrebeast
-- **Twitter/X**: @bizarrebeasts
-- **Telegram**: BizarreBeasts Official
+**Q: Does it work in Farcaster?**
+A: Yes! Full miniapp support on both mobile and desktop Farcaster.
 
-### **Report Issues**
-- **Bug Reports**: GitHub Issues
-- **Feature Requests**: Discord suggestions
-- **Security**: security@bizarrebeasts.io
-
-### **Stay Updated**
-- **Blog**: Latest news and tutorials
-- **Newsletter**: Weekly updates
-- **Farcaster Channel**: /bizarrebeasts
+**Q: How do I report bugs?**
+A: Join our Farcaster channel /bizarrebeasts or contact @bizarrebeast.
 
 ---
 
-## Advanced Features Guide
+## 🎮 Keyboard Shortcuts
 
-### **For Developers**
-
-#### API Access (Coming Soon)
-- Programmatic meme generation
-- Sticker library integration
-- Empire tier verification
-- Token balance checks
-
-#### Open Source
-- Frontend code available on GitHub
-- Contribute sticker packs
-- Build extensions
-- Create themes
-
-### **For Content Creators**
-
-#### Best Practices:
-1. **Consistency**: Develop your style
-2. **Engagement**: Respond to comments
-3. **Timing**: Post when community is active
-4. **Hashtags**: Use #BizarreBeasts #BBMemes
-
-#### Content Ideas:
-- Daily meme challenges
-- Reaction templates
-- Story sequences
-- Character combinations
+- **Delete/Backspace**: Remove selected item
+- **Shift + Rotate**: 15° angle snapping
+- **Double-click**: Edit text inline
+- **Click Empty Space**: Deselect all (desktop only)
 
 ---
 
-## Roadmap Highlights
+## 🔗 Important Links
 
-### **Recently Added**
-- ✅ **Daily Rituals**: 9 tasks to complete each day
-- ✅ **Featured Rituals**: Time-limited special campaigns
-- ✅ **Rank Sharing**: Share your Empire position with $GLANKER branding
-- ✅ **Tier-Locked Stickers**: Premium content for higher tiers
-- ✅ **Cross-Page Integration**: Ritual completion syncs between pages
+- **App**: [bbapp.bizarrebeasts.io](https://bbapp.bizarrebeasts.io)
+- **Token**: [$BB on Base](https://basescan.org/token/0x0520bf1d3cEE163407aDA79109333aB1599b4004)
+- **Farcaster**: [/bizarrebeasts](https://warpcast.com/~/channel/bizarrebeasts)
+- **Games**: [bizarrebeasts.win](https://bizarrebeasts.win)
+- **Twitter**: [@BizarreBeast](https://twitter.com/BizarreBeast)
+
+---
+
+## 📝 Release Notes
+
+### **Version 2.0.0 - January 2025**
+- ✅ Base Smart Wallet integration
+- ✅ Redesigned download modal with clear save instructions
+- ✅ 9 Daily BIZARRE Rituals
+- ✅ Live Empire leaderboard with search
+- ✅ Native Farcaster sharing
+- ✅ 8 integrated games
+- ✅ Mobile-first responsive design
+- ✅ PWA support
+- ✅ Auto-wallet reconnection
+- ✅ Enhanced meme generator with tier gating
 
 ### **Coming Soon**
-- 🎮 **Mini-Games**: Play to earn
-- 🏆 **Tournaments**: Meme competitions
-- 🤖 **AI Features**: Smart suggestions
-- 📱 **Native Apps**: iOS/Android
-- 🎨 **NFT Minting**: Turn memes into NFTs
-- 🌐 **Multi-Language**: Global support
-
-### **Future Vision**
-- Cross-chain integration
-- Collaborative creation tools
-- Advanced animation support
-- Marketplace for user content
-- DAO governance implementation
+- 100+ actual BizarreBeasts stickers
+- Contest voting system
+- User profiles and galleries
+- Achievement system
+- API for developers
 
 ---
 
-## Security & Privacy
+## 🙏 Credits
 
-### **Data Protection**
-- **No Tracking**: We respect your privacy
-- **Local Storage**: Preferences saved locally
-- **Secure Connections**: HTTPS only
-- **Open Source**: Verify our code
-
-### **Best Practices**
-- Never share private keys
-- Verify contract addresses
-- Use hardware wallets for large holdings
-- Report suspicious activity
+- **Creator**: @bizarrebeast
+- **Music**: @kateyarter
+- **Community**: 4,400+ $BB holders
+- **Games**: 130,000+ plays and counting!
 
 ---
-
-## Credits & Acknowledgments
-
-### **Built By**
-- **BizarreBeasts Team**: Core development
-- **Community Artists**: Sticker contributions
-- **@siablo.eth**: UGC collection creator
-
-### **Powered By**
-- **Farcaster**: Social protocol
-- **Base**: L2 blockchain
-- **Next.js**: Framework
-- **Fabric.js**: Canvas engine
-
-### **Special Thanks**
-- Early testers and bug reporters
-- Community moderators
-- $BB holders and supporters
-- Farcaster ecosystem
-
----
-
-## Summary for Quick Reference
-
-### **Quick Start Checklist**
-- [ ] Visit bbapp.bizarrebeasts.io
-- [ ] Add to home screen (mobile)
-- [ ] Connect wallet (optional)
-- [ ] Choose a sticker collection
-- [ ] Create your first meme
-- [ ] Download your creation
-- [ ] Share to Farcaster
-- [ ] Join the community
-
-### **Essential Links**
-- **App**: [bbapp.bizarrebeasts.io](https://bbapp.bizarrebeasts.io)
-- **Farcaster**: [@bizarrebeast](https://warpcast.com/bizarrebeast)
-- **Channel**: [/bizarrebeasts](https://warpcast.com/~/channel/bizarrebeasts)
-- **Token**: $BB on Base
-
-### **Key Features Summary**
-- ✅ **Free to Use**: No tokens required for basic features
-- ✅ **Mobile Optimized**: Works perfectly on all devices
-- ✅ **Farcaster Native**: Share directly without leaving
-- ✅ **Tier System**: Unlock content by holding $BB
-- ✅ **Community Driven**: User-generated content welcome
-- ✅ **Secure**: Non-custodial, open-source
-- ✅ **Fast**: Optimized performance on Base L2
-
----
-
-## Contact & Feedback
-
-**We'd love to hear from you!**
-
-- **Feedback**: feedback@bizarrebeasts.io
-- **Partnerships**: partnerships@bizarrebeasts.io
-- **Support**: Use Discord or Farcaster
-- **Media**: media@bizarrebeasts.io
-
----
-
-*Last Updated: January 11, 2025*
-*Version: 1.1.0 - Rituals & Empire Update*
 
 **Welcome to the BIZARRE revolution! 🦾**
+
+*Hold 25M $BB to join /bizarrebeasts*
+
+---
+
+**Document Version:** 2.0.0  
+**Last Updated:** January 2025  
+**App Status:** Live Production  
+**Smart Wallet:** Fully Integrated

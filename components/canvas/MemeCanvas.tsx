@@ -764,7 +764,7 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
                   // Desktop Farcaster: Sandboxed environment blocks downloads
                   console.log('Desktop Farcaster - showing download modal');
                   
-                  // Create modal overlay with dark theme
+                  // Create modal overlay with dark theme matching featured game box
                   const modal = document.createElement('div');
                   modal.style.cssText = `
                     position: fixed;
@@ -772,149 +772,282 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
                     left: 0;
                     right: 0;
                     bottom: 0;
-                    background: linear-gradient(135deg, rgba(10, 10, 14, 0.95), rgba(20, 20, 28, 0.98));
-                    backdrop-filter: blur(10px);
+                    background: rgba(10, 10, 14, 0.95);
+                    backdrop-filter: blur(12px);
                     z-index: 10000;
                     display: flex;
                     flex-direction: column;
                     align-items: center;
                     justify-content: center;
                     padding: 20px;
+                    animation: fadeIn 0.3s ease;
                   `;
                   
-                  // Create content container with gem styling
+                  // Add fade-in animation
+                  const style = document.createElement('style');
+                  style.textContent = `
+                    @keyframes fadeIn {
+                      from { opacity: 0; }
+                      to { opacity: 1; }
+                    }
+                    @keyframes pulse {
+                      0%, 100% { transform: scale(1); }
+                      50% { transform: scale(1.05); }
+                    }
+                    @keyframes slideDown {
+                      from { transform: translateY(-10px); opacity: 0; }
+                      to { transform: translateY(0); opacity: 1; }
+                    }
+                  `;
+                  document.head.appendChild(style);
+                  
+                  // Create content container matching featured game box style
                   const contentContainer = document.createElement('div');
                   contentContainer.style.cssText = `
-                    background: rgba(17, 24, 39, 0.9);
+                    background: linear-gradient(to bottom right, #111827, #111827, rgba(251, 191, 36, 0.05));
                     border: 1px solid rgba(251, 191, 36, 0.3);
                     border-radius: 16px;
-                    padding: 24px;
-                    max-width: 90%;
-                    box-shadow: 0 0 40px rgba(251, 191, 36, 0.2), 0 0 80px rgba(147, 51, 234, 0.1);
+                    padding: 32px;
+                    max-width: 600px;
+                    width: 90%;
+                    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 0 0 60px rgba(251, 191, 36, 0.1);
+                    transition: border-color 0.3s ease;
+                    animation: slideDown 0.4s ease;
                   `;
                   
-                  // Create image container
+                  // Add hover effect to container
+                  contentContainer.onmouseover = () => {
+                    contentContainer.style.borderColor = 'rgba(251, 191, 36, 0.5)';
+                  };
+                  contentContainer.onmouseout = () => {
+                    contentContainer.style.borderColor = 'rgba(251, 191, 36, 0.3)';
+                  };
+                  
+                  // Create title
+                  const title = document.createElement('h2');
+                  title.style.cssText = `
+                    font-size: 28px;
+                    font-weight: bold;
+                    text-align: center;
+                    margin: 0 0 24px 0;
+                    background: linear-gradient(135deg, #60a5fa, #fbbf24, #f472b6);
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                    background-clip: text;
+                    font-family: system-ui, -apple-system, sans-serif;
+                  `;
+                  title.textContent = 'Your BizarreBeasts Meme is Ready!';
+                  
+                  // Create image container with cursor hint
                   const imgContainer = document.createElement('div');
                   imgContainer.style.cssText = `
                     position: relative;
                     display: flex;
                     justify-content: center;
+                    margin-bottom: 24px;
                   `;
                   
-                  // Create image element with gem border
+                  // Create image element
                   const img = document.createElement('img');
                   img.src = httpUrl;
                   img.style.cssText = `
                     max-width: 100%;
-                    max-height: 60vh;
-                    border: 3px solid transparent;
-                    background: linear-gradient(#0a0a0e, #0a0a0e) padding-box,
-                                linear-gradient(135deg, #fbbf24, #9333ea, #3b82f6) border-box;
+                    max-height: 400px;
                     border-radius: 12px;
-                    box-shadow: 0 4px 20px rgba(251, 191, 36, 0.3);
+                    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+                    cursor: pointer;
+                    transition: transform 0.3s ease;
                   `;
                   
-                  // Create instruction text with BizarreBeasts branding
-                  const instructions = document.createElement('div');
-                  instructions.style.cssText = `
-                    color: white;
+                  // Add hover effect to image
+                  img.onmouseover = () => {
+                    img.style.transform = 'scale(1.02)';
+                    cursorHint.style.opacity = '1';
+                  };
+                  img.onmouseout = () => {
+                    img.style.transform = 'scale(1)';
+                    cursorHint.style.opacity = '0.8';
+                  };
+                  
+                  // Create animated cursor hint
+                  const cursorHint = document.createElement('div');
+                  cursorHint.style.cssText = `
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    pointer-events: none;
+                    opacity: 0.8;
+                    transition: opacity 0.3s ease;
+                    animation: pulse 2s infinite;
+                  `;
+                  cursorHint.innerHTML = `
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M12 2L13.09 8.26L19 7L15.45 11.82L21 16L14.82 16.45L16 22L11 17L6 22L7.18 16.45L1 16L6.55 11.82L3 7L8.91 8.26L12 2Z" 
+                            fill="rgba(251, 191, 36, 0.9)" stroke="rgba(251, 191, 36, 1)" stroke-width="1"/>
+                    </svg>
+                  `;
+                  
+                  // Create primary instructions box (emphasized)
+                  const instructionsBox = document.createElement('div');
+                  instructionsBox.style.cssText = `
+                    background: linear-gradient(135deg, rgba(251, 191, 36, 0.1), rgba(147, 51, 234, 0.05));
+                    border: 2px solid rgba(251, 191, 36, 0.4);
+                    border-radius: 12px;
+                    padding: 20px;
+                    margin-bottom: 24px;
                     text-align: center;
-                    margin-top: 24px;
-                    font-family: system-ui, -apple-system, sans-serif;
-                    font-size: 16px;
-                    line-height: 1.5;
-                  `;
-                  instructions.innerHTML = `
-                    <p style="margin: 0 0 12px 0; font-size: 24px; font-weight: bold; 
-                              background: linear-gradient(135deg, #fbbf24, #f59e0b, #fbbf24);
-                              -webkit-background-clip: text;
-                              -webkit-text-fill-color: transparent;
-                              background-clip: text;">
-                      ✨ Your BizarreBeasts creation is ready!
-                    </p>
-                    <p style="margin: 0 0 24px 0; color: #9ca3af;">
-                      Right-click the image and select "Save Image As..." to download
-                    </p>
                   `;
                   
-                  // Create button container - centered
+                  // Instructions header with icon
+                  const instructionsHeader = document.createElement('div');
+                  instructionsHeader.style.cssText = `
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 8px;
+                    margin-bottom: 16px;
+                  `;
+                  instructionsHeader.innerHTML = `
+                    <span style="font-size: 24px;">💾</span>
+                    <h3 style="
+                      font-size: 20px;
+                      font-weight: bold;
+                      color: #fbbf24;
+                      margin: 0;
+                      font-family: system-ui, -apple-system, sans-serif;
+                    ">Save Your Creation</h3>
+                  `;
+                  
+                  // Step-by-step instructions
+                  const steps = document.createElement('ol');
+                  steps.style.cssText = `
+                    list-style: none;
+                    padding: 0;
+                    margin: 0;
+                    color: #e5e7eb;
+                    font-size: 16px;
+                    line-height: 1.8;
+                    font-family: system-ui, -apple-system, sans-serif;
+                  `;
+                  steps.innerHTML = `
+                    <li style="margin-bottom: 8px;">
+                      <span style="color: #fbbf24; font-weight: bold; margin-right: 8px;">1.</span>
+                      Right-click on the image above
+                    </li>
+                    <li style="margin-bottom: 8px;">
+                      <span style="color: #fbbf24; font-weight: bold; margin-right: 8px;">2.</span>
+                      Select "Save Image As..." from the menu
+                    </li>
+                    <li>
+                      <span style="color: #fbbf24; font-weight: bold; margin-right: 8px;">3.</span>
+                      Choose your download location and save
+                    </li>
+                  `;
+                  
+                  // Alternative text
+                  const altText = document.createElement('p');
+                  altText.style.cssText = `
+                    color: #9ca3af;
+                    font-size: 14px;
+                    margin: 16px 0 0 0;
+                    font-family: system-ui, -apple-system, sans-serif;
+                  `;
+                  altText.textContent = 'Having trouble? Try the button below:';
+                  
+                  // Create button container with secondary styling
                   const buttonContainer = document.createElement('div');
                   buttonContainer.style.cssText = `
                     display: flex;
-                    gap: 16px;
+                    gap: 12px;
                     justify-content: center;
-                    margin: 0 auto;
                   `;
                   
-                  // Create "Open in Browser" button with gem styling
+                  // Create "Open in Browser" button as secondary option
                   const openButton = document.createElement('button');
-                  openButton.textContent = '🌐 Open in Browser';
+                  openButton.textContent = '🌐 Open in New Tab';
                   openButton.style.cssText = `
-                    padding: 14px 28px;
-                    background: linear-gradient(135deg, #fbbf24, #f59e0b);
-                    color: #0a0a0e;
-                    border: none;
+                    padding: 12px 24px;
+                    background: rgba(31, 41, 55, 0.8);
+                    color: #9ca3af;
+                    border: 1px solid rgba(156, 163, 175, 0.2);
                     border-radius: 10px;
-                    font-weight: bold;
+                    font-weight: 600;
                     cursor: pointer;
-                    font-size: 16px;
+                    font-size: 14px;
                     font-family: system-ui, -apple-system, sans-serif;
                     transition: all 0.3s ease;
-                    box-shadow: 0 4px 15px rgba(251, 191, 36, 0.3);
                   `;
                   openButton.onmouseover = () => {
+                    openButton.style.background = 'rgba(31, 41, 55, 1)';
+                    openButton.style.color = '#e5e7eb';
+                    openButton.style.borderColor = 'rgba(156, 163, 175, 0.4)';
                     openButton.style.transform = 'translateY(-2px)';
-                    openButton.style.boxShadow = '0 6px 20px rgba(251, 191, 36, 0.4)';
                   };
                   openButton.onmouseout = () => {
+                    openButton.style.background = 'rgba(31, 41, 55, 0.8)';
+                    openButton.style.color = '#9ca3af';
+                    openButton.style.borderColor = 'rgba(156, 163, 175, 0.2)';
                     openButton.style.transform = 'translateY(0)';
-                    openButton.style.boxShadow = '0 4px 15px rgba(251, 191, 36, 0.3)';
                   };
                   openButton.onclick = () => {
                     window.open(httpUrl, '_blank');
                   };
                   
-                  // Create close button with dark styling
+                  // Create close button
                   const closeButton = document.createElement('button');
-                  closeButton.textContent = '✕ Close';
+                  closeButton.textContent = '✓ Done';
                   closeButton.style.cssText = `
-                    padding: 14px 28px;
-                    background: linear-gradient(135deg, #374151, #1f2937);
-                    color: #d1d5db;
-                    border: 1px solid rgba(156, 163, 175, 0.2);
+                    padding: 12px 24px;
+                    background: linear-gradient(135deg, #60a5fa, #fbbf24, #f472b6);
+                    color: #0a0a0e;
+                    border: none;
                     border-radius: 10px;
                     font-weight: bold;
                     cursor: pointer;
-                    font-size: 16px;
+                    font-size: 14px;
                     font-family: system-ui, -apple-system, sans-serif;
                     transition: all 0.3s ease;
+                    box-shadow: 0 4px 15px rgba(251, 191, 36, 0.2);
                   `;
                   closeButton.onmouseover = () => {
                     closeButton.style.transform = 'translateY(-2px)';
-                    closeButton.style.borderColor = 'rgba(156, 163, 175, 0.4)';
+                    closeButton.style.boxShadow = '0 6px 20px rgba(251, 191, 36, 0.3)';
                   };
                   closeButton.onmouseout = () => {
                     closeButton.style.transform = 'translateY(0)';
-                    closeButton.style.borderColor = 'rgba(156, 163, 175, 0.2)';
+                    closeButton.style.boxShadow = '0 4px 15px rgba(251, 191, 36, 0.2)';
                   };
                   closeButton.onclick = () => {
                     document.body.removeChild(modal);
+                    // Clean up style element
+                    document.head.removeChild(style);
                   };
                   
                   // Also close on backdrop click
                   modal.onclick = (e) => {
                     if (e.target === modal) {
                       document.body.removeChild(modal);
+                      document.head.removeChild(style);
                     }
                   };
                   
-                  // Assemble modal with proper structure
+                  // Assemble modal with new structure
                   imgContainer.appendChild(img);
+                  imgContainer.appendChild(cursorHint);
+                  
+                  instructionsBox.appendChild(instructionsHeader);
+                  instructionsBox.appendChild(steps);
+                  
                   buttonContainer.appendChild(openButton);
                   buttonContainer.appendChild(closeButton);
-                  instructions.appendChild(buttonContainer);
+                  
+                  contentContainer.appendChild(title);
                   contentContainer.appendChild(imgContainer);
-                  contentContainer.appendChild(instructions);
+                  contentContainer.appendChild(instructionsBox);
+                  contentContainer.appendChild(altText);
+                  contentContainer.appendChild(buttonContainer);
+                  
                   modal.appendChild(contentContainer);
                   
                   // Add to page
