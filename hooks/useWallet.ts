@@ -17,8 +17,30 @@ export function useWallet() {
     const init = async () => {
       try {
         await web3Service.initialize();
-        await web3Service.checkConnection();
-        setWalletState(web3Service.getState());
+        
+        // Check connection with retry logic
+        const checkWithRetry = async (retries = 3) => {
+          for (let i = 0; i < retries; i++) {
+            await web3Service.checkConnection();
+            const state = web3Service.getState();
+            
+            // If we got a connection, use it
+            if (state.isConnected) {
+              setWalletState(state);
+              break;
+            }
+            
+            // Wait before retry
+            if (i < retries - 1) {
+              await new Promise(resolve => setTimeout(resolve, 500));
+            } else {
+              // Final attempt failed, just set the state
+              setWalletState(state);
+            }
+          }
+        };
+        
+        await checkWithRetry();
       } catch (error) {
         console.error('Failed to initialize wallet:', error);
       } finally {
@@ -31,6 +53,11 @@ export function useWallet() {
     // Subscribe to state changes
     const unsubscribe = web3Service.onStateChange((newState) => {
       setWalletState(newState);
+      
+      // Update initializing state if needed
+      if (isInitializing && newState.isConnected) {
+        setIsInitializing(false);
+      }
     });
 
     return () => {

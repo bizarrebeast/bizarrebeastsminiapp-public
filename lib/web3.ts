@@ -93,7 +93,7 @@ class Web3Service {
           '4622a2b2d6af1c9844944291e5e7351a6aa24cd7b23099efac1b2fd875da31a0', // Trust Wallet
         ],
         // Enable debug mode to see what's happening
-        debug: true,
+        debug: false,
         // Enable auto-reconnection
         enableOnramp: true
       } as any);
@@ -107,8 +107,10 @@ class Web3Service {
       this.isInitialized = true;
       console.log('Web3Service initialized with Reown AppKit');
 
-      // Auto-connect if previously connected
-      await this.checkConnection();
+      // Auto-connect if previously connected - add delay for AppKit to fully initialize
+      setTimeout(async () => {
+        await this.checkConnection();
+      }, 500);
     } catch (error) {
       console.error('Failed to initialize Web3Service:', error);
       throw error;
