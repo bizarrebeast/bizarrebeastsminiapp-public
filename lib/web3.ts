@@ -8,7 +8,6 @@ import { mainnet, base, arbitrum, polygon } from '@reown/appkit/networks';
 import { EthersAdapter } from '@reown/appkit-adapter-ethers';
 import { ethers } from 'ethers';
 import { empireService, AccessTier } from './empire';
-import CoinbaseWalletSDK from '@coinbase/wallet-sdk';
 
 // Reown Project ID
 const PROJECT_ID = '569afd0d3f8efc1ba7a63a57045ee717';
@@ -26,7 +25,6 @@ class Web3Service {
   private static instance: Web3Service;
   private appKit: any = null;
   private ethersAdapter: any = null;
-  private smartWalletProvider: any = null;
   private isInitialized: boolean = false;
   private currentState: WalletState = {
     isConnected: false,
@@ -68,8 +66,12 @@ class Web3Service {
           email: false,          // Disable email login
           socials: false,        // Disable social logins
           onramp: true,         // Enable crypto on-ramp
-          swaps: false          // Disable swaps
+          swaps: false,          // Disable swaps
+          allWallets: true      // Show all wallets including Smart Wallet
         },
+        // Coinbase configuration for Smart Wallet
+        enableCoinbase: true,    // Enable Coinbase support
+        coinbasePreference: 'all', // Support both regular and smart wallet
         themeMode: 'dark',
         themeVariables: {
           // Core colors
@@ -83,14 +85,18 @@ class Web3Service {
           // Z-index
           '--w3m-z-index': 9999
         } as any,
-        // Featured wallets
+        // Featured wallets - Coinbase first for Smart Wallet
         featuredWalletIds: [
-          'fd20dc426fb37566d803205b19bbc1d4096b248ac04548e3cfb6b3a38bd033aa', // Coinbase Wallet
+          'fd20dc426fb37566d803205b19bbc1d4096b248ac04548e3cfb6b3a38bd033aa', // Coinbase Wallet (includes Smart Wallet)
           '1ae92b26df02f0abca6304df07debccd18262fdf5fe82daa81593582dac9a369', // Rainbow
           'c57ca95b47569778a828d19178114f4db188b89b763c899ba0be274e97267d96', // MetaMask
           '4622a2b2d6af1c9844944291e5e7351a6aa24cd7b23099efac1b2fd875da31a0', // Trust Wallet
-        ]
-      });
+        ],
+        // Enable debug mode to see what's happening
+        debug: true,
+        // Enable auto-reconnection
+        enableOnramp: true
+      } as any);
 
       // Set up event listeners
       this.setupEventListeners();
@@ -197,115 +203,9 @@ class Web3Service {
 
 
   /**
-   * Connect using Coinbase Smart Wallet
-   */
-  async connectSmartWallet(): Promise<void> {
-    try {
-      console.log('Initializing Smart Wallet...');
-      
-      // Initialize Coinbase Wallet SDK with Smart Wallet preference
-      const coinbaseWallet = new CoinbaseWalletSDK({
-        appName: 'BizarreBeasts Miniapp',
-        appLogoUrl: 'https://bizarrebeastsminiapp.vercel.app/icon.png',
-        darkMode: true,
-      });
-
-      // Create provider with Base as default chain
-      this.smartWalletProvider = coinbaseWallet.makeWeb3Provider('https://mainnet.base.org', 8453);
-      
-      console.log('Provider created, requesting accounts...');
-      
-      // Request account access
-      const accounts = await this.smartWalletProvider.request({
-        method: 'eth_requestAccounts'
-      });
-
-      if (accounts && accounts.length > 0) {
-        const address = accounts[0];
-        
-        // Switch to Base network
-        try {
-          await this.smartWalletProvider.request({
-            method: 'wallet_switchEthereumChain',
-            params: [{ chainId: '0x2105' }], // Base chain ID in hex
-          });
-        } catch (switchError: any) {
-          // Chain not added, add it
-          if (switchError.code === 4902) {
-            await this.smartWalletProvider.request({
-              method: 'wallet_addEthereumChain',
-              params: [{
-                chainId: '0x2105',
-                chainName: 'Base',
-                nativeCurrency: {
-                  name: 'Ethereum',
-                  symbol: 'ETH',
-                  decimals: 18
-                },
-                rpcUrls: ['https://mainnet.base.org'],
-                blockExplorerUrls: ['https://basescan.org']
-              }]
-            });
-          }
-        }
-
-        // Fetch Empire data
-        const empireData = await empireService.getUserByAddress(address);
-        
-        this.currentState = {
-          isConnected: true,
-          address: address,
-          ensName: null,
-          empireRank: empireData?.rank || null,
-          empireScore: empireData?.balance || null,
-          empireTier: empireService.getUserTier(empireData?.rank || null)
-        };
-        
-        this.notifyStateChange();
-        
-        // Listen for account changes
-        this.smartWalletProvider.on('accountsChanged', async (accounts: string[]) => {
-          if (accounts.length === 0) {
-            await this.disconnect();
-          } else if (accounts[0] !== this.currentState.address) {
-            const empireData = await empireService.getUserByAddress(accounts[0]);
-            this.currentState = {
-              isConnected: true,
-              address: accounts[0],
-              ensName: null,
-              empireRank: empireData?.rank || null,
-              empireScore: empireData?.balance || null,
-              empireTier: empireService.getUserTier(empireData?.rank || null)
-            };
-            this.notifyStateChange();
-          }
-        });
-      }
-    } catch (error: any) {
-      console.error('Failed to connect Smart Wallet:', error);
-      console.error('Error details:', {
-        message: error?.message,
-        code: error?.code,
-        stack: error?.stack
-      });
-      throw error;
-    }
-  }
-
-  /**
    * Disconnect wallet
    */
   async disconnect(): Promise<void> {
-    // Disconnect from Smart Wallet if connected
-    if (this.smartWalletProvider) {
-      try {
-        await this.smartWalletProvider.disconnect();
-      } catch (e) {
-        console.log('Smart wallet disconnect error:', e);
-      }
-      this.smartWalletProvider = null;
-    }
-    
     // Disconnect from AppKit if connected
     if (this.appKit) {
       await this.appKit.disconnect();
