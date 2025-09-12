@@ -58,8 +58,8 @@ class Web3Service {
         metadata: {
           name: 'BizarreBeasts Miniapp',
           description: 'Create epic memes with BizarreBeasts - Empire powered features',
-          url: typeof window !== 'undefined' ? window.location.origin : 'https://app.bizarrebeats.io',
-          icons: ['/icon.png']
+          url: 'https://bizarrebeastsminiapp.vercel.app', // Use consistent URL for CORS
+          icons: ['https://bizarrebeastsminiapp.vercel.app/icon.png']
         },
         features: {
           analytics: true,       // Enable analytics
