@@ -587,6 +587,7 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
 
       export: async (options: ExportOptions) => {
         // SDK retry logic will handle initialization timing
+        let uploadedImageUrl: string | null = null; // Track the uploaded URL for sharing
         
         // Add watermark if enabled
         if (options.watermark.enabled) {
@@ -756,7 +757,8 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
                     }
                   }
                   
-                  // Return the uploaded URL for Step 2
+                  // Store and return the uploaded URL for Step 2
+                  uploadedImageUrl = httpUrl;
                   return httpUrl;
                 } else {
                   // Desktop Farcaster: Normal download
@@ -771,7 +773,8 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
                 }
                 
                 console.log('Download handled successfully');
-                // Return the uploaded URL for Step 2
+                // Store and return the uploaded URL for Step 2
+                uploadedImageUrl = httpUrl;
                 return httpUrl;
               } else {
                 throw new Error('Failed to upload image');
@@ -782,7 +785,25 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
             }
             
           } else if (isMobileDevice()) {
-            console.log('Mobile browser download');
+            console.log('Mobile browser download - uploading for potential share');
+            
+            // Upload to get URL for Step 2 (even though we download locally)
+            let uploadedUrl: string | null = null;
+            try {
+              const uploadResponse = await fetch('/api/upload-temp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ imageData: finalDataURL })
+              });
+              
+              if (uploadResponse.ok) {
+                const { id, imageUrl } = await uploadResponse.json();
+                uploadedUrl = imageUrl || `${window.location.origin}/api/image/${id}`;
+                console.log('Image uploaded for sharing:', uploadedUrl);
+              }
+            } catch (error) {
+              console.log('Upload failed, but continuing with download:', error);
+            }
             
             // Mobile browser: Use standard mobile download
             const success = await downloadImageMobile(finalDataURL, filename);
@@ -795,72 +816,71 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
               link.click();
               document.body.removeChild(link);
             }
+            
+            // Store and return the uploaded URL for Step 2, or data URL as fallback
+            if (uploadedUrl) {
+              uploadedImageUrl = uploadedUrl;
+              return uploadedUrl;
+            } else {
+              return finalDataURL;
+            }
           } else {
-            // Desktop download
-            console.log('Desktop download');
+            // Desktop download - also need to upload for Step 2 sharing
+            console.log('Desktop download - uploading for potential share');
+            
+            // Upload to get URL for Step 2 (even though we download locally)
+            try {
+              const uploadResponse = await fetch('/api/upload-temp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ imageData: finalDataURL })
+              });
+              
+              if (uploadResponse.ok) {
+                const { id, imageUrl } = await uploadResponse.json();
+                uploadedImageUrl = imageUrl || `${window.location.origin}/api/image/${id}`;
+                console.log('Image uploaded for sharing:', uploadedImageUrl);
+              }
+            } catch (error) {
+              console.log('Upload failed, but continuing with download:', error);
+            }
+            
+            // Download to device
             const link = document.createElement('a');
             link.download = filename;
             link.href = finalDataURL;
             document.body.appendChild(link); // Add to DOM
             link.click();
             document.body.removeChild(link); // Remove from DOM
+            
+            // Return the uploaded URL if we have it, otherwise return data URL
+            if (uploadedImageUrl) {
+              console.log('Returning uploaded URL from desktop path:', uploadedImageUrl);
+              return uploadedImageUrl;
+            } else {
+              console.log('Returning data URL from desktop path');
+              return finalDataURL;
+            }
           }
+          
+          // Early return after handling download
+          return uploadedImageUrl || finalDataURL;
         }
 
-        // Handle Farcaster share
+        // Handle Farcaster share - simplified manual attachment
         if (options.shareToFarcaster) {
-          console.log('Starting Farcaster share process');
-          
-          // Check environment
-          const inFarcasterApp = isInFarcaster || 
-                                window.location !== window.parent.location ||
-                                window.self !== window.top;
-          const isMobileBrowser = isMobileDevice() && !inFarcasterApp;
+          console.log('Starting Farcaster share - manual attachment mode');
           
           try {
-            let imageUrl: string;
-            
-            // Use pre-uploaded URL from Step 1 if available
-            if (options.preUploadedUrl) {
-              console.log('Using pre-uploaded image URL from Step 1:', options.preUploadedUrl);
-              imageUrl = options.preUploadedUrl;
-            } else {
-              // Fallback: Upload image if not already uploaded
-              console.log('No pre-uploaded URL, uploading image now');
-              const uploadResponse = await fetch('/api/upload-temp', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ imageData: finalDataURL }),
-              });
-
-              if (!uploadResponse.ok) {
-                throw new Error('Failed to upload image');
-              }
-              
-              const result = await uploadResponse.json();
-              imageUrl = result.imageUrl;
-              console.log('Image uploaded successfully:', imageUrl);
-            }
-            
-            // Prepopulated text
+            // Prepopulated text (user will attach meme manually)
             const shareText = `...\n\nCheck out BizarreBeasts ($BB) and hold 25M tokens to join /bizarrebeasts! 🚀 👹\n\nCC @bizarrebeast\n\nhttps://bbapp.bizarrebeasts.io`;
             
-            // Create compose URL
+            // Create compose URL without image embed
             const baseUrl = 'https://warpcast.com/~/compose';
             const params = new URLSearchParams();
             params.append('text', shareText);
-            params.append('embeds[]', imageUrl);
             params.append('channelKey', 'bizarrebeasts');
             const shareUrl = `${baseUrl}?${params.toString()}`;
-            
-            // Environment detection logging
-            console.log('Share Environment:', { 
-              inFarcasterApp, 
-              isMobileBrowser, 
-              isMobile, 
-              isInFarcaster,
-              userAgent: navigator.userAgent 
-            });
             
             // Use official SDK detection for share
             let isInMiniApp = false;
@@ -894,10 +914,10 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
                 // Force SDK init before share
                 await forceSDKInit();
                 
-                // Use the ultimate share function that ALWAYS works
+                // Use the ultimate share function without image embed
                 const result = await ultimateShare({
                   text: shareText,
-                  embeds: [imageUrl],
+                  embeds: [], // No embeds - user will attach manually
                   channelKey: 'bizarrebeasts'
                 });
                 
@@ -941,7 +961,7 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
             const extension = exportFormat === 'jpeg' ? 'jpg' : 'png';
             const filename = `meme-${Date.now()}.${extension}`;
             
-            if (isMobileDevice() || inFarcasterApp) {
+            if (isMobileDevice() || isInFarcaster) {
               await downloadImageMobile(finalDataURL, filename);
               alert('Image saved! Share it manually on Farcaster.');
             } else {
@@ -955,6 +975,8 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
           }
         }
 
+        // Return the data URL for now - sharing will handle upload
+        // This matches yesterday's working version
         return finalDataURL;
       },
     };

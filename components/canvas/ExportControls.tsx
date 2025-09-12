@@ -10,7 +10,7 @@ import UpgradePrompt from '@/components/UpgradePrompt';
 import { useFarcasterSDK } from '@/contexts/SDKContext';
 
 interface ExportControlsProps {
-  onExport: (options: ExportOptions) => void | Promise<void>;
+  onExport: (options: ExportOptions) => Promise<string | void> | string | void;
 }
 
 export default function ExportControls({ onExport }: ExportControlsProps) {
@@ -19,7 +19,7 @@ export default function ExportControls({ onExport }: ExportControlsProps) {
   const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);
   const [hasDownloaded, setHasDownloaded] = useState(false);
   const [downloadSuccess, setDownloadSuccess] = useState(false);
-  const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null);
+  const [savedImageDataUrl, setSavedImageDataUrl] = useState<string | null>(null);
   const [isMobileFarcaster, setIsMobileFarcaster] = useState(false);
   const { empireTier } = useWallet();
   const { isSDKReady } = useFarcasterSDK();
@@ -85,10 +85,11 @@ export default function ExportControls({ onExport }: ExportControlsProps) {
         shareToFarcaster: false
       });
       
-      // Store the uploaded URL for Step 2 sharing
-      if (typeof result === 'string') {
-        setUploadedImageUrl(result);
-        console.log('Stored uploaded URL for sharing:', result);
+      // Store the data URL for Step 2 sharing
+      console.log('Export result:', result, 'Type:', typeof result);
+      if (result && typeof result === 'string') {
+        setSavedImageDataUrl(result);
+        console.log('Stored image data for sharing');
       }
       
       // Always show success message (even for Farcaster desktop)
@@ -106,20 +107,23 @@ export default function ExportControls({ onExport }: ExportControlsProps) {
   };
 
   const handleShareToFarcaster = async () => {
-    if (!hasDownloaded || !uploadedImageUrl) {
+    if (!hasDownloaded) {
       alert('Please download your meme first (Step 1) before sharing!');
       return;
     }
     
     setIsSharing(true);
     try {
-      // Share using the URL from Step 1
+      // Simple share - just open Farcaster with pre-filled text
+      // User will manually attach their downloaded image
       await onExport({
         ...exportOptions,
         shareToFarcaster: true,
-        downloadToDevice: false, // Step 2 only shares, doesn't download
-        preUploadedUrl: uploadedImageUrl, // Pass the URL from Step 1
+        downloadToDevice: false,
       });
+    } catch (error) {
+      console.error('Share failed:', error);
+      alert('Failed to open Farcaster. Please try again.');
     } finally {
       setIsSharing(false);
     }
@@ -188,7 +192,7 @@ export default function ExportControls({ onExport }: ExportControlsProps) {
                   </div>
                   <div>
                     <p className="text-white font-semibold text-sm">Share to Farcaster</p>
-                    <p className="text-gray-400 text-xs">Auto-attaches your meme to the cast</p>
+                    <p className="text-gray-400 text-xs">Opens cast composer - attach your meme manually</p>
                   </div>
                 </div>
               </div>
@@ -256,7 +260,7 @@ export default function ExportControls({ onExport }: ExportControlsProps) {
             </button>
             {hasDownloaded && !isSharing && (
               <p className="text-xs text-gray-400 text-center">
-                Your meme will be automatically attached to the cast
+                Manually attach your downloaded meme to the cast
               </p>
             )}
           </div>
