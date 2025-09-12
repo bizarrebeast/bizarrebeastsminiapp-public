@@ -807,9 +807,11 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
                     background: linear-gradient(to bottom right, #111827, #111827, rgba(251, 191, 36, 0.05));
                     border: 1px solid rgba(251, 191, 36, 0.3);
                     border-radius: 16px;
-                    padding: 32px;
-                    max-width: 600px;
-                    width: 90%;
+                    padding: 24px;
+                    max-width: 90%;
+                    width: 600px;
+                    max-height: 90vh;
+                    overflow-y: auto;
                     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 0 0 60px rgba(251, 191, 36, 0.1);
                     transition: border-color 0.3s ease;
                     animation: slideDown 0.4s ease;
@@ -826,10 +828,10 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
                   // Create title
                   const title = document.createElement('h2');
                   title.style.cssText = `
-                    font-size: 28px;
+                    font-size: 24px;
                     font-weight: bold;
                     text-align: center;
-                    margin: 0 0 24px 0;
+                    margin: 0 0 20px 0;
                     background: linear-gradient(135deg, #60a5fa, #fbbf24, #f472b6);
                     -webkit-background-clip: text;
                     -webkit-text-fill-color: transparent;
@@ -844,7 +846,7 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
                     position: relative;
                     display: flex;
                     justify-content: center;
-                    margin-bottom: 24px;
+                    margin-bottom: 20px;
                   `;
                   
                   // Create image element
@@ -852,7 +854,7 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
                   img.src = httpUrl;
                   img.style.cssText = `
                     max-width: 100%;
-                    max-height: 400px;
+                    max-height: 350px;
                     border-radius: 12px;
                     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
                     cursor: pointer;
@@ -894,8 +896,8 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
                     background: linear-gradient(135deg, rgba(251, 191, 36, 0.1), rgba(147, 51, 234, 0.05));
                     border: 2px solid rgba(251, 191, 36, 0.4);
                     border-radius: 12px;
-                    padding: 20px;
-                    margin-bottom: 24px;
+                    padding: 16px;
+                    margin-bottom: 20px;
                     text-align: center;
                   `;
                   
@@ -906,12 +908,12 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
                     align-items: center;
                     justify-content: center;
                     gap: 8px;
-                    margin-bottom: 16px;
+                    margin-bottom: 12px;
                   `;
                   instructionsHeader.innerHTML = `
-                    <span style="font-size: 24px;">💾</span>
+                    <span style="font-size: 20px;">💾</span>
                     <h3 style="
-                      font-size: 20px;
+                      font-size: 18px;
                       font-weight: bold;
                       color: #fbbf24;
                       margin: 0;
@@ -926,16 +928,16 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
                     padding: 0;
                     margin: 0;
                     color: #e5e7eb;
-                    font-size: 16px;
-                    line-height: 1.8;
+                    font-size: 15px;
+                    line-height: 1.6;
                     font-family: system-ui, -apple-system, sans-serif;
                   `;
                   steps.innerHTML = `
-                    <li style="margin-bottom: 8px;">
+                    <li style="margin-bottom: 6px;">
                       <span style="color: #fbbf24; font-weight: bold; margin-right: 8px;">1.</span>
                       Right-click on the image above
                     </li>
-                    <li style="margin-bottom: 8px;">
+                    <li style="margin-bottom: 6px;">
                       <span style="color: #fbbf24; font-weight: bold; margin-right: 8px;">2.</span>
                       Select "Save Image As..." from the menu
                     </li>
@@ -949,8 +951,8 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
                   const altText = document.createElement('p');
                   altText.style.cssText = `
                     color: #9ca3af;
-                    font-size: 14px;
-                    margin: 16px 0 0 0;
+                    font-size: 13px;
+                    margin: 12px 0 0 0;
                     font-family: system-ui, -apple-system, sans-serif;
                   `;
                   altText.textContent = 'Having trouble? Try the button below:';
