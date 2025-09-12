@@ -48,6 +48,62 @@ body {
   }
 }
 
+/* Animation for Safari prompt */
+@keyframes slide-up {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-up {
+  animation: slide-up 0.3s ease-out;
+}
+
+/* Enhanced scrollbar for sticker gallery on mobile */
+.sticker-scroll-container {
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: #fbbf24 #1f2937;
+}
+
+/* Webkit browsers (Chrome, Safari) - make scrollbar more visible */
+.sticker-scroll-container::-webkit-scrollbar {
+  height: 8px;
+  display: block !important;
+}
+
+.sticker-scroll-container::-webkit-scrollbar-track {
+  background: #1f2937;
+  border-radius: 4px;
+}
+
+.sticker-scroll-container::-webkit-scrollbar-thumb {
+  background: linear-gradient(90deg, #fbbf24, #f59e0b);
+  border-radius: 4px;
+  border: 1px solid #1f2937;
+}
+
+.sticker-scroll-container::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(90deg, #f59e0b, #d97706);
+}
+
+/* Mobile-specific: Always show scrollbar on mobile */
+@media (max-width: 640px) {
+  .sticker-scroll-container::-webkit-scrollbar {
+    height: 10px;
+  }
+  
+  .sticker-scroll-container::-webkit-scrollbar-thumb {
+    background: #fbbf24;
+    box-shadow: 0 0 6px rgba(251, 191, 36, 0.5);
+  }
+}
+
 /* Smooth animation for success messages */
 @keyframes fade-in {
   from {

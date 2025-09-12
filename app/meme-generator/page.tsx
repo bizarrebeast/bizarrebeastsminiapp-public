@@ -5,6 +5,7 @@ import MemeCanvas from '@/components/canvas/MemeCanvas';
 import StickerGallery from '@/components/canvas/StickerGallery';
 import TextControls from '@/components/canvas/TextControls';
 import ExportControls from '@/components/canvas/ExportControls';
+import SafariAddToHomePrompt from '@/components/SafariAddToHomePrompt';
 import { StickerCollection } from '@/types';
 import { AccessTier } from '@/lib/empire';
 
@@ -76,6 +77,7 @@ export default function MemeGeneratorPage() {
 
   return (
     <div className="min-h-[calc(100vh-64px)] bg-dark-bg flex flex-col">
+      <SafariAddToHomePrompt />
       <div className="flex-1 flex flex-col w-full max-w-7xl mx-auto px-2 sm:px-4 py-2 sm:py-4">
         {/* Header */}
         <div className="mb-4 flex justify-center">

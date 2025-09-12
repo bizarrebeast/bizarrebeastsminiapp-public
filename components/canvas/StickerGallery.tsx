@@ -234,6 +234,11 @@ export default function StickerGallery({
 
       {/* Stickers Horizontal Scroll */}
       <div className="relative">
+        {/* Mobile scroll hint */}
+        <div className="sm:hidden text-xs text-gem-gold/70 text-center mb-1">
+          ← Swipe to see more stickers →
+        </div>
+        
         {isLoadingStickers ? (
           <div className="flex items-center justify-center py-8">
             <div className="text-gray-400">
@@ -242,8 +247,20 @@ export default function StickerGallery({
             </div>
           </div>
         ) : filteredStickers.length > 0 ? (
-          <div className="overflow-x-auto overflow-y-visible pb-3 pt-2 px-1 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800 max-w-full">
-            <div className="flex gap-3">
+          <>
+            {/* Scroll Hint for Mobile */}
+            <div className="sm:hidden absolute right-0 top-1/2 -translate-y-1/2 z-10 pointer-events-none">
+              <div className="bg-gradient-to-l from-dark-card via-dark-card/80 to-transparent pl-8 pr-2">
+                <div className="text-gem-gold animate-pulse">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M9 18l6-6-6-6" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+            
+            <div className="overflow-x-auto overflow-y-visible pb-3 pt-2 px-1 sticker-scroll-container max-w-full">
+              <div className="flex gap-3">
               {filteredStickers.map(sticker => {
                 const hasAccess = !sticker.tier || canAccessSticker(userTier, sticker.tier);
                 const tierBadge = getTierBadge(sticker.tier);
@@ -303,14 +320,14 @@ export default function StickerGallery({
               })}
             </div>
           </div>
+          </>
         ) : (
           <div className="text-center text-gray-500 py-4 text-sm">
             No stickers found
           </div>
         )}
       </div>
-
-        </>
+      </>
       )}
 
       {/* Upgrade Prompt Modal */}
