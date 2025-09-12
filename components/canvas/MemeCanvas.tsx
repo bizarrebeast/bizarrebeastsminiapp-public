@@ -761,15 +761,48 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
                   uploadedImageUrl = httpUrl;
                   return httpUrl;
                 } else {
-                  // Desktop Farcaster: Normal download
-                  console.log('Desktop Farcaster - downloading via HTTP URL');
+                  // Desktop Farcaster: Try multiple download methods
+                  console.log('Desktop Farcaster - attempting download via HTTP URL');
+                  
+                  // Method 1: Try standard download link
                   const link = document.createElement('a');
                   link.download = filename;
                   link.href = httpUrl;
                   link.style.display = 'none';
                   document.body.appendChild(link);
+                  
+                  // Add a click listener to detect if download actually started
+                  let downloadStarted = false;
+                  link.addEventListener('click', () => {
+                    downloadStarted = true;
+                  });
+                  
                   link.click();
-                  setTimeout(() => document.body.removeChild(link), 100);
+                  
+                  // Give it a moment to see if download started
+                  setTimeout(() => {
+                    document.body.removeChild(link);
+                    
+                    // Method 2: If download didn't start, open in new window
+                    if (!downloadStarted) {
+                      console.log('Standard download failed, trying window.open()');
+                      const newWindow = window.open(httpUrl, '_blank');
+                      
+                      if (newWindow) {
+                        // Show instructions for desktop
+                        alert('Image opened in new tab. Right-click and select "Save Image As..." to download.');
+                      } else {
+                        // Method 3: Copy URL to clipboard as last resort
+                        console.log('Window.open blocked, copying URL to clipboard');
+                        navigator.clipboard.writeText(httpUrl).then(() => {
+                          alert(`Download blocked by browser. Image URL copied to clipboard!\n\nPaste in a new tab to download.`);
+                        }).catch(() => {
+                          // Final fallback: Show URL for manual copy
+                          prompt('Copy this URL and paste in a new tab to download:', httpUrl);
+                        });
+                      }
+                    }
+                  }, 500);
                 }
                 
                 console.log('Download handled successfully');
