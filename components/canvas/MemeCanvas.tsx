@@ -864,31 +864,10 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
                   // Add hover effect to image
                   img.onmouseover = () => {
                     img.style.transform = 'scale(1.02)';
-                    cursorHint.style.opacity = '1';
                   };
                   img.onmouseout = () => {
                     img.style.transform = 'scale(1)';
-                    cursorHint.style.opacity = '0.8';
                   };
-                  
-                  // Create animated cursor hint
-                  const cursorHint = document.createElement('div');
-                  cursorHint.style.cssText = `
-                    position: absolute;
-                    top: 50%;
-                    left: 50%;
-                    transform: translate(-50%, -50%);
-                    pointer-events: none;
-                    opacity: 0.8;
-                    transition: opacity 0.3s ease;
-                    animation: pulse 2s infinite;
-                  `;
-                  cursorHint.innerHTML = `
-                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M12 2L13.09 8.26L19 7L15.45 11.82L21 16L14.82 16.45L16 22L11 17L6 22L7.18 16.45L1 16L6.55 11.82L3 7L8.91 8.26L12 2Z" 
-                            fill="rgba(251, 191, 36, 0.9)" stroke="rgba(251, 191, 36, 1)" stroke-width="1"/>
-                    </svg>
-                  `;
                   
                   // Create primary instructions box (emphasized)
                   const instructionsBox = document.createElement('div');
@@ -1007,7 +986,6 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
                   
                   // Assemble modal with new structure
                   imgContainer.appendChild(img);
-                  imgContainer.appendChild(cursorHint);
                   
                   buttonContainer.appendChild(openButton);
                   buttonContainer.appendChild(closeButton);
