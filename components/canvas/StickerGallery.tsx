@@ -327,7 +327,7 @@ export default function StickerGallery({
           </div>
         )}
       </div>
-      </>
+        </>
       )}
 
       {/* Upgrade Prompt Modal */}

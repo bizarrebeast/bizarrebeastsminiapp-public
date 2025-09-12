@@ -762,47 +762,50 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
                   return httpUrl;
                 } else {
                   // Desktop Farcaster: Try multiple download methods
-                  console.log('Desktop Farcaster - attempting download via HTTP URL');
+                  console.log('Desktop Farcaster - attempting download with HTTP URL');
                   
-                  // Method 1: Try standard download link
+                  // Method 1: Try anchor element with HTTP URL
                   const link = document.createElement('a');
-                  link.download = filename;
                   link.href = httpUrl;
+                  link.download = filename;
                   link.style.display = 'none';
                   document.body.appendChild(link);
                   
-                  // Add a click listener to detect if download actually started
-                  let downloadStarted = false;
-                  link.addEventListener('click', () => {
-                    downloadStarted = true;
-                  });
-                  
+                  // Try to trigger download
                   link.click();
+                  console.log('Triggered anchor click for download');
                   
-                  // Give it a moment to see if download started
+                  // Clean up
                   setTimeout(() => {
                     document.body.removeChild(link);
-                    
-                    // Method 2: If download didn't start, open in new window
-                    if (!downloadStarted) {
-                      console.log('Standard download failed, trying window.open()');
-                      const newWindow = window.open(httpUrl, '_blank');
+                  }, 100);
+                  
+                  // Method 2: Also try fetching and creating blob URL
+                  setTimeout(async () => {
+                    try {
+                      console.log('Attempting blob download as fallback');
+                      const response = await fetch(httpUrl);
+                      const blob = await response.blob();
+                      const blobUrl = URL.createObjectURL(blob);
                       
+                      const blobLink = document.createElement('a');
+                      blobLink.href = blobUrl;
+                      blobLink.download = filename;
+                      document.body.appendChild(blobLink);
+                      blobLink.click();
+                      document.body.removeChild(blobLink);
+                      
+                      setTimeout(() => URL.revokeObjectURL(blobUrl), 100);
+                      console.log('Blob download triggered');
+                    } catch (err) {
+                      console.log('Blob download failed:', err);
+                      // Final fallback: Open in new tab
+                      const newWindow = window.open(httpUrl, '_blank');
                       if (newWindow) {
-                        // Show instructions for desktop
-                        alert('Image opened in new tab. Right-click and select "Save Image As..." to download.');
-                      } else {
-                        // Method 3: Copy URL to clipboard as last resort
-                        console.log('Window.open blocked, copying URL to clipboard');
-                        navigator.clipboard.writeText(httpUrl).then(() => {
-                          alert(`Download blocked by browser. Image URL copied to clipboard!\n\nPaste in a new tab to download.`);
-                        }).catch(() => {
-                          // Final fallback: Show URL for manual copy
-                          prompt('Copy this URL and paste in a new tab to download:', httpUrl);
-                        });
+                        alert('If download didn\'t start, right-click the image and select "Save Image As..."');
                       }
                     }
-                  }, 500);
+                  }, 500); // Small delay to not conflict with first attempt
                 }
                 
                 console.log('Download handled successfully');
