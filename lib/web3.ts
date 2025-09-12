@@ -49,13 +49,7 @@ class Web3Service {
       // Create ethers adapter
       this.ethersAdapter = new EthersAdapter();
 
-      // Detect if mobile
-      const isMobile = typeof window !== 'undefined' && (
-        /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ||
-        window.matchMedia('(display-mode: standalone)').matches
-      );
-
-      // Create the AppKit instance with mobile-optimized config
+      // Create the AppKit instance
       this.appKit = createAppKit({
         adapters: [this.ethersAdapter],
         networks: [base, mainnet, arbitrum, polygon], // Base first as it's where $BB is
@@ -87,53 +81,13 @@ class Web3Service {
           // Z-index
           '--w3m-z-index': 9999
         } as any,
-        // Enable WalletConnect - critical for mobile
-        enableWalletConnect: true,
-        // Configure wallets for mobile
-        featuredWalletIds: isMobile ? [
-          '1ae92b26df02f0abca6304df07debccd18262fdf5fe82daa81593582dac9a369', // Rainbow - works well on mobile
-          'fd20dc426fb37566d803205b19bbc1d4096b248ac04548e3cfb6b3a38bd033aa', // Coinbase Wallet
-          '4622a2b2d6af1c9844944291e5e7351a6aa24cd7b23099efac1b2fd875da31a0', // Trust Wallet
-          'c57ca95b47569778a828d19178114f4db188b89b763c899ba0be274e97267d96', // MetaMask
-        ] : [
+        // Featured wallets
+        featuredWalletIds: [
           'fd20dc426fb37566d803205b19bbc1d4096b248ac04548e3cfb6b3a38bd033aa', // Coinbase Wallet
           '1ae92b26df02f0abca6304df07debccd18262fdf5fe82daa81593582dac9a369', // Rainbow
           'c57ca95b47569778a828d19178114f4db188b89b763c899ba0be274e97267d96', // MetaMask
           '4622a2b2d6af1c9844944291e5e7351a6aa24cd7b23099efac1b2fd875da31a0', // Trust Wallet
-        ],
-        // Include all wallets but prioritize mobile-friendly ones
-        includeWalletIds: undefined,
-        excludeWalletIds: undefined,
-        // Add custom config for mobile
-        ...(isMobile && {
-          // Force enable deep linking on mobile
-          mobileWallets: [
-            {
-              id: 'rainbow',
-              name: 'Rainbow',
-              links: {
-                native: 'rainbow:',
-                universal: 'https://rnbwapp.com'
-              }
-            },
-            {
-              id: 'metamask',
-              name: 'MetaMask',
-              links: {
-                native: 'metamask:',
-                universal: 'https://metamask.app.link'
-              }
-            },
-            {
-              id: 'trust',
-              name: 'Trust Wallet',
-              links: {
-                native: 'trust:',
-                universal: 'https://link.trustwallet.com'
-              }
-            }
-          ]
-        } as any)
+        ]
       });
 
       // Set up event listeners
@@ -230,29 +184,8 @@ class Web3Service {
       await this.initialize();
     }
     
-    // Check if we're on mobile Safari or PWA
-    const isMobileSafari = /iPhone|iPad|iPod/.test(navigator.userAgent) && 
-                           /Safari/.test(navigator.userAgent) && 
-                           !/CriOS|FxiOS/.test(navigator.userAgent);
-    const isPWA = window.matchMedia('(display-mode: standalone)').matches;
-    const isAndroid = /Android/i.test(navigator.userAgent);
-    const isMobile = isMobileSafari || isPWA || isAndroid;
-    
-    if (isMobile) {
-      console.log('Mobile detected - optimizing for mobile wallet connection');
-      
-      // For mobile, try to open directly with QR/WalletConnect view
-      try {
-        // Open modal with QR code view for mobile
-        await this.appKit.open({ view: 'ConnectWallet' });
-      } catch (e) {
-        console.log('Failed to open ConnectWallet view, trying default', e);
-        await this.appKit.open();
-      }
-    } else {
-      // Desktop - open normally
-      await this.appKit.open();
-    }
+    // Just open the modal - let Reown handle the mobile/desktop detection
+    await this.appKit.open();
     
     // Check connection after modal interaction
     setTimeout(async () => {
@@ -260,50 +193,6 @@ class Web3Service {
     }, 1000);
   }
 
-  /**
-   * Open QR code view specifically
-   */
-  async openQRCode(): Promise<void> {
-    if (!this.isInitialized) {
-      await this.initialize();
-    }
-    
-    console.log('Opening QR code view explicitly');
-    
-    // Try different view names that might show QR code
-    const viewsToTry = ['Qrcode', 'WalletConnect', 'ConnectWallet', 'Connect', 'AllWallets'];
-    
-    for (const view of viewsToTry) {
-      try {
-        console.log(`Trying to open view: ${view}`);
-        await this.appKit.open({ view });
-        console.log(`Successfully opened view: ${view}`);
-        break;
-      } catch (e) {
-        console.log(`Failed to open ${view} view:`, e);
-      }
-    }
-  }
-
-  /**
-   * Generate WalletConnect URI for manual connection
-   */
-  async getWalletConnectURI(): Promise<string | null> {
-    if (!this.appKit) return null;
-    
-    try {
-      // Try to get the WalletConnect URI
-      const uri = await this.appKit.getWalletConnectUri?.();
-      if (uri) {
-        console.log('WalletConnect URI:', uri);
-        return uri;
-      }
-    } catch (e) {
-      console.error('Failed to get WalletConnect URI:', e);
-    }
-    
-    return null;
-  }
 
   /**
    * Disconnect wallet
