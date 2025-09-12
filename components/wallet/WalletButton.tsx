@@ -1,10 +1,11 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useWallet } from '@/hooks/useWallet';
-import { Wallet, Crown, LogOut, RefreshCw } from 'lucide-react';
+import { Wallet, Crown, LogOut, RefreshCw, Smartphone } from 'lucide-react';
 import { AccessTier } from '@/lib/empire';
 import { empireService } from '@/lib/empire';
+import { MobileWalletHelper } from './MobileWalletHelper';
 
 export function WalletButton() {
   const { 
@@ -19,6 +20,8 @@ export function WalletButton() {
     formatAddress,
     isInitializing 
   } = useWallet();
+  
+  const [showMobileHelper, setShowMobileHelper] = useState(false);
 
   const getTierColor = () => {
     // Always use site gradient colors when connected
@@ -55,14 +58,39 @@ export function WalletButton() {
   }
 
   if (!isConnected) {
+    // Check if mobile/PWA
+    const isMobile = typeof window !== 'undefined' && (
+      /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ||
+      window.matchMedia('(display-mode: standalone)').matches
+    );
+
     return (
-      <button
-        onClick={connect}
-        className="flex items-center gap-1 px-3 py-1.5 text-xs bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink text-black font-semibold rounded hover:opacity-90 transition-all duration-300"
-      >
-        <Wallet className="w-3 h-3" />
-        <span>Connect</span>
-      </button>
+      <>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={connect}
+            className="flex items-center gap-1 px-3 py-1.5 text-xs bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink text-black font-semibold rounded hover:opacity-90 transition-all duration-300"
+          >
+            <Wallet className="w-3 h-3" />
+            <span>Connect</span>
+          </button>
+          {isMobile && (
+            <button
+              onClick={() => setShowMobileHelper(true)}
+              className="flex items-center gap-1 px-2 py-1.5 text-xs bg-dark-card border border-gem-crystal/30 text-gem-crystal font-semibold rounded hover:bg-gem-crystal/10 transition-all duration-300"
+              title="Mobile Wallet Help"
+            >
+              <Smartphone className="w-3 h-3" />
+            </button>
+          )}
+        </div>
+        
+        {/* Mobile Wallet Helper Modal */}
+        <MobileWalletHelper 
+          isOpen={showMobileHelper} 
+          onClose={() => setShowMobileHelper(false)} 
+        />
+      </>
     );
   }
 
