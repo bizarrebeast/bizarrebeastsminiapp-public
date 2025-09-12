@@ -873,7 +873,12 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
           
           try {
             // Prepopulated text (user will attach meme manually)
-            const shareText = `...\n\nCheck out BizarreBeasts ($BB) and hold 25M tokens to join /bizarrebeasts! 🚀 👹\n\nCC @bizarrebeast\n\nhttps://bbapp.bizarrebeasts.io`;
+            // Add @siablo.eth if using Siablo collection
+            const ccTags = selectedCollection?.id === 'siablo' 
+              ? 'CC @bizarrebeast @siablo.eth'
+              : 'CC @bizarrebeast';
+            
+            const shareText = `...\n\nCheck out BizarreBeasts ($BB) and hold 25M tokens to join /bizarrebeasts! 🚀 👹\n\n${ccTags}\n\nhttps://bbapp.bizarrebeasts.io`;
             
             // Create compose URL without image embed
             const baseUrl = 'https://warpcast.com/~/compose';
