@@ -19,7 +19,7 @@ export default function ExportControls({ onExport }: ExportControlsProps) {
   const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);
   const [hasDownloaded, setHasDownloaded] = useState(false);
   const [downloadSuccess, setDownloadSuccess] = useState(false);
-  const [currentImageData, setCurrentImageData] = useState<string | null>(null);
+  const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null);
   const [isMobileFarcaster, setIsMobileFarcaster] = useState(false);
   const { empireTier } = useWallet();
   const { isSDKReady } = useFarcasterSDK();
@@ -78,16 +78,17 @@ export default function ExportControls({ onExport }: ExportControlsProps) {
     setDownloadSuccess(false);
     
     try {
-      // Export and store the image data
+      // Export and get the uploaded URL back
       const result = await onExport({
         ...exportOptions,
         downloadToDevice: true,
         shareToFarcaster: false
       });
       
-      // Store image data for sharing
+      // Store the uploaded URL for Step 2 sharing
       if (typeof result === 'string') {
-        setCurrentImageData(result);
+        setUploadedImageUrl(result);
+        console.log('Stored uploaded URL for sharing:', result);
       }
       
       // Always show success message (even for Farcaster desktop)
@@ -105,18 +106,19 @@ export default function ExportControls({ onExport }: ExportControlsProps) {
   };
 
   const handleShareToFarcaster = async () => {
-    if (!hasDownloaded) {
+    if (!hasDownloaded || !uploadedImageUrl) {
       alert('Please download your meme first (Step 1) before sharing!');
       return;
     }
     
     setIsSharing(true);
     try {
-      // Only share, no download
+      // Share using the URL from Step 1
       await onExport({
         ...exportOptions,
         shareToFarcaster: true,
         downloadToDevice: false, // Step 2 only shares, doesn't download
+        preUploadedUrl: uploadedImageUrl, // Pass the URL from Step 1
       });
     } finally {
       setIsSharing(false);

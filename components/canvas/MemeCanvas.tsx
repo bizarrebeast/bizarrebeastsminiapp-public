@@ -714,18 +714,50 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
               });
               
               if (uploadResponse.ok) {
-                const { id } = await uploadResponse.json();
-                const httpUrl = `${window.location.origin}/api/image/${id}`;
+                const { id, imageUrl } = await uploadResponse.json();
+                const httpUrl = imageUrl || `${window.location.origin}/api/image/${id}`;
                 console.log('Image uploaded, HTTP URL:', httpUrl);
                 
                 if (isMobileFarcaster) {
-                  // Mobile Farcaster: Open in new tab for long-press save
-                  console.log('Mobile Farcaster - opening image in new tab for save');
-                  const newWindow = window.open(httpUrl, '_blank');
+                  // Mobile Farcaster: Try native share first, then fallback
+                  console.log('Mobile Farcaster - attempting native share');
                   
-                  if (newWindow) {
-                    console.log('Image opened! User can long-press to save to photos.');
+                  // Try Web Share API for native share sheet
+                  if (navigator.share && window.isSecureContext) {
+                    try {
+                      // Convert data URL to blob for sharing
+                      const response = await fetch(finalDataURL);
+                      const blob = await response.blob();
+                      const file = new File([blob], filename, { type: blob.type });
+                      
+                      await navigator.share({
+                        files: [file],
+                        title: 'Save your meme',
+                        text: 'BizarreBeasts Meme'
+                      });
+                      
+                      console.log('Native share successful!');
+                      // Return the uploaded URL for potential Step 2 sharing
+                      return httpUrl;
+                    } catch (shareError) {
+                      console.log('Native share failed, using fallback:', shareError);
+                      // Fallback: Open in new tab for long-press save
+                      const newWindow = window.open(httpUrl, '_blank');
+                      if (newWindow) {
+                        console.log('Image opened! User can long-press to save to photos.');
+                      }
+                    }
+                  } else {
+                    // No Web Share API: Open in new tab for long-press save
+                    console.log('Web Share API not available, opening image in new tab');
+                    const newWindow = window.open(httpUrl, '_blank');
+                    if (newWindow) {
+                      console.log('Image opened! User can long-press to save to photos.');
+                    }
                   }
+                  
+                  // Return the uploaded URL for Step 2
+                  return httpUrl;
                 } else {
                   // Desktop Farcaster: Normal download
                   console.log('Desktop Farcaster - downloading via HTTP URL');
@@ -739,6 +771,8 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
                 }
                 
                 console.log('Download handled successfully');
+                // Return the uploaded URL for Step 2
+                return httpUrl;
               } else {
                 throw new Error('Failed to upload image');
               }
@@ -784,20 +818,29 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
           const isMobileBrowser = isMobileDevice() && !inFarcasterApp;
           
           try {
-            // Always upload image first for consistent URL
-            console.log('Uploading image to temporary storage');
-            const uploadResponse = await fetch('/api/upload-temp', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ imageData: finalDataURL }),
-            });
-
-            if (!uploadResponse.ok) {
-              throw new Error('Failed to upload image');
-            }
+            let imageUrl: string;
             
-            const { imageUrl } = await uploadResponse.json();
-            console.log('Image uploaded successfully:', imageUrl);
+            // Use pre-uploaded URL from Step 1 if available
+            if (options.preUploadedUrl) {
+              console.log('Using pre-uploaded image URL from Step 1:', options.preUploadedUrl);
+              imageUrl = options.preUploadedUrl;
+            } else {
+              // Fallback: Upload image if not already uploaded
+              console.log('No pre-uploaded URL, uploading image now');
+              const uploadResponse = await fetch('/api/upload-temp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ imageData: finalDataURL }),
+              });
+
+              if (!uploadResponse.ok) {
+                throw new Error('Failed to upload image');
+              }
+              
+              const result = await uploadResponse.json();
+              imageUrl = result.imageUrl;
+              console.log('Image uploaded successfully:', imageUrl);
+            }
             
             // Prepopulated text
             const shareText = `...\n\nCheck out BizarreBeasts ($BB) and hold 25M tokens to join /bizarrebeasts! 🚀 👹\n\nCC @bizarrebeast\n\nhttps://bbapp.bizarrebeasts.io`;

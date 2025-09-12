@@ -41,9 +41,12 @@ export async function POST(request: NextRequest) {
     
     const imageUrl = `${baseUrl}/api/image/${imageId}`;
 
+    // Return both id and imageUrl for backward compatibility
+    // MemeCanvas expects 'id' for downloads and 'imageUrl' for shares
     return NextResponse.json({ 
       success: true,
       imageUrl,
+      id: imageId, // Add 'id' field for download compatibility
       imageId,
       expiresIn: '1 hour'
     });

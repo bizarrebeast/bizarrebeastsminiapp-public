@@ -184,4 +184,5 @@ export interface ExportOptions {
   };
   shareToFarcaster: boolean;
   downloadToDevice: boolean;
+  preUploadedUrl?: string; // URL from Step 1 to use in Step 2
 }
