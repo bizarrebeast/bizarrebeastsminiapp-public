@@ -896,55 +896,26 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
                     background: linear-gradient(135deg, rgba(251, 191, 36, 0.1), rgba(147, 51, 234, 0.05));
                     border: 2px solid rgba(251, 191, 36, 0.4);
                     border-radius: 12px;
-                    padding: 16px;
-                    margin-bottom: 20px;
+                    padding: 14px;
+                    margin-bottom: 16px;
                     text-align: center;
                   `;
                   
-                  // Instructions header with icon
-                  const instructionsHeader = document.createElement('div');
-                  instructionsHeader.style.cssText = `
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    gap: 8px;
-                    margin-bottom: 12px;
-                  `;
-                  instructionsHeader.innerHTML = `
-                    <span style="font-size: 20px;">💾</span>
-                    <h3 style="
-                      font-size: 18px;
-                      font-weight: bold;
+                  // Simple instructions
+                  instructionsBox.innerHTML = `
+                    <div style="
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      gap: 8px;
                       color: #fbbf24;
-                      margin: 0;
+                      font-size: 16px;
+                      font-weight: bold;
                       font-family: system-ui, -apple-system, sans-serif;
-                    ">Save Your Creation</h3>
-                  `;
-                  
-                  // Step-by-step instructions
-                  const steps = document.createElement('ol');
-                  steps.style.cssText = `
-                    list-style: none;
-                    padding: 0;
-                    margin: 0;
-                    color: #e5e7eb;
-                    font-size: 15px;
-                    line-height: 1.6;
-                    font-family: system-ui, -apple-system, sans-serif;
-                  `;
-                  steps.innerHTML = `
-                    <li style="margin-bottom: 6px;">
-                      <span style="color: #fbbf24; font-weight: bold; margin-right: 8px;">1.</span>
-                      Right-click on the image above
-                    </li>
-                    <li style="margin-bottom: 6px;">
-                      <span style="color: #fbbf24; font-weight: bold; margin-right: 8px;">2.</span>
-                      Select "Save Image As..." from the menu
-                    </li>
-                    <li>
-                      <span style="color: #fbbf24; font-weight: bold; margin-right: 8px;">3.</span>
-                      Choose your download location and save
-                    </li>
+                    ">
+                      <span style="font-size: 20px;">💾</span>
+                      Right-click the image above and select "Save Image As..."
+                    </div>
                   `;
                   
                   // Alternative text
@@ -1037,9 +1008,6 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
                   // Assemble modal with new structure
                   imgContainer.appendChild(img);
                   imgContainer.appendChild(cursorHint);
-                  
-                  instructionsBox.appendChild(instructionsHeader);
-                  instructionsBox.appendChild(steps);
                   
                   buttonContainer.appendChild(openButton);
                   buttonContainer.appendChild(closeButton);
