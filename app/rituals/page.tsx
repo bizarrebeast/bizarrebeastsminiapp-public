@@ -389,13 +389,39 @@ export default function RitualsPage() {
                     </button>
                     
                     <button
-                      onClick={() => {
+                      onClick={async () => {
                         const shareText = `🚨 FEATURED RITUAL ALERT! 🚨\n\nVote for BizarreBeasts for the DCP @dcpfoundation Base Creators Award! 🏆\n\nLess than 48 hours left to support BizarreBeasts ($BB) for potential funding and exposure from @dcpfoundation and @zora!\n\nYour vote makes a direct impact for the BIZARRE future! 👹\n\n#BizarreBeasts #BBRituals #BBFeaturedRitual`;
-                        const params = new URLSearchParams();
-                        params.append('text', shareText);
-                        params.append('embeds[]', featuredRitual.actionUrl); // DCP project page
-                        params.append('embeds[]', 'https://bbapp.bizarrebeasts.io/rituals'); // BB rituals page
-                        window.open(`https://warpcast.com/~/compose?${params.toString()}`, '_blank');
+
+                        // Check if we're in Farcaster miniapp and use SDK if available
+                        try {
+                          const isInMiniApp = await sdk.isInMiniApp();
+
+                          if (isInMiniApp) {
+                            // Use SDK for native sharing in Farcaster (works on mobile!)
+                            await ultimateShare({
+                              text: shareText,
+                              embeds: [featuredRitual.actionUrl, 'https://bbapp.bizarrebeasts.io/rituals'],
+                              channelKey: 'bizarrebeasts'
+                            });
+                          } else {
+                            // Browser fallback
+                            const params = new URLSearchParams();
+                            params.append('text', shareText);
+                            params.append('embeds[]', featuredRitual.actionUrl); // DCP project page
+                            params.append('embeds[]', 'https://bbapp.bizarrebeasts.io/rituals'); // BB rituals page
+                            params.append('channelKey', 'bizarrebeasts');
+                            window.open(`https://warpcast.com/~/compose?${params.toString()}`, '_blank');
+                          }
+                        } catch (error) {
+                          console.error('Share failed:', error);
+                          // Fallback
+                          const params = new URLSearchParams();
+                          params.append('text', shareText);
+                          params.append('embeds[]', featuredRitual.actionUrl); // DCP project page
+                          params.append('embeds[]', 'https://bbapp.bizarrebeasts.io/rituals'); // BB rituals page
+                          params.append('channelKey', 'bizarrebeasts');
+                          window.open(`https://warpcast.com/~/compose?${params.toString()}`, '_blank');
+                        }
                       }}
                       className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg font-semibold text-sm transition-all duration-300 bg-dark-card border border-gem-gold/50 text-gem-gold hover:bg-gem-gold/20"
                     >
