@@ -69,6 +69,62 @@
       "category": "characters",
       "tags": ["beast", "siablo", "custom", "meme"],
       "tier": "basic"
+    },
+    {
+      "id": "ugc-9",
+      "name": "Siablo Beast 9",
+      "filename": "../siablo/siablo-bizarrebeasts-UGC-stickers-9.svg",
+      "category": "characters",
+      "tags": ["beast", "siablo", "custom", "meme"],
+      "tier": "basic"
+    },
+    {
+      "id": "ugc-10",
+      "name": "Siablo Beast 10",
+      "filename": "../siablo/siablo-bizarrebeasts-UGC-stickers-10.svg",
+      "category": "characters",
+      "tags": ["beast", "siablo", "custom", "meme"],
+      "tier": "basic"
+    },
+    {
+      "id": "ugc-11",
+      "name": "Siablo Beast 11",
+      "filename": "../siablo/siablo-bizarrebeasts-UGC-stickers-11.svg",
+      "category": "characters",
+      "tags": ["beast", "siablo", "custom", "meme"],
+      "tier": "basic"
+    },
+    {
+      "id": "ugc-12",
+      "name": "Siablo Beast 12",
+      "filename": "../siablo/siablo-bizarrebeasts-UGC-stickers-12.svg",
+      "category": "characters",
+      "tags": ["beast", "siablo", "custom", "meme"],
+      "tier": "basic"
+    },
+    {
+      "id": "ugc-13",
+      "name": "Siablo Beast 13",
+      "filename": "../siablo/siablo-bizarrebeasts-UGC-stickers-13.svg",
+      "category": "characters",
+      "tags": ["beast", "siablo", "custom", "meme"],
+      "tier": "basic"
+    },
+    {
+      "id": "ugc-14",
+      "name": "Siablo Beast 14",
+      "filename": "../siablo/siablo-bizarrebeasts-UGC-stickers-14.svg",
+      "category": "characters",
+      "tags": ["beast", "siablo", "custom", "meme"],
+      "tier": "basic"
+    },
+    {
+      "id": "ugc-15",
+      "name": "Siablo Beast 15",
+      "filename": "../siablo/siablo-bizarrebeasts-UGC-stickers-15.svg",
+      "category": "characters",
+      "tags": ["beast", "siablo", "custom", "meme"],
+      "tier": "basic"
     }
   ]
 }
