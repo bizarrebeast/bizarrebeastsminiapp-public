@@ -8,6 +8,7 @@ import { AccessTier } from '@/lib/empire';
 import { canRemoveWatermark } from '@/lib/empire-gating';
 import UpgradePrompt from '@/components/UpgradePrompt';
 import { useFarcasterSDK } from '@/contexts/SDKContext';
+import ShareButtons from '@/components/ShareButtons';
 
 interface ExportControlsProps {
   onExport: (options: ExportOptions) => Promise<string | void> | string | void;
@@ -235,33 +236,43 @@ export default function ExportControls({ onExport }: ExportControlsProps) {
 
           {/* Step 2: Share */}
           <div className="space-y-2 mb-4">
-            <div className="text-xs text-gray-400 uppercase tracking-wider mb-1">Step 2</div>
-            <button
-              onClick={handleShareToFarcaster}
-              disabled={isSharing || !hasDownloaded || (isMobileFarcaster && !isSDKReady)}
-              className={`w-full py-3 rounded-lg font-semibold transition-all duration-300 flex items-center justify-center gap-2 ${
-                hasDownloaded && (!isMobileFarcaster || isSDKReady)
-                  ? 'bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink text-black transform hover:scale-105' 
-                  : 'bg-gray-700 text-gray-400 cursor-not-allowed'
-              } disabled:opacity-50`}
-              title={isMobileFarcaster && !isSDKReady ? 'Please wait for app to fully load' : ''}
-            >
-              {isSharing ? (
-                <>
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
-                  Preparing share...
-                </>
-              ) : (
-                <>
-                  <Share2 className="w-5 h-5" />
-                  {hasDownloaded ? 'Share to Farcaster' : 'Download First to Share'}
-                </>
-              )}
-            </button>
-            {hasDownloaded && !isSharing && (
-              <p className="text-xs text-gray-400 text-center">
-                Manually attach your downloaded meme to the cast
-              </p>
+            <div className="text-xs text-gray-400 uppercase tracking-wider mb-1">Step 2: Share</div>
+
+            {hasDownloaded ? (
+              <>
+                {/* Multi-platform share buttons */}
+                <div className="bg-gray-800/50 rounded-lg p-3">
+                  <p className="text-xs text-gray-400 mb-3 text-center">
+                    Choose platform to share your meme:
+                  </p>
+                  <ShareButtons
+                    imageDataUrl={savedImageDataUrl || undefined}
+                    shareType="meme"
+                    buttonSize="md"
+                    className="justify-center"
+                  />
+                  <p className="text-xs text-gray-500 mt-3 text-center">
+                    Attach your downloaded meme manually
+                  </p>
+                </div>
+
+                {/* Alternative: Original Farcaster button (hidden for now but available) */}
+                {false && (
+                  <button
+                    onClick={handleShareToFarcaster}
+                    disabled={isSharing}
+                    className="w-full py-3 rounded-lg font-semibold bg-purple-600 hover:bg-purple-500 text-white"
+                  >
+                    {isSharing ? 'Opening Farcaster...' : 'Share to Farcaster (Original)'}
+                  </button>
+                )}
+              </>
+            ) : (
+              <div className="bg-gray-800/50 rounded-lg p-4 text-center">
+                <p className="text-sm text-gray-400">
+                  Download your meme first (Step 1) to enable sharing
+                </p>
+              </div>
             )}
           </div>
 

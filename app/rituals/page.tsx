@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { ExternalLink, Check, Share2, Share } from 'lucide-react';
 import { ultimateShare } from '@/lib/sdk-ultimate';
 import { sdk } from '@/lib/sdk-init';
+import ShareButtons from '@/components/ShareButtons';
 
 interface Ritual {
   id: number;
@@ -388,46 +389,12 @@ export default function RitualsPage() {
                       <ExternalLink className="w-3 h-3" />
                     </button>
                     
-                    <button
-                      onClick={async () => {
-                        const shareText = `🚨 FEATURED RITUAL ALERT! 🚨\n\nVote for BizarreBeasts for the DCP @dcpfoundation Base Creators Award! 🏆\n\nLess than 48 hours left to support BizarreBeasts ($BB) for potential funding and exposure from @dcpfoundation and @zora!\n\nYour vote makes a direct impact for the BIZARRE future! 👹\n\n#BizarreBeasts #BBRituals #BBFeaturedRitual`;
-
-                        // Check if we're in Farcaster miniapp and use SDK if available
-                        try {
-                          const isInMiniApp = await sdk.isInMiniApp();
-
-                          if (isInMiniApp) {
-                            // Use SDK for native sharing in Farcaster (works on mobile!)
-                            await ultimateShare({
-                              text: shareText,
-                              embeds: [featuredRitual.actionUrl, 'https://bbapp.bizarrebeasts.io/rituals'],
-                              channelKey: 'bizarrebeasts'
-                            });
-                          } else {
-                            // Browser fallback
-                            const params = new URLSearchParams();
-                            params.append('text', shareText);
-                            params.append('embeds[]', featuredRitual.actionUrl); // DCP project page
-                            params.append('embeds[]', 'https://bbapp.bizarrebeasts.io/rituals'); // BB rituals page
-                            params.append('channelKey', 'bizarrebeasts');
-                            window.open(`https://warpcast.com/~/compose?${params.toString()}`, '_blank');
-                          }
-                        } catch (error) {
-                          console.error('Share failed:', error);
-                          // Fallback
-                          const params = new URLSearchParams();
-                          params.append('text', shareText);
-                          params.append('embeds[]', featuredRitual.actionUrl); // DCP project page
-                          params.append('embeds[]', 'https://bbapp.bizarrebeasts.io/rituals'); // BB rituals page
-                          params.append('channelKey', 'bizarrebeasts');
-                          window.open(`https://warpcast.com/~/compose?${params.toString()}`, '_blank');
-                        }
-                      }}
-                      className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg font-semibold text-sm transition-all duration-300 bg-dark-card border border-gem-gold/50 text-gem-gold hover:bg-gem-gold/20"
-                    >
-                      <Share className="w-3 h-3" />
-                      Share
-                    </button>
+                    <ShareButtons
+                      customText={`🚨 FEATURED RITUAL ALERT! 🚨\n\nVote for BizarreBeasts for the DCP @dcpfoundation Base Creators Award! 🏆\n\nLess than 48 hours left to support BizarreBeasts ($BB) for potential funding and exposure from @dcpfoundation and @zora!\n\nYour vote makes a direct impact for the BIZARRE future! 👹\n\n#BizarreBeasts #BBRituals #BBFeaturedRitual`}
+                      shareType="default"
+                      buttonSize="sm"
+                      showLabels={false}
+                    />
                   </div>
                 </div>
               </div>
@@ -550,14 +517,20 @@ export default function RitualsPage() {
                         )}
                       </button>
                       
-                      <button
-                        onClick={() => handleShareRitual(ritual)}
-                        className="inline-flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-all duration-300 bg-dark-card border border-gray-700 text-gray-300 hover:border-gem-crystal/50 hover:text-gem-crystal"
-                        title="Share this ritual on Farcaster"
-                      >
-                        <Share className="w-4 h-4" />
-                        Share
-                      </button>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-gray-400">Share:</span>
+                        <ShareButtons
+                          shareType="ritual"
+                          ritualData={{
+                            id: ritual.id,
+                            title: ritual.title,
+                            description: ritual.description,
+                            actionUrl: ritual.actionUrl
+                          }}
+                          buttonSize="sm"
+                          showLabels={false}
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -580,13 +553,16 @@ export default function RitualsPage() {
                   ? "You've completed all BIZARRE Rituals! Share your achievement with the community!"
                   : "Great progress! Share your ritual journey with the BizarreBeasts community!"}
               </p>
-              <button
-                onClick={handleShare}
-                className="inline-flex items-center gap-2 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink text-dark-bg px-8 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 hover:shadow-lg"
-              >
-                <Share2 className="w-5 h-5" />
-                Share Your Progress
-              </button>
+              <div className="flex flex-col items-center gap-3">
+                <p className="text-sm text-gray-400">Share your progress:</p>
+                <ShareButtons
+                  customText={`I've completed ${completedRituals.size} of 9 Daily BIZARRE Rituals! 👹\n\nJoin me in the BizarreBeasts ($BB) Community!\n\n#BizarreBeasts #BBRituals`}
+                  shareType="default"
+                  buttonSize="md"
+                  showLabels={false}
+                  className="justify-center"
+                />
+              </div>
             </div>
           </div>
         )}

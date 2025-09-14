@@ -5,6 +5,7 @@ import { Search, Trophy, Zap, Users, Info, Share2 } from 'lucide-react';
 import { empireService, EmpireHolder, AccessTier } from '@/lib/empire';
 import { ultimateShare } from '@/lib/sdk-ultimate';
 import { sdk } from '@/lib/sdk-init';
+import ShareButtons from '@/components/ShareButtons';
 
 export default function EmpirePage() {
   const [leaderboard, setLeaderboard] = useState<EmpireHolder[]>([]);
@@ -214,13 +215,31 @@ export default function EmpirePage() {
                       <p className="text-gray-400 text-sm">{searchResult.finalMultiplier.toFixed(1)}x boost</p>
                     </div>
                   </div>
-                  <button
-                    onClick={() => handleShareRank(searchResult)}
-                    className="w-full sm:w-auto px-6 py-2 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink text-black font-semibold rounded-lg hover:opacity-90 transition flex items-center justify-center gap-2"
-                  >
-                    <Share2 className="w-4 h-4" />
-                    Share Your Rank
-                  </button>
+                  <div className="flex flex-col gap-2">
+                    <p className="text-xs text-gray-400">Share your rank:</p>
+                    <ShareButtons
+                      customText={(() => {
+                        const tier = empireService.getUserTier(searchResult.rank);
+                        const tierEmoji =
+                          tier === AccessTier.BIZARRE ? '🤪' :
+                          tier === AccessTier.WEIRDO ? '🤡' :
+                          tier === AccessTier.ODDBALL ? '🎭' :
+                          tier === AccessTier.MISFIT ? '👾' : '😐';
+                        const tierName =
+                          tier === AccessTier.BIZARRE ? 'BIZARRE' :
+                          tier === AccessTier.WEIRDO ? 'Weirdo' :
+                          tier === AccessTier.ODDBALL ? 'Oddball' :
+                          tier === AccessTier.MISFIT ? 'Misfit' : 'Normie';
+                        const formattedBalance = empireService.formatScore(searchResult.balance);
+
+                        // Return the full text that will be formatted per platform
+                        return `I'm ranked #${searchResult.rank} in the BizarreBeasts ($BB) Empire! 🏆\n\nTier: ${tierName} ${tierEmoji}\nScore: ${formattedBalance}\n${searchResult.finalMultiplier > 1 ? `Boost: ${searchResult.finalMultiplier.toFixed(1)}x 🚀\n` : ''}\nJoin the Empire and climb the ranks! 👹\n\nPowered by $GLANKER\n\n#BizarreBeasts #BBEmpire`;
+                      })()}
+                      shareType="default"
+                      buttonSize="md"
+                      showLabels={false}
+                    />
+                  </div>
                 </div>
               </>
             ) : (
