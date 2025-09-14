@@ -31,7 +31,7 @@ export default function UpgradePrompt({
   onClose,
   requiredTier,
   featureName,
-  currentTier = AccessTier.VISITOR,
+  currentTier = AccessTier.NORMIE,
 }: UpgradePromptProps) {
   const { address } = useWallet();
   const [userData, setUserData] = useState<EmpireHolder | null>(null);
@@ -51,12 +51,12 @@ export default function UpgradePrompt({
 
   const getTierInfo = (tier: AccessTier) => {
     switch(tier) {
-      case AccessTier.ELITE:
-        return { 
-          name: 'Elite', 
-          icon: '👑', 
+      case AccessTier.BIZARRE:
+        return {
+          name: 'BIZARRE',
+          icon: '👑',
           color: 'from-gem-gold to-yellow-500',
-          requirement: 'Top 10 Empire Rank',
+          requirement: 'Top 25 Empire Rank',
           benefits: [
             'All sticker collections',
             'No watermarks',
@@ -64,10 +64,10 @@ export default function UpgradePrompt({
             'Premium features',
           ]
         };
-      case AccessTier.CHAMPION:
-        return { 
-          name: 'Champion', 
-          icon: '🏆', 
+      case AccessTier.WEIRDO:
+        return {
+          name: 'Weirdo',
+          icon: '🏆',
           color: 'from-gem-purple to-purple-500',
           requirement: 'Top 50 Empire Rank',
           benefits: [
@@ -77,10 +77,10 @@ export default function UpgradePrompt({
             'Advanced features',
           ]
         };
-      case AccessTier.VETERAN:
-        return { 
-          name: 'Veteran', 
-          icon: '⭐', 
+      case AccessTier.ODDBALL:
+        return {
+          name: 'Oddball',
+          icon: '⭐',
           color: 'from-gem-blue to-blue-500',
           requirement: 'Top 100 Empire Rank',
           benefits: [
@@ -89,10 +89,10 @@ export default function UpgradePrompt({
             'Special backgrounds',
           ]
         };
-      case AccessTier.MEMBER:
-        return { 
-          name: 'Member', 
-          icon: '💎', 
+      case AccessTier.MISFIT:
+        return {
+          name: 'Misfit',
+          icon: '💎',
           color: 'from-gem-crystal to-cyan-500',
           requirement: 'Top 500 Empire Rank',
           benefits: [
@@ -101,9 +101,9 @@ export default function UpgradePrompt({
           ]
         };
       default:
-        return { 
-          name: 'Visitor', 
-          icon: '👤', 
+        return {
+          name: 'Normie',
+          icon: '👤',
           color: 'from-gray-500 to-gray-600',
           requirement: 'No rank required',
           benefits: ['Basic features only']
@@ -118,10 +118,10 @@ export default function UpgradePrompt({
   const calculateRequirement = () => {
     if (!userData) return null;
     
-    const targetRank = requiredTier === AccessTier.ELITE ? 10 :
-                      requiredTier === AccessTier.CHAMPION ? 50 :
-                      requiredTier === AccessTier.VETERAN ? 100 :
-                      requiredTier === AccessTier.MEMBER ? 500 : 999999;
+    const targetRank = requiredTier === AccessTier.BIZARRE ? 25 :
+                      requiredTier === AccessTier.WEIRDO ? 50 :
+                      requiredTier === AccessTier.ODDBALL ? 100 :
+                      requiredTier === AccessTier.MISFIT ? 500 : 999999;
     
     const currentRank = userData.rank || 999999;
     const ranksNeeded = Math.max(0, currentRank - targetRank);

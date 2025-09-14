@@ -155,7 +155,7 @@ class Web3Service {
             ensName: null,
             empireRank: null,
             empireScore: null,
-            empireTier: AccessTier.VISITOR
+            empireTier: AccessTier.NORMIE
           };
         }
         
@@ -219,7 +219,7 @@ class Web3Service {
       ensName: null,
       empireRank: null,
       empireScore: null,
-      empireTier: AccessTier.VISITOR
+      empireTier: AccessTier.NORMIE
     };
     
     this.notifyStateChange();
@@ -327,7 +327,7 @@ class Web3Service {
         ensName: null,
         empireRank: null,
         empireScore: null,
-        empireTier: AccessTier.VISITOR
+        empireTier: AccessTier.NORMIE
       };
       
       this.notifyStateChange();

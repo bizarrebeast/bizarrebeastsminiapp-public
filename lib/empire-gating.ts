@@ -44,7 +44,7 @@ export interface FeatureAccess {
 
 // Tier-based feature configuration
 export const TIER_FEATURES: Record<AccessTier, FeatureAccess> = {
-  [AccessTier.ELITE]: {
+  [AccessTier.BIZARRE]: {
     // Watermark
     watermarkOptional: true,  // Can remove watermark
     
@@ -79,7 +79,7 @@ export const TIER_FEATURES: Record<AccessTier, FeatureAccess> = {
     nftMinting: true,
   },
   
-  [AccessTier.CHAMPION]: {
+  [AccessTier.WEIRDO]: {
     // Watermark
     watermarkOptional: true,  // Can remove watermark
     
@@ -114,7 +114,7 @@ export const TIER_FEATURES: Record<AccessTier, FeatureAccess> = {
     nftMinting: false,
   },
   
-  [AccessTier.VETERAN]: {
+  [AccessTier.ODDBALL]: {
     // Watermark
     watermarkOptional: false,  // Watermark required
     
@@ -149,7 +149,7 @@ export const TIER_FEATURES: Record<AccessTier, FeatureAccess> = {
     nftMinting: false,
   },
   
-  [AccessTier.MEMBER]: {
+  [AccessTier.MISFIT]: {
     // Watermark
     watermarkOptional: false,  // Watermark required
     
@@ -184,7 +184,7 @@ export const TIER_FEATURES: Record<AccessTier, FeatureAccess> = {
     nftMinting: false,
   },
   
-  [AccessTier.VISITOR]: {
+  [AccessTier.NORMIE]: {
     // Watermark
     watermarkOptional: false,  // Watermark required
     
@@ -249,7 +249,7 @@ export function canRemoveWatermark(userTier: AccessTier): boolean {
 }
 
 export function canUploadBackground(userTier: AccessTier, collectionId: string): boolean {
-  // Only BizarreBeasts collection allows uploads, and only for Elite/Champion
+  // Only BizarreBeasts collection allows uploads, and only for BIZARRE/Weirdo
   if (collectionId !== 'bizarrebeasts') return false;
   return TIER_FEATURES[userTier]?.uploadCustomBackground || false;
 }
@@ -271,13 +271,13 @@ export function canAccessSticker(userTier: AccessTier, stickerTier: StickerTier)
 
 export function getLockedFeatureMessage(feature: string, requiredTier?: AccessTier): string {
   const messages: Record<string, string> = {
-    watermark: 'Watermark removal is only available for Elite and Champion tiers',
-    uploadBackground: 'Custom backgrounds are only available for Elite and Champion tiers in the BizarreBeasts collection',
-    collection: `This collection requires ${requiredTier || 'higher'} tier`,
-    sticker: `This sticker requires ${requiredTier || 'higher'} tier`,
-    contest: 'Contest participation requires Member tier or higher',
+    watermark: 'Watermark removal is only available for BIZARRE and Weirdo tiers',
+    uploadBackground: 'Custom backgrounds are only available for BIZARRE and Weirdo tiers in the BizarreBeasts collection',
+    collection: `This collection requires ${requiredTier || 'weirder'} tier`,
+    sticker: `This sticker requires ${requiredTier || 'weirder'} tier`,
+    contest: 'Contest participation requires Misfit tier or higher (no Normies allowed!)',
     export: 'You\'ve reached your daily export limit',
   };
-  
-  return messages[feature] || `This feature requires ${requiredTier || 'higher'} tier`;
+
+  return messages[feature] || `This feature requires ${requiredTier || 'weirder'} tier`;
 }

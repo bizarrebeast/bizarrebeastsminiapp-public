@@ -48,17 +48,17 @@ export default function EmpirePage() {
 
   const handleShareRank = async (holder: EmpireHolder) => {
     const tier = empireService.getUserTier(holder.rank);
-    const tierEmoji = 
-      tier === AccessTier.ELITE ? '👑' :
-      tier === AccessTier.CHAMPION ? '🏆' :
-      tier === AccessTier.VETERAN ? '🎖️' :
-      tier === AccessTier.MEMBER ? '⭐' : '🌟';
+    const tierEmoji =
+      tier === AccessTier.BIZARRE ? '🤪' :
+      tier === AccessTier.WEIRDO ? '🤡' :
+      tier === AccessTier.ODDBALL ? '🎭' :
+      tier === AccessTier.MISFIT ? '👾' : '😐';
     
-    const tierName = 
-      tier === AccessTier.ELITE ? 'Elite' :
-      tier === AccessTier.CHAMPION ? 'Champion' :
-      tier === AccessTier.VETERAN ? 'Veteran' :
-      tier === AccessTier.MEMBER ? 'Member' : 'Visitor';
+    const tierName =
+      tier === AccessTier.BIZARRE ? 'BIZARRE' :
+      tier === AccessTier.WEIRDO ? 'Weirdo' :
+      tier === AccessTier.ODDBALL ? 'Oddball' :
+      tier === AccessTier.MISFIT ? 'Misfit' : 'Normie';
 
     const formattedBalance = empireService.formatScore(holder.balance);
     
@@ -121,13 +121,13 @@ export default function EmpirePage() {
   const getTierColor = (rank: number) => {
     const tier = empireService.getUserTier(rank);
     switch(tier) {
-      case AccessTier.ELITE:
+      case AccessTier.BIZARRE:
         return 'text-gem-gold';
-      case AccessTier.CHAMPION:
-        return 'text-gem-gold';
-      case AccessTier.VETERAN:
-        return 'text-gem-pink';
-      case AccessTier.MEMBER:
+      case AccessTier.WEIRDO:
+        return 'text-gem-purple';
+      case AccessTier.ODDBALL:
+        return 'text-gem-blue';
+      case AccessTier.MISFIT:
         return 'text-gem-crystal';
       default:
         return 'text-gray-400';
@@ -137,11 +137,11 @@ export default function EmpirePage() {
   const getTierBadge = (rank: number) => {
     const tier = empireService.getUserTier(rank);
     const badges = {
-      [AccessTier.ELITE]: '👑',
-      [AccessTier.CHAMPION]: '🏆',
-      [AccessTier.VETERAN]: '⭐',
-      [AccessTier.MEMBER]: '✨',
-      [AccessTier.VISITOR]: ''
+      [AccessTier.BIZARRE]: '👑',
+      [AccessTier.WEIRDO]: '🏆',
+      [AccessTier.ODDBALL]: '⭐',
+      [AccessTier.MISFIT]: '✨',
+      [AccessTier.NORMIE]: ''
     };
     return badges[tier];
   };
@@ -359,19 +359,19 @@ export default function EmpirePage() {
           {Object.values(AccessTier).map((tier) => (
             <div key={tier} className="bg-dark-card border border-gem-pink/20 rounded-lg p-4">
               <h4 className={`font-semibold mb-2 capitalize ${
-                tier === AccessTier.ELITE ? 'text-gem-gold' :
-                tier === AccessTier.CHAMPION ? 'text-gem-gold' :
-                tier === AccessTier.VETERAN ? 'text-gem-pink' :
-                tier === AccessTier.MEMBER ? 'text-gem-crystal' :
+                tier === AccessTier.BIZARRE ? 'text-gem-gold' :
+                tier === AccessTier.WEIRDO ? 'text-gem-purple' :
+                tier === AccessTier.ODDBALL ? 'text-gem-blue' :
+                tier === AccessTier.MISFIT ? 'text-gem-crystal' :
                 'text-gray-400'
               }`}>
                 {tier} Tier
               </h4>
               <p className="text-gray-400 text-xs mb-2">
-                {tier === AccessTier.ELITE ? 'Rank 1-10' :
-                 tier === AccessTier.CHAMPION ? 'Rank 11-50' :
-                 tier === AccessTier.VETERAN ? 'Rank 51-100' :
-                 tier === AccessTier.MEMBER ? 'Rank 101-500' :
+                {tier === AccessTier.BIZARRE ? 'Rank 1-25' :
+                 tier === AccessTier.WEIRDO ? 'Rank 26-50' :
+                 tier === AccessTier.ODDBALL ? 'Rank 51-100' :
+                 tier === AccessTier.MISFIT ? 'Rank 101-500' :
                  'Rank 501+'}
               </p>
               <ul className="text-xs text-gray-300 space-y-1">

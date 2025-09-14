@@ -27,13 +27,13 @@ export function WalletButton() {
 
   const getTierBadge = () => {
     switch(empireTier) {
-      case AccessTier.ELITE:
+      case AccessTier.BIZARRE:
         return '👑';
-      case AccessTier.CHAMPION:
+      case AccessTier.WEIRDO:
         return '🏆';
-      case AccessTier.VETERAN:
+      case AccessTier.ODDBALL:
         return '⭐';
-      case AccessTier.MEMBER:
+      case AccessTier.MISFIT:
         return '✨';
       default:
         return '';
@@ -113,10 +113,10 @@ export function WalletButton() {
                 <div className="flex items-center justify-between mt-1">
                   <span className="text-xs text-gray-400">Tier</span>
                   <span className={`text-xs font-semibold uppercase ${
-                    empireTier === AccessTier.ELITE ? 'text-gem-gold' :
-                    empireTier === AccessTier.CHAMPION ? 'text-gem-purple' :
-                    empireTier === AccessTier.VETERAN ? 'text-gem-blue' :
-                    empireTier === AccessTier.MEMBER ? 'text-gem-crystal' :
+                    empireTier === AccessTier.BIZARRE ? 'text-gem-gold' :
+                    empireTier === AccessTier.WEIRDO ? 'text-gem-purple' :
+                    empireTier === AccessTier.ODDBALL ? 'text-gem-blue' :
+                    empireTier === AccessTier.MISFIT ? 'text-gem-crystal' :
                     'text-gray-400'
                   }`}>
                     {empireTier}

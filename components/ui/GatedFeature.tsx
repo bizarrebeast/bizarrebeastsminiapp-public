@@ -27,14 +27,14 @@ export function GatedFeature({
   
   // Get tier hierarchy
   const tierHierarchy: Record<AccessTier, number> = {
-    [AccessTier.ELITE]: 5,
-    [AccessTier.CHAMPION]: 4,
-    [AccessTier.VETERAN]: 3,
-    [AccessTier.MEMBER]: 2,
-    [AccessTier.VISITOR]: 1,
+    [AccessTier.BIZARRE]: 5,
+    [AccessTier.WEIRDO]: 4,
+    [AccessTier.ODDBALL]: 3,
+    [AccessTier.MISFIT]: 2,
+    [AccessTier.NORMIE]: 1,
   };
   
-  const userTierLevel = tierHierarchy[empireTier || AccessTier.VISITOR];
+  const userTierLevel = tierHierarchy[empireTier || AccessTier.NORMIE];
   const requiredTierLevel = tierHierarchy[requiredTier];
   const hasAccess = userTierLevel >= requiredTierLevel;
   
@@ -46,16 +46,16 @@ export function GatedFeature({
   // Get tier display info
   const getTierInfo = (tier: AccessTier) => {
     switch(tier) {
-      case AccessTier.ELITE:
-        return { name: 'Elite', range: 'Rank 1-10', color: 'text-gem-gold', icon: '👑' };
-      case AccessTier.CHAMPION:
-        return { name: 'Champion', range: 'Rank 11-50', color: 'text-gem-purple', icon: '🏆' };
-      case AccessTier.VETERAN:
-        return { name: 'Veteran', range: 'Rank 51-100', color: 'text-gem-blue', icon: '⭐' };
-      case AccessTier.MEMBER:
-        return { name: 'Member', range: 'Rank 101-500', color: 'text-gem-crystal', icon: '✨' };
+      case AccessTier.BIZARRE:
+        return { name: 'BIZARRE', range: 'Rank 1-25', color: 'text-gem-gold', icon: '👑' };
+      case AccessTier.WEIRDO:
+        return { name: 'Weirdo', range: 'Rank 26-50', color: 'text-gem-purple', icon: '🏆' };
+      case AccessTier.ODDBALL:
+        return { name: 'Oddball', range: 'Rank 51-100', color: 'text-gem-blue', icon: '⭐' };
+      case AccessTier.MISFIT:
+        return { name: 'Misfit', range: 'Rank 101-500', color: 'text-gem-crystal', icon: '✨' };
       default:
-        return { name: 'Visitor', range: 'Rank 501+', color: 'text-gray-400', icon: '' };
+        return { name: 'Normie', range: 'Rank 501+', color: 'text-gray-400', icon: '' };
     }
   };
   
@@ -146,25 +146,25 @@ export function GatedBadge({ requiredTier }: { requiredTier: AccessTier }) {
   const { empireTier } = useWallet();
   
   const tierHierarchy: Record<AccessTier, number> = {
-    [AccessTier.ELITE]: 5,
-    [AccessTier.CHAMPION]: 4,
-    [AccessTier.VETERAN]: 3,
-    [AccessTier.MEMBER]: 2,
-    [AccessTier.VISITOR]: 1,
+    [AccessTier.BIZARRE]: 5,
+    [AccessTier.WEIRDO]: 4,
+    [AccessTier.ODDBALL]: 3,
+    [AccessTier.MISFIT]: 2,
+    [AccessTier.NORMIE]: 1,
   };
   
-  const userTierLevel = tierHierarchy[empireTier || AccessTier.VISITOR];
+  const userTierLevel = tierHierarchy[empireTier || AccessTier.NORMIE];
   const requiredTierLevel = tierHierarchy[requiredTier];
   const hasAccess = userTierLevel >= requiredTierLevel;
   
   if (hasAccess) return null;
   
   const tierColors = {
-    [AccessTier.ELITE]: 'bg-gem-gold/20 text-gem-gold border-gem-gold/30',
-    [AccessTier.CHAMPION]: 'bg-gem-purple/20 text-gem-purple border-gem-purple/30',
-    [AccessTier.VETERAN]: 'bg-gem-blue/20 text-gem-blue border-gem-blue/30',
-    [AccessTier.MEMBER]: 'bg-gem-crystal/20 text-gem-crystal border-gem-crystal/30',
-    [AccessTier.VISITOR]: 'bg-gray-700/20 text-gray-400 border-gray-600/30',
+    [AccessTier.BIZARRE]: 'bg-gem-gold/20 text-gem-gold border-gem-gold/30',
+    [AccessTier.WEIRDO]: 'bg-gem-purple/20 text-gem-purple border-gem-purple/30',
+    [AccessTier.ODDBALL]: 'bg-gem-blue/20 text-gem-blue border-gem-blue/30',
+    [AccessTier.MISFIT]: 'bg-gem-crystal/20 text-gem-crystal border-gem-crystal/30',
+    [AccessTier.NORMIE]: 'bg-gray-700/20 text-gray-400 border-gray-600/30',
   };
   
   return (

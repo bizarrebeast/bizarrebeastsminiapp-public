@@ -30,25 +30,25 @@ function getTierBadge(tier?: string) {
     case 'elite':
       return { 
         icon: <Crown className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-gem-gold" />, 
-        label: 'Elite',
+        label: 'BIZARRE',
         color: 'text-gem-gold'
       };
     case 'premium':
       return { 
         icon: <Star className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-gem-purple" />, 
-        label: 'Champion',
+        label: 'Weirdo',
         color: 'text-gem-purple'
       };
     case 'rare':
       return { 
         icon: <Star className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-gem-blue" />, 
-        label: 'Veteran',
+        label: 'Oddball',
         color: 'text-gem-blue'
       };
     case 'common':
       return { 
         icon: <Sparkles className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-gem-crystal" />, 
-        label: 'Member',
+        label: 'Misfit',
         color: 'text-gem-crystal'
       };
     case 'basic':
@@ -68,14 +68,14 @@ export default function StickerGallery({
   const [isExpanded, setIsExpanded] = useState(true);
   const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);
   const [upgradeInfo, setUpgradeInfo] = useState<{ tier: AccessTier, feature: string }>({
-    tier: AccessTier.VETERAN,
+    tier: AccessTier.ODDBALL,
     feature: 'Premium Sticker Collection'
   });
   
   const currentCollection = collections.find(c => c.id === selectedCollection);
   
   const { empireTier } = useWallet();
-  const userTier = empireTier || AccessTier.VISITOR;
+  const userTier = empireTier || AccessTier.NORMIE;
   const [collectionStickers, setCollectionStickers] = useState<Sticker[]>([]);
   const [isLoadingStickers, setIsLoadingStickers] = useState(false);
   
@@ -278,11 +278,11 @@ export default function StickerGallery({
                       } else {
                         // Show upgrade prompt for locked sticker
                         const requiredTier = 
-                          sticker.tier === 'all' ? AccessTier.ELITE :
-                          sticker.tier === 'premium' ? AccessTier.CHAMPION :
-                          sticker.tier === 'rare' ? AccessTier.VETERAN :
-                          sticker.tier === 'common' ? AccessTier.MEMBER :
-                          AccessTier.VISITOR;
+                          sticker.tier === 'all' ? AccessTier.BIZARRE :
+                          sticker.tier === 'premium' ? AccessTier.WEIRDO :
+                          sticker.tier === 'rare' ? AccessTier.ODDBALL :
+                          sticker.tier === 'common' ? AccessTier.MISFIT :
+                          AccessTier.NORMIE;
                         
                         setUpgradeInfo({
                           tier: requiredTier,

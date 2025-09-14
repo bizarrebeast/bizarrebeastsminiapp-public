@@ -20,7 +20,7 @@ const mockCollections: StickerCollection[] = [
     backgrounds: [],
     backgroundType: 'image', // Upload only for Elite/Champion (color picker is in canvas)
     isTokenGated: false,
-    requiredTier: AccessTier.VISITOR, // Basic access for all
+    requiredTier: AccessTier.NORMIE, // Basic access for all
     sortOrder: 1,
     tags: ['characters', 'main'],
   },
@@ -33,7 +33,7 @@ const mockCollections: StickerCollection[] = [
     backgrounds: [], // Will add background images
     backgroundType: 'image', // Background images only (no upload)
     isTokenGated: false,
-    requiredTier: AccessTier.VISITOR, // Open to all
+    requiredTier: AccessTier.NORMIE, // Open to all
     sortOrder: 2,
     tags: ['game', 'items'],
   },
@@ -46,7 +46,7 @@ const mockCollections: StickerCollection[] = [
     backgrounds: [], // Will add background images
     backgroundType: 'image', // Background images only (no upload)
     isTokenGated: false,
-    requiredTier: AccessTier.VISITOR, // Open to all
+    requiredTier: AccessTier.NORMIE, // Open to all
     sortOrder: 3,
     tags: ['characters', 'vibes'],
     disabled: true, // Mark as disabled
@@ -60,7 +60,7 @@ const mockCollections: StickerCollection[] = [
     backgrounds: [],
     backgroundType: 'color', // Color picker only (no background images)
     isTokenGated: false,
-    requiredTier: AccessTier.VISITOR, // Open to all
+    requiredTier: AccessTier.NORMIE, // Open to all
     sortOrder: 4,
     tags: ['community', 'ugc', 'memes'],
   },

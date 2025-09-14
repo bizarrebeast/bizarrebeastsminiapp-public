@@ -26,7 +26,7 @@ export default function BackgroundSelector({
 }: BackgroundSelectorProps) {
   const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);
   const [upgradeInfo, setUpgradeInfo] = useState<{ tier: AccessTier, feature: string }>({
-    tier: AccessTier.VETERAN,
+    tier: AccessTier.ODDBALL,
     feature: 'Premium Background'
   });
   const [backgrounds, setBackgrounds] = useState<TieredBackground[]>([]);
@@ -35,9 +35,9 @@ export default function BackgroundSelector({
   const [usedIndices, setUsedIndices] = useState<Set<number>>(new Set());
   
   const { empireTier } = useWallet();
-  const userTier = empireTier || AccessTier.VISITOR;
+  const userTier = empireTier || AccessTier.NORMIE;
   
-  // Check if user can upload backgrounds (Elite/Champion on BizarreBeasts collection only)
+  // Check if user can upload backgrounds (BIZARRE/Weirdo on BizarreBeasts collection only)
   const canUpload = canUploadBackground(userTier, collection.id);
   
   // Load all backgrounds metadata once
@@ -124,25 +124,25 @@ export default function BackgroundSelector({
       case 'elite':
         return { 
           icon: <Crown className="w-3 h-3 text-gem-gold" />, 
-          label: 'Elite',
+          label: 'BIZARRE',
           color: 'text-gem-gold'
         };
       case 'premium':
         return { 
           icon: <Star className="w-3 h-3 text-gem-purple" />, 
-          label: 'Champion',
+          label: 'Weirdo',
           color: 'text-gem-purple'
         };
       case 'rare':
         return { 
           icon: <Star className="w-3 h-3 text-gem-blue" />, 
-          label: 'Veteran',
+          label: 'Oddball',
           color: 'text-gem-blue'
         };
       case 'common':
         return { 
           icon: <Star className="w-3 h-3 text-gem-crystal" />, 
-          label: 'Member',
+          label: 'Misfit',
           color: 'text-gem-crystal'
         };
       case 'basic':
@@ -176,7 +176,7 @@ export default function BackgroundSelector({
                 className="text-xs text-gem-crystal flex items-center gap-1 hover:text-gem-gold transition-colors"
               >
                 <Lock className="w-3 h-3" />
-                Elite/Champion only
+                BIZARRE/Weirdo only
               </button>
             )}
           </div>
@@ -223,7 +223,7 @@ export default function BackgroundSelector({
               ) : (
                 <>
                   <Lock className="w-5 h-5 text-gray-500 mx-auto mb-1" />
-                  <span className="text-sm text-gray-500">Unlock with Elite or Champion tier</span>
+                  <span className="text-sm text-gray-500">Unlock with BIZARRE or Weirdo tier</span>
                 </>
               )}
             </div>
@@ -234,7 +234,7 @@ export default function BackgroundSelector({
         <UpgradePrompt
           isOpen={showUpgradePrompt}
           onClose={() => setShowUpgradePrompt(false)}
-          requiredTier={AccessTier.ELITE}
+          requiredTier={AccessTier.BIZARRE}
           featureName="Upload Custom Backgrounds"
           currentTier={userTier}
         />
@@ -275,11 +275,11 @@ export default function BackgroundSelector({
                           } else {
                             // Show upgrade prompt for locked background
                             const requiredTier = 
-                              bg.tier === 'all' ? AccessTier.ELITE :
-                              bg.tier === 'premium' ? AccessTier.CHAMPION :
-                              bg.tier === 'rare' ? AccessTier.VETERAN :
-                              bg.tier === 'common' ? AccessTier.MEMBER :
-                              AccessTier.VISITOR;
+                              bg.tier === 'all' ? AccessTier.BIZARRE :
+                              bg.tier === 'premium' ? AccessTier.WEIRDO :
+                              bg.tier === 'rare' ? AccessTier.ODDBALL :
+                              bg.tier === 'common' ? AccessTier.MISFIT :
+                              AccessTier.NORMIE;
                             
                             setUpgradeInfo({
                               tier: requiredTier,

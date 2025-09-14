@@ -8,7 +8,7 @@ export function useWallet() {
   const [walletState, setWalletState] = useState<WalletState>({
     isConnected: false,
     address: null,
-    empireTier: AccessTier.VISITOR
+    empireTier: AccessTier.NORMIE
   });
   const [isInitializing, setIsInitializing] = useState(true);
 

@@ -41,14 +41,14 @@ export default function ExportControls({ onExport }: ExportControlsProps) {
     checkPlatform();
   }, []);
   
-  // Check if user can remove watermark (Elite or Champion only)
-  const canToggleWatermark = canRemoveWatermark(empireTier || AccessTier.VISITOR);
+  // Check if user can remove watermark (BIZARRE or Weirdo only)
+  const canToggleWatermark = canRemoveWatermark(empireTier || AccessTier.NORMIE);
   
   const [exportOptions, setExportOptions] = useState<ExportOptions>({
     format: 'png',
     quality: 1.0, // PNG doesn't use quality, always lossless
     watermark: {
-      enabled: !canToggleWatermark, // Auto-disable for Elite/Champion
+      enabled: !canToggleWatermark, // Auto-disable for BIZARRE/Weirdo
       text: 'BizarreBeasts ($BB)',
       position: 'bottom-right',
       opacity: 0.5,
@@ -62,7 +62,7 @@ export default function ExportControls({ onExport }: ExportControlsProps) {
   // Update watermark when tier changes
   useEffect(() => {
     if (!canToggleWatermark) {
-      // Force watermark on for non-Elite/Champion users
+      // Force watermark on for non-BIZARRE/Weirdo users
       setExportOptions(prev => ({
         ...prev,
         watermark: {
@@ -325,7 +325,7 @@ export default function ExportControls({ onExport }: ExportControlsProps) {
                     }}
                   >
                     <Lock className="w-3 h-3" />
-                    Elite/Champion only
+                    BIZARRE/Weirdo only
                   </button>
                 )}
               </label>
@@ -402,9 +402,9 @@ export default function ExportControls({ onExport }: ExportControlsProps) {
   <UpgradePrompt
     isOpen={showUpgradePrompt}
     onClose={() => setShowUpgradePrompt(false)}
-    requiredTier={AccessTier.ELITE}
+    requiredTier={AccessTier.BIZARRE}
     featureName="Remove Watermark"
-    currentTier={empireTier || AccessTier.VISITOR}
+    currentTier={empireTier || AccessTier.NORMIE}
   />
   </div>
   );

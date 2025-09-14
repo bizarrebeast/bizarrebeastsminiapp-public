@@ -25,13 +25,13 @@ export interface EmpireLeaderboard {
   cached: boolean;
 }
 
-// Tier system (placeholder - will be fine-tuned later)
+// Tier system - Embrace the weirdness!
 export enum AccessTier {
-  ELITE = 'elite',      // Rank 1-10
-  CHAMPION = 'champion', // Rank 11-50
-  VETERAN = 'veteran',   // Rank 51-100
-  MEMBER = 'member',     // Rank 101-500
-  VISITOR = 'visitor'    // Rank 501+ or not on leaderboard
+  BIZARRE = 'bizarre',   // Rank 1-25 - You ARE the Bizarre Beast
+  WEIRDO = 'weirdo',     // Rank 26-50 - Embracing the weird
+  ODDBALL = 'oddball',   // Rank 51-100 - Delightfully odd
+  MISFIT = 'misfit',     // Rank 101-500 - Don't quite fit in (yet)
+  NORMIE = 'normie'      // Rank 501+ or not on leaderboard - Still too normal
 }
 
 export class EmpireService {
@@ -111,14 +111,14 @@ export class EmpireService {
   }
 
   getUserTier(rank: number | null): AccessTier {
-    if (!rank) return AccessTier.VISITOR;
-    
-    // Placeholder tiers - will be fine-tuned
-    if (rank <= 10) return AccessTier.ELITE;
-    if (rank <= 50) return AccessTier.CHAMPION;
-    if (rank <= 100) return AccessTier.VETERAN;
-    if (rank <= 500) return AccessTier.MEMBER;
-    return AccessTier.VISITOR;
+    if (!rank) return AccessTier.NORMIE;
+
+    // Tier thresholds - embrace the weirdness!
+    if (rank <= 25) return AccessTier.BIZARRE;
+    if (rank <= 50) return AccessTier.WEIRDO;
+    if (rank <= 100) return AccessTier.ODDBALL;
+    if (rank <= 500) return AccessTier.MISFIT;
+    return AccessTier.NORMIE;
   }
 
   async getUserTierByAddress(address: string): Promise<AccessTier> {
@@ -141,10 +141,10 @@ export class EmpireService {
     return `${address.slice(0, 6)}...${address.slice(-4)}`;
   }
 
-  // Get tier benefits (placeholder - will be customized)
+  // Get tier benefits - embrace your weirdness level!
   getTierBenefits(tier: AccessTier): string[] {
     switch(tier) {
-      case AccessTier.ELITE:
+      case AccessTier.BIZARRE:
         return [
           'All sticker collections unlocked',
           'No watermark on exports',
@@ -152,20 +152,20 @@ export class EmpireService {
           'Contest creation',
           'AI background removal'
         ];
-      case AccessTier.CHAMPION:
+      case AccessTier.WEIRDO:
         return [
           'Most sticker collections',
           'No watermark on exports',
           'Custom backgrounds',
           'Contest voting power 2x'
         ];
-      case AccessTier.VETERAN:
+      case AccessTier.ODDBALL:
         return [
           'Advanced sticker collections',
           'No watermark on exports',
           'Contest participation'
         ];
-      case AccessTier.MEMBER:
+      case AccessTier.MISFIT:
         return [
           'Basic sticker collections',
           'Custom backgrounds',
