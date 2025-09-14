@@ -57,7 +57,7 @@ export async function shareMemeToFarcaster(
     const params = new URLSearchParams();
     
     // Add cast text
-    const defaultText = `(your text here)\n\nCheck out BizarreBeasts ($BB) and hold 25M tokens to join /bizarrebeasts! 🚀 👹\n\nCC @bizarrebeast\nhttps://app.bizarrebeasts.io`;
+    const defaultText = `(your text here)\n\nCheck out BizarreBeasts ($BB) and hold 25M tokens to join /bizarrebeasts! 🚀 👹\n\nCC @bizarrebeast\nhttps://bbapp.bizarrebeasts.io`;
     params.append('text', customText || defaultText);
     
     // Add channel
@@ -103,10 +103,10 @@ export function generateFrameMetadata(imageUrl: string, memeId: string) {
     'fc:frame:image:aspect_ratio': '1:1',
     'fc:frame:button:1': 'Create Your Own',
     'fc:frame:button:1:action': 'link',
-    'fc:frame:button:1:target': `https://app.bizarrebeasts.io/meme-generator`,
+    'fc:frame:button:1:target': `https://bbapp.bizarrebeasts.io/meme-generator`,
     'fc:frame:button:2': 'View Gallery',
     'fc:frame:button:2:action': 'link',
-    'fc:frame:button:2:target': `https://app.bizarrebeasts.io/gallery/${memeId}`,
+    'fc:frame:button:2:target': `https://bbapp.bizarrebeasts.io/gallery/${memeId}`,
     'og:image': imageUrl,
     'og:title': 'BizarreBeasts Meme',
     'og:description': 'Check out this epic meme created with BizarreBeasts Meme Generator!',

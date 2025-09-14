@@ -3,6 +3,8 @@
 import React, { useState } from 'react';
 import { SharePlatform, shareToSocial, shareMemeWithImage, SHARE_TEMPLATES, formatTextForPlatform } from '@/lib/social-sharing';
 import { shareMemeToFarcaster } from '@/lib/farcaster';
+import { ultimateShare } from '@/lib/sdk-ultimate';
+import { sdk } from '@/lib/sdk-init';
 
 interface ShareButtonsProps {
   imageDataUrl?: string;
@@ -36,25 +38,38 @@ export default function ShareButtons({
     setSharing(platform);
 
     try {
-      // For Farcaster, use the original working function
+      // For Farcaster, check if we're in the miniapp to use the right method
       if (platform === 'farcaster') {
-        // For rituals, use custom text with the ritual data
-        if (shareType === 'ritual' && ritualData) {
-          let ritualText = SHARE_TEMPLATES.farcaster.ritual;
-          ritualText = ritualText.replace('{id}', ritualData.id.toString());
-          ritualText = ritualText.replace('{title}', ritualData.title);
-          ritualText = ritualText.replace('{description}', ritualData.description);
+        // Check if we're in Farcaster miniapp
+        const isInMiniApp = await sdk.isInMiniApp();
 
-          await shareMemeToFarcaster(
-            imageDataUrl || '',
-            ritualText,
-            'bizarrebeasts'
-          );
+        // Prepare the share text
+        let shareText = customText;
+        if (!shareText && shareType) {
+          shareText = SHARE_TEMPLATES.farcaster[shareType];
+          // Replace placeholders
+          if (rank && shareText.includes('#{rank}')) {
+            shareText = shareText.replace('#{rank}', rank.toString());
+          }
+          if (ritualData && shareType === 'ritual') {
+            shareText = shareText.replace('{id}', ritualData.id.toString());
+            shareText = shareText.replace('{title}', ritualData.title);
+            shareText = shareText.replace('{description}', ritualData.description);
+          }
+        }
+
+        if (isInMiniApp) {
+          // Use ultimateShare for native Farcaster sharing (works on mobile!)
+          await ultimateShare({
+            text: shareText || SHARE_TEMPLATES.farcaster.default,
+            embeds: ['https://bbapp.bizarrebeasts.io'],
+            channelKey: 'bizarrebeasts'
+          });
         } else {
-          // Use the original Farcaster sharing that was working
+          // Fallback to opening Warpcast compose for browser users
           await shareMemeToFarcaster(
             imageDataUrl || '',
-            customText,
+            shareText,
             'bizarrebeasts'
           );
         }
@@ -84,7 +99,7 @@ export default function ShareButtons({
         await shareToSocial({
           platform,
           text,
-          url: 'https://app.bizarrebeasts.io',
+          url: 'https://bbapp.bizarrebeasts.io',
           hashtags: platform === 'twitter' ? ['BizarreBeasts', 'BB'] : undefined,
         });
       }

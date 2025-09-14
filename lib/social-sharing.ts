@@ -160,7 +160,7 @@ export async function shareToTelegram(options: ShareOptions): Promise<void> {
   const params = new URLSearchParams();
 
   // Telegram requires a URL
-  const url = options.url || 'https://app.bizarrebeasts.io';
+  const url = options.url || 'https://bbapp.bizarrebeasts.io';
   params.append('url', url);
 
   // Use custom text or default template
@@ -205,7 +205,7 @@ export async function shareMemeWithImage(
     const shareOptions: ShareOptions = {
       platform,
       text: customText || SHARE_TEMPLATES[platform].meme,
-      url: 'https://app.bizarrebeasts.io',
+      url: 'https://bbapp.bizarrebeasts.io',
       imageUrl,
       hashtags: platform === 'twitter' ? ['BizarreBeasts', 'BB', 'Memes'] : undefined,
       channelKey: platform === 'farcaster' ? 'bizarrebeasts' : undefined,
@@ -219,7 +219,7 @@ export async function shareMemeWithImage(
     await shareToSocial({
       platform,
       text: customText || SHARE_TEMPLATES[platform].meme,
-      url: 'https://app.bizarrebeasts.io',
+      url: 'https://bbapp.bizarrebeasts.io',
       hashtags: platform === 'twitter' ? ['BizarreBeasts', 'BB', 'Memes'] : undefined,
       channelKey: platform === 'farcaster' ? 'bizarrebeasts' : undefined,
     });

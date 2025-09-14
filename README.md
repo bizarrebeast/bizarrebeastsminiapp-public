@@ -4,6 +4,10 @@ A production-ready Farcaster miniapp for the BizarreBeasts ecosystem featuring a
 
 **🔗 Live:** [bbapp.bizarrebeasts.io](https://bbapp.bizarrebeasts.io)
 
+## 📚 Important Documentation
+
+- **[SHARING-IMPLEMENTATION-GUIDE.md](./SHARING-IMPLEMENTATION-GUIDE.md)** - Complete guide to sharing features and implementation
+
 ## 🚀 Core Features
 
 ### 💳 Base Smart Wallet Integration (NEW)

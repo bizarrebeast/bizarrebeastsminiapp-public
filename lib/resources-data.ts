@@ -10,6 +10,7 @@ export interface Resource {
   updatedDate: string;
   externalUrl: string;
   thumbnail?: string;
+  bannerImage?: string; // Path to banner image from Paragraph articles
   tags: string[];
 }
 
@@ -25,6 +26,7 @@ export const resources: Resource[] = [
     featured: true,
     updatedDate: 'Dec 2024',
     externalUrl: 'https://paragraph.com/@bizarrebeasts/discover-the-bizarrebeasts-empire-everything-you-need-to-know-to-get-started',
+    bannerImage: '/assets/resources/empire-guide.jpg',
     tags: ['empire', 'tokens', 'boosters', 'rewards']
   },
   {
@@ -38,6 +40,7 @@ export const resources: Resource[] = [
     featured: true,
     updatedDate: 'Nov 2024',
     externalUrl: 'https://paragraph.com/@bizarrebeasts/curious-about-crypto-dive-into-bizarrebeasts-a-beginners-guide',
+    bannerImage: '/assets/resources/beginners-guide.jpg',
     tags: ['web3', 'nfts', 'getting-started', 'crypto']
   },
   {
