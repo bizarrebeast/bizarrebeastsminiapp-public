@@ -7,56 +7,41 @@
   "requiredTier": "basic",
   "stickers": [
     {
-      "id": "beast-1",
-      "name": "OG Beast",
-      "filename": "bizarrebeasts-stickers-1.svg",
-      "category": "characters",
-      "tags": [
-        "beast",
-        "classic",
-        "original",
-        "character"
-      ],
-      "tier": "basic"
-    },
-    {
-      "id": "beast-5",
-      "name": "Happy Beast",
-      "filename": "bizarrebeasts-stickers-5.svg",
-      "category": "characters",
-      "tags": [
-        "beast",
-        "happy",
-        "joy",
-        "smile"
-      ],
-      "tier": "basic"
-    },
-    {
-      "id": "beast-10",
-      "name": "LOL Bubble",
-      "filename": "bizarrebeasts-stickers-10.svg",
+      "id": "beast-12",
+      "name": "WTF Bubble",
+      "filename": "bizarrebeasts-stickers-12.svg",
       "category": "bubbles",
       "tags": [
         "speech",
         "bubble",
-        "lol",
-        "text"
+        "wtf",
+        "confused"
+      ],
+      "tier": "common"
+    },
+    {
+      "id": "beast-68",
+      "name": "Beast Sticker 68",
+      "filename": "bizarrebeasts-stickers-68.svg",
+      "category": "characters",
+      "tags": [
+        "beast",
+        "sticker",
+        "new"
       ],
       "tier": "basic"
     },
     {
-      "id": "beast-27",
-      "name": "Fire Beast",
-      "filename": "bizarrebeasts-stickers-27.svg",
+      "id": "beast-72",
+      "name": "Beast Sticker 72",
+      "filename": "bizarrebeasts-stickers-72.svg",
       "category": "characters",
       "tags": [
         "beast",
-        "fire",
-        "flame",
-        "hot"
+        "sticker",
+        "new"
       ],
-      "tier": "premium"
+      "tier": "basic"
     },
     {
       "id": "beast-17",
@@ -71,56 +56,80 @@
       "tier": "common"
     },
     {
-      "id": "beast-4",
-      "name": "Sad Beast",
-      "filename": "bizarrebeasts-stickers-4.svg",
+      "id": "beast-50",
+      "name": "Void Beast",
+      "filename": "bizarrebeasts-stickers-50.svg",
       "category": "characters",
       "tags": [
         "beast",
-        "sad",
-        "crying",
-        "emotion"
+        "void",
+        "abyss",
+        "darkness"
       ],
-      "tier": "basic"
+      "tier": "rare"
     },
     {
-      "id": "beast-20",
-      "name": "Star Item",
-      "filename": "bizarrebeasts-stickers-20.svg",
+      "id": "beast-45",
+      "name": "Infinity Orb",
+      "filename": "bizarrebeasts-stickers-45.svg",
       "category": "items",
       "tags": [
-        "star",
-        "item",
-        "special",
-        "reward"
-      ],
-      "tier": "common"
-    },
-    {
-      "id": "beast-11",
-      "name": "OMG Bubble",
-      "filename": "bizarrebeasts-stickers-11.svg",
-      "category": "bubbles",
-      "tags": [
-        "speech",
-        "bubble",
-        "omg",
-        "shocked"
+        "orb",
+        "infinity",
+        "eternal",
+        "ultimate"
       ],
       "tier": "basic"
     },
     {
-      "id": "beast-32",
-      "name": "Golden Beast",
-      "filename": "bizarrebeasts-stickers-32.svg",
+      "id": "beast-38",
+      "name": "Queen Beast",
+      "filename": "bizarrebeasts-stickers-38.svg",
       "category": "characters",
       "tags": [
         "beast",
-        "golden",
-        "shiny",
-        "premium"
+        "queen",
+        "crown",
+        "royal"
       ],
-      "tier": "premium"
+      "tier": "basic"
+    },
+    {
+      "id": "beast-99",
+      "name": "Beast Sticker 99",
+      "filename": "bizarrebeasts-stickers-99.svg",
+      "category": "special",
+      "tags": [
+        "beast",
+        "sticker",
+        "new"
+      ],
+      "tier": "basic"
+    },
+    {
+      "id": "beast-64",
+      "name": "Beast Sticker 64",
+      "filename": "bizarrebeasts-stickers-64.svg",
+      "category": "characters",
+      "tags": [
+        "beast",
+        "sticker",
+        "new"
+      ],
+      "tier": "basic"
+    },
+    {
+      "id": "beast-29",
+      "name": "Lightning Beast",
+      "filename": "bizarrebeasts-stickers-29.svg",
+      "category": "characters",
+      "tags": [
+        "beast",
+        "lightning",
+        "electric",
+        "thunder"
+      ],
+      "tier": "rare"
     },
     {
       "id": "beast-6",
@@ -136,118 +145,40 @@
       "tier": "common"
     },
     {
-      "id": "beast-24",
-      "name": "Action Banner",
-      "filename": "bizarrebeasts-stickers-24.svg",
-      "category": "banners",
-      "tags": [
-        "banner",
-        "action",
-        "text",
-        "pow"
-      ],
-      "tier": "basic"
-    },
-    {
-      "id": "beast-16",
-      "name": "Basic Item",
-      "filename": "bizarrebeasts-stickers-16.svg",
-      "category": "items",
-      "tags": [
-        "item",
-        "tool",
-        "object"
-      ],
-      "tier": "basic"
-    },
-    {
-      "id": "beast-12",
-      "name": "WTF Bubble",
-      "filename": "bizarrebeasts-stickers-12.svg",
-      "category": "bubbles",
-      "tags": [
-        "speech",
-        "bubble",
-        "wtf",
-        "confused"
-      ],
-      "tier": "common"
-    },
-    {
-      "id": "beast-35",
-      "name": "Rainbow Beast",
-      "filename": "bizarrebeasts-stickers-35.svg",
+      "id": "beast-44",
+      "name": "Divine Beast",
+      "filename": "bizarrebeasts-stickers-44.svg",
       "category": "characters",
       "tags": [
         "beast",
-        "rainbow",
-        "colorful",
-        "special"
+        "divine",
+        "holy",
+        "blessed"
       ],
       "tier": "rare"
     },
     {
-      "id": "beast-7",
-      "name": "Cool Beast",
-      "filename": "bizarrebeasts-stickers-7.svg",
+      "id": "beast-70",
+      "name": "Beast Sticker 70",
+      "filename": "bizarrebeasts-stickers-70.svg",
       "category": "characters",
       "tags": [
         "beast",
-        "cool",
-        "sunglasses",
-        "swag"
-      ],
-      "tier": "common"
-    },
-    {
-      "id": "beast-23",
-      "name": "Heart Item",
-      "filename": "bizarrebeasts-stickers-23.svg",
-      "category": "items",
-      "tags": [
-        "heart",
-        "love",
-        "item",
-        "symbol"
+        "sticker",
+        "new"
       ],
       "tier": "basic"
     },
     {
-      "id": "beast-8",
-      "name": "Dancing Beast",
-      "filename": "bizarrebeasts-stickers-8.svg",
+      "id": "beast-39",
+      "name": "Dragon Beast",
+      "filename": "bizarrebeasts-stickers-39.svg",
       "category": "characters",
       "tags": [
         "beast",
-        "dancing",
-        "party",
-        "fun"
-      ],
-      "tier": "basic"
-    },
-    {
-      "id": "beast-13",
-      "name": "LMAO Bubble",
-      "filename": "bizarrebeasts-stickers-13.svg",
-      "category": "bubbles",
-      "tags": [
-        "speech",
-        "bubble",
-        "lmao",
-        "laughing"
-      ],
-      "tier": "common"
-    },
-    {
-      "id": "beast-25",
-      "name": "Victory Banner",
-      "filename": "bizarrebeasts-stickers-25.svg",
-      "category": "banners",
-      "tags": [
-        "banner",
-        "victory",
-        "win",
-        "text"
+        "dragon",
+        "mythic",
+        "legendary"
       ],
       "tier": "common"
     },
@@ -265,6 +196,44 @@
       "tier": "rare"
     },
     {
+      "id": "beast-86",
+      "name": "Beast Sticker 86",
+      "filename": "bizarrebeasts-stickers-86.svg",
+      "category": "characters",
+      "tags": [
+        "beast",
+        "sticker",
+        "new"
+      ],
+      "tier": "basic"
+    },
+    {
+      "id": "beast-49",
+      "name": "Ultimate Beast",
+      "filename": "bizarrebeasts-stickers-49.svg",
+      "category": "characters",
+      "tags": [
+        "beast",
+        "ultimate",
+        "supreme",
+        "final"
+      ],
+      "tier": "common"
+    },
+    {
+      "id": "beast-27",
+      "name": "Fire Beast",
+      "filename": "bizarrebeasts-stickers-27.svg",
+      "category": "characters",
+      "tags": [
+        "beast",
+        "fire",
+        "flame",
+        "hot"
+      ],
+      "tier": "premium"
+    },
+    {
       "id": "beast-21",
       "name": "Magic Beast",
       "filename": "bizarrebeasts-stickers-21.svg",
@@ -278,30 +247,55 @@
       "tier": "rare"
     },
     {
-      "id": "beast-19",
-      "name": "Power Item",
-      "filename": "bizarrebeasts-stickers-19.svg",
-      "category": "items",
+      "id": "beast-4",
+      "name": "Sad Beast",
+      "filename": "bizarrebeasts-stickers-4.svg",
+      "category": "characters",
       "tags": [
-        "power",
-        "energy",
-        "item",
-        "boost"
+        "beast",
+        "sad",
+        "crying",
+        "emotion"
       ],
       "tier": "basic"
     },
     {
-      "id": "beast-26",
-      "name": "Epic Banner",
-      "filename": "bizarrebeasts-stickers-26.svg",
-      "category": "banners",
+      "id": "beast-43",
+      "name": "Titan Beast",
+      "filename": "bizarrebeasts-stickers-43.svg",
+      "category": "characters",
       "tags": [
-        "banner",
-        "epic",
-        "grand",
-        "text"
+        "beast",
+        "titan",
+        "giant",
+        "massive"
       ],
-      "tier": "rare"
+      "tier": "common"
+    },
+    {
+      "id": "beast-23",
+      "name": "Heart Item",
+      "filename": "bizarrebeasts-stickers-23.svg",
+      "category": "items",
+      "tags": [
+        "heart",
+        "love",
+        "item",
+        "symbol"
+      ],
+      "tier": "basic"
+    },
+    {
+      "id": "beast-100",
+      "name": "Beast Sticker 100",
+      "filename": "bizarrebeasts-stickers-100.svg",
+      "category": "special",
+      "tags": [
+        "beast",
+        "sticker",
+        "new"
+      ],
+      "tier": "basic"
     },
     {
       "id": "beast-28",
@@ -317,43 +311,103 @@
       "tier": "common"
     },
     {
-      "id": "beast-22",
-      "name": "Ninja Beast",
-      "filename": "bizarrebeasts-stickers-22.svg",
+      "id": "beast-85",
+      "name": "Beast Sticker 85",
+      "filename": "bizarrebeasts-stickers-85.svg",
       "category": "characters",
       "tags": [
         "beast",
-        "ninja",
-        "stealth",
-        "warrior"
+        "sticker",
+        "new"
       ],
-      "tier": "premium"
+      "tier": "basic"
     },
     {
-      "id": "beast-31",
-      "name": "Diamond Item",
-      "filename": "bizarrebeasts-stickers-31.svg",
-      "category": "items",
-      "tags": [
-        "diamond",
-        "gem",
-        "rare",
-        "treasure"
-      ],
-      "tier": "all"
-    },
-    {
-      "id": "beast-29",
-      "name": "Lightning Beast",
-      "filename": "bizarrebeasts-stickers-29.svg",
+      "id": "beast-35",
+      "name": "Rainbow Beast",
+      "filename": "bizarrebeasts-stickers-35.svg",
       "category": "characters",
       "tags": [
         "beast",
-        "lightning",
-        "electric",
-        "thunder"
+        "rainbow",
+        "colorful",
+        "special"
       ],
       "tier": "rare"
+    },
+    {
+      "id": "beast-95",
+      "name": "Beast Sticker 95",
+      "filename": "bizarrebeasts-stickers-95.svg",
+      "category": "special",
+      "tags": [
+        "beast",
+        "sticker",
+        "new"
+      ],
+      "tier": "basic"
+    },
+    {
+      "id": "beast-75",
+      "name": "Beast Sticker 75",
+      "filename": "bizarrebeasts-stickers-75.svg",
+      "category": "characters",
+      "tags": [
+        "beast",
+        "sticker",
+        "new"
+      ],
+      "tier": "basic"
+    },
+    {
+      "id": "beast-74",
+      "name": "Beast Sticker 74",
+      "filename": "bizarrebeasts-stickers-74.svg",
+      "category": "characters",
+      "tags": [
+        "beast",
+        "sticker",
+        "new"
+      ],
+      "tier": "basic"
+    },
+    {
+      "id": "beast-98",
+      "name": "Beast Sticker 98",
+      "filename": "bizarrebeasts-stickers-98.svg",
+      "category": "special",
+      "tags": [
+        "beast",
+        "sticker",
+        "new"
+      ],
+      "tier": "basic"
+    },
+    {
+      "id": "beast-51",
+      "name": "Reality Stone",
+      "filename": "bizarrebeasts-stickers-51.svg",
+      "category": "items",
+      "tags": [
+        "stone",
+        "reality",
+        "power",
+        "ultimate"
+      ],
+      "tier": "rare"
+    },
+    {
+      "id": "beast-18",
+      "name": "Elite Scene",
+      "filename": "bizarrebeasts-stickers-18.svg",
+      "category": "scenes",
+      "tags": [
+        "scene",
+        "background",
+        "complex",
+        "art"
+      ],
+      "tier": "premium"
     },
     {
       "id": "beast-34",
@@ -369,6 +423,67 @@
       "tier": "rare"
     },
     {
+      "id": "beast-65",
+      "name": "Beast Sticker 65",
+      "filename": "bizarrebeasts-stickers-65.svg",
+      "category": "characters",
+      "tags": [
+        "beast",
+        "sticker",
+        "new"
+      ],
+      "tier": "basic"
+    },
+    {
+      "id": "beast-93",
+      "name": "Beast Sticker 93",
+      "filename": "bizarrebeasts-stickers-93.svg",
+      "category": "special",
+      "tags": [
+        "beast",
+        "sticker",
+        "new"
+      ],
+      "tier": "basic"
+    },
+    {
+      "id": "beast-84",
+      "name": "Beast Sticker 84",
+      "filename": "bizarrebeasts-stickers-84.svg",
+      "category": "characters",
+      "tags": [
+        "beast",
+        "sticker",
+        "new"
+      ],
+      "tier": "basic"
+    },
+    {
+      "id": "beast-71",
+      "name": "Beast Sticker 71",
+      "filename": "bizarrebeasts-stickers-71.svg",
+      "category": "characters",
+      "tags": [
+        "beast",
+        "sticker",
+        "new"
+      ],
+      "tier": "basic"
+    },
+    {
+      "id": "beast-40",
+      "name": "Phoenix Beast",
+      "filename": "bizarrebeasts-stickers-40.svg",
+      "category": "characters",
+      "tags": [
+        "beast",
+        "phoenix",
+        "rebirth",
+        "fire"
+      ],
+      "tier": "common"
+    },
+    {
       "id": "beast-14",
       "name": "Legendary Banner",
       "filename": "bizarrebeasts-stickers-14.svg",
@@ -380,6 +495,365 @@
         "rare"
       ],
       "tier": "premium"
+    },
+    {
+      "id": "beast-102",
+      "name": "Beast Sticker 102",
+      "filename": "bizarrebeasts-stickers-102.svg",
+      "category": "special",
+      "tags": [
+        "beast",
+        "sticker",
+        "new"
+      ],
+      "tier": "basic"
+    },
+    {
+      "id": "beast-31",
+      "name": "Diamond Item",
+      "filename": "bizarrebeasts-stickers-31.svg",
+      "category": "items",
+      "tags": [
+        "diamond",
+        "gem",
+        "rare",
+        "treasure"
+      ],
+      "tier": "all"
+    },
+    {
+      "id": "beast-73",
+      "name": "Beast Sticker 73",
+      "filename": "bizarrebeasts-stickers-73.svg",
+      "category": "characters",
+      "tags": [
+        "beast",
+        "sticker",
+        "new"
+      ],
+      "tier": "basic"
+    },
+    {
+      "id": "beast-58",
+      "name": "Beast Sticker 58",
+      "filename": "bizarrebeasts-stickers-58.svg",
+      "category": "characters",
+      "tags": [
+        "beast",
+        "sticker",
+        "new"
+      ],
+      "tier": "basic"
+    },
+    {
+      "id": "beast-8",
+      "name": "Dancing Beast",
+      "filename": "bizarrebeasts-stickers-8.svg",
+      "category": "characters",
+      "tags": [
+        "beast",
+        "dancing",
+        "party",
+        "fun"
+      ],
+      "tier": "basic"
+    },
+    {
+      "id": "beast-20",
+      "name": "Star Item",
+      "filename": "bizarrebeasts-stickers-20.svg",
+      "category": "items",
+      "tags": [
+        "star",
+        "item",
+        "special",
+        "reward"
+      ],
+      "tier": "common"
+    },
+    {
+      "id": "beast-47",
+      "name": "Alpha Beast",
+      "filename": "bizarrebeasts-stickers-47.svg",
+      "category": "characters",
+      "tags": [
+        "beast",
+        "alpha",
+        "first",
+        "origin"
+      ],
+      "tier": "basic"
+    },
+    {
+      "id": "beast-7",
+      "name": "Cool Beast",
+      "filename": "bizarrebeasts-stickers-7.svg",
+      "category": "characters",
+      "tags": [
+        "beast",
+        "cool",
+        "sunglasses",
+        "swag"
+      ],
+      "tier": "common"
+    },
+    {
+      "id": "beast-59",
+      "name": "Beast Sticker 59",
+      "filename": "bizarrebeasts-stickers-59.svg",
+      "category": "characters",
+      "tags": [
+        "beast",
+        "sticker",
+        "new"
+      ],
+      "tier": "basic"
+    },
+    {
+      "id": "beast-10",
+      "name": "LOL Bubble",
+      "filename": "bizarrebeasts-stickers-10.svg",
+      "category": "bubbles",
+      "tags": [
+        "speech",
+        "bubble",
+        "lol",
+        "text"
+      ],
+      "tier": "basic"
+    },
+    {
+      "id": "beast-79",
+      "name": "Beast Sticker 79",
+      "filename": "bizarrebeasts-stickers-79.svg",
+      "category": "characters",
+      "tags": [
+        "beast",
+        "sticker",
+        "new"
+      ],
+      "tier": "basic"
+    },
+    {
+      "id": "beast-63",
+      "name": "Beast Sticker 63",
+      "filename": "bizarrebeasts-stickers-63.svg",
+      "category": "characters",
+      "tags": [
+        "beast",
+        "sticker",
+        "new"
+      ],
+      "tier": "basic"
+    },
+    {
+      "id": "beast-89",
+      "name": "Beast Sticker 89",
+      "filename": "bizarrebeasts-stickers-89.svg",
+      "category": "characters",
+      "tags": [
+        "beast",
+        "sticker",
+        "new"
+      ],
+      "tier": "basic"
+    },
+    {
+      "id": "beast-66",
+      "name": "Beast Sticker 66",
+      "filename": "bizarrebeasts-stickers-66.svg",
+      "category": "characters",
+      "tags": [
+        "beast",
+        "sticker",
+        "new"
+      ],
+      "tier": "basic"
+    },
+    {
+      "id": "beast-81",
+      "name": "Beast Sticker 81",
+      "filename": "bizarrebeasts-stickers-81.svg",
+      "category": "characters",
+      "tags": [
+        "beast",
+        "sticker",
+        "new"
+      ],
+      "tier": "basic"
+    },
+    {
+      "id": "beast-88",
+      "name": "Beast Sticker 88",
+      "filename": "bizarrebeasts-stickers-88.svg",
+      "category": "characters",
+      "tags": [
+        "beast",
+        "sticker",
+        "new"
+      ],
+      "tier": "basic"
+    },
+    {
+      "id": "beast-25",
+      "name": "Victory Banner",
+      "filename": "bizarrebeasts-stickers-25.svg",
+      "category": "banners",
+      "tags": [
+        "banner",
+        "victory",
+        "win",
+        "text"
+      ],
+      "tier": "common"
+    },
+    {
+      "id": "beast-94",
+      "name": "Beast Sticker 94",
+      "filename": "bizarrebeasts-stickers-94.svg",
+      "category": "special",
+      "tags": [
+        "beast",
+        "sticker",
+        "new"
+      ],
+      "tier": "basic"
+    },
+    {
+      "id": "beast-11",
+      "name": "OMG Bubble",
+      "filename": "bizarrebeasts-stickers-11.svg",
+      "category": "bubbles",
+      "tags": [
+        "speech",
+        "bubble",
+        "omg",
+        "shocked"
+      ],
+      "tier": "basic"
+    },
+    {
+      "id": "beast-96",
+      "name": "Beast Sticker 96",
+      "filename": "bizarrebeasts-stickers-96.svg",
+      "category": "special",
+      "tags": [
+        "beast",
+        "sticker",
+        "new"
+      ],
+      "tier": "basic"
+    },
+    {
+      "id": "beast-97",
+      "name": "Beast Sticker 97",
+      "filename": "bizarrebeasts-stickers-97.svg",
+      "category": "special",
+      "tags": [
+        "beast",
+        "sticker",
+        "new"
+      ],
+      "tier": "basic"
+    },
+    {
+      "id": "beast-80",
+      "name": "Beast Sticker 80",
+      "filename": "bizarrebeasts-stickers-80.svg",
+      "category": "characters",
+      "tags": [
+        "beast",
+        "sticker",
+        "new"
+      ],
+      "tier": "basic"
+    },
+    {
+      "id": "beast-60",
+      "name": "Beast Sticker 60",
+      "filename": "bizarrebeasts-stickers-60.svg",
+      "category": "characters",
+      "tags": [
+        "beast",
+        "sticker",
+        "new"
+      ],
+      "tier": "basic"
+    },
+    {
+      "id": "beast-46",
+      "name": "Omega Beast",
+      "filename": "bizarrebeasts-stickers-46.svg",
+      "category": "characters",
+      "tags": [
+        "beast",
+        "omega",
+        "final",
+        "ultimate"
+      ],
+      "tier": "basic"
+    },
+    {
+      "id": "beast-61",
+      "name": "Beast Sticker 61",
+      "filename": "bizarrebeasts-stickers-61.svg",
+      "category": "characters",
+      "tags": [
+        "beast",
+        "sticker",
+        "new"
+      ],
+      "tier": "basic"
+    },
+    {
+      "id": "beast-22",
+      "name": "Ninja Beast",
+      "filename": "bizarrebeasts-stickers-22.svg",
+      "category": "characters",
+      "tags": [
+        "beast",
+        "ninja",
+        "stealth",
+        "warrior"
+      ],
+      "tier": "premium"
+    },
+    {
+      "id": "beast-101",
+      "name": "Beast Sticker 101",
+      "filename": "bizarrebeasts-stickers-101.svg",
+      "category": "special",
+      "tags": [
+        "beast",
+        "sticker",
+        "new"
+      ],
+      "tier": "basic"
+    },
+    {
+      "id": "beast-90",
+      "name": "Beast Sticker 90",
+      "filename": "bizarrebeasts-stickers-90.svg",
+      "category": "special",
+      "tags": [
+        "beast",
+        "sticker",
+        "new"
+      ],
+      "tier": "basic"
+    },
+    {
+      "id": "beast-37",
+      "name": "King Beast",
+      "filename": "bizarrebeasts-stickers-37.svg",
+      "category": "characters",
+      "tags": [
+        "beast",
+        "king",
+        "crown",
+        "royal"
+      ],
+      "tier": "rare"
     },
     {
       "id": "beast-30",
@@ -408,56 +882,114 @@
       "tier": "premium"
     },
     {
-      "id": "beast-18",
-      "name": "Elite Scene",
-      "filename": "bizarrebeasts-stickers-18.svg",
-      "category": "scenes",
-      "tags": [
-        "scene",
-        "background",
-        "complex",
-        "art"
-      ],
-      "tier": "premium"
-    },
-    {
-      "id": "beast-36",
-      "name": "Cosmic Beast",
-      "filename": "bizarrebeasts-stickers-36.svg",
+      "id": "beast-57",
+      "name": "Beast Sticker 57",
+      "filename": "bizarrebeasts-stickers-57.svg",
       "category": "characters",
       "tags": [
         "beast",
-        "cosmic",
-        "space",
-        "galaxy"
+        "sticker",
+        "new"
       ],
-      "tier": "rare"
+      "tier": "basic"
     },
     {
-      "id": "beast-15",
-      "name": "Ultimate Banner",
-      "filename": "bizarrebeasts-stickers-15.svg",
+      "id": "beast-92",
+      "name": "Beast Sticker 92",
+      "filename": "bizarrebeasts-stickers-92.svg",
+      "category": "special",
+      "tags": [
+        "beast",
+        "sticker",
+        "new"
+      ],
+      "tier": "basic"
+    },
+    {
+      "id": "beast-16",
+      "name": "Basic Item",
+      "filename": "bizarrebeasts-stickers-16.svg",
+      "category": "items",
+      "tags": [
+        "item",
+        "tool",
+        "object"
+      ],
+      "tier": "basic"
+    },
+    {
+      "id": "beast-83",
+      "name": "Beast Sticker 83",
+      "filename": "bizarrebeasts-stickers-83.svg",
+      "category": "characters",
+      "tags": [
+        "beast",
+        "sticker",
+        "new"
+      ],
+      "tier": "basic"
+    },
+    {
+      "id": "beast-13",
+      "name": "LMAO Bubble",
+      "filename": "bizarrebeasts-stickers-13.svg",
+      "category": "bubbles",
+      "tags": [
+        "speech",
+        "bubble",
+        "lmao",
+        "laughing"
+      ],
+      "tier": "common"
+    },
+    {
+      "id": "beast-67",
+      "name": "Beast Sticker 67",
+      "filename": "bizarrebeasts-stickers-67.svg",
+      "category": "characters",
+      "tags": [
+        "beast",
+        "sticker",
+        "new"
+      ],
+      "tier": "basic"
+    },
+    {
+      "id": "beast-87",
+      "name": "Beast Sticker 87",
+      "filename": "bizarrebeasts-stickers-87.svg",
+      "category": "characters",
+      "tags": [
+        "beast",
+        "sticker",
+        "new"
+      ],
+      "tier": "basic"
+    },
+    {
+      "id": "beast-24",
+      "name": "Action Banner",
+      "filename": "bizarrebeasts-stickers-24.svg",
       "category": "banners",
       "tags": [
         "banner",
-        "ultimate",
-        "supreme",
-        "best"
+        "action",
+        "text",
+        "pow"
       ],
-      "tier": "premium"
+      "tier": "basic"
     },
     {
-      "id": "beast-37",
-      "name": "King Beast",
-      "filename": "bizarrebeasts-stickers-37.svg",
+      "id": "beast-69",
+      "name": "Beast Sticker 69",
+      "filename": "bizarrebeasts-stickers-69.svg",
       "category": "characters",
       "tags": [
         "beast",
-        "king",
-        "crown",
-        "royal"
+        "sticker",
+        "new"
       ],
-      "tier": "rare"
+      "tier": "basic"
     },
     {
       "id": "beast-42",
@@ -473,6 +1005,118 @@
       "tier": "all"
     },
     {
+      "id": "beast-76",
+      "name": "Beast Sticker 76",
+      "filename": "bizarrebeasts-stickers-76.svg",
+      "category": "characters",
+      "tags": [
+        "beast",
+        "sticker",
+        "new"
+      ],
+      "tier": "basic"
+    },
+    {
+      "id": "beast-91",
+      "name": "Beast Sticker 91",
+      "filename": "bizarrebeasts-stickers-91.svg",
+      "category": "special",
+      "tags": [
+        "beast",
+        "sticker",
+        "new"
+      ],
+      "tier": "basic"
+    },
+    {
+      "id": "beast-32",
+      "name": "Golden Beast",
+      "filename": "bizarrebeasts-stickers-32.svg",
+      "category": "characters",
+      "tags": [
+        "beast",
+        "golden",
+        "shiny",
+        "premium"
+      ],
+      "tier": "premium"
+    },
+    {
+      "id": "beast-26",
+      "name": "Epic Banner",
+      "filename": "bizarrebeasts-stickers-26.svg",
+      "category": "banners",
+      "tags": [
+        "banner",
+        "epic",
+        "grand",
+        "text"
+      ],
+      "tier": "rare"
+    },
+    {
+      "id": "beast-1",
+      "name": "OG Beast",
+      "filename": "bizarrebeasts-stickers-1.svg",
+      "category": "characters",
+      "tags": [
+        "beast",
+        "classic",
+        "original",
+        "character"
+      ],
+      "tier": "basic"
+    },
+    {
+      "id": "beast-77",
+      "name": "Beast Sticker 77",
+      "filename": "bizarrebeasts-stickers-77.svg",
+      "category": "characters",
+      "tags": [
+        "beast",
+        "sticker",
+        "new"
+      ],
+      "tier": "basic"
+    },
+    {
+      "id": "beast-56",
+      "name": "Beast Sticker 56",
+      "filename": "bizarrebeasts-stickers-56.svg",
+      "category": "characters",
+      "tags": [
+        "beast",
+        "sticker",
+        "new"
+      ],
+      "tier": "basic"
+    },
+    {
+      "id": "beast-15",
+      "name": "Ultimate Banner",
+      "filename": "bizarrebeasts-stickers-15.svg",
+      "category": "banners",
+      "tags": [
+        "banner",
+        "ultimate",
+        "supreme",
+        "best"
+      ],
+      "tier": "premium"
+    },
+    {
+      "id": "beast-62",
+      "name": "Beast Sticker 62",
+      "filename": "bizarrebeasts-stickers-62.svg",
+      "category": "characters",
+      "tags": [
+        "beast",
+        "sticker",
+        "new"
+      ],
+      "tier": "basic"
+    },
+    {
       "id": "beast-41",
       "name": "Legendary Crown",
       "filename": "bizarrebeasts-stickers-41.svg",
@@ -486,93 +1130,15 @@
       "tier": "basic"
     },
     {
-      "id": "beast-38",
-      "name": "Queen Beast",
-      "filename": "bizarrebeasts-stickers-38.svg",
-      "category": "characters",
-      "tags": [
-        "beast",
-        "queen",
-        "crown",
-        "royal"
-      ],
-      "tier": "basic"
-    },
-    {
-      "id": "beast-39",
-      "name": "Dragon Beast",
-      "filename": "bizarrebeasts-stickers-39.svg",
-      "category": "characters",
-      "tags": [
-        "beast",
-        "dragon",
-        "mythic",
-        "legendary"
-      ],
-      "tier": "common"
-    },
-    {
-      "id": "beast-40",
-      "name": "Phoenix Beast",
-      "filename": "bizarrebeasts-stickers-40.svg",
-      "category": "characters",
-      "tags": [
-        "beast",
-        "phoenix",
-        "rebirth",
-        "fire"
-      ],
-      "tier": "common"
-    },
-    {
-      "id": "beast-43",
-      "name": "Titan Beast",
-      "filename": "bizarrebeasts-stickers-43.svg",
-      "category": "characters",
-      "tags": [
-        "beast",
-        "titan",
-        "giant",
-        "massive"
-      ],
-      "tier": "common"
-    },
-    {
-      "id": "beast-44",
-      "name": "Divine Beast",
-      "filename": "bizarrebeasts-stickers-44.svg",
-      "category": "characters",
-      "tags": [
-        "beast",
-        "divine",
-        "holy",
-        "blessed"
-      ],
-      "tier": "rare"
-    },
-    {
-      "id": "beast-45",
-      "name": "Infinity Orb",
-      "filename": "bizarrebeasts-stickers-45.svg",
+      "id": "beast-19",
+      "name": "Power Item",
+      "filename": "bizarrebeasts-stickers-19.svg",
       "category": "items",
       "tags": [
-        "orb",
-        "infinity",
-        "eternal",
-        "ultimate"
-      ],
-      "tier": "basic"
-    },
-    {
-      "id": "beast-46",
-      "name": "Omega Beast",
-      "filename": "bizarrebeasts-stickers-46.svg",
-      "category": "characters",
-      "tags": [
-        "beast",
-        "omega",
-        "final",
-        "ultimate"
+        "power",
+        "energy",
+        "item",
+        "boost"
       ],
       "tier": "basic"
     },
@@ -590,56 +1156,54 @@
       "tier": "basic"
     },
     {
-      "id": "beast-51",
-      "name": "Reality Stone",
-      "filename": "bizarrebeasts-stickers-51.svg",
-      "category": "items",
-      "tags": [
-        "stone",
-        "reality",
-        "power",
-        "ultimate"
-      ],
-      "tier": "rare"
-    },
-    {
-      "id": "beast-47",
-      "name": "Alpha Beast",
-      "filename": "bizarrebeasts-stickers-47.svg",
+      "id": "beast-5",
+      "name": "Happy Beast",
+      "filename": "bizarrebeasts-stickers-5.svg",
       "category": "characters",
       "tags": [
         "beast",
-        "alpha",
-        "first",
-        "origin"
+        "happy",
+        "joy",
+        "smile"
       ],
       "tier": "basic"
     },
     {
-      "id": "beast-49",
-      "name": "Ultimate Beast",
-      "filename": "bizarrebeasts-stickers-49.svg",
+      "id": "beast-78",
+      "name": "Beast Sticker 78",
+      "filename": "bizarrebeasts-stickers-78.svg",
       "category": "characters",
       "tags": [
         "beast",
-        "ultimate",
-        "supreme",
-        "final"
+        "sticker",
+        "new"
       ],
-      "tier": "common"
+      "tier": "basic"
     },
     {
-      "id": "beast-50",
-      "name": "Void Beast",
-      "filename": "bizarrebeasts-stickers-50.svg",
+      "id": "beast-36",
+      "name": "Cosmic Beast",
+      "filename": "bizarrebeasts-stickers-36.svg",
       "category": "characters",
       "tags": [
         "beast",
-        "void",
-        "abyss",
-        "darkness"
+        "cosmic",
+        "space",
+        "galaxy"
       ],
       "tier": "rare"
+    },
+    {
+      "id": "beast-82",
+      "name": "Beast Sticker 82",
+      "filename": "bizarrebeasts-stickers-82.svg",
+      "category": "characters",
+      "tags": [
+        "beast",
+        "sticker",
+        "new"
+      ],
+      "tier": "basic"
     }
   ]
 }
