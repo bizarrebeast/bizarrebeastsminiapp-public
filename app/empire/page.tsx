@@ -50,7 +50,7 @@ export default function EmpirePage() {
   const handleShareRank = async (holder: EmpireHolder) => {
     const tier = empireService.getUserTier(holder.rank);
     const tierEmoji =
-      tier === AccessTier.BIZARRE ? '🤪' :
+      tier === AccessTier.BIZARRE ? '👹' :
       tier === AccessTier.WEIRDO ? '🤡' :
       tier === AccessTier.ODDBALL ? '🎭' :
       tier === AccessTier.MISFIT ? '👾' : '😐';
@@ -138,11 +138,11 @@ export default function EmpirePage() {
   const getTierBadge = (rank: number) => {
     const tier = empireService.getUserTier(rank);
     const badges = {
-      [AccessTier.BIZARRE]: '👑',
-      [AccessTier.WEIRDO]: '🏆',
-      [AccessTier.ODDBALL]: '⭐',
-      [AccessTier.MISFIT]: '✨',
-      [AccessTier.NORMIE]: ''
+      [AccessTier.BIZARRE]: '👹',
+      [AccessTier.WEIRDO]: '🤡',
+      [AccessTier.ODDBALL]: '🎭',
+      [AccessTier.MISFIT]: '👾',
+      [AccessTier.NORMIE]: '😐'
     };
     return badges[tier];
   };
@@ -388,6 +388,12 @@ export default function EmpirePage() {
               }`}>
                 {tier} Tier
               </h4>
+              <div className="text-3xl mb-2">
+                {tier === AccessTier.BIZARRE ? '👹' :
+                 tier === AccessTier.WEIRDO ? '🤡' :
+                 tier === AccessTier.ODDBALL ? '🎭' :
+                 tier === AccessTier.MISFIT ? '👾' : '😐'}
+              </div>
               <p className="text-gray-400 text-xs mb-2">
                 {tier === AccessTier.BIZARRE ? 'Rank 1-25' :
                  tier === AccessTier.WEIRDO ? 'Rank 26-50' :

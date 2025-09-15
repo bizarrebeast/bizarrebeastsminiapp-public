@@ -15,13 +15,13 @@ export function EmpireBadges() {
   const getTierBadge = () => {
     switch(empireTier) {
       case AccessTier.BIZARRE:
-        return { emoji: '👑', name: 'BIZARRE' };
+        return { emoji: '👹', name: 'BIZARRE' };
       case AccessTier.WEIRDO:
-        return { emoji: '🏆', name: 'WEIRDO' };
+        return { emoji: '🤡', name: 'WEIRDO' };
       case AccessTier.ODDBALL:
-        return { emoji: '⭐', name: 'ODDBALL' };
+        return { emoji: '🎭', name: 'ODDBALL' };
       case AccessTier.MISFIT:
-        return { emoji: '✨', name: 'MISFIT' };
+        return { emoji: '👾', name: 'MISFIT' };
       default:
         return null;
     }
