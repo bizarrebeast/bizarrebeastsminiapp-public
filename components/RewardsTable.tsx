@@ -32,13 +32,19 @@ export default function RewardsTable() {
                     <th className="text-right py-2 text-gem-crystal">5-Day</th>
                     <th className="text-right py-2 text-gem-crystal">15-Day</th>
                     <th className="text-right py-2 text-gem-crystal">30-Day</th>
-                    <th className="text-right py-2 text-gem-crystal">Total/Month</th>
+                    <th className="text-right py-2 text-gem-crystal">
+                      <span className="hidden sm:inline">Total/Month</span>
+                      <span className="sm:hidden">Total/<br/>Month</span>
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr className="border-b border-gem-gold/10">
                     <td className="py-2">
-                      <span className="text-gem-gold font-bold">👹 BIZARRE</span>
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:gap-1">
+                        <span className="text-2xl sm:text-base">👹</span>
+                        <span className="text-gem-gold font-bold">BIZARRE</span>
+                      </div>
                     </td>
                     <td className="text-right py-2 text-gem-crystal">100K</td>
                     <td className="text-right py-2 text-gem-crystal">50K</td>
@@ -47,7 +53,10 @@ export default function RewardsTable() {
                   </tr>
                   <tr className="border-b border-gem-gold/10">
                     <td className="py-2">
-                      <span className="text-gem-purple font-bold">🤡 WEIRDO</span>
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:gap-1">
+                        <span className="text-2xl sm:text-base">🤡</span>
+                        <span className="text-gem-purple font-bold">WEIRDO</span>
+                      </div>
                     </td>
                     <td className="text-right py-2 text-gem-crystal">50K</td>
                     <td className="text-right py-2 text-gem-crystal">25K</td>
@@ -56,7 +65,10 @@ export default function RewardsTable() {
                   </tr>
                   <tr className="border-b border-gem-gold/10">
                     <td className="py-2">
-                      <span className="text-gem-blue font-bold">🎭 ODDBALL</span>
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:gap-1">
+                        <span className="text-2xl sm:text-base">🎭</span>
+                        <span className="text-gem-blue font-bold">ODDBALL</span>
+                      </div>
                     </td>
                     <td className="text-right py-2 text-gem-crystal">25K</td>
                     <td className="text-right py-2 text-gem-crystal">10K</td>
@@ -65,7 +77,10 @@ export default function RewardsTable() {
                   </tr>
                   <tr className="border-b border-gem-gold/10">
                     <td className="py-2">
-                      <span className="text-gem-crystal font-bold">👾 MISFIT</span>
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:gap-1">
+                        <span className="text-2xl sm:text-base">👾</span>
+                        <span className="text-gem-crystal font-bold">MISFIT</span>
+                      </div>
                     </td>
                     <td className="text-right py-2 text-gem-crystal">5K</td>
                     <td className="text-right py-2 text-gem-crystal">-</td>
@@ -74,7 +89,10 @@ export default function RewardsTable() {
                   </tr>
                   <tr>
                     <td className="py-2">
-                      <span className="text-gray-400 font-bold">😐 NORMIE</span>
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:gap-1">
+                        <span className="text-2xl sm:text-base">😐</span>
+                        <span className="text-gray-400 font-bold">NORMIE</span>
+                      </div>
                     </td>
                     <td className="text-right py-2 text-gray-400">-</td>
                     <td className="text-right py-2 text-gray-400">-</td>
