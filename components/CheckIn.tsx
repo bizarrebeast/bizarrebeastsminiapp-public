@@ -448,7 +448,7 @@ export default function CheckIn({ userTier = 'NORMIE', completedRituals }: Check
             </p>
           </div>
           <div className="text-xs text-gray-500 text-center mt-4">
-            Connected: {wallet.formatAddress(wallet.address)}
+            Connected: {wallet.address ? wallet.formatAddress(wallet.address) : 'Not connected'}
             {wallet.empireScore && ` • Empire Score: ${wallet.empireScore}`}
           </div>
         </div>
@@ -672,7 +672,7 @@ export default function CheckIn({ userTier = 'NORMIE', completedRituals }: Check
 
       {/* Footer */}
       <div className="text-xs text-gray-500 text-center">
-        Connected: {wallet.formatAddress(wallet.address)}
+        Connected: {wallet.address ? wallet.formatAddress(wallet.address) : 'Not connected'}
         {wallet.empireScore && ` • Empire Score: ${wallet.empireScore}`}
       </div>
     </div>
