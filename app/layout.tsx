@@ -5,6 +5,7 @@ import "./globals.css";
 import "@/lib/sdk-ultimate";
 import { Navbar } from "@/components/navigation/Navbar";
 import { LayoutWrapper } from "@/components/layout/LayoutWrapper";
+import Footer from "@/components/layout/Footer";
 import { FarcasterSDK } from "@/components/FarcasterSDK";
 import { FarcasterProvider } from "@/contexts/FarcasterContext";
 import { SDKProvider } from "@/contexts/SDKContext";
@@ -88,7 +89,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.className} bg-dark-bg text-white min-h-screen antialiased`}>
+      <body className={`${inter.className} bg-dark-bg text-white min-h-screen antialiased flex flex-col`}>
         <SDKProvider>
           <FarcasterSDK />
           <FarcasterProvider>
@@ -97,6 +98,7 @@ export default function RootLayout({
               <main className="flex-1">
                 {children}
               </main>
+              <Footer />
             </LayoutWrapper>
           </FarcasterProvider>
         </SDKProvider>
