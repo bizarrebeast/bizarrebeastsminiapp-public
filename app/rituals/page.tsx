@@ -120,45 +120,60 @@ We are up to 171 votes, and YOUR VOTE is absolutely crucial and makes a direct i
 };
 
 export default function RitualsPage() {
-  // Track featured ritual completion separately
-  const [featuredCompleted, setFeaturedCompleted] = useState<boolean>(false);
-  
-  // Try to load from localStorage on mount, with daily reset
-  const [completedRituals, setCompletedRituals] = useState<Set<number>>(() => {
+  // Initialize both states from localStorage
+  const [ritualsData, setRitualsData] = useState<{
+    completedRituals: Set<number>;
+    featuredCompleted: boolean;
+  }>(() => {
     try {
       const stored = localStorage.getItem('bizarreRitualsData');
       if (stored) {
         const data = JSON.parse(stored);
         const today = new Date().toDateString();
-        
+
         // Check if it's a new day - if so, reset
         if (data.date === today) {
           console.log('Loading rituals from today');
-          return new Set(data.rituals);
+          return {
+            completedRituals: new Set(data.rituals || []),
+            featuredCompleted: data.featuredCompleted || false
+          };
         } else {
           console.log('New day detected - resetting rituals');
           // It's a new day, start fresh
-          return new Set();
+          return {
+            completedRituals: new Set(),
+            featuredCompleted: false
+          };
         }
       }
     } catch (e) {
       console.log('Could not load rituals from localStorage:', e);
     }
-    return new Set();
+    return {
+      completedRituals: new Set(),
+      featuredCompleted: false
+    };
   });
 
-  // Save to localStorage whenever rituals change, with date
+  // Extract individual states for easier use
+  const [completedRituals, setCompletedRituals] = useState<Set<number>>(ritualsData.completedRituals);
+  const [featuredCompleted, setFeaturedCompleted] = useState<boolean>(ritualsData.featuredCompleted);
+
+  // Save to localStorage whenever rituals or featured ritual change
   useEffect(() => {
     try {
       const data = {
         rituals: Array.from(completedRituals),
+        featuredCompleted: featuredCompleted,
         date: new Date().toDateString() // Save today's date
       };
       localStorage.setItem('bizarreRitualsData', JSON.stringify(data));
+      console.log('Saved rituals to localStorage:', data);
     } catch (e) {
       console.log('Could not save rituals to localStorage:', e);
     }
-  }, [completedRituals]);
+  }, [completedRituals, featuredCompleted]);
 
   const handleRitualAction = (ritual: Ritual) => {
     console.log('Ritual action clicked:', ritual.title);
