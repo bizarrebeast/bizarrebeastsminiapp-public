@@ -174,19 +174,24 @@ export default function RitualsPage() {
   };
 
   const handleShare = async () => {
-    const completedCount = completedRituals.size;
-    
+    const completedCount = completedRituals.size + (featuredCompleted ? 1 : 0);
+
     // Get the names of completed rituals (without emojis for cleaner share text)
-    const completedRitualsList = rituals
+    let completedRitualsList = rituals
       .filter(r => completedRituals.has(r.id))
       .map(r => {
         // Remove emojis from title for the list
         const cleanTitle = r.title.replace(/[\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu, '').trim();
         return `✅ ${cleanTitle}`;
-      })
-      .join('\n');
-    
-    const shareText = `I've completed ${completedCount} of 9 Daily BIZARRE Rituals! 👹\n\n${completedRitualsList}\n\nJoin me in the BizarreBeasts ($BB) Community and complete your daily $BIZARRE rituals!\n\n#BizarreBeasts #BBRituals`;
+      });
+
+    // Add featured ritual if completed
+    if (featuredCompleted && featuredRitual) {
+      const cleanFeaturedTitle = featuredRitual.title.replace(/[\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu, '').trim();
+      completedRitualsList.push(`⭐ ${cleanFeaturedTitle}`);
+    }
+
+    const shareText = `I've completed ${completedCount} of 10 Daily BIZARRE Rituals! 👹\n\n${completedRitualsList.join('\n')}\n\nJoin me in the BizarreBeasts ($BB) Community and complete your daily $BIZARRE rituals!\n\n#BizarreBeasts #BBRituals`;
     
     // Build URL with embeds[] parameter for proper link preview
     const params = new URLSearchParams();
@@ -411,9 +416,9 @@ export default function RitualsPage() {
           </p>
           <div className="inline-flex items-center gap-2 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink p-[1px] rounded-lg">
             <div className="bg-dark-bg rounded-lg px-4 py-2 flex items-center gap-2">
-              <span className="bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent font-bold text-xl">{completedRituals.size}</span>
+              <span className="bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent font-bold text-xl">{completedRituals.size + (featuredCompleted ? 1 : 0)}</span>
               <span className="text-gray-400">of</span>
-              <span className="bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent font-bold text-xl">9</span>
+              <span className="bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent font-bold text-xl">10</span>
               <span className="text-gray-400">Rituals Complete</span>
             </div>
           </div>
@@ -542,23 +547,23 @@ export default function RitualsPage() {
         </div>
 
         {/* Share Section */}
-        {completedRituals.size > 0 && (
+        {(completedRituals.size > 0 || featuredCompleted) && (
           <div className="mt-12 text-center">
             <div className="bg-gradient-to-br from-dark-card via-dark-card to-gem-gold/5 border border-gem-gold/20 rounded-lg p-8">
               <h2 className="text-2xl font-bold mb-4">
-                {completedRituals.size === 9 
-                  ? "🏆 All Rituals Complete!" 
-                  : `👹 ${completedRituals.size} Ritual${completedRituals.size > 1 ? 's' : ''} Complete!`}
+                {(completedRituals.size + (featuredCompleted ? 1 : 0)) === 10
+                  ? "🏆 All Rituals Complete!"
+                  : `👹 ${completedRituals.size + (featuredCompleted ? 1 : 0)} Ritual${(completedRituals.size + (featuredCompleted ? 1 : 0)) > 1 ? 's' : ''} Complete!`}
               </h2>
               <p className="text-gray-300 mb-6">
-                {completedRituals.size === 9
+                {(completedRituals.size + (featuredCompleted ? 1 : 0)) === 10
                   ? "You've completed all BIZARRE Rituals! Share your achievement with the community!"
                   : "Great progress! Share your ritual journey with the BizarreBeasts community!"}
               </p>
               <div className="flex flex-col items-center gap-3">
                 <p className="text-sm text-gray-400">Share your progress:</p>
                 <ShareButtons
-                  customText={`I've completed ${completedRituals.size} of 9 Daily BIZARRE Rituals! 👹\n\nJoin me in the BizarreBeasts ($BB) Community!\n\n#BizarreBeasts #BBRituals`}
+                  customText={`I've completed ${completedRituals.size + (featuredCompleted ? 1 : 0)} of 10 Daily BIZARRE Rituals! 👹\n\nJoin me in the BizarreBeasts ($BB) Community!\n\n#BizarreBeasts #BBRituals`}
                   shareType="default"
                   buttonSize="md"
                   showLabels={false}
