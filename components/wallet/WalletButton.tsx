@@ -5,6 +5,7 @@ import { useWallet } from '@/hooks/useWallet';
 import { Wallet, Crown, LogOut, RefreshCw } from 'lucide-react';
 import { AccessTier } from '@/lib/empire';
 import { empireService } from '@/lib/empire';
+import { isBetaTester, BETA_BENEFITS, BETA_PHASE_ACTIVE } from '@/lib/beta-testers';
 
 export function WalletButton() {
   const { 
@@ -77,6 +78,14 @@ export function WalletButton() {
         
         {/* Content */}
         <div className="relative flex items-center gap-1 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent font-semibold">
+          {/* Beta Tester Badge */}
+          {BETA_PHASE_ACTIVE && isBetaTester(address) && (
+            <span className="text-sm" title={BETA_BENEFITS.badgeText}>
+              {BETA_BENEFITS.badge}
+            </span>
+          )}
+
+          {/* Empire Tier Badge and Rank */}
           {empireRank && (
             <>
               <span className="text-sm">{getTierBadge()}</span>
@@ -84,6 +93,8 @@ export function WalletButton() {
               <span className="hidden lg:inline opacity-75 mx-1">|</span>
             </>
           )}
+
+          {/* Wallet Address */}
           <span className="hidden lg:inline">
             {formatAddress(address!)}
           </span>
@@ -98,7 +109,20 @@ export function WalletButton() {
         <div className="p-4 border-b border-gray-700">
           <p className="text-xs text-gray-400 mb-1">Connected Wallet</p>
           <p className="text-white font-mono text-xs break-all">{address}</p>
-          
+
+          {/* Beta Tester Badge */}
+          {BETA_PHASE_ACTIVE && isBetaTester(address) && (
+            <div className="mt-3 pt-3 border-t border-gray-700">
+              <div className="flex items-center gap-2">
+                <span className="text-lg">{BETA_BENEFITS.badge}</span>
+                <div>
+                  <p className="text-gem-gold font-semibold text-sm">{BETA_BENEFITS.badgeText}</p>
+                  <p className="text-xs text-gray-400">{BETA_BENEFITS.specialMessage}</p>
+                </div>
+              </div>
+            </div>
+          )}
+
           {empireRank && (
             <>
               <div className="mt-3 pt-3 border-t border-gray-700">

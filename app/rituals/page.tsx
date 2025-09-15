@@ -5,6 +5,7 @@ import { ExternalLink, Check, Share2, Share } from 'lucide-react';
 import { ultimateShare } from '@/lib/sdk-ultimate';
 import { sdk } from '@/lib/sdk-init';
 import ShareButtons from '@/components/ShareButtons';
+import RewardsTable from '@/components/RewardsTable';
 import dynamic from 'next/dynamic';
 
 // Dynamically import CheckIn to avoid SSR issues with Web3
@@ -101,11 +102,17 @@ interface FeaturedRitual {
   actionUrl: string;
   image: string;
   expiresAt?: string; // Optional expiration date
+  sponsorType?: 'sponsored' | 'collab' | 'partner'; // Type of sponsorship
+  sponsorName?: string; // Name of sponsor/partner
+  sponsorLogo?: string; // Optional sponsor logo
+  sponsorTagline?: string; // Optional tagline like "Powered by X"
 }
 
 // Featured ritual - can be easily updated or removed
+// Set to null to hide the featured section
+// For sponsored content, add sponsorType, sponsorName, etc.
 const featuredRitual: FeaturedRitual | null = {
-  title: "Vote for BizarreBeasts for the DCP Base Creators Award! 🏆",
+  title: "Vote for BizarreBeasts for the DCP Base Creators Award!",
   description: `There's less than 48 hours left to vote for BizarreBeasts ($BB) to receive the DCP Onchain Creators Award from @dcpfoundation! 🤯
 
 This is a huge opportunity to bring BizarreBeasts to life as animated shorts, with potential funding and exposure from @dcpfoundation and @zora.
@@ -116,7 +123,13 @@ We are up to 171 votes, and YOUR VOTE is absolutely crucial and makes a direct i
   actionText: "Vote Now on DCP",
   actionUrl: "https://app.decentralized.pictures/project/68694bbba0073d7cf1048a2b",
   image: "/assets/page-assets/banners/rituals-boxes/featured-ritual-banner.png",
-  expiresAt: "2025-01-13" // Optional: auto-hide after this date
+  expiresAt: "2025-01-13", // Optional: auto-hide after this date
+
+  // Sponsorship fields (uncomment and fill for sponsored content)
+  // sponsorType: 'sponsored', // or 'collab' or 'partner'
+  // sponsorName: 'Partner Name',
+  // sponsorLogo: '/path/to/logo.png',
+  // sponsorTagline: 'Powered by Partner'
 };
 
 export default function RitualsPage() {
@@ -246,9 +259,24 @@ export default function RitualsPage() {
 
   const handleShareRitual = async (ritual: Ritual) => {
     console.log('Share ritual clicked:', ritual.title);
-    
+
+    // Mark ritual as complete when shared
+    setCompletedRituals(prev => {
+      const newCompleted = new Set([...prev, ritual.id]);
+
+      // Save to localStorage
+      const savedData = {
+        date: new Date().toDateString(),
+        completedRituals: Array.from(newCompleted)
+      };
+      localStorage.setItem('bizarreRituals', JSON.stringify(savedData));
+      console.log('Marked ritual as complete:', ritual.id, 'Total completed:', newCompleted.size);
+
+      return newCompleted;
+    });
+
     // Build the action URL (same logic as handleRitualAction)
-    let actionUrl = ritual.actionUrl.startsWith('/') 
+    let actionUrl = ritual.actionUrl.startsWith('/')
       ? `https://bbapp.bizarrebeasts.io${ritual.actionUrl}`
       : ritual.actionUrl;
     
@@ -332,13 +360,31 @@ export default function RitualsPage() {
           <div className="mb-12">
             <div className="bg-gradient-to-br from-gem-gold/20 via-dark-card to-gem-crystal/10 border-2 border-gem-gold rounded-2xl overflow-hidden shadow-xl hover:shadow-gem-gold/30 transition-all duration-300">
               <div className="bg-gradient-to-r from-gem-gold/30 to-gem-crystal/30 px-6 py-2">
-                <h2 className="text-lg font-bold flex items-center justify-center gap-2 text-center">
-                  <span className="text-xl">⭐</span>
-                  FEATURED RITUAL
-                  <span className="text-xl">⭐</span>
-                </h2>
+                <div className="flex items-center justify-between">
+                  <div className="flex-1" />
+                  <h2 className="text-lg font-bold flex items-center justify-center gap-2 text-center">
+                    <span className="text-xl">⭐</span>
+                    {featuredRitual.sponsorType ? (
+                      featuredRitual.sponsorType === 'sponsored' ? 'SPONSORED RITUAL' :
+                      featuredRitual.sponsorType === 'collab' ? 'COLLABORATION' :
+                      'PARTNER RITUAL'
+                    ) : (
+                      'FEATURED RITUAL'
+                    )}
+                    <span className="text-xl">⭐</span>
+                  </h2>
+                  <div className="flex-1 flex justify-end">
+                    {featuredRitual.sponsorType && (
+                      <span className="text-xs bg-black/30 px-2 py-1 rounded-full text-gem-gold">
+                        {featuredRitual.sponsorType === 'sponsored' ? 'AD' :
+                         featuredRitual.sponsorType === 'collab' ? 'COLLAB' :
+                         'PARTNER'}
+                      </span>
+                    )}
+                  </div>
+                </div>
               </div>
-              
+
               <div className="flex flex-col md:flex-row">
                 {/* Image */}
                 <div className="md:w-48 h-48 md:h-auto bg-gradient-to-br from-gray-800 to-gray-900 relative overflow-hidden flex-shrink-0">
@@ -368,6 +414,22 @@ export default function RitualsPage() {
                 
                 {/* Content */}
                 <div className="flex-1 p-4 md:p-5">
+                  {/* Sponsor info if present */}
+                  {featuredRitual.sponsorName && (
+                    <div className="flex items-center justify-center gap-2 mb-3">
+                      {featuredRitual.sponsorLogo && (
+                        <img
+                          src={featuredRitual.sponsorLogo}
+                          alt={featuredRitual.sponsorName}
+                          className="h-6 w-auto object-contain"
+                        />
+                      )}
+                      <span className="text-xs text-gray-400">
+                        {featuredRitual.sponsorTagline || `In partnership with ${featuredRitual.sponsorName}`}
+                      </span>
+                    </div>
+                  )}
+
                   <h3 className="text-lg font-bold mb-2 bg-gradient-to-r from-gem-gold to-gem-crystal bg-clip-text text-transparent flex items-center justify-center gap-2 text-center">
                     {featuredRitual.title}
                     {featuredCompleted && (
@@ -379,68 +441,157 @@ export default function RitualsPage() {
                     {featuredRitual.description.split('\n\n')[0]} {/* Show just first paragraph */}
                     <span className="text-gray-400"> • Less than 48 hours left!</span>
                   </div>
-                  
-                  <div className="flex gap-2 flex-wrap">
-                    <button
-                      onClick={() => {
-                        setFeaturedCompleted(true);
-                        window.open(featuredRitual.actionUrl, '_blank');
-                      }}
-                      className={`inline-flex items-center gap-1 px-4 py-1.5 rounded-lg font-semibold text-sm transition-all duration-300 transform ${
-                        featuredCompleted
-                          ? 'bg-gem-gold/20 text-gem-gold border border-gem-gold/40'
-                          : 'bg-gradient-to-r from-gem-gold to-gem-crystal text-dark-bg hover:scale-105 hover:shadow-lg'
-                      }`}
-                    >
-                      {featuredCompleted ? (
-                        <>
-                          <Check className="w-3 h-3" />
-                          Voted
-                        </>
-                      ) : (
-                        <>
-                          {featuredRitual.actionText}
-                          <ExternalLink className="w-3 h-3" />
-                        </>
-                      )}
-                    </button>
-                    
-                    <button
-                      onClick={() => window.open('https://paragraph.com/@bizarrebeasts/bizarrebeasts-applies-for-dcps-onchain-creators-award', '_blank')}
-                      className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg font-semibold text-sm transition-all duration-300 bg-dark-card border border-gem-crystal/50 text-gem-crystal hover:bg-gem-crystal/20"
-                    >
-                      Learn More
-                      <ExternalLink className="w-3 h-3" />
-                    </button>
-                    
-                    <ShareButtons
-                      customText={`🚨 FEATURED RITUAL ALERT! 🚨\n\nVote for BizarreBeasts for the DCP @dcpfoundation Base Creators Award! 🏆\n\nLess than 48 hours left to support BizarreBeasts ($BB) for potential funding and exposure from @dcpfoundation and @zora!\n\nYour vote makes a direct impact for the BIZARRE future! 👹`}
-                      shareType="default"
-                      buttonSize="sm"
-                      showLabels={false}
-                      contextUrl="https://bbapp.bizarrebeasts.io/rituals"
-                    />
+
+                  <div className="space-y-3">
+                    {/* Action Buttons */}
+                    <div className="flex gap-2 flex-wrap">
+                      <button
+                        onClick={() => {
+                          setFeaturedCompleted(true);
+                          window.open(featuredRitual.actionUrl, '_blank');
+                        }}
+                        className={`inline-flex items-center gap-1 px-4 py-1.5 rounded-lg font-semibold text-sm transition-all duration-300 transform ${
+                          featuredCompleted
+                            ? 'bg-gem-gold/20 text-gem-gold border border-gem-gold/40'
+                            : 'bg-gradient-to-r from-gem-gold to-gem-crystal text-dark-bg hover:scale-105 hover:shadow-lg'
+                        }`}
+                      >
+                        {featuredCompleted ? (
+                          <>
+                            <Check className="w-3 h-3" />
+                            Voted
+                          </>
+                        ) : (
+                          <>
+                            {featuredRitual.actionText}
+                            <ExternalLink className="w-3 h-3" />
+                          </>
+                        )}
+                      </button>
+
+                      <button
+                        onClick={() => window.open('https://paragraph.com/@bizarrebeasts/bizarrebeasts-applies-for-dcps-onchain-creators-award', '_blank')}
+                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg font-semibold text-sm transition-all duration-300 bg-dark-card border border-gem-crystal/50 text-gem-crystal hover:bg-gem-crystal/20"
+                      >
+                        Learn More
+                        <ExternalLink className="w-3 h-3" />
+                      </button>
+                    </div>
+
+                    {/* Share Buttons */}
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-gray-400 font-semibold">Share:</span>
+                      <ShareButtons
+                        customText={`🚨 FEATURED RITUAL ALERT! 🚨\n\nVote for BizarreBeasts for the DCP @dcpfoundation Base Creators Award! 🏆\n\nLess than 48 hours left to support BizarreBeasts ($BB) for potential funding and exposure from @dcpfoundation and @zora!\n\nYour vote makes a direct impact for the BIZARRE future! 👹`}
+                        shareType="default"
+                        buttonSize="sm"
+                        showLabels={false}
+                        contextUrl="https://bbapp.bizarrebeasts.io/rituals"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
+
+            {/* Partnership CTA Button - Below Featured Box */}
+            <div className="text-center mt-4">
+              <button
+                onClick={() => window.open('/partnerships', '_blank')}
+                className="inline-flex items-center gap-2 px-6 py-2 bg-gradient-to-r from-dark-card to-gem-gold/10 border border-gem-gold/30 text-gem-gold font-semibold text-sm rounded-lg hover:from-gem-gold/20 hover:to-gem-gold/30 hover:border-gem-gold/50 transition-all group"
+              >
+                <span className="text-base">🤝</span>
+                <span>Want to feature your project here?</span>
+                <span className="text-xs opacity-70 group-hover:opacity-100">Learn more →</span>
+              </button>
+            </div>
           </div>
         )}
         
-        {/* Description */}
-        <div className="text-center mb-12">
-          <p className="text-lg text-gray-300 mb-4">
-            Complete your daily BIZARRE Rituals to engage with the BizarreBeasts ($BB) ecosystem! 
-            Each ritual helps you explore different aspects of our community and helps you GO BIZARRE.
-          </p>
-          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink p-[1px] rounded-lg">
-            <div className="bg-dark-bg rounded-lg px-4 py-2 flex items-center gap-2">
-              <span className="bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent font-bold text-xl">{completedRituals.size + (featuredCompleted ? 1 : 0)}</span>
-              <span className="text-gray-400">of</span>
-              <span className="bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent font-bold text-xl">10</span>
-              <span className="text-gray-400">Rituals Complete</span>
+        {/* How It Works Section */}
+        <div className="bg-gradient-to-br from-dark-card via-dark-card to-gem-crystal/5 border border-gem-crystal/20 rounded-2xl p-6 mb-8">
+          <h2 className="text-2xl font-bold text-center mb-6 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent">
+            💎 How Daily Check-In Rewards Work
+          </h2>
+
+          <div className="grid md:grid-cols-3 gap-4 mb-6">
+            <div className="text-center p-4 bg-dark-bg/50 rounded-lg">
+              <div className="text-3xl mb-2">1️⃣</div>
+              <h3 className="font-semibold text-gem-crystal mb-2">Complete 3 Rituals</h3>
+              <p className="text-sm text-gray-400">Finish any 3 daily rituals below to unlock check-in eligibility</p>
+            </div>
+
+            <div className="text-center p-4 bg-dark-bg/50 rounded-lg">
+              <div className="text-3xl mb-2">2️⃣</div>
+              <h3 className="font-semibold text-gem-gold mb-2">Check In Daily</h3>
+              <p className="text-sm text-gray-400">Once unlocked, check in every day to build your streak</p>
+            </div>
+
+            <div className="text-center p-4 bg-dark-bg/50 rounded-lg">
+              <div className="text-3xl mb-2">3️⃣</div>
+              <h3 className="font-semibold text-gem-pink mb-2">Earn $BB Rewards</h3>
+              <p className="text-sm text-gray-400">Get rewards every 5 days based on your Empire tier!</p>
             </div>
           </div>
+
+          <div className="text-center">
+            <p className="text-sm text-gray-400 mb-3">
+              <span className="text-gem-gold font-semibold">🧪 Beta Testing Phase:</span> Be among the first to earn $BB rewards on Base! Limited beta access now live.
+            </p>
+          </div>
+        </div>
+
+        {/* Rewards Table - Always visible as a resource */}
+        <div className="mb-8">
+          <RewardsTable />
+        </div>
+
+        {/* Progress Tracker */}
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink p-[1px] rounded-lg">
+            <div className="bg-dark-bg rounded-lg px-6 py-3 flex items-center gap-3">
+              <div className="text-center">
+                <div className="text-2xl font-bold bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent">
+                  {completedRituals.size + (featuredCompleted ? 1 : 0)}/10
+                </div>
+                <div className="text-xs text-gray-400">Rituals Done</div>
+              </div>
+              <div className="w-px h-10 bg-gray-600"></div>
+              <div className="text-center">
+                <div className="text-2xl font-bold">
+                  {completedRituals.size + (featuredCompleted ? 1 : 0) >= 3 ? '✅' : '🔒'}
+                </div>
+                <div className="text-xs text-gray-400">
+                  {completedRituals.size + (featuredCompleted ? 1 : 0) >= 3 ? 'Unlocked!' : 'Need ' + (3 - completedRituals.size - (featuredCompleted ? 1 : 0)) + ' more'}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {completedRituals.size + (featuredCompleted ? 1 : 0) < 3 && (
+            <p className="mt-3 text-sm text-gray-400">
+              Complete <span className="text-gem-gold font-semibold">{3 - completedRituals.size - (featuredCompleted ? 1 : 0)} more ritual{(3 - completedRituals.size - (featuredCompleted ? 1 : 0)) > 1 ? 's' : ''}</span> to unlock daily check-in rewards!
+            </p>
+          )}
+        </div>
+
+        {/* Check-In Component - Prominently displayed */}
+        <div className="mb-12">
+          <CheckIn
+            userTier="BIZARRE" // Testing with BIZARRE tier for full rewards
+            completedRituals={completedRituals.size + (featuredCompleted ? 1 : 0)}
+          />
+        </div>
+
+        {/* Rituals Section Header */}
+        <div className="text-center mb-8">
+          <h2 className="text-2xl font-bold mb-3 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent">
+            ✔️ Complete Your Daily BIZARRE Rituals
+          </h2>
+          <p className="text-gray-400">
+            Each ritual helps you engage with different parts of the BizarreBeasts ecosystem.
+            Complete any 3 to unlock check-in rewards!
+          </p>
         </div>
 
         {/* Rituals List */}
@@ -520,10 +671,10 @@ export default function RitualsPage() {
                     
                     <p className="text-gray-400 mb-4">{ritual.description}</p>
                     
-                    <div className="flex gap-2 flex-wrap">
+                    <div className="flex flex-col sm:flex-row gap-2 sm:gap-2">
                       <button
                         onClick={() => handleRitualAction(ritual)}
-                        className={`inline-flex items-center gap-2 px-6 py-2 rounded-lg font-semibold transition-all duration-300 ${
+                        className={`inline-flex items-center justify-center gap-2 px-6 py-2 rounded-lg font-semibold transition-all duration-300 ${
                           isCompleted
                             ? 'bg-gem-gold/20 text-gem-gold border border-gem-gold/40'
                             : 'bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink text-dark-bg hover:shadow-lg transform hover:scale-105'
@@ -541,9 +692,9 @@ export default function RitualsPage() {
                           </>
                         )}
                       </button>
-                      
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs text-gray-400">Share:</span>
+
+                      <div className="flex items-center gap-2 w-full sm:w-auto">
+                        <span className="text-sm text-gray-400 font-semibold">Share:</span>
                         <ShareButtons
                           shareType="ritual"
                           ritualData={{
@@ -594,11 +745,6 @@ export default function RitualsPage() {
           </div>
         )}
 
-        {/* Check-In Component */}
-        <CheckIn
-          userTier="NORMIE" // TODO: Get actual tier from user data
-          completedRituals={completedRituals.size + (featuredCompleted ? 1 : 0)}
-        />
 
         {/* Bottom Info */}
         <div className="mt-12 text-center text-gray-400 text-sm">

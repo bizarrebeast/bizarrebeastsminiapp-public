@@ -9,13 +9,29 @@ import { sdk } from '@/lib/sdk-init';
 interface ShareButtonsProps {
   imageDataUrl?: string;
   customText?: string;
-  shareType?: 'default' | 'meme' | 'rank' | 'ritual';
+  shareType?: 'default' | 'meme' | 'rank' | 'ritual' | 'checkin' | 'claim' | 'milestone5' | 'milestone15' | 'milestone30' | 'streakbreak';
   rank?: number;
   ritualData?: {
     id: number;
     title: string;
     description: string;
     actionUrl?: string;
+  };
+  checkInData?: {
+    streak: number;
+    tierReward: string; // e.g., "100k", "50k"
+    streakMessage: string;
+  };
+  claimData?: {
+    amount: string; // e.g., "500,000"
+    totalEarned: string;
+    tierMessage: string;
+  };
+  milestoneData?: {
+    reward?: string; // For 5-day
+    bonus?: string; // For 15-day
+    totalRewards?: string; // For 30-day
+    bestStreak?: number; // For streak break
   };
   className?: string;
   showLabels?: boolean;
@@ -29,6 +45,9 @@ export default function ShareButtons({
   shareType = 'default',
   rank,
   ritualData,
+  checkInData,
+  claimData,
+  milestoneData,
   className = '',
   showLabels = true,
   buttonSize = 'md',
@@ -57,6 +76,33 @@ export default function ShareButtons({
             shareText = shareText.replace('{id}', ritualData.id.toString());
             shareText = shareText.replace('{title}', ritualData.title);
             shareText = shareText.replace('{description}', ritualData.description);
+          }
+          // Check-in placeholders
+          if (checkInData && shareType === 'checkin') {
+            shareText = shareText.replace('{streak}', checkInData.streak.toString());
+            shareText = shareText.replace('{tierReward}', checkInData.tierReward);
+            shareText = shareText.replace('{streakMessage}', checkInData.streakMessage);
+          }
+          // Claim placeholders
+          if (claimData && shareType === 'claim') {
+            shareText = shareText.replace('{amount}', claimData.amount);
+            shareText = shareText.replace('{totalEarned}', claimData.totalEarned);
+            shareText = shareText.replace('{tierMessage}', claimData.tierMessage);
+          }
+          // Milestone placeholders
+          if (milestoneData) {
+            if (shareType === 'milestone5' && milestoneData.reward) {
+              shareText = shareText.replace('{reward}', milestoneData.reward);
+            }
+            if (shareType === 'milestone15' && milestoneData.bonus) {
+              shareText = shareText.replace('{bonus}', milestoneData.bonus);
+            }
+            if (shareType === 'milestone30' && milestoneData.totalRewards) {
+              shareText = shareText.replace('{totalRewards}', milestoneData.totalRewards);
+            }
+            if (shareType === 'streakbreak' && milestoneData.bestStreak) {
+              shareText = shareText.replace('{bestStreak}', milestoneData.bestStreak.toString());
+            }
           }
         }
 
@@ -97,6 +143,33 @@ export default function ShareButtons({
             text = text.replace('{id}', ritualData.id.toString());
             text = text.replace('{title}', ritualData.title);
             text = text.replace('{description}', ritualData.description);
+          }
+          // Check-in placeholders
+          if (checkInData && shareType === 'checkin') {
+            text = text.replace('{streak}', checkInData.streak.toString());
+            text = text.replace('{tierReward}', checkInData.tierReward);
+            text = text.replace('{streakMessage}', checkInData.streakMessage);
+          }
+          // Claim placeholders
+          if (claimData && shareType === 'claim') {
+            text = text.replace('{amount}', claimData.amount);
+            text = text.replace('{totalEarned}', claimData.totalEarned);
+            text = text.replace('{tierMessage}', claimData.tierMessage);
+          }
+          // Milestone placeholders
+          if (milestoneData) {
+            if (shareType === 'milestone5' && milestoneData.reward) {
+              text = text.replace('{reward}', milestoneData.reward);
+            }
+            if (shareType === 'milestone15' && milestoneData.bonus) {
+              text = text.replace('{bonus}', milestoneData.bonus);
+            }
+            if (shareType === 'milestone30' && milestoneData.totalRewards) {
+              text = text.replace('{totalRewards}', milestoneData.totalRewards);
+            }
+            if (shareType === 'streakbreak' && milestoneData.bestStreak) {
+              text = text.replace('{bestStreak}', milestoneData.bestStreak.toString());
+            }
           }
         }
 

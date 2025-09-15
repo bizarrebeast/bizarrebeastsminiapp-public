@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Menu, X, Palette, Gamepad2, FileText, Crown, ArrowDownUp, Music, Sparkles } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import { WalletButton } from '@/components/wallet/WalletButton';
+import { EmpireBadges } from '@/components/wallet/EmpireBadges';
 
 // Navigation items in order
 const navItems = [
@@ -54,8 +55,9 @@ export function Navbar() {
             </Link>
           </div>
 
-          {/* Right side - Wallet and Hamburger */}
+          {/* Right side - Badges, Wallet and Hamburger */}
           <div className="flex items-center gap-3">
+            <EmpireBadges />
             <WalletButton />
             <button
               onClick={() => setIsOpen(!isOpen)}

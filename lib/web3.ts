@@ -4,7 +4,7 @@
  */
 
 import { createAppKit } from '@reown/appkit';
-import { mainnet, base, arbitrum, polygon } from '@reown/appkit/networks';
+import { mainnet, base, arbitrum, polygon, baseSepolia } from '@reown/appkit/networks';
 import { EthersAdapter } from '@reown/appkit-adapter-ethers';
 import { ethers } from 'ethers';
 import { empireService, AccessTier } from './empire';
@@ -52,7 +52,7 @@ class Web3Service {
       // Create the AppKit instance
       this.appKit = createAppKit({
         adapters: [this.ethersAdapter],
-        networks: [base, mainnet, arbitrum, polygon], // Base first as it's where $BB is
+        networks: [base, baseSepolia, mainnet, arbitrum, polygon], // Base first as it's where $BB is
         defaultNetwork: base,
         projectId: PROJECT_ID,
         metadata: {
@@ -381,11 +381,27 @@ class Web3Service {
    */
   async getProvider(): Promise<ethers.BrowserProvider | null> {
     if (!this.appKit) return null;
-    
+
     const walletProvider = await this.appKit.getWalletProvider();
     if (!walletProvider) return null;
-    
+
     return new ethers.BrowserProvider(walletProvider);
+  }
+
+  /**
+   * Get signer for contract interactions
+   */
+  async getSigner(): Promise<any | null> {
+    const provider = await this.getProvider();
+    if (!provider) return null;
+
+    try {
+      const signer = await provider.getSigner();
+      return signer;
+    } catch (error) {
+      console.error('Failed to get signer:', error);
+      return null;
+    }
   }
 
   /**
