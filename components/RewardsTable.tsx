@@ -38,48 +38,48 @@ export default function RewardsTable() {
                 <tbody>
                   <tr className="border-b border-gem-gold/10">
                     <td className="py-2">
-                      <span className="text-gem-gold font-bold">👑 BIZARRE</span>
+                      <span className="text-gem-gold font-bold">👹 BIZARRE</span>
                     </td>
-                    <td className="text-right py-2 text-gem-crystal">100,000 BB</td>
-                    <td className="text-right py-2 text-gem-crystal">50,000 BB</td>
-                    <td className="text-right py-2 text-gem-crystal">100,000 BB</td>
-                    <td className="text-right py-2 font-bold text-gem-gold">750,000 BB</td>
+                    <td className="text-right py-2 text-gem-crystal">100K</td>
+                    <td className="text-right py-2 text-gem-crystal">50K</td>
+                    <td className="text-right py-2 text-gem-crystal">100K</td>
+                    <td className="text-right py-2 font-bold text-gem-gold">750K</td>
                   </tr>
                   <tr className="border-b border-gem-gold/10">
                     <td className="py-2">
-                      <span className="text-gem-purple font-bold">🏆 WEIRDO</span>
+                      <span className="text-gem-purple font-bold">🤡 WEIRDO</span>
                     </td>
-                    <td className="text-right py-2 text-gem-crystal">50,000 BB</td>
-                    <td className="text-right py-2 text-gem-crystal">25,000 BB</td>
-                    <td className="text-right py-2 text-gem-crystal">50,000 BB</td>
-                    <td className="text-right py-2 font-bold text-gem-purple">375,000 BB</td>
+                    <td className="text-right py-2 text-gem-crystal">50K</td>
+                    <td className="text-right py-2 text-gem-crystal">25K</td>
+                    <td className="text-right py-2 text-gem-crystal">50K</td>
+                    <td className="text-right py-2 font-bold text-gem-purple">375K</td>
                   </tr>
                   <tr className="border-b border-gem-gold/10">
                     <td className="py-2">
-                      <span className="text-gem-blue font-bold">⭐ ODDBALL</span>
+                      <span className="text-gem-blue font-bold">🎭 ODDBALL</span>
                     </td>
-                    <td className="text-right py-2 text-gem-crystal">25,000 BB</td>
-                    <td className="text-right py-2 text-gem-crystal">10,000 BB</td>
-                    <td className="text-right py-2 text-gem-crystal">25,000 BB</td>
-                    <td className="text-right py-2 font-bold text-gem-blue">185,000 BB</td>
+                    <td className="text-right py-2 text-gem-crystal">25K</td>
+                    <td className="text-right py-2 text-gem-crystal">10K</td>
+                    <td className="text-right py-2 text-gem-crystal">25K</td>
+                    <td className="text-right py-2 font-bold text-gem-blue">185K</td>
                   </tr>
                   <tr className="border-b border-gem-gold/10">
                     <td className="py-2">
-                      <span className="text-gem-crystal font-bold">✨ MISFIT</span>
+                      <span className="text-gem-crystal font-bold">👾 MISFIT</span>
                     </td>
-                    <td className="text-right py-2 text-gem-crystal">5,000 BB</td>
-                    <td className="text-right py-2 text-gem-crystal">0 BB</td>
-                    <td className="text-right py-2 text-gem-crystal">0 BB</td>
-                    <td className="text-right py-2 font-bold text-gem-crystal">30,000 BB</td>
+                    <td className="text-right py-2 text-gem-crystal">5K</td>
+                    <td className="text-right py-2 text-gem-crystal">-</td>
+                    <td className="text-right py-2 text-gem-crystal">-</td>
+                    <td className="text-right py-2 font-bold text-gem-crystal">30K</td>
                   </tr>
                   <tr>
                     <td className="py-2">
                       <span className="text-gray-400 font-bold">😐 NORMIE</span>
                     </td>
-                    <td className="text-right py-2 text-gray-400">0 BB</td>
-                    <td className="text-right py-2 text-gray-400">0 BB</td>
-                    <td className="text-right py-2 text-gray-400">0 BB</td>
-                    <td className="text-right py-2 font-bold text-gray-400">0 BB</td>
+                    <td className="text-right py-2 text-gray-400">-</td>
+                    <td className="text-right py-2 text-gray-400">-</td>
+                    <td className="text-right py-2 text-gray-400">-</td>
+                    <td className="text-right py-2 font-bold text-gray-400">-</td>
                   </tr>
                 </tbody>
               </table>

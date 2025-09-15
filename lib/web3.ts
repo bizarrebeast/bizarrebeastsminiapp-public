@@ -52,7 +52,7 @@ class Web3Service {
       // Create the AppKit instance
       this.appKit = createAppKit({
         adapters: [this.ethersAdapter],
-        networks: [base, baseSepolia, mainnet, arbitrum, polygon], // Base first as it's where $BB is
+        networks: [base], // Only Base network to force it
         defaultNetwork: base,
         projectId: PROJECT_ID,
         metadata: {
@@ -136,8 +136,12 @@ class Web3Service {
         if (newAddress) {
           // Wallet connected - fetch Empire data
           console.log('Wallet connected:', newAddress);
+
+          // Force switch to Base network if on wrong network
+          await this.switchToBase();
+
           const empireData = await empireService.getUserByAddress(newAddress);
-          
+
           this.currentState = {
             isConnected: true,
             address: newAddress,
@@ -401,24 +405,84 @@ class Web3Service {
   }
 
   /**
+   * Switch to Base network if on wrong network
+   */
+  async switchToBase(): Promise<void> {
+    try {
+      const provider = await this.getProvider();
+      if (!provider) return;
+
+      // Get current network
+      const network = await provider.getNetwork();
+      const currentChainId = Number(network.chainId);
+
+      // Base mainnet chain ID is 8453
+      const BASE_CHAIN_ID = 8453;
+
+      if (currentChainId !== BASE_CHAIN_ID) {
+        console.log(`Current network: ${currentChainId}, switching to Base (${BASE_CHAIN_ID})`);
+
+        // Request network switch
+        const walletProvider = await this.appKit.getWalletProvider();
+        if (walletProvider && walletProvider.request) {
+          try {
+            // Try to switch to Base network
+            await walletProvider.request({
+              method: 'wallet_switchEthereumChain',
+              params: [{ chainId: `0x${BASE_CHAIN_ID.toString(16)}` }]
+            });
+            console.log('Successfully switched to Base network');
+          } catch (switchError: any) {
+            // If the chain is not added, add it
+            if (switchError.code === 4902) {
+              console.log('Base network not found, adding it...');
+              await walletProvider.request({
+                method: 'wallet_addEthereumChain',
+                params: [{
+                  chainId: `0x${BASE_CHAIN_ID.toString(16)}`,
+                  chainName: 'Base',
+                  nativeCurrency: {
+                    name: 'Ethereum',
+                    symbol: 'ETH',
+                    decimals: 18
+                  },
+                  rpcUrls: ['https://mainnet.base.org'],
+                  blockExplorerUrls: ['https://basescan.org']
+                }]
+              });
+              console.log('Base network added successfully');
+            } else {
+              console.error('Failed to switch network:', switchError);
+            }
+          }
+        }
+      } else {
+        console.log('Already on Base network');
+      }
+    } catch (error) {
+      console.error('Error in switchToBase:', error);
+    }
+  }
+
+  /**
    * Refresh Empire data for current wallet
    */
   async refreshEmpireData(): Promise<void> {
     if (!this.currentState.address) return;
-    
+
     // Clear cache to force fresh data
     empireService.clearCache();
-    
+
     // Fetch updated Empire data
     const empireData = await empireService.getUserByAddress(this.currentState.address);
-    
+
     this.currentState = {
       ...this.currentState,
       empireRank: empireData?.rank || null,
       empireScore: empireData?.balance || null,
       empireTier: empireService.getUserTier(empireData?.rank || null)
     };
-    
+
     this.notifyStateChange();
   }
 }
