@@ -620,8 +620,8 @@ export default function CheckIn({ userTier = 'NORMIE', completedRituals }: Check
                     'Building my empire, one day at a time!'
                 }}
                 milestoneData={{
-                  reward: currentStreak === 5 ? tierInfo.fiveDayReward : undefined,
-                  bonus: currentStreak === 15 ? tierInfo.fifteenDayBonus : undefined,
+                  reward: currentStreak === 5 ? (tierInfo.fiveDayReward || undefined) : undefined,
+                  bonus: currentStreak === 15 ? (tierInfo.fifteenDayBonus || undefined) : undefined,
                   totalRewards: currentStreak === 30 ?
                     `${(parseFloat(tierInfo.fiveDayReward?.replace(/[^0-9]/g, '') || '0') * 6 +
                        parseFloat(tierInfo.fifteenDayBonus?.replace(/[^0-9]/g, '') || '0') +
