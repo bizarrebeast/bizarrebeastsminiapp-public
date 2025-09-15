@@ -60,6 +60,9 @@ export default function ShareButtons({
           }
         }
 
+        // For Farcaster, keep hashtags in the text if they exist
+        // They've already been removed from X/Twitter and Telegram custom texts
+
         // Determine the URL to share based on context
         const shareUrl = contextUrl || 'https://bbapp.bizarrebeasts.io';
 
@@ -97,6 +100,19 @@ export default function ShareButtons({
           }
         }
 
+        // Remove hashtags for X/Twitter and Telegram (2025 best practices)
+        if (platform === 'twitter' || platform === 'telegram') {
+          // Remove common hashtags from the text
+          text = text?.replace(/#BizarreBeasts/g, '')
+            .replace(/#BBRituals/g, '')
+            .replace(/#BBEmpire/g, '')
+            .replace(/#BBFeaturedRitual/g, '')
+            .replace(/#BB\b/g, '') // Remove #BB but keep $BB
+            .replace(/\s+\n/g, '\n') // Clean up extra spaces before newlines
+            .replace(/\n\n+/g, '\n\n') // Clean up multiple newlines
+            .trim();
+        }
+
         // Format text for specific platform (handles, $BB spacing)
         if (text) {
           text = formatTextForPlatform(text, platform);
@@ -109,7 +125,7 @@ export default function ShareButtons({
           platform,
           text,
           url: shareUrl,
-          hashtags: platform === 'twitter' ? ['BizarreBeasts', 'BB'] : undefined,
+          hashtags: undefined, // Removed hashtags for X/Twitter per 2025 best practices
         });
       }
     } catch (error) {

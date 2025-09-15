@@ -207,7 +207,7 @@ export async function shareMemeWithImage(
       text: customText || SHARE_TEMPLATES[platform].meme,
       url: 'https://bbapp.bizarrebeasts.io',
       imageUrl,
-      hashtags: platform === 'twitter' ? ['BizarreBeasts', 'BB', 'Memes'] : undefined,
+      hashtags: undefined, // Removed hashtags for X/Twitter per 2025 best practices
       channelKey: platform === 'farcaster' ? 'bizarrebeasts' : undefined,
     };
 
@@ -220,7 +220,7 @@ export async function shareMemeWithImage(
       platform,
       text: customText || SHARE_TEMPLATES[platform].meme,
       url: 'https://bbapp.bizarrebeasts.io',
-      hashtags: platform === 'twitter' ? ['BizarreBeasts', 'BB', 'Memes'] : undefined,
+      hashtags: undefined, // Removed hashtags for X/Twitter per 2025 best practices
       channelKey: platform === 'farcaster' ? 'bizarrebeasts' : undefined,
     });
   }

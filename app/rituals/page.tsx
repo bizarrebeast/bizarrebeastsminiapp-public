@@ -5,6 +5,10 @@ import { ExternalLink, Check, Share2, Share } from 'lucide-react';
 import { ultimateShare } from '@/lib/sdk-ultimate';
 import { sdk } from '@/lib/sdk-init';
 import ShareButtons from '@/components/ShareButtons';
+import dynamic from 'next/dynamic';
+
+// Dynamically import CheckIn to avoid SSR issues with Web3
+const CheckIn = dynamic(() => import('@/components/CheckIn'), { ssr: false });
 
 interface Ritual {
   id: number;
@@ -395,7 +399,7 @@ export default function RitualsPage() {
                     </button>
                     
                     <ShareButtons
-                      customText={`🚨 FEATURED RITUAL ALERT! 🚨\n\nVote for BizarreBeasts for the DCP @dcpfoundation Base Creators Award! 🏆\n\nLess than 48 hours left to support BizarreBeasts ($BB) for potential funding and exposure from @dcpfoundation and @zora!\n\nYour vote makes a direct impact for the BIZARRE future! 👹\n\n#BizarreBeasts #BBRituals #BBFeaturedRitual`}
+                      customText={`🚨 FEATURED RITUAL ALERT! 🚨\n\nVote for BizarreBeasts for the DCP @dcpfoundation Base Creators Award! 🏆\n\nLess than 48 hours left to support BizarreBeasts ($BB) for potential funding and exposure from @dcpfoundation and @zora!\n\nYour vote makes a direct impact for the BIZARRE future! 👹`}
                       shareType="default"
                       buttonSize="sm"
                       showLabels={false}
@@ -563,7 +567,7 @@ export default function RitualsPage() {
               <div className="flex flex-col items-center gap-3">
                 <p className="text-sm text-gray-400">Share your progress:</p>
                 <ShareButtons
-                  customText={`I've completed ${completedRituals.size + (featuredCompleted ? 1 : 0)} of 10 Daily BIZARRE Rituals! 👹\n\nJoin me in the BizarreBeasts ($BB) Community!\n\n#BizarreBeasts #BBRituals`}
+                  customText={`I've completed ${completedRituals.size + (featuredCompleted ? 1 : 0)} of 10 Daily BIZARRE Rituals! 👹\n\nJoin me in the BizarreBeasts ($BB) Community!`}
                   shareType="default"
                   buttonSize="md"
                   showLabels={false}
@@ -574,6 +578,12 @@ export default function RitualsPage() {
             </div>
           </div>
         )}
+
+        {/* Check-In Component */}
+        <CheckIn
+          userTier="NORMIE" // TODO: Get actual tier from user data
+          completedRituals={completedRituals.size + (featuredCompleted ? 1 : 0)}
+        />
 
         {/* Bottom Info */}
         <div className="mt-12 text-center text-gray-400 text-sm">
