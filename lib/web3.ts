@@ -365,18 +365,6 @@ class Web3Service {
   }
 
   /**
-   * Get signer for transactions
-   */
-  async getSigner(): Promise<ethers.Signer | null> {
-    if (!this.currentState.isConnected) return null;
-    
-    const provider = await this.getProvider();
-    if (!provider) return null;
-    
-    return provider.getSigner();
-  }
-
-  /**
    * Get provider
    */
   async getProvider(): Promise<ethers.BrowserProvider | null> {
@@ -391,7 +379,7 @@ class Web3Service {
   /**
    * Get signer for contract interactions
    */
-  async getSigner(): Promise<any | null> {
+  async getSigner(): Promise<ethers.Signer | null> {
     const provider = await this.getProvider();
     if (!provider) return null;
 
