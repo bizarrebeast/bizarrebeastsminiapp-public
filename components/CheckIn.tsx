@@ -157,10 +157,8 @@ export default function CheckIn({ userTier = 'NORMIE', completedRituals }: Check
 
     try {
       // Use the actual empire tier from wallet, fallback to prop
-      const tierToUse = wallet.empireTier ?
-        Object.keys(EMPIRE_TIERS).find(tier =>
-          EMPIRE_TIERS[tier as keyof typeof EMPIRE_TIERS].name === wallet.empireTier
-        ) || userTier : userTier;
+      // wallet.empireTier is already the tier key (e.g., "BIZARRE", "WEIRDO", etc.)
+      const tierToUse = wallet.empireTier || userTier;
 
       const tx = await checkInContract.checkIn(tierToUse);
       setMessage('Transaction sent! Confirming on blockchain...');
