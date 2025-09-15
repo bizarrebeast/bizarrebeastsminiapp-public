@@ -238,6 +238,7 @@ export default function EmpirePage() {
                       shareType="default"
                       buttonSize="md"
                       showLabels={false}
+                      contextUrl="https://bbapp.bizarrebeasts.io/empire"
                     />
                   </div>
                 </div>

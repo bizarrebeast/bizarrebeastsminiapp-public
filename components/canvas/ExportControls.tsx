@@ -250,6 +250,7 @@ export default function ExportControls({ onExport }: ExportControlsProps) {
                     shareType="meme"
                     buttonSize="md"
                     className="justify-center"
+                    contextUrl="https://bbapp.bizarrebeasts.io/meme-generator"
                   />
                   <p className="text-xs text-gray-500 mt-3 text-center">
                     Attach your downloaded meme manually

@@ -20,6 +20,7 @@ interface ShareButtonsProps {
   className?: string;
   showLabels?: boolean;
   buttonSize?: 'sm' | 'md' | 'lg';
+  contextUrl?: string; // Optional: specific URL for the current page/content
 }
 
 export default function ShareButtons({
@@ -30,7 +31,8 @@ export default function ShareButtons({
   ritualData,
   className = '',
   showLabels = true,
-  buttonSize = 'md'
+  buttonSize = 'md',
+  contextUrl
 }: ShareButtonsProps) {
   const [sharing, setSharing] = useState<SharePlatform | null>(null);
 
@@ -58,20 +60,25 @@ export default function ShareButtons({
           }
         }
 
+        // Determine the URL to share based on context
+        const shareUrl = contextUrl || 'https://bbapp.bizarrebeasts.io';
+
         if (isInMiniApp) {
           // Use ultimateShare for native Farcaster sharing (works on mobile!)
           await ultimateShare({
             text: shareText || SHARE_TEMPLATES.farcaster.default,
-            embeds: ['https://bbapp.bizarrebeasts.io'],
+            embeds: [shareUrl],
             channelKey: 'bizarrebeasts'
           });
         } else {
-          // Fallback to opening Warpcast compose for browser users
-          await shareMemeToFarcaster(
-            imageDataUrl || '',
-            shareText,
-            'bizarrebeasts'
-          );
+          // Fallback to opening Warpcast compose for browser/desktop users
+          // Use shareToSocial instead of shareMemeToFarcaster to ensure URL embeds
+          await shareToSocial({
+            platform: 'farcaster',
+            text: shareText || SHARE_TEMPLATES.farcaster.default,
+            url: shareUrl,
+            channelKey: 'bizarrebeasts'
+          });
         }
       } else {
         // For other platforms, use the new social sharing
@@ -95,11 +102,13 @@ export default function ShareButtons({
           text = formatTextForPlatform(text, platform);
         }
 
-        // For Twitter and Telegram
+        // For Twitter and Telegram - use contextUrl if provided
+        const shareUrl = contextUrl || 'https://bbapp.bizarrebeasts.io';
+
         await shareToSocial({
           platform,
           text,
-          url: 'https://bbapp.bizarrebeasts.io',
+          url: shareUrl,
           hashtags: platform === 'twitter' ? ['BizarreBeasts', 'BB'] : undefined,
         });
       }

@@ -1102,16 +1102,18 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
         // Handle Farcaster share - simplified manual attachment
         if (options.shareToFarcaster) {
           console.log('Starting Farcaster share - manual attachment mode');
-          
+
           try {
             // Prepopulated text (user will attach meme manually)
-            const shareText = `...\n\nCheck out BizarreBeasts ($BB) and hold 25M tokens to join /bizarrebeasts! 🚀 👹\n\nCC @bizarrebeast\n\nhttps://bbapp.bizarrebeasts.io`;
-            
-            // Create compose URL without image embed
+            const shareText = `...\n\nCheck out BizarreBeasts ($BB) and hold 25M tokens to join /bizarrebeasts! 🚀 👹\n\nCC @bizarrebeast`;
+
+            // Create compose URL with proper URL embed for preview card
             const baseUrl = 'https://warpcast.com/~/compose';
             const params = new URLSearchParams();
             params.append('text', shareText);
             params.append('channelKey', 'bizarrebeasts');
+            // IMPORTANT: Add URL as embed for proper preview card generation - use meme-generator page
+            params.append('embeds[]', 'https://bbapp.bizarrebeasts.io/meme-generator');
             const shareUrl = `${baseUrl}?${params.toString()}`;
             
             // Use official SDK detection for share

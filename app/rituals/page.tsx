@@ -394,6 +394,7 @@ export default function RitualsPage() {
                       shareType="default"
                       buttonSize="sm"
                       showLabels={false}
+                      contextUrl="https://bbapp.bizarrebeasts.io/rituals"
                     />
                   </div>
                 </div>
@@ -529,6 +530,7 @@ export default function RitualsPage() {
                           }}
                           buttonSize="sm"
                           showLabels={false}
+                          contextUrl="https://bbapp.bizarrebeasts.io/rituals"
                         />
                       </div>
                     </div>
@@ -561,6 +563,7 @@ export default function RitualsPage() {
                   buttonSize="md"
                   showLabels={false}
                   className="justify-center"
+                  contextUrl="https://bbapp.bizarrebeasts.io/rituals"
                 />
               </div>
             </div>
