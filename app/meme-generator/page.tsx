@@ -8,6 +8,7 @@ import ExportControls from '@/components/canvas/ExportControls';
 import SafariAddToHomePrompt from '@/components/SafariAddToHomePrompt';
 import { StickerCollection } from '@/types';
 import { AccessTier } from '@/lib/empire';
+import { BookOpen, ExternalLink } from 'lucide-react';
 
 // Collections with Empire tier requirements
 const mockCollections: StickerCollection[] = [
@@ -84,9 +85,19 @@ export default function MemeGeneratorPage() {
           <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent leading-tight pb-2">
             Stickers & Meme Creator
           </h1>
-          <p className="text-lg text-gray-300 max-w-4xl mx-auto px-4">
+          <p className="text-lg text-gray-300 max-w-4xl mx-auto px-4 mb-4">
             Create your own memes, PFPs, and artwork with BizarreBeasts stickers from the BizarreBeasts universe! Choose from original artwork, game sprites, animations, and unique collections created by BIZARRE community members based on BizarreBeasts characters.
           </p>
+          <a
+            href="https://paragraph.com/@bizarrebeasts/bizarrebeasts-miniapp-how-to-series-stickers-and-meme-creator?referrer=0x3FDD6aFEd7a19990632468c7102219d051E685dB"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink text-black font-semibold rounded-lg hover:shadow-lg transition-all duration-300 transform hover:scale-105"
+          >
+            <BookOpen className="w-5 h-5" />
+            How-To Guide
+            <ExternalLink className="w-4 h-4" />
+          </a>
         </div>
 
         {/* Sticker Library - Above everything */}
