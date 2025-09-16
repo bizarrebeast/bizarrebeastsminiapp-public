@@ -174,7 +174,6 @@ export default function ResourcesPage() {
                   alt="Empire Guide"
                   className="w-full h-full object-cover rounded-t-xl"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-dark-card/80 to-transparent" />
               </div>
 
               {/* Content - Below */}

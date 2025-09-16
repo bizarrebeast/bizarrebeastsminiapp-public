@@ -156,8 +156,20 @@ export default function EmpirePage() {
             <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent leading-tight pb-2">
               Empire Leaderboard
             </h1>
+
+            {/* Page Banner */}
+            <div className="my-8 max-w-4xl mx-auto">
+              <img
+                src="/assets/page-assets/banners/page-banners/bizarrebeasts-page-banner-16.svg"
+                alt="Empire Banner"
+                className="w-full h-auto rounded-xl shadow-2xl"
+              />
+            </div>
+
             <p className="text-lg text-gray-300 max-w-4xl mx-auto px-4">
-              Climb the ranks and unlock exclusive features based on your $BB holdings! See where you stand among the BizarreBeasts community and discover what premium content awaits at higher Empire positions. Your leaderboard position qualifies you for treasury distributions, NFT raffles, and other BIZARRE perks! Powered by EmpireBuilder.world ($GLANKER)
+              Climb the ranks and unlock exclusive features based on your $BB holdings! See where you stand among the BizarreBeasts community and discover what premium content awaits at higher Empire positions.
+              <br /><br />
+              Your leaderboard position qualifies you for treasury distributions, NFT raffles, and other BIZARRE perks! Powered by EmpireBuilder.world ($GLANKER)
             </p>
           </div>
           
@@ -300,15 +312,15 @@ export default function EmpirePage() {
 
         {/* Main Leaderboard Table */}
         <div className="bg-dark-card border border-gem-crystal/20 rounded-lg overflow-hidden">
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto max-h-[800px] overflow-y-auto">
             <table className="w-full">
-              <thead className="bg-dark-bg border-b border-gem-crystal/20">
+              <thead className="bg-dark-bg border-b border-gem-crystal/20 sticky top-0 z-10">
                 <tr>
-                  <th className="text-left px-2 sm:px-4 py-3 text-gray-400 font-medium text-xs sm:text-sm">Rank</th>
-                  <th className="text-center px-2 sm:px-4 py-3 text-gray-400 font-medium text-xs sm:text-sm">Tier</th>
-                  <th className="text-left px-2 sm:px-4 py-3 text-gray-400 font-medium text-xs sm:text-sm">Address/Name</th>
-                  <th className="text-right px-2 sm:px-4 py-3 text-gray-400 font-medium text-xs sm:text-sm">Score</th>
-                  <th className="text-right px-2 sm:px-4 py-3 text-gray-400 font-medium text-xs sm:text-sm hidden sm:table-cell">Boosters</th>
+                  <th className="text-left px-2 sm:px-4 py-3 text-gray-400 font-medium text-xs sm:text-sm bg-dark-bg">Rank</th>
+                  <th className="text-center px-2 sm:px-4 py-3 text-gray-400 font-medium text-xs sm:text-sm bg-dark-bg">Tier</th>
+                  <th className="text-left px-2 sm:px-4 py-3 text-gray-400 font-medium text-xs sm:text-sm bg-dark-bg">Address/Name</th>
+                  <th className="text-right px-2 sm:px-4 py-3 text-gray-400 font-medium text-xs sm:text-sm bg-dark-bg">Score</th>
+                  <th className="text-right px-2 sm:px-4 py-3 text-gray-400 font-medium text-xs sm:text-sm hidden sm:table-cell bg-dark-bg">Boosters</th>
                 </tr>
               </thead>
               <tbody>
@@ -325,7 +337,7 @@ export default function EmpirePage() {
                     </td>
                   </tr>
                 ) : (
-                  leaderboard.slice(0, 100).map((holder) => (
+                  leaderboard.slice(0, 250).map((holder) => (
                     <tr key={holder.address} className="border-b border-gray-800 hover:bg-dark-card/50 transition">
                       <td className="px-2 sm:px-4 py-3">
                         <span className={`font-bold text-xs sm:text-base ${getTierColor(holder.rank)}`}>
@@ -363,10 +375,10 @@ export default function EmpirePage() {
               </tbody>
             </table>
           </div>
-          
-          {!loading && leaderboard.length > 100 && (
+
+          {!loading && leaderboard.length > 250 && (
             <div className="p-4 text-center text-gray-400 text-sm border-t border-gray-800">
-              Showing top 100 holders • Total: {leaderboard.length} holders
+              Showing top 250 holders • Total: {leaderboard.length} holders
             </div>
           )}
         </div>
