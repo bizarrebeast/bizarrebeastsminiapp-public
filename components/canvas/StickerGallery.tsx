@@ -28,26 +28,26 @@ function getTierBadge(tier?: string) {
   switch(tier) {
     case 'all':
     case 'elite':
-      return { 
-        icon: <Crown className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-gem-gold" />, 
+      return {
+        emoji: '👹',
         label: 'BIZARRE',
         color: 'text-gem-gold'
       };
     case 'premium':
-      return { 
-        icon: <Star className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-gem-purple" />, 
+      return {
+        emoji: '🤡',
         label: 'Weirdo',
         color: 'text-gem-purple'
       };
     case 'rare':
-      return { 
-        icon: <Star className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-gem-blue" />, 
+      return {
+        emoji: '🎭',
         label: 'Oddball',
         color: 'text-gem-blue'
       };
     case 'common':
-      return { 
-        icon: <Sparkles className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-gem-crystal" />, 
+      return {
+        emoji: '👾',
         label: 'Misfit',
         color: 'text-gem-crystal'
       };
@@ -309,10 +309,8 @@ export default function StickerGallery({
                     
                     {/* Tier Badge - show for all tier-locked items */}
                     {tierBadge && (
-                      <div className="absolute bottom-0.5 right-0.5 bg-black/70 rounded p-0.5">
-                        <div className="w-3 h-3">
-                          {tierBadge.icon}
-                        </div>
+                      <div className="absolute bottom-0.5 right-0.5 bg-black/70 rounded p-0.5 flex items-center justify-center" style={{ width: '18px', height: '18px' }}>
+                        <span className="text-xs leading-none">{tierBadge.emoji}</span>
                       </div>
                     )}
                   </TouchSafeButton>

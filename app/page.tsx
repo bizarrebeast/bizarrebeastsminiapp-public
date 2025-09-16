@@ -43,17 +43,17 @@ export default function Home() {
   return (
     <div className="min-h-[calc(100vh-64px)]">
       {/* Hero Section */}
-      <section className="relative px-4 py-20 text-center">
+      <section className="relative px-4 pt-8 pb-20 text-center">
         <div className="max-w-4xl mx-auto">
-          {/* Banner */}
+          {/* Banner above title */}
           <div className="flex justify-center mb-6">
-            <img 
-              src="/assets/page-assets/banners/home-page-banner.png" 
-              alt="BizarreBeasts Banner" 
-              className="w-full max-w-4xl object-contain rounded-2xl"
+            <img
+              src="/assets/page-assets/banners/new-home-page-banner-bizarrebeasts.svg"
+              alt="BizarreBeasts Banner"
+              className="w-full max-w-4xl object-contain"
             />
           </div>
-          
+
           {/* Welcome Title */}
           <h1 className="text-4xl sm:text-5xl font-bold mb-6 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent">
             BizarreBeasts ($BB) Miniapp

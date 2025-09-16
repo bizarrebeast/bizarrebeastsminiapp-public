@@ -157,15 +157,6 @@ export default function EmpirePage() {
               Empire Leaderboard
             </h1>
 
-            {/* Page Banner */}
-            <div className="my-8 max-w-4xl mx-auto">
-              <img
-                src="/assets/page-assets/banners/page-banners/bizarrebeasts-page-banner-16.svg"
-                alt="Empire Banner"
-                className="w-full h-auto rounded-xl shadow-2xl"
-              />
-            </div>
-
             <p className="text-lg text-gray-300 max-w-4xl mx-auto px-4">
               Climb the ranks and unlock exclusive features based on your $BB holdings! See where you stand among the BizarreBeasts community and discover what premium content awaits at higher Empire positions.
               <br /><br />
