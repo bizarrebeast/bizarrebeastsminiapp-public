@@ -75,26 +75,28 @@ export default function ResourcesPage() {
   // Get category info
   const getCategoryInfo = (category: string) => {
     switch(category) {
+      case 'how-to':
+        return { icon: BookOpen, color: 'from-teal-400 to-yellow-400', name: 'BizarreBeasts Miniapp How-To Series' };
       case 'getting-started':
-        return { icon: Sparkles, color: 'from-gem-crystal via-gem-gold to-gem-pink', name: 'Getting Started' };
+        return { icon: Sparkles, color: 'from-teal-400 to-yellow-400', name: 'Getting Started' };
       case 'tokens':
-        return { icon: Coins, color: 'from-gem-crystal via-gem-gold to-gem-pink', name: 'Tokens & Economy' };
+        return { icon: Coins, color: 'from-teal-400 to-yellow-400', name: 'Tokens & Economy' };
       case 'empire':
-        return { icon: Crown, color: 'from-gem-crystal via-gem-gold to-gem-pink', name: 'Empire System' };
+        return { icon: Crown, color: 'from-teal-400 to-yellow-400', name: 'Empire System' };
       case 'games':
-        return { icon: Gamepad2, color: 'from-gem-crystal via-gem-gold to-gem-pink', name: 'Games & Entertainment' };
+        return { icon: Gamepad2, color: 'from-teal-400 to-yellow-400', name: 'Games & Entertainment' };
       case 'community':
-        return { icon: Heart, color: 'from-gem-crystal via-gem-gold to-gem-pink', name: 'Community & Culture' };
+        return { icon: Heart, color: 'from-teal-400 to-yellow-400', name: 'Community & Culture' };
       case 'international':
-        return { icon: Globe2, color: 'from-gem-crystal via-gem-gold to-gem-pink', name: 'International' };
+        return { icon: Globe2, color: 'from-teal-400 to-yellow-400', name: 'International' };
       case 'monthly-updates':
-        return { icon: FileText, color: 'from-gem-crystal via-gem-gold to-gem-pink', name: 'Monthly Updates' };
+        return { icon: FileText, color: 'from-teal-400 to-yellow-400', name: 'Monthly Updates' };
       case 'art':
-        return { icon: Sparkles, color: 'from-gem-crystal via-gem-gold to-gem-pink', name: 'Art & Creativity' };
+        return { icon: Sparkles, color: 'from-teal-400 to-yellow-400', name: 'Art & Creativity' };
       case 'technical':
-        return { icon: BookOpen, color: 'from-gem-crystal via-gem-gold to-gem-pink', name: 'Technical Deep Dives' };
+        return { icon: BookOpen, color: 'from-teal-400 to-yellow-400', name: 'Technical Deep Dives' };
       default:
-        return { icon: FileText, color: 'from-gem-crystal via-gem-gold to-gem-pink', name: category };
+        return { icon: FileText, color: 'from-teal-400 to-yellow-400', name: category };
     }
   };
 
@@ -158,6 +160,55 @@ export default function ResourcesPage() {
           </div>
         </section>
 
+
+        {/* How-To Series Guide - New Special Prominent Section */}
+        <section className="mb-12">
+          <div className="relative overflow-hidden rounded-xl">
+            {/* Background gradient */}
+            <div className="absolute inset-0 bg-gradient-to-br from-teal-500/20 via-yellow-500/10 to-teal-400/20" />
+
+            {/* Content */}
+            <div className="relative bg-dark-card/90 backdrop-blur border border-yellow-500/30 rounded-xl">
+              {/* Banner Image - Top */}
+              <div className="relative h-64 md:h-80 overflow-hidden">
+                <img
+                  src="/assets/page-assets/banners/bizarrebeasts-how-to-series-banner-1.png"
+                  alt="How-To Series"
+                  className="w-full h-full object-cover rounded-t-xl"
+                />
+              </div>
+
+              {/* Content - Below */}
+              <div className="p-6 md:p-8">
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="p-2 bg-gradient-to-r from-teal-400 to-yellow-400 rounded-lg">
+                    <BookOpen className="w-6 h-6 text-dark-bg" />
+                  </div>
+                  <span className="text-sm font-bold bg-gradient-to-r from-teal-400 to-yellow-400 bg-clip-text text-transparent uppercase tracking-wider">How-To Series</span>
+                </div>
+
+                <h3 className="text-2xl md:text-3xl font-bold mb-3 bg-gradient-to-r from-teal-400 to-yellow-400 bg-clip-text text-transparent">
+                  BizarreBeasts Miniapp How-To: Stickers & Meme Creator
+                </h3>
+
+                <p className="text-gray-300 mb-6">
+                  Learn how to use the BizarreBeasts Stickers & Meme Creator tool. Step-by-step guide to creating custom memes, PFPs, and artwork with BizarreBeasts stickers.
+                </p>
+
+                {/* Read Article Button */}
+                <a
+                  href="https://paragraph.com/@bizarrebeasts/bizarrebeasts-miniapp-how-to-series-stickers-and-meme-creator"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-teal-400 to-yellow-400 text-dark-bg font-bold rounded-lg hover:shadow-lg transition-all duration-300 transform hover:scale-105"
+                >
+                  Read Tutorial
+                  <ExternalLink className="w-4 h-4" />
+                </a>
+              </div>
+            </div>
+          </div>
+        </section>
 
         {/* Empire Guide - Special Prominent Section */}
         <section className="mb-12">
@@ -238,7 +289,7 @@ export default function ResourcesPage() {
               </h2>
             </div>
             <div className="grid md:grid-cols-3 gap-6">
-              {featuredResources.slice(1, 4).map(resource => (
+              {featuredResources.slice(2, 5).map(resource => (
                 <a
                   key={resource.id}
                   href={resource.externalUrl}

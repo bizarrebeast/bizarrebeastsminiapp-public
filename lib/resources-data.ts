@@ -2,7 +2,7 @@ export interface Resource {
   id: string;
   title: string;
   description: string;
-  category: 'getting-started' | 'tokens' | 'empire' | 'games' | 'community' | 'international' | 'monthly-updates' | 'art' | 'technical';
+  category: 'how-to' | 'getting-started' | 'tokens' | 'empire' | 'games' | 'community' | 'international' | 'monthly-updates' | 'art' | 'technical';
   language: 'en' | 'es' | 'ko' | 'ja' | 'zh';
   readTime: number; // in minutes
   topic: string; // Replaced difficulty with topic (e.g., 'Strategy', 'Tutorial', 'News', 'Guide')
@@ -18,13 +18,27 @@ export interface Resource {
 export const resources: Resource[] = [
   // FEATURED/HIGH PRIORITY ARTICLES
   {
+    id: 'how-to-stickers-meme',
+    title: 'BizarreBeasts Miniapp How-To Series: Stickers and Meme Creator',
+    description: 'Learn how to use the BizarreBeasts Stickers & Meme Creator tool. Step-by-step guide to creating custom memes, PFPs, and artwork with BizarreBeasts stickers.',
+    category: 'how-to',
+    language: 'en',
+    readTime: 8,
+    topic: 'Tutorial',
+    difficulty: 'beginner',
+    featured: true,
+    updatedDate: 'Dec 2024',
+    externalUrl: 'https://paragraph.com/@bizarrebeasts/bizarrebeasts-miniapp-how-to-series-stickers-and-meme-creator',
+    tags: ['how-to', 'tutorial', 'memes', 'stickers', 'creator', 'miniapp']
+  },
+  {
     id: 'bb-empire-guide',
     title: '$BB Empire Guide',
     description: 'Everything you need to know to get started with the BizarreBeasts Empire. Complete walkthrough of tokens, boosters, and rewards.',
     category: 'empire',
     language: 'en',
     readTime: 10,
-    
+
     topic: 'Guide',
     difficulty: 'beginner',
     featured: true,
@@ -38,8 +52,8 @@ export const resources: Resource[] = [
     description: 'Curious about crypto? Dive into BizarreBeasts with this complete beginner\'s guide to Web3, NFTs, and the ecosystem.',
     category: 'getting-started',
     language: 'en',
-    readTime: 15,
-    
+    readTime: 9,
+
     topic: 'Guide',
     difficulty: 'beginner',
     featured: true,
@@ -53,7 +67,7 @@ export const resources: Resource[] = [
     description: 'Complete walkthrough and strategy guide for the flagship BizarreBeasts game, Treasure Quest.',
     category: 'games',
     language: 'en',
-    readTime: 20,
+    readTime: 5,
     topic: 'Guide',
     difficulty: 'intermediate',
     featured: true,
@@ -67,7 +81,7 @@ export const resources: Resource[] = [
     description: 'The technical journey of creating BizarreBeasts Treasure Quest - a deep dive into building Web3 games.',
     category: 'technical',
     language: 'en',
-    readTime: 25,
+    readTime: 11,
     topic: 'Development',
     difficulty: 'advanced',
     featured: true,
