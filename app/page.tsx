@@ -1,11 +1,12 @@
 'use client';
 
 import Link from 'next/link';
-import { Palette, Gamepad2, Trophy, TrendingUp, Users, Sparkles, ArrowDownUp, Music, ExternalLink } from 'lucide-react';
+import { Palette, Gamepad2, Trophy, TrendingUp, Users, Sparkles, ArrowDownUp, Music, ExternalLink, FileText, Coins, ChevronDown } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
 export default function Home() {
   const [marketCap, setMarketCap] = useState<string>('--');
+  const [showEcosystemTokens, setShowEcosystemTokens] = useState(false);
 
   useEffect(() => {
     const fetchMarketCap = async () => {
@@ -104,7 +105,7 @@ export default function Home() {
       </section>
 
       {/* About BizarreBeasts Section */}
-      <section className="px-4 pb-16">
+      <section className="px-4 pb-8">
         <div className="max-w-4xl mx-auto">
           <div className="bg-gradient-to-br from-dark-card via-dark-card to-gem-crystal/5 border border-gem-crystal/20 rounded-2xl p-8">
             <div className="flex justify-center mb-4">
@@ -133,7 +134,7 @@ export default function Home() {
       </section>
 
       {/* Features Grid */}
-      <section className="px-4 py-16">
+      <section className="px-4 py-8">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-5xl font-bold text-center mb-12 relative">
             <span className="bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent">
@@ -289,7 +290,7 @@ export default function Home() {
       </section>
 
       {/* Featured Game Banner - Treasure Quest */}
-      <section className="px-4 py-16">
+      <section className="px-4 py-8">
         <div className="max-w-6xl mx-auto">
           <div className="bg-gradient-to-br from-dark-card via-dark-card to-gem-gold/10 border border-gem-gold/30 rounded-2xl overflow-hidden hover:border-gem-gold/50 transition-all duration-300">
             <div className="relative">
@@ -371,8 +372,233 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Contract Information Section */}
+      <section className="px-4 py-8">
+        <div className="max-w-6xl mx-auto">
+          <div className="bg-dark-card border border-gem-crystal/20 rounded-xl p-6 md:p-8">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="p-2 bg-gradient-to-r from-teal-400 to-yellow-400 rounded-lg">
+                <FileText className="w-6 h-6 text-dark-bg" />
+              </div>
+              <h2 className="text-2xl font-bold bg-gradient-to-r from-teal-400 to-yellow-400 bg-clip-text text-transparent">
+                Token Ecosystem & Contracts
+              </h2>
+            </div>
+
+            {/* Main $BB Token */}
+            <div className="mb-8">
+              <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                <Coins className="w-5 h-5 text-gem-gold" />
+                BizarreBeasts ($BB) Token
+              </h3>
+              <div className="bg-dark-bg/50 rounded-lg p-4 space-y-3">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+                  <span className="text-gray-400 text-sm">Contract Address:</span>
+                  <code className="text-gem-crystal text-xs sm:text-sm font-mono break-all">
+                    0x0520bf1d3cEE163407aDA79109333aB1599b4004
+                  </code>
+                </div>
+                <div className="flex flex-wrap gap-3">
+                  <a
+                    href="https://basescan.org/token/0x0520bf1d3cEE163407aDA79109333aB1599b4004"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-gem-purple to-gem-blue text-white text-sm rounded-lg hover:shadow-lg transition-all duration-300"
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                    BaseScan
+                  </a>
+                  <a
+                    href="https://dexscreener.com/base/0x49e35c372ee285d22a774f8a415f8bf3ad6456c2"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-gem-gold to-gem-crystal text-dark-bg text-sm rounded-lg hover:shadow-lg transition-all duration-300"
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                    DexScreener
+                  </a>
+                  <a
+                    href="https://app.uniswap.org/swap?outputCurrency=0x0520bf1d3cEE163407aDA79109333aB1599b4004&chain=base"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-pink-500 to-purple-500 text-white text-sm rounded-lg hover:shadow-lg transition-all duration-300"
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                    Uniswap
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            {/* Smart Contracts */}
+            <div className="mb-8">
+              <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                <FileText className="w-5 h-5 text-gem-purple" />
+                Smart Contracts
+              </h3>
+              <div className="bg-dark-bg/50 rounded-lg p-4 space-y-4">
+                <div>
+                  <div className="font-semibold text-white mb-2">BizarreCheckIn Contract</div>
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+                    <span className="text-gray-400 text-sm">Address:</span>
+                    <code className="text-gem-crystal text-xs sm:text-sm font-mono break-all">
+                      0x12125F025ea390B975aEa210B40c7B81dC2F00E0
+                    </code>
+                  </div>
+                  <a
+                    href="https://basescan.org/address/0x12125F025ea390B975aEa210B40c7B81dC2F00E0"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 mt-2 text-gem-crystal hover:text-gem-gold text-sm transition-colors"
+                  >
+                    View on BaseScan <ExternalLink className="w-3 h-3" />
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            {/* Ecosystem Tokens Dropdown */}
+            <div>
+              <button
+                onClick={() => setShowEcosystemTokens(!showEcosystemTokens)}
+                className="flex items-center gap-2 text-lg font-bold text-white mb-4 hover:text-gem-crystal transition-colors"
+              >
+                <Sparkles className="w-5 h-5 text-gem-crystal" />
+                Ecosystem Tokens
+                <ChevronDown
+                  className={`w-4 h-4 transition-transform duration-200 ${
+                    showEcosystemTokens ? 'rotate-180' : ''
+                  }`}
+                />
+              </button>
+
+              {showEcosystemTokens && (
+                <div className="bg-dark-bg/50 rounded-lg p-4 space-y-4 animate-fadeIn">
+                  {/* Zora Creator Coin */}
+                  <div className="border-b border-gem-crystal/10 pb-4">
+                    <div className="font-semibold text-white mb-2">BizarreBeasts Zora Creator Coin</div>
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-3">
+                      <span className="text-gray-400 text-sm">Contract:</span>
+                      <code className="text-gem-crystal text-xs sm:text-sm font-mono break-all">
+                        0x409a3041a005b0e1b4a9e8bb397a988228e05c2d
+                      </code>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      <a
+                        href="https://zora.co/@bizarrebeasts"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 px-3 py-1.5 bg-black text-white text-xs rounded-lg hover:bg-gray-900 transition-colors"
+                      >
+                        Zora Profile <ExternalLink className="w-3 h-3" />
+                      </a>
+                      <a
+                        href="https://basescan.org/address/0x409a3041a005b0e1b4a9e8bb397a988228e05c2d"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-600/20 text-blue-400 text-xs rounded-lg hover:bg-blue-600/30 transition-colors"
+                      >
+                        BaseScan <ExternalLink className="w-3 h-3" />
+                      </a>
+                      <a
+                        href="https://dexscreener.com/base/0xffb35712fae7648592ca57293bc910a21a55a9780d7b40c46087137d0b9039af"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 px-3 py-1.5 bg-yellow-600/20 text-yellow-400 text-xs rounded-lg hover:bg-yellow-600/30 transition-colors"
+                      >
+                        DexScreener <ExternalLink className="w-3 h-3" />
+                      </a>
+                    </div>
+                  </div>
+
+                  {/* CURA Channel Token */}
+                  <div className="border-b border-gem-crystal/10 pb-4">
+                    <div className="font-semibold text-white mb-2">$BIZARRE - CURA Channel Token</div>
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-3">
+                      <span className="text-gray-400 text-sm">Token Contract:</span>
+                      <code className="text-gem-crystal text-xs sm:text-sm font-mono break-all">
+                        0x3733D96361829911C1A5080e6F5095774B12D628
+                      </code>
+                    </div>
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-3">
+                      <span className="text-gray-400 text-sm">Claim Contract:</span>
+                      <code className="text-gem-crystal text-xs sm:text-sm font-mono break-all">
+                        0x7d0436582a5b0341a4335d5d9818978ade808980
+                      </code>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      <a
+                        href="https://cura.network/bizarrebeasts/token"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 px-3 py-1.5 bg-purple-600/20 text-purple-400 text-xs rounded-lg hover:bg-purple-600/30 transition-colors"
+                      >
+                        CURA Network <ExternalLink className="w-3 h-3" />
+                      </a>
+                      <a
+                        href="https://dexscreener.com/base/0x3733D96361829911C1A5080e6F5095774B12D628"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 px-3 py-1.5 bg-yellow-600/20 text-yellow-400 text-xs rounded-lg hover:bg-yellow-600/30 transition-colors"
+                      >
+                        DexScreener <ExternalLink className="w-3 h-3" />
+                      </a>
+                      <a
+                        href="https://basescan.org/address/0x7d0436582a5b0341a4335d5d9818978ade808980"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-600/20 text-blue-400 text-xs rounded-lg hover:bg-blue-600/30 transition-colors"
+                      >
+                        Claim Contract <ExternalLink className="w-3 h-3" />
+                      </a>
+                    </div>
+                  </div>
+
+                  {/* Retake.tv Token */}
+                  <div className="border-b border-gem-crystal/10 pb-4">
+                    <div className="font-semibold text-white mb-2">BIZARREBEAST - Retake.tv Token</div>
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-3">
+                      <span className="text-gray-400 text-sm">Contract:</span>
+                      <code className="text-gem-crystal text-xs sm:text-sm font-mono break-all">
+                        0xd86dba76a95305539ba3b6628ef1476e70f99b07
+                      </code>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      <a
+                        href="https://basescan.org/token/0xd86dba76a95305539ba3b6628ef1476e70f99b07"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-600/20 text-blue-400 text-xs rounded-lg hover:bg-blue-600/30 transition-colors"
+                      >
+                        BaseScan <ExternalLink className="w-3 h-3" />
+                      </a>
+                      <a
+                        href="https://retake.tv/live/357897"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 px-3 py-1.5 bg-green-600/20 text-green-400 text-xs rounded-lg hover:bg-green-600/30 transition-colors"
+                      >
+                        Retake.tv <ExternalLink className="w-3 h-3" />
+                      </a>
+                      <span className="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-600/20 text-gray-400 text-xs rounded-lg">
+                        DEX Coming Soon
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Placeholder for future tokens */}
+                  <div className="text-gray-500 text-sm italic pt-2">
+                    More ecosystem tokens coming soon
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Contest Banner */}
-      <section className="px-4 py-16">
+      <section className="px-4 py-8">
         <div className="max-w-4xl mx-auto">
           <div className="bg-gradient-to-r from-gem-crystal/20 via-gem-gold/20 to-gem-pink/20 rounded-lg p-8 text-center border border-gem-crystal/30">
             <h2 className="text-2xl font-bold mb-4">🏆 Meme Contest Coming Soon</h2>
