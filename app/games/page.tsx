@@ -20,19 +20,15 @@ export default function GamesPage() {
   return (
     <div className="min-h-[calc(100vh-64px)] px-4 py-8">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-12 flex justify-center">
-          <img 
-            src="/assets/page-assets/banners/bizarrebeasts-games-banner.png" 
-            alt={`BizarreBeasts Games - 8 Hand-crafted games with over ${formatPlayCount(totalPlays)} plays!`}
-            className="w-full max-w-4xl object-contain rounded-2xl"
-          />
+        {/* Title and Description */}
+        <div className="text-center mb-8">
+          <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent leading-tight pb-2">
+            BizarreBeasts Games
+          </h1>
+          <p className="text-lg text-gray-300 max-w-4xl mx-auto px-4">
+            Play all 8 original BizarreBeasts games powered by Remix! Each game features original hand-illustrated BizarreBeasts artwork and characters from the universe. Jump into adventures, collect treasures, and experience the full BIZARRE gaming ecosystem. All games are playable across multiple platforms, including Farcaster, Telegram, World App, and coming soon to iOS and Android!
+          </p>
         </div>
-        
-        {/* Description */}
-        <p className="text-lg text-gray-300 mb-8 max-w-4xl mx-auto px-4 text-center">
-          Play all 8 original BizarreBeasts games powered by Remix! Each game features original hand-illustrated BizarreBeasts artwork and characters from the universe. Jump into adventures, collect treasures, and experience the full BIZARRE gaming ecosystem. All games are playable across multiple platforms, including Farcaster, Telegram, World App, and coming soon to iOS and Android!
-        </p>
 
         {/* Quick Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">

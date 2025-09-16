@@ -346,13 +346,14 @@ export default function RitualsPage() {
   return (
     <div className="min-h-[calc(100vh-64px)] px-4 py-8">
       <div className="max-w-4xl mx-auto">
-        {/* Header Banner */}
-        <div className="text-center mb-12 flex justify-center">
-          <img 
-            src="/assets/page-assets/banners/daily-bizarre-rituals-banner.png" 
-            alt="Daily BIZARRE Rituals - Complete your daily tasks in the BizarreBeasts ecosystem"
-            className="w-full max-w-4xl object-contain rounded-2xl"
-          />
+        {/* Title and Description */}
+        <div className="text-center mb-8">
+          <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent leading-tight pb-2">
+            Daily BIZARRE Rituals
+          </h1>
+          <p className="text-lg text-gray-300 max-w-2xl mx-auto">
+            Complete daily rituals and check-ins to engage with the BizarreBeasts ecosystem, earn $BB rewards, and strengthen our community. Your consistency drives the $BIZARRE movement forward!
+          </p>
         </div>
 
         {/* Featured Ritual */}

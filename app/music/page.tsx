@@ -163,52 +163,13 @@ export default function MusicPage() {
   return (
     <div className="min-h-[calc(100vh-64px)] bg-dark-bg">
       <div className="max-w-7xl mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="mb-8 flex justify-center">
-          <img 
-            src="/assets/page-assets/banners/music-game-soundtracks-banner.png" 
-            alt="Game Soundtracks - Original music from BizarreBeasts games. Stream on your favorite platform or collect as NFTs."
-            className="w-full max-w-4xl object-contain rounded-2xl"
-          />
-        </div>
-        
-        {/* Description */}
-        <p className="text-lg text-gray-300 mb-8 max-w-4xl mx-auto px-4 text-center">
-          Original music from BizarreBeasts games! Stream BIZARRE, original soundtracks from BizarreBeasts games on your favorite platform, or collect them as exclusive NFTs. Experience the full BIZARRE audio universe that brings the games to life.
-        </p>
-
-        {/* About the Music Section */}
-        <div className="mb-8 bg-gray-800/50 rounded-lg p-6 border border-gray-700">
-          <h2 className="text-xl font-semibold text-white mb-3 flex items-center gap-2">
-            <Headphones className="w-5 h-5 text-gem-crystal" />
-            About the Music
-          </h2>
-          <p className="text-gray-400 mb-4">
-            All tracks are original compositions created and produced by{' '}
-            <a 
-              href="https://farcaster.xyz/kateyarter" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="text-gem-crystal hover:text-gem-gold transition-colors"
-            >
-              @kateyarter
-            </a>
-            {' '}of Honey High Records for the BizarreBeasts gaming ecosystem. 
-            Each piece is crafted to enhance the gaming experience and bring the world of BizarreBeasts to life. 
-            Reach out to{' '}
-            <a 
-              href="https://farcaster.xyz/kateyarter" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="text-gem-crystal hover:text-gem-gold transition-colors"
-            >
-              @kateyarter
-            </a>
-            {' '}for original tracks for your games or projects!
-          </p>
-          <p className="text-gray-400">
-            Stream on your favorite platform or collect limited edition NFT versions to support the project 
-            and own a piece of BizarreBeasts history.
+        {/* Title and Description */}
+        <div className="text-center mb-8">
+          <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent leading-tight pb-2">
+            Music & Soundtracks
+          </h1>
+          <p className="text-lg text-gray-300 max-w-4xl mx-auto px-4">
+            Original music from BizarreBeasts games! Stream BIZARRE, original soundtracks from BizarreBeasts games on your favorite platform, or collect them as exclusive NFTs. Experience the full BIZARRE audio universe that brings the games to life.
           </p>
         </div>
 
@@ -343,6 +304,41 @@ export default function MusicPage() {
               </div>
             </div>
           ))}
+        </div>
+
+        {/* About the Music Section */}
+        <div className="mt-8 bg-gray-800/50 rounded-lg p-6 border border-gray-700">
+          <h2 className="text-xl font-semibold text-white mb-3 flex items-center gap-2">
+            <Headphones className="w-5 h-5 text-gem-crystal" />
+            About the Music
+          </h2>
+          <p className="text-gray-400 mb-4">
+            All tracks are original compositions created and produced by{' '}
+            <a
+              href="https://farcaster.xyz/kateyarter"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gem-crystal hover:text-gem-gold transition-colors"
+            >
+              @kateyarter
+            </a>
+            {' '}of Honey High Records for the BizarreBeasts gaming ecosystem.
+            Each piece is crafted to enhance the gaming experience and bring the world of BizarreBeasts to life.
+            Reach out to{' '}
+            <a
+              href="https://farcaster.xyz/kateyarter"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gem-crystal hover:text-gem-gold transition-colors"
+            >
+              @kateyarter
+            </a>
+            {' '}for original tracks for your games or projects!
+          </p>
+          <p className="text-gray-400">
+            Stream on your favorite platform or collect limited edition NFT versions to support the project
+            and own a piece of BizarreBeasts history.
+          </p>
         </div>
 
       </div>

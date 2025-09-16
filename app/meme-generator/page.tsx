@@ -79,19 +79,15 @@ export default function MemeGeneratorPage() {
     <div className="min-h-[calc(100vh-64px)] bg-dark-bg flex flex-col">
       <SafariAddToHomePrompt />
       <div className="flex-1 flex flex-col w-full max-w-7xl mx-auto px-2 sm:px-4 py-2 sm:py-4">
-        {/* Header */}
-        <div className="mb-4 flex justify-center">
-          <img 
-            src="/assets/page-assets/banners/stickers-meme-creator-banner.png" 
-            alt="Meme Generator - Create epic memes with BizarreBeasts stickers"
-            className="w-full max-w-4xl object-contain rounded-2xl"
-          />
+        {/* Title and Description */}
+        <div className="text-center mb-6">
+          <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent leading-tight pb-2">
+            Stickers & Meme Creator
+          </h1>
+          <p className="text-lg text-gray-300 max-w-4xl mx-auto px-4">
+            Create your own memes, PFPs, and artwork with BizarreBeasts stickers from the BizarreBeasts universe! Choose from original artwork, game sprites, animations, and unique collections created by BIZARRE community members based on BizarreBeasts characters.
+          </p>
         </div>
-        
-        {/* Description */}
-        <p className="text-lg text-gray-300 mb-8 max-w-4xl mx-auto px-4 text-center">
-          Create your own memes, PFPs, and artwork with BizarreBeasts stickers from the BizarreBeasts universe! Choose from original artwork, game sprites, animations, and unique collections created by BIZARRE community members based on BizarreBeasts characters.
-        </p>
 
         {/* Sticker Library - Above everything */}
         <div className="bg-dark-card border border-gem-crystal/20 rounded-lg p-3 sm:p-4 mb-4">

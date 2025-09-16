@@ -50,19 +50,15 @@ export default function SwapPage() {
   return (
     <div className="min-h-[calc(100vh-64px)] bg-dark-bg overflow-x-hidden">
       <div className="max-w-7xl mx-auto px-4 py-8 overflow-x-hidden">
-        {/* Header */}
-        <div className="mb-8 flex justify-center">
-          <img 
-            src="/assets/page-assets/banners/token-swap-bb-chart-banner.png" 
-            alt="Token Swap - Swap any token on Base. Default output is $BB token."
-            className="w-full max-w-4xl object-contain rounded-2xl"
-          />
+        {/* Title and Description */}
+        <div className="text-center mb-8">
+          <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent leading-tight pb-2">
+            Token Swap & Chart
+          </h1>
+          <p className="text-lg text-gray-300 max-w-4xl mx-auto px-4">
+            Track $BB token performance and swap tokens directly in the app! View real-time price charts, trading volume, and market data for BizarreBeasts ($BB) token. Seamlessly swap $BB or any token with built-in Uniswap integration.
+          </p>
         </div>
-        
-        {/* Description */}
-        <p className="text-lg text-gray-300 mb-8 max-w-4xl mx-auto px-4 text-center">
-          Track $BB token performance and swap tokens directly in the app! View real-time price charts, trading volume, and market data for BizarreBeasts ($BB) token. Seamlessly swap $BB or any token with built-in Uniswap integration.
-        </p>
 
         {/* Main Content Grid */}
         <div className="grid lg:grid-cols-[1fr_350px] gap-6">

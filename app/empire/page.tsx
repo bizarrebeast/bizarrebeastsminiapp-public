@@ -150,20 +150,16 @@ export default function EmpirePage() {
   return (
     <div className="min-h-[calc(100vh-64px)] bg-dark-bg px-4 py-8">
       <div className="max-w-6xl mx-auto">
-        {/* Header */}
+        {/* Title and Description */}
         <div className="mb-8">
-          <div className="mb-4 flex justify-center">
-            <img 
-              src="/assets/page-assets/banners/empire-leaderboard-banner.png" 
-              alt="Empire Leaderboard"
-              className="w-full max-w-4xl object-contain rounded-2xl"
-            />
+          <div className="text-center mb-6">
+            <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent leading-tight pb-2">
+              Empire Leaderboard
+            </h1>
+            <p className="text-lg text-gray-300 max-w-4xl mx-auto px-4">
+              Climb the ranks and unlock exclusive features based on your $BB holdings! See where you stand among the BizarreBeasts community and discover what premium content awaits at higher Empire positions. Your leaderboard position qualifies you for treasury distributions, NFT raffles, and other BIZARRE perks! Powered by EmpireBuilder.world ($GLANKER)
+            </p>
           </div>
-          
-          {/* Description */}
-          <p className="text-lg text-gray-300 mb-8 max-w-4xl mx-auto px-4 text-center">
-            Climb the ranks and unlock exclusive features based on your $BB holdings! See where you stand among the BizarreBeasts community and discover what premium content awaits at higher Empire positions. Your leaderboard position qualifies you for treasury distributions, NFT raffles, and other BIZARRE perks! Powered by EmpireBuilder.world ($GLANKER)
-          </p>
           
           {/* Search Bar */}
           <div className="flex gap-2 mb-4">

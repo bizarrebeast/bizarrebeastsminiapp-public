@@ -2,16 +2,24 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { 
-  BookOpen, 
-  Clock, 
-  Globe, 
+import {
+  BookOpen,
+  Clock,
+  Globe,
   ExternalLink,
   Filter,
   Search,
   Star,
   Users,
-  FileText
+  FileText,
+  ChevronDown,
+  ChevronUp,
+  Sparkles,
+  Gamepad2,
+  Crown,
+  Coins,
+  Heart,
+  Globe2
 } from 'lucide-react';
 import { resources, quickGuides } from '@/lib/resources-data';
 import type { Resource } from '@/lib/resources-data';
@@ -19,35 +27,87 @@ import type { Resource } from '@/lib/resources-data';
 export default function ResourcesPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [selectedDifficulty, setSelectedDifficulty] = useState<string>('all');
+  // Removed difficulty filter - now using topic instead
   const [selectedLanguage, setSelectedLanguage] = useState<string>('all');
+  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set(['getting-started']));
 
   // Filter resources
   const filteredResources = resources.filter(resource => {
     const matchesSearch = resource.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                           resource.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
                           resource.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
-    
+
     const matchesCategory = selectedCategory === 'all' || resource.category === selectedCategory;
-    const matchesDifficulty = selectedDifficulty === 'all' || resource.difficulty === selectedDifficulty;
+    // Difficulty filter removed - using topic tags instead
     const matchesLanguage = selectedLanguage === 'all' || resource.language === selectedLanguage;
-    
-    return matchesSearch && matchesCategory && matchesDifficulty && matchesLanguage;
+
+    return matchesSearch && matchesCategory && matchesLanguage;
   });
 
   const featuredResources = filteredResources.filter(r => r.featured);
-  const regularResources = filteredResources.filter(r => !r.featured);
+
+  // Group resources by category
+  const resourcesByCategory = filteredResources.reduce((acc, resource) => {
+    if (!resource.featured) {
+      if (!acc[resource.category]) {
+        acc[resource.category] = [];
+      }
+      acc[resource.category].push(resource);
+    }
+    return acc;
+  }, {} as Record<string, Resource[]>);
 
   // Get unique languages
   const languages = Array.from(new Set(resources.map(r => r.language)));
   const resourceCount = resources.length;
 
-  // Difficulty colors
-  const getDifficultyColor = (difficulty: string) => {
-    switch(difficulty) {
-      case 'beginner': return 'text-green-400 bg-green-400/10';
-      case 'intermediate': return 'text-yellow-400 bg-yellow-400/10';
-      case 'advanced': return 'text-red-400 bg-red-400/10';
+  // Toggle category expansion
+  const toggleCategory = (category: string) => {
+    const newExpanded = new Set(expandedCategories);
+    if (newExpanded.has(category)) {
+      newExpanded.delete(category);
+    } else {
+      newExpanded.add(category);
+    }
+    setExpandedCategories(newExpanded);
+  };
+
+  // Get category info
+  const getCategoryInfo = (category: string) => {
+    switch(category) {
+      case 'getting-started':
+        return { icon: Sparkles, color: 'from-gem-crystal to-gem-gold', name: 'Getting Started' };
+      case 'tokens':
+        return { icon: Coins, color: 'from-gem-gold to-gem-pink', name: 'Tokens & Economy' };
+      case 'empire':
+        return { icon: Crown, color: 'from-gem-purple to-gem-crystal', name: 'Empire System' };
+      case 'games':
+        return { icon: Gamepad2, color: 'from-gem-pink to-gem-purple', name: 'Games & Entertainment' };
+      case 'community':
+        return { icon: Heart, color: 'from-gem-crystal to-gem-pink', name: 'Community & Culture' };
+      case 'international':
+        return { icon: Globe2, color: 'from-gem-gold to-gem-crystal', name: 'International' };
+      case 'monthly-updates':
+        return { icon: FileText, color: 'from-gem-crystal to-gem-purple', name: 'Monthly Updates' };
+      case 'art':
+        return { icon: Sparkles, color: 'from-gem-pink to-gem-gold', name: 'Art & Creativity' };
+      case 'technical':
+        return { icon: BookOpen, color: 'from-gem-purple to-gem-pink', name: 'Technical Deep Dives' };
+      default:
+        return { icon: FileText, color: 'from-gray-600 to-gray-500', name: category };
+    }
+  };
+
+  // Topic colors
+  const getTopicColor = (topic: string) => {
+    switch(topic) {
+      case 'Guide': return 'text-gem-crystal bg-gem-crystal/10';
+      case 'Tutorial': return 'text-green-400 bg-green-400/10';
+      case 'Announcement': return 'text-gem-gold bg-gem-gold/10';
+      case 'Development': return 'text-purple-400 bg-purple-400/10';
+      case 'Monthly Recap': return 'text-blue-400 bg-blue-400/10';
+      case 'Art Showcase': return 'text-gem-pink bg-gem-pink/10';
+      case 'New Release': return 'text-yellow-400 bg-yellow-400/10';
       default: return 'text-gray-400 bg-gray-400/10';
     }
   };
@@ -67,21 +127,19 @@ export default function ResourcesPage() {
   return (
     <div className="min-h-screen bg-dark-bg py-8">
       <div className="max-w-7xl mx-auto px-4">
-        {/* Banner */}
-        <div className="mb-8 flex justify-center">
-          <img 
-            src="/assets/page-assets/banners/community-resources-banner.png" 
-            alt="Community Resources - Guides, tutorials, and documentation for the BizarreBeasts universe"
-            className="w-full max-w-4xl object-contain rounded-2xl"
-          />
+        {/* Title and Description */}
+        <div className="text-center mb-8">
+          <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent leading-tight pb-2">
+            Community Resources
+          </h1>
+          <p className="text-lg text-gray-300 max-w-3xl mx-auto">
+            Explore guides, tutorials, and documentation for the BizarreBeasts universe.
+            From beginner guides to advanced strategies, find everything you need to join our creative ecosystem.
+          </p>
         </div>
 
         {/* Hero Section */}
         <section className="text-center mb-12">
-          <p className="text-gray-400 text-lg mb-8 max-w-3xl mx-auto">
-            Explore guides, tutorials, and documentation for the BizarreBeasts universe. 
-            From beginner guides to advanced strategies, find everything you need to join our creative ecosystem.
-          </p>
           
           {/* Quick Stats */}
           <div className="flex justify-center gap-8 mb-8">
@@ -100,177 +158,130 @@ export default function ResourcesPage() {
           </div>
         </section>
 
-        {/* Search and Filters */}
-        <section className="mb-8">
-          <div className="bg-dark-card border border-gray-700 rounded-lg p-4">
-            <div className="flex flex-col lg:flex-row gap-4">
-              {/* Search */}
-              <div className="flex-1">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                  <input
-                    type="text"
-                    placeholder="Search resources..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-gem-crystal"
-                  />
-                </div>
+
+        {/* Empire Guide - Special Prominent Section */}
+        <section className="mb-12">
+          <div className="relative overflow-hidden rounded-xl">
+            {/* Background gradient */}
+            <div className="absolute inset-0 bg-gradient-to-br from-gem-purple/20 via-gem-gold/10 to-gem-crystal/20" />
+
+            {/* Content */}
+            <div className="relative bg-dark-card/90 backdrop-blur border border-gem-gold/30 rounded-xl">
+              {/* Banner Image - Top */}
+              <div className="relative h-64 md:h-80 overflow-hidden">
+                <img
+                  src="/assets/page-assets/banners/page-banners/bizarrebeasts-page-banner-8.svg"
+                  alt="Empire Guide"
+                  className="w-full h-full object-cover rounded-t-xl"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-dark-card/80 to-transparent" />
               </div>
 
-              {/* Filters */}
-              <div className="flex gap-2 flex-wrap">
-                <select
-                  value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-gem-crystal"
-                >
-                  <option value="all">All Categories</option>
-                  <option value="getting-started">Getting Started</option>
-                  <option value="tokens">Tokens</option>
-                  <option value="empire">Empire</option>
-                  <option value="games">Games</option>
-                  <option value="community">Community</option>
-                  <option value="international">International</option>
-                </select>
+              {/* Content - Below */}
+              <div className="p-6 md:p-8">
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="p-2 bg-gradient-to-r from-gem-gold to-gem-crystal rounded-lg">
+                    <Crown className="w-6 h-6 text-dark-bg" />
+                  </div>
+                  <span className="text-sm font-bold bg-gradient-to-r from-gem-gold to-gem-crystal bg-clip-text text-transparent uppercase tracking-wider">Essential Guide</span>
+                </div>
 
-                <select
-                  value={selectedDifficulty}
-                  onChange={(e) => setSelectedDifficulty(e.target.value)}
-                  className="px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-gem-crystal"
-                >
-                  <option value="all">All Levels</option>
-                  <option value="beginner">Beginner</option>
-                  <option value="intermediate">Intermediate</option>
-                  <option value="advanced">Advanced</option>
-                </select>
+                <h3 className="text-2xl md:text-3xl font-bold mb-3 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent">
+                  BizarreBeasts ($BB) Empire Guide
+                </h3>
 
-                <select
-                  value={selectedLanguage}
-                  onChange={(e) => setSelectedLanguage(e.target.value)}
-                  className="px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-gem-crystal"
-                >
-                  <option value="all">All Languages</option>
-                  {languages.map(lang => (
-                    <option key={lang} value={lang}>{getLanguageLabel(lang)}</option>
-                  ))}
-                </select>
+                <p className="text-gray-300 mb-6">
+                  Everything you need to know to get started with the BizarreBeasts Empire. Complete walkthrough of tokens, boosters, rewards, and gameplay mechanics.
+                </p>
+
+                {/* Language Buttons - Same gradient, stacked on mobile */}
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <a
+                    href="https://paragraph.com/@bizarrebeasts/discover-the-bizarrebeasts-empire-everything-you-need-to-know-to-get-started"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full sm:w-auto px-6 py-2.5 bg-gradient-to-r from-gem-gold via-gem-crystal to-gem-pink text-dark-bg font-bold rounded-lg hover:shadow-lg transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2"
+                  >
+                    🇬🇧 English
+                    <ExternalLink className="w-4 h-4" />
+                  </a>
+                  <a
+                    href="https://paragraph.com/@bizarrebeasts/discover-the-bizarrebeasts-empire-everything-you-need-to-know-to-get-started-spanish"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full sm:w-auto px-6 py-2.5 bg-gradient-to-r from-gem-gold via-gem-crystal to-gem-pink text-dark-bg font-bold rounded-lg hover:shadow-lg transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2"
+                  >
+                    🇪🇸 Español
+                    <ExternalLink className="w-4 h-4" />
+                  </a>
+                  <a
+                    href="https://paragraph.com/@bizarrebeasts/discover-the-bizarrebeasts-empire-everything-you-need-to-know-to-get-started-korean"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full sm:w-auto px-6 py-2.5 bg-gradient-to-r from-gem-gold via-gem-crystal to-gem-pink text-dark-bg font-bold rounded-lg hover:shadow-lg transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2"
+                  >
+                    🇰🇷 한국어
+                    <ExternalLink className="w-4 h-4" />
+                  </a>
+                </div>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Featured Resources */}
-        {featuredResources.length > 0 && (
+        {/* Other Featured Resources - Grid Layout */}
+        {featuredResources.length > 1 && (
           <section className="mb-12">
-            <h2 className="text-2xl font-bold mb-6">Featured Resources</h2>
-            <div className="grid md:grid-cols-2 gap-6">
-              {featuredResources.map(resource => (
-                <a
-                  key={resource.id}
-                  href={resource.externalUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="bg-gradient-to-br from-dark-card via-dark-card to-gem-crystal/5 border border-gem-crystal/20 rounded-lg overflow-hidden hover:border-gem-crystal/40 transition-all duration-300 hover:scale-[1.02] group"
-                >
-                  {/* Banner Image - DISABLED until images are available */}
-                  {/* TODO: Uncomment when banner images are added to /public/assets/resources/ */}
-                  {false && resource.bannerImage && (
-                    <div className="relative h-40 w-full overflow-hidden">
-                      <img
-                        src={resource.bannerImage}
-                        alt={resource.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        onError={(e) => {
-                          // Fallback to placeholder if image fails to load
-                          (e.target as HTMLImageElement).src = '/assets/resources/placeholder.jpg';
-                        }}
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-dark-card/90 to-transparent" />
-                    </div>
-                  )}
-
-                  <div className="p-6">
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="flex items-center gap-2">
-                        <Star className="w-5 h-5 text-gem-gold" />
-                        <span className="text-xs text-gem-gold font-semibold">Featured</span>
-                      </div>
-                      <ExternalLink className="w-4 h-4 text-gray-400 group-hover:text-gem-crystal transition-colors" />
-                    </div>
-
-                    <h3 className="text-xl font-semibold mb-2 text-white group-hover:text-gem-crystal transition-colors">
-                      {resource.title}
-                    </h3>
-                    <p className="text-gray-400 text-sm mb-4">{resource.description}</p>
-
-                    <div className="flex items-center gap-4 text-xs">
-                      <span className="flex items-center gap-1">
-                        <Clock className="w-3 h-3" />
-                        {resource.readTime} min read
-                      </span>
-                      <span className={`px-2 py-1 rounded-full ${getDifficultyColor(resource.difficulty)}`}>
-                        {resource.difficulty}
-                      </span>
-                      <span className="text-gray-500">Updated {resource.updatedDate}</span>
-                    </div>
-                  </div>
-                </a>
-              ))}
+            <div className="flex items-center gap-3 mb-6">
+              <Star className="w-6 h-6 text-gem-gold" />
+              <h2 className="text-2xl font-bold bg-gradient-to-r from-gem-gold to-gem-crystal bg-clip-text text-transparent">
+                Featured Guides
+              </h2>
             </div>
-          </section>
-        )}
-
-        {/* All Resources */}
-        {regularResources.length > 0 && (
-          <section className="mb-12">
-            <h2 className="text-2xl font-bold mb-6">All Resources</h2>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {regularResources.map(resource => (
+            <div className="grid md:grid-cols-3 gap-6">
+              {featuredResources.slice(1, 4).map(resource => (
                 <a
                   key={resource.id}
                   href={resource.externalUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="bg-dark-card border border-gray-700 rounded-lg overflow-hidden hover:border-gem-crystal/40 transition-all duration-300 hover:scale-[1.02] group"
+                  className="group block"
                 >
-                  {/* Banner Image for regular resources - DISABLED until images are available */}
-                  {/* TODO: Uncomment when banner images are added to /public/assets/resources/ */}
-                  {false && resource.bannerImage && (
-                    <div className="relative h-32 w-full overflow-hidden">
+                  <div className="bg-dark-card border border-gem-crystal/20 rounded-lg overflow-hidden hover:border-gem-crystal/40 transition-all duration-300 h-full flex flex-col">
+                    {/* Banner Image */}
+                    <div className="relative h-48 overflow-hidden bg-gradient-to-br from-gem-purple/20 to-gem-crystal/20">
                       <img
-                        src={resource.bannerImage}
+                        src={
+                          resource.id === 'beginners-guide' ? '/assets/page-assets/banners/page-banners/bizarrebeasts-page-banner-5.svg' :
+                          resource.id === 'treasure-quest-guide' ? '/assets/page-assets/banners/page-banners/bizarrebeasts-page-banner-14.svg' :
+                          resource.id === 'building-web3-masterpiece' ? '/assets/page-assets/banners/page-banners/bizarrebeasts-page-banner-11.svg' :
+                          '/assets/page-assets/featured-boxes/empire-quest-featured-box.svg'
+                        }
                         alt={resource.title}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).src = '/assets/resources/placeholder.jpg';
-                        }}
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-dark-card/90 to-transparent" />
                     </div>
-                  )}
 
-                  <div className="p-4">
-                    <div className="flex items-start justify-between mb-3">
-                      <h3 className="text-lg font-semibold text-white group-hover:text-gem-crystal transition-colors flex-1">
+                    {/* Content */}
+                    <div className="p-6 flex-1 flex flex-col">
+                      <div className="flex items-center gap-2 mb-3">
+                        <span className={`px-2 py-1 rounded-full text-xs ${getTopicColor((resource as any).topic || 'Guide')}`}>
+                          {(resource as any).topic || 'Guide'}
+                        </span>
+                      </div>
+
+                      <h3 className="text-lg font-semibold mb-2 text-white group-hover:text-gem-crystal transition-colors">
                         {resource.title}
                       </h3>
-                      {resource.language !== 'en' && (
-                        <span className="text-xs text-gray-400 ml-2">{getLanguageLabel(resource.language).split(' ')[0]}</span>
-                      )}
-                    </div>
+                      <p className="text-gray-400 text-sm mb-4 flex-1">{resource.description}</p>
 
-                    <p className="text-gray-400 text-sm mb-3 line-clamp-2">{resource.description}</p>
-
-                    <div className="flex items-center gap-3 text-xs">
-                      <span className="flex items-center gap-1 text-gray-500">
-                        <Clock className="w-3 h-3" />
-                        {resource.readTime} min
-                      </span>
-                      <span className={`px-2 py-1 rounded-full ${getDifficultyColor(resource.difficulty)}`}>
-                        {resource.difficulty}
-                      </span>
-                      <span className="text-gray-500">{resource.updatedDate}</span>
+                      <div className="flex items-center justify-between text-xs text-gray-500 pt-4 border-t border-gray-700">
+                        <span className="flex items-center gap-1">
+                          <Clock className="w-3 h-3" />
+                          {resource.readTime} min read
+                        </span>
+                        <ExternalLink className="w-4 h-4 text-gray-400 group-hover:text-gem-crystal transition-colors" />
+                      </div>
                     </div>
                   </div>
                 </a>
@@ -278,6 +289,166 @@ export default function ResourcesPage() {
             </div>
           </section>
         )}
+
+        {/* Search Bar - Moved above Browse Categories */}
+        <section className="mb-8">
+          <div className="max-w-3xl mx-auto">
+            <div className="relative group">
+              <div className="absolute inset-0 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink rounded-lg opacity-20 group-hover:opacity-30 transition-opacity" />
+              <div className="relative bg-dark-card border border-gem-crystal/20 rounded-lg p-1">
+                <div className="relative">
+                  <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gem-crystal w-5 h-5" />
+                  <input
+                    type="text"
+                    placeholder="Search articles, guides, and resources..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full pl-12 pr-4 py-3 bg-dark-bg border-0 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gem-crystal/50"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Filter Pills */}
+          <div className="flex justify-center gap-2 mt-4 flex-wrap">
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="px-3 py-1.5 bg-dark-card border border-gray-700 rounded-full text-sm text-white focus:outline-none focus:border-gem-crystal"
+            >
+              <option value="all">All Categories</option>
+              <option value="getting-started">Getting Started</option>
+              <option value="tokens">Tokens</option>
+              <option value="empire">Empire</option>
+              <option value="games">Games</option>
+              <option value="community">Community</option>
+              <option value="monthly-updates">Monthly Updates</option>
+              <option value="art">Art</option>
+              <option value="technical">Technical</option>
+              <option value="international">International</option>
+            </select>
+
+            <select
+              value={selectedLanguage}
+              onChange={(e) => setSelectedLanguage(e.target.value)}
+              className="px-3 py-1.5 bg-dark-card border border-gray-700 rounded-full text-sm text-white focus:outline-none focus:border-gem-crystal"
+            >
+              <option value="all">All Languages</option>
+              {languages.map(lang => (
+                <option key={lang} value={lang}>{getLanguageLabel(lang)}</option>
+              ))}
+            </select>
+          </div>
+        </section>
+
+        {/* Resources by Category - Accordion Style */}
+        <section className="mb-12 space-y-4">
+          <h2 className="text-2xl font-bold mb-6 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent">
+            Browse by Category
+          </h2>
+
+          {Object.entries(resourcesByCategory).map(([category, categoryResources]) => {
+            const categoryInfo = getCategoryInfo(category);
+            const Icon = categoryInfo.icon;
+            const isExpanded = expandedCategories.has(category);
+
+            return (
+              <div key={category} className="group">
+                {/* Category Header - Clickable */}
+                <button
+                  onClick={() => toggleCategory(category)}
+                  className="w-full relative overflow-hidden rounded-lg transition-all duration-300"
+                >
+                  {/* Gradient border effect */}
+                  <div className={`absolute inset-0 bg-gradient-to-r ${categoryInfo.color} opacity-10 group-hover:opacity-20 transition-opacity`} />
+                  <div className="relative bg-dark-card border border-gem-crystal/20 group-hover:border-gem-crystal/40 rounded-lg p-4 flex items-center justify-between transition-all">
+                    <div className="flex items-center gap-3">
+                      <div className={`p-2 bg-gradient-to-r ${categoryInfo.color} rounded-lg`}>
+                        <Icon className="w-5 h-5 text-dark-bg" />
+                      </div>
+                      <div className="text-left">
+                        <h3 className="text-lg font-semibold text-white">{categoryInfo.name}</h3>
+                        <p className="text-sm text-gray-400">{categoryResources.length} resources</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs px-2 py-1 bg-gray-800 rounded-full text-gray-400">
+                        {categoryResources.length}
+                      </span>
+                      {isExpanded ? (
+                        <ChevronUp className="w-5 h-5 text-gem-crystal transition-transform" />
+                      ) : (
+                        <ChevronDown className="w-5 h-5 text-gray-400 group-hover:text-gem-crystal transition-all" />
+                      )}
+                    </div>
+                  </div>
+                </button>
+
+                {/* Expandable Content - List of Resources */}
+                {isExpanded && (
+                  <div className="mt-2 space-y-2 pl-4 animate-in slide-in-from-top-2 duration-300">
+                    {categoryResources.map(resource => (
+                      <a
+                        key={resource.id}
+                        href={resource.externalUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block group/item"
+                      >
+                        <div className="bg-dark-card/50 border border-gray-700 hover:border-gem-crystal/30 rounded-lg p-4 transition-all duration-200 hover:translate-x-1">
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <h4 className="text-sm font-medium text-white group-hover/item:text-gem-crystal transition-colors mb-1">
+                                {resource.title}
+                              </h4>
+                              <p className="text-xs text-gray-400 line-clamp-1 mb-2">
+                                {resource.description}
+                              </p>
+                              <div className="flex items-center gap-3 text-xs">
+                                <span className="text-gray-500">
+                                  <Clock className="w-3 h-3 inline mr-1" />
+                                  {resource.readTime} min
+                                </span>
+                                <span className={`px-2 py-0.5 rounded-full ${getTopicColor((resource as any).topic || 'Guide')}`}>
+                                  {(resource as any).topic || 'Guide'}
+                                </span>
+                                {resource.language !== 'en' && (
+                                  <span className="text-gray-500">
+                                    {getLanguageLabel(resource.language).split(' ')[0]}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                            <ExternalLink className="w-3 h-3 text-gray-500 group-hover/item:text-gem-crystal mt-1 ml-3 flex-shrink-0" />
+                          </div>
+                        </div>
+                      </a>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+
+          {/* Empty State */}
+          {Object.keys(resourcesByCategory).length === 0 && !featuredResources.length && (
+            <div className="text-center py-12">
+              <FileText className="w-12 h-12 text-gray-600 mx-auto mb-4" />
+              <p className="text-gray-400">No resources found matching your criteria.</p>
+              <button
+                onClick={() => {
+                  setSearchTerm('');
+                  setSelectedCategory('all');
+                  setSelectedLanguage('all');
+                }}
+                className="mt-4 text-gem-crystal hover:text-gem-gold transition-colors text-sm"
+              >
+                Clear filters
+              </button>
+            </div>
+          )}
+        </section>
 
         {/* Quick Start Guides */}
         <section className="mb-12">

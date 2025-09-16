@@ -39,11 +39,18 @@ export function EmpireBadges() {
       {/* Beta Tester Badge */}
       {isBeta && (
         <div
-          className="flex items-center gap-1 px-2 py-1 text-xs bg-gradient-to-r from-gem-purple to-gem-pink rounded-lg group cursor-default"
+          className="flex items-center gap-1 px-2 py-1 text-xs bg-dark-card rounded-lg cursor-default relative overflow-hidden group"
           title={`${BETA_BENEFITS.badgeText} - ${BETA_BENEFITS.specialMessage}`}
         >
-          <span className="text-sm">{BETA_BENEFITS.badge}</span>
-          <span className="hidden sm:inline text-black font-semibold">BETA</span>
+          {/* Gradient border effect */}
+          <div className="absolute inset-0 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink rounded-lg" />
+          <div className="absolute inset-[1px] bg-dark-card rounded-lg" />
+
+          {/* Content */}
+          <div className="relative flex items-center gap-1">
+            <span className="text-sm">{BETA_BENEFITS.badge}</span>
+            <span className="hidden sm:inline bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent font-semibold">BETA</span>
+          </div>
         </div>
       )}
 
