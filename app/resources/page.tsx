@@ -76,25 +76,25 @@ export default function ResourcesPage() {
   const getCategoryInfo = (category: string) => {
     switch(category) {
       case 'getting-started':
-        return { icon: Sparkles, color: 'from-gem-crystal to-gem-gold', name: 'Getting Started' };
+        return { icon: Sparkles, color: 'from-gem-crystal via-gem-gold to-gem-pink', name: 'Getting Started' };
       case 'tokens':
-        return { icon: Coins, color: 'from-gem-gold to-gem-pink', name: 'Tokens & Economy' };
+        return { icon: Coins, color: 'from-gem-crystal via-gem-gold to-gem-pink', name: 'Tokens & Economy' };
       case 'empire':
-        return { icon: Crown, color: 'from-gem-purple to-gem-crystal', name: 'Empire System' };
+        return { icon: Crown, color: 'from-gem-crystal via-gem-gold to-gem-pink', name: 'Empire System' };
       case 'games':
-        return { icon: Gamepad2, color: 'from-gem-pink to-gem-purple', name: 'Games & Entertainment' };
+        return { icon: Gamepad2, color: 'from-gem-crystal via-gem-gold to-gem-pink', name: 'Games & Entertainment' };
       case 'community':
-        return { icon: Heart, color: 'from-gem-crystal to-gem-pink', name: 'Community & Culture' };
+        return { icon: Heart, color: 'from-gem-crystal via-gem-gold to-gem-pink', name: 'Community & Culture' };
       case 'international':
-        return { icon: Globe2, color: 'from-gem-gold to-gem-crystal', name: 'International' };
+        return { icon: Globe2, color: 'from-gem-crystal via-gem-gold to-gem-pink', name: 'International' };
       case 'monthly-updates':
-        return { icon: FileText, color: 'from-gem-crystal to-gem-purple', name: 'Monthly Updates' };
+        return { icon: FileText, color: 'from-gem-crystal via-gem-gold to-gem-pink', name: 'Monthly Updates' };
       case 'art':
-        return { icon: Sparkles, color: 'from-gem-pink to-gem-gold', name: 'Art & Creativity' };
+        return { icon: Sparkles, color: 'from-gem-crystal via-gem-gold to-gem-pink', name: 'Art & Creativity' };
       case 'technical':
-        return { icon: BookOpen, color: 'from-gem-purple to-gem-pink', name: 'Technical Deep Dives' };
+        return { icon: BookOpen, color: 'from-gem-crystal via-gem-gold to-gem-pink', name: 'Technical Deep Dives' };
       default:
-        return { icon: FileText, color: 'from-gray-600 to-gray-500', name: category };
+        return { icon: FileText, color: 'from-gem-crystal via-gem-gold to-gem-pink', name: category };
     }
   };
 
