@@ -15,7 +15,8 @@ import {
   Loader2,
   RefreshCw,
   Camera,
-  Plus
+  Plus,
+  Trash2
 } from 'lucide-react';
 import { useWallet } from '@/hooks/useWallet';
 import { isAdmin } from '@/lib/admin';
@@ -23,15 +24,21 @@ import { contestQueries, Contest, ContestSubmission } from '@/lib/supabase';
 import { formatTokenBalance } from '@/lib/tokenBalance';
 import ScreenshotModal from '@/components/admin/ScreenshotModal';
 import CreateContestForm from '@/components/admin/CreateContestForm';
+import WinnerSelectionModal from '@/components/admin/WinnerSelectionModal';
+import TestContestManager from '@/components/admin/TestContestManager';
 
 export default function AdminContestsPage() {
   const router = useRouter();
   const { address, isConnected } = useWallet();
   const [loading, setLoading] = useState(true);
   const [contests, setContests] = useState<Contest[]>([]);
+  const [filteredContests, setFilteredContests] = useState<Contest[]>([]);
   const [selectedContest, setSelectedContest] = useState<Contest | null>(null);
   const [submissions, setSubmissions] = useState<ContestSubmission[]>([]);
   const [processingId, setProcessingId] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'draft' | 'ended'>('all');
+  const [showTestContests, setShowTestContests] = useState(true);
   const [stats, setStats] = useState({
     totalSubmissions: 0,
     pendingCount: 0,
@@ -52,6 +59,8 @@ export default function AdminContestsPage() {
 
   const [thumbnailSize, setThumbnailSize] = useState<'small' | 'medium' | 'large'>('medium');
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [showWinnerModal, setShowWinnerModal] = useState(false);
+  const [showTestManager, setShowTestManager] = useState(false);
 
   // Check admin access
   useEffect(() => {
@@ -63,17 +72,24 @@ export default function AdminContestsPage() {
       return;
     }
 
+    // Store admin wallet in localStorage for API calls
+    if (address) {
+      localStorage.setItem('adminWallet', address);
+    }
+
     fetchContests();
   }, [address, isConnected]);
 
   const fetchContests = async () => {
     try {
       setLoading(true);
-      const allContests = await contestQueries.getActiveContestsWithStats();
+      // For admin, fetch ALL contests regardless of status
+      const allContests = await contestQueries.getAllContests();
       setContests(allContests || []);
+      setFilteredContests(allContests || []);
 
       // Auto-select first contest if available
-      if (allContests && allContests.length > 0) {
+      if (allContests && allContests.length > 0 && !selectedContest) {
         setSelectedContest(allContests[0]);
         await fetchSubmissions(allContests[0].id);
       }
@@ -83,6 +99,36 @@ export default function AdminContestsPage() {
       setLoading(false);
     }
   };
+
+  const filterContests = (search: string, status: string, includeTest: boolean) => {
+    let filtered = [...contests];
+
+    // Filter out test contests if needed
+    if (!includeTest) {
+      filtered = filtered.filter(c => !c.is_test);
+    }
+
+    // Filter by search term
+    if (search) {
+      filtered = filtered.filter(c =>
+        c.name.toLowerCase().includes(search.toLowerCase()) ||
+        c.type.toLowerCase().includes(search.toLowerCase()) ||
+        (c.game_name && c.game_name.toLowerCase().includes(search.toLowerCase()))
+      );
+    }
+
+    // Filter by status
+    if (status !== 'all') {
+      filtered = filtered.filter(c => c.status === status);
+    }
+
+    setFilteredContests(filtered);
+  };
+
+  // Update filters when search/status/test changes
+  useEffect(() => {
+    filterContests(searchTerm, statusFilter, showTestContests);
+  }, [searchTerm, statusFilter, showTestContests, contests]);
 
   const fetchSubmissions = async (contestId: string) => {
     try {
@@ -164,37 +210,102 @@ export default function AdminContestsPage() {
     }
   };
 
-  const exportToCSV = () => {
-    if (!submissions || submissions.length === 0) {
+  const deleteContest = async (contestId: string, contestName: string) => {
+    if (!address) return;
+
+    const confirmDelete = window.confirm(
+      `Are you sure you want to delete "${contestName}"?\n\nThis will also delete all submissions and cannot be undone.`
+    );
+
+    if (!confirmDelete) return;
+
+    try {
+      const response = await fetch(`/api/admin/contests/delete?id=${contestId}&wallet=${address}`, {
+        method: 'DELETE',
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to delete contest');
+      }
+
+      // Success - refresh contests
+      alert(`Contest "${contestName}" deleted successfully`);
+
+      // Clear selected contest if it was deleted
+      if (selectedContest?.id === contestId) {
+        setSelectedContest(null);
+        setSubmissions([]);
+      }
+
+      // Refresh contest list
+      await fetchContests();
+    } catch (error) {
+      console.error('Error deleting contest:', error);
+      alert(`Failed to delete contest: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  };
+
+  const exportToCSV = (onlyApproved: boolean = false) => {
+    const dataToExport = onlyApproved
+      ? submissions.filter(s => s.status === 'approved')
+      : submissions;
+
+    if (!dataToExport || dataToExport.length === 0) {
       alert('No submissions to export');
       return;
     }
 
-    // Create CSV content
-    const headers = ['Rank', 'Wallet', 'Username', 'Score', 'Status', 'Submitted At'];
-    const rows = submissions
-      .filter(s => s.status === 'approved')
-      .sort((a, b) => (b.score || 0) - (a.score || 0))
-      .map((sub, index) => [
+    // Enhanced CSV content with more fields
+    const headers = [
+      'Rank',
+      'Wallet Address',
+      'Username',
+      'Score',
+      'Token Balance',
+      'Status',
+      'Submitted Date',
+      'Submitted Time',
+      'Reviewed By',
+      'Notes'
+    ];
+
+    const sortedData = [...dataToExport].sort((a, b) => (b.score || 0) - (a.score || 0));
+    const rows = sortedData.map((sub, index) => {
+      const submissionDate = new Date(sub.submitted_at);
+      return [
         index + 1,
         sub.wallet_address,
         sub.username || 'Anonymous',
-        sub.score || 0,
+        sub.score || 'N/A',
+        sub.token_balance || 0,
         sub.status,
-        new Date(sub.submitted_at).toLocaleDateString()
-      ]);
+        submissionDate.toLocaleDateString(),
+        submissionDate.toLocaleTimeString(),
+        sub.reviewed_by || '-',
+        sub.reviewer_notes || '-'
+      ];
+    });
 
     const csvContent = [
+      `Contest: ${selectedContest?.name || 'Unknown'}`,
+      `Export Date: ${new Date().toLocaleString()}`,
+      `Total Entries: ${dataToExport.length}`,
+      '',
       headers.join(','),
-      ...rows.map(row => row.join(','))
+      ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
     ].join('\n');
 
-    // Download CSV
+    // Download CSV with better filename
     const blob = new Blob([csvContent], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `contest-${selectedContest?.id}-submissions.csv`;
+    const timestamp = new Date().toISOString().slice(0, 10);
+    const type = onlyApproved ? 'approved' : 'all';
+    const contestName = selectedContest?.name.replace(/[^a-z0-9]/gi, '_') || 'contest';
+    a.download = `${contestName}_${type}_${timestamp}.csv`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -251,6 +362,13 @@ export default function AdminContestsPage() {
               Create Contest
             </button>
             <button
+              onClick={() => setShowTestManager(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-orange-500/20 text-orange-300 border border-orange-500/40 rounded-lg hover:bg-orange-500/30 transition"
+            >
+              <Trash2 className="w-4 h-4" />
+              Manage Test Contests
+            </button>
+            <button
               onClick={fetchContests}
               className="flex items-center gap-2 px-4 py-2 bg-dark-card border border-gray-700 rounded-lg hover:bg-dark-bg transition"
             >
@@ -292,10 +410,57 @@ export default function AdminContestsPage() {
           </div>
         </div>
 
-        {/* Contest Selector */}
+        {/* Contest Selector with Filters */}
         <div className="bg-dark-card border border-gray-700 rounded-lg p-4 mb-6">
+          {/* Search and Filter Bar */}
+          <div className="flex flex-col md:flex-row gap-3 mb-4">
+            {/* Search Input */}
+            <div className="flex-1">
+              <input
+                type="text"
+                placeholder="Search contests by name, type, or game..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full px-4 py-2 bg-dark-bg border border-gray-700 rounded-lg
+                         text-white placeholder-gray-500 focus:border-gem-crystal
+                         focus:outline-none transition"
+              />
+            </div>
+
+            {/* Status Filter */}
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value as any)}
+              className="px-4 py-2 bg-dark-bg border border-gray-700 rounded-lg
+                       text-white focus:border-gem-crystal focus:outline-none transition"
+            >
+              <option value="all">All Status</option>
+              <option value="active">Active</option>
+              <option value="draft">Draft</option>
+              <option value="ended">Ended</option>
+            </select>
+
+            {/* Test Toggle */}
+            <button
+              onClick={() => setShowTestContests(!showTestContests)}
+              className={`px-4 py-2 border rounded-lg transition flex items-center gap-2 ${
+                showTestContests
+                  ? 'bg-orange-500/20 border-orange-500/40 text-orange-300'
+                  : 'bg-dark-bg border-gray-700 text-gray-400'
+              }`}
+            >
+              🧪
+              {showTestContests ? 'Tests Shown' : 'Tests Hidden'}
+            </button>
+          </div>
+
           <div className="flex justify-between items-start mb-2">
-            <label className="block text-sm font-medium">Select Contest</label>
+            <label className="block text-sm font-medium">
+              Select Contest
+              <span className="text-gray-500 ml-2">
+                ({filteredContests.length} of {contests.length} contests)
+              </span>
+            </label>
             {/* Thumbnail Size Toggle */}
             <div className="flex items-center gap-2">
               <span className="text-xs text-gray-400">Thumbnail Size:</span>
@@ -342,29 +507,149 @@ export default function AdminContestsPage() {
               className="flex-1 px-4 py-2 bg-dark-bg border border-gray-600 rounded-lg text-white"
             >
               <option value="">Choose a contest...</option>
-              {contests.map(contest => (
-                <option key={contest.id} value={contest.id}>
-                  {contest.name}
-                </option>
-              ))}
+              {filteredContests.map(contest => {
+                const now = new Date();
+                const startDate = contest.start_date ? new Date(contest.start_date) : new Date();
+                const endDate = contest.end_date ? new Date(contest.end_date) : new Date();
+                const isActive = contest.status === 'active' && now >= startDate && now <= endDate;
+                const isUpcoming = contest.status === 'active' && now < startDate;
+                const isEnded = contest.status === 'ended' || (contest.status === 'active' && now > endDate);
+                const isDraft = contest.status === 'draft';
+
+                return (
+                  <option key={contest.id} value={contest.id}>
+                    {contest.is_test && '🧪 [TEST] '}
+                    {contest.name}
+                    {' • '}
+                    {isDraft && '🟡 Draft'}
+                    {isActive && '🟢 Active'}
+                    {isUpcoming && '🔵 Upcoming'}
+                    {isEnded && '🔴 Ended'}
+                    {' • '}
+                    {contest.type}
+                    {contest.is_recurring && ' • 🔄 Recurring'}
+                  </option>
+                );
+              })}
             </select>
             {selectedContest && (
-              <button
-                onClick={exportToCSV}
-                className="flex items-center gap-2 px-4 py-2 bg-gem-crystal text-dark-bg rounded-lg hover:bg-gem-crystal/80 transition"
-              >
-                <Download className="w-4 h-4" />
-                Export CSV
-              </button>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => exportToCSV(false)}
+                  className="px-3 py-1 bg-dark-bg border border-gray-600 rounded-lg hover:bg-gray-800 transition flex items-center gap-1 text-sm"
+                >
+                  <Download className="w-4 h-4" />
+                  Export All
+                </button>
+                <button
+                  onClick={() => exportToCSV(true)}
+                  className="px-3 py-1 bg-gem-crystal/20 border border-gem-crystal/40 rounded-lg hover:bg-gem-crystal/30 transition flex items-center gap-1 text-sm"
+                >
+                  <Download className="w-4 h-4" />
+                  Export Approved
+                </button>
+              </div>
             )}
           </div>
+
+          {/* Contest Info Display */}
+          {selectedContest && (
+            <div className="mt-3 space-y-2">
+              {/* Contest Info Cards */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                <div className="bg-dark-bg px-3 py-2 rounded-lg">
+                  <span className="text-xs text-gray-500">Type</span>
+                  <p className="text-sm font-medium capitalize">{selectedContest.type.replace('_', ' ')}</p>
+                </div>
+                <div className="bg-dark-bg px-3 py-2 rounded-lg">
+                  <span className="text-xs text-gray-500">Status</span>
+                  <p className="text-sm font-medium">
+                    {selectedContest.status === 'active' && '🟢 Active'}
+                    {selectedContest.status === 'draft' && '🟡 Draft'}
+                    {selectedContest.status === 'ended' && '🔴 Ended'}
+                  </p>
+                </div>
+                <div className="bg-dark-bg px-3 py-2 rounded-lg">
+                  <span className="text-xs text-gray-500">Starts</span>
+                  <p className="text-sm font-medium">
+                    {selectedContest.start_date
+                      ? new Date(selectedContest.start_date).toLocaleDateString()
+                      : 'Not set'}
+                  </p>
+                </div>
+                <div className="bg-dark-bg px-3 py-2 rounded-lg">
+                  <span className="text-xs text-gray-500">Ends</span>
+                  <p className="text-sm font-medium">
+                    {selectedContest.end_date
+                      ? new Date(selectedContest.end_date).toLocaleDateString()
+                      : 'Not set'}
+                  </p>
+                </div>
+              </div>
+
+              {/* Additional Info Row */}
+              <div className="flex flex-wrap gap-2 text-xs">
+                {selectedContest.is_test && (
+                  <>
+                    <span className="bg-orange-500/10 text-orange-300 px-2 py-1 rounded font-bold">
+                      🧪 TEST CONTEST
+                    </span>
+                    <button
+                      onClick={() => deleteContest(selectedContest.id, selectedContest.name)}
+                      className="bg-red-500/10 text-red-400 hover:bg-red-500/20 px-2 py-1 rounded flex items-center gap-1 transition"
+                    >
+                      <Trash2 className="w-3 h-3" />
+                      Delete Test
+                    </button>
+                  </>
+                )}
+                {selectedContest.status === 'draft' && !selectedContest.is_test && (
+                  <button
+                    onClick={() => deleteContest(selectedContest.id, selectedContest.name)}
+                    className="bg-yellow-500/10 text-yellow-400 hover:bg-yellow-500/20 px-2 py-1 rounded flex items-center gap-1 transition"
+                  >
+                    <Trash2 className="w-3 h-3" />
+                    Delete Draft
+                  </button>
+                )}
+                {selectedContest.min_bb_required > 0 && (
+                  <span className="bg-gem-crystal/10 text-gem-crystal px-2 py-1 rounded">
+                    💎 {selectedContest.min_bb_required} $BB Required
+                  </span>
+                )}
+                {selectedContest.prize_amount && (
+                  <span className="bg-gem-gold/10 text-gem-gold px-2 py-1 rounded">
+                    🏆 {selectedContest.prize_amount} $BB Prize
+                  </span>
+                )}
+                {selectedContest.is_recurring && (
+                  <span className="bg-gem-pink/10 text-gem-pink px-2 py-1 rounded">
+                    🔄 {selectedContest.recurrence_interval} Recurring
+                  </span>
+                )}
+                <span className="bg-gray-700 px-2 py-1 rounded">
+                  📝 Max {selectedContest.max_entries_per_wallet || 1} Entry/Wallet
+                </span>
+                <span className="bg-gray-700 px-2 py-1 rounded">
+                  👥 {stats.totalSubmissions} Total Submissions
+                </span>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Submissions Table */}
         {selectedContest && (
           <div className="bg-dark-card border border-gray-700 rounded-lg overflow-hidden">
-            <div className="px-6 py-4 border-b border-gray-700">
+            <div className="px-6 py-4 border-b border-gray-700 flex justify-between items-center">
               <h2 className="text-xl font-bold">Submissions for {selectedContest.name}</h2>
+              <button
+                onClick={() => setShowWinnerModal(true)}
+                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-gem-gold to-gem-crystal text-dark-bg font-bold rounded-lg hover:opacity-90 transition"
+              >
+                <Trophy className="w-4 h-4" />
+                Select Winners
+              </button>
             </div>
 
             {submissions.length === 0 ? (
@@ -560,6 +845,32 @@ export default function AdminContestsPage() {
             setShowCreateForm(false);
             fetchContests();
           }}
+        />
+
+        {/* Winner Selection Modal */}
+        {selectedContest && (
+          <WinnerSelectionModal
+            isOpen={showWinnerModal}
+            onClose={() => setShowWinnerModal(false)}
+            contestId={selectedContest.id}
+            contestName={selectedContest.name}
+            contestType={selectedContest.type}
+            submissions={submissions}
+            onWinnersSelected={() => {
+              // Refresh submissions after winners are selected
+              if (selectedContest) {
+                fetchSubmissions(selectedContest.id);
+              }
+            }}
+          />
+        )}
+
+        {/* Test Contest Manager Modal */}
+        <TestContestManager
+          isOpen={showTestManager}
+          onClose={() => setShowTestManager(false)}
+          contests={contests}
+          onRefresh={fetchContests}
         />
       </div>
     </div>

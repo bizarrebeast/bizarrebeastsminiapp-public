@@ -29,7 +29,8 @@ export default function CreateContestForm({ isOpen, onClose, onSuccess }: Create
     rules: '',
     status: 'active' as 'draft' | 'active' | 'ended' | 'cancelled',
     is_recurring: false,
-    recurrence_interval: 'weekly' as 'daily' | 'weekly' | 'monthly'
+    recurrence_interval: 'weekly' as 'daily' | 'weekly' | 'monthly',
+    is_test: false
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -99,7 +100,8 @@ export default function CreateContestForm({ isOpen, onClose, onSuccess }: Create
         rules: '',
         status: 'active',
         is_recurring: false,
-        recurrence_interval: 'weekly'
+        recurrence_interval: 'weekly',
+        is_test: false
       });
     } catch (err) {
       console.error('Error creating contest:', err);
@@ -321,19 +323,39 @@ export default function CreateContestForm({ isOpen, onClose, onSuccess }: Create
           </div>
 
           {/* Contest Status */}
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              Initial Status
-            </label>
-            <select
-              value={formData.status}
-              onChange={(e) => setFormData({ ...formData, status: e.target.value as any })}
-              className="w-full px-4 py-2 bg-dark-bg border border-gray-700 rounded-lg
-                       text-white focus:border-gem-crystal focus:outline-none transition"
-            >
-              <option value="active">Active (Live Immediately)</option>
-              <option value="draft">Draft (Not Visible Yet)</option>
-            </select>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Initial Status
+              </label>
+              <select
+                value={formData.status}
+                onChange={(e) => setFormData({ ...formData, status: e.target.value as any })}
+                className="w-full px-4 py-2 bg-dark-bg border border-gray-700 rounded-lg
+                         text-white focus:border-gem-crystal focus:outline-none transition"
+              >
+                <option value="active">Active (Live Immediately)</option>
+                <option value="draft">Draft (Not Visible Yet)</option>
+              </select>
+            </div>
+
+            {/* Test Contest Toggle */}
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                id="is_test"
+                checked={formData.is_test}
+                onChange={(e) => setFormData({ ...formData, is_test: e.target.checked })}
+                className="w-4 h-4 text-gem-crystal bg-dark-bg border-gray-600 rounded
+                         focus:ring-gem-crystal focus:ring-2 mr-3"
+              />
+              <label htmlFor="is_test" className="text-sm font-medium text-gray-300">
+                🧪 Test Contest
+                <span className="block text-xs text-gray-500 mt-1">
+                  Mark as test (can be filtered out in production)
+                </span>
+              </label>
+            </div>
           </div>
 
           {/* Recurring Contest */}

@@ -32,6 +32,7 @@ export async function POST(request: Request) {
       max_entries_per_wallet: body.max_entries_per_wallet || 1,
       is_recurring: body.is_recurring || false,
       recurrence_interval: body.recurrence_interval || null,
+      is_test: body.is_test || false,
       created_by: body.created_by.toLowerCase(),
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()

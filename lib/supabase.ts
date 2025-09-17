@@ -24,6 +24,9 @@ export interface Contest {
   status: 'draft' | 'active' | 'ended' | 'cancelled';
   rules?: string;
   max_entries_per_wallet: number;
+  is_recurring?: boolean;
+  recurrence_interval?: 'daily' | 'weekly' | 'monthly';
+  is_test?: boolean;
   created_at: string;
   created_by?: string;
   updated_at: string;
@@ -86,14 +89,35 @@ export interface ContestLeaderboard {
 
 // Helper functions for common operations
 export const contestQueries = {
-  // Get all active contests
-  async getActiveContests() {
+  // Get ALL contests (for admin panel)
+  async getAllContests() {
     const { data, error } = await supabase
       .from('contests')
       .select('*')
-      .eq('status', 'active')
-      .gte('end_date', new Date().toISOString())
       .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Error fetching all contests:', error);
+      return [];
+    }
+
+    return data as Contest[];
+  },
+
+  // Get all active contests (excludes test by default)
+  async getActiveContests(includeTest: boolean = false) {
+    let query = supabase
+      .from('contests')
+      .select('*')
+      .eq('status', 'active')
+      .gte('end_date', new Date().toISOString());
+
+    // Exclude test contests for production views
+    if (!includeTest) {
+      query = query.eq('is_test', false);
+    }
+
+    const { data, error } = await query.order('created_at', { ascending: false });
 
     if (error) throw error;
     return data as Contest[];
