@@ -30,6 +30,7 @@ export interface Contest {
   created_at: string;
   created_by?: string;
   updated_at: string;
+  banner_image_url?: string;
 }
 
 export interface ContestSubmission {

@@ -5,6 +5,7 @@ import { Trophy, Upload, Loader2, AlertCircle, CheckCircle, Camera } from 'lucid
 import { useWallet } from '@/hooks/useWallet';
 import { Contest } from '@/lib/supabase';
 import { getCachedBBBalance, formatTokenBalance } from '@/lib/tokenBalance';
+import ShareButtons from '@/components/ShareButtons';
 
 interface SubmissionFormProps {
   contest: Contest;
@@ -155,7 +156,35 @@ export default function SubmissionForm({ contest, onSuccess }: SubmissionFormPro
         <p className="text-gray-400">Your contest entry has been successfully submitted.</p>
         <p className="text-sm text-gray-500 mt-4">Good luck! 🍀</p>
 
-        {/* Sharing buttons will go here */}
+        {/* Share your entry */}
+        <div className="mt-6 mb-4">
+          <p className="text-sm text-gray-400 mb-3">Share your entry:</p>
+          <div className="flex justify-center">
+            <ShareButtons
+              shareType="contestEntry"
+              contestData={{
+                name: contest.name,
+                description: contest.description || '',
+                prize: contest.prize_amount ? `${formatTokenBalance(contest.prize_amount.toString())} $BB` : 'Amazing prizes',
+                timeLeft: contest.end_date ?
+                  (() => {
+                    const end = new Date(contest.end_date);
+                    const now = new Date();
+                    const diff = end.getTime() - now.getTime();
+                    if (diff <= 0) return 'Contest ended';
+                    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    if (days > 0) return `${days} day${days > 1 ? 's' : ''} left`;
+                    return `${hours} hour${hours > 1 ? 's' : ''} left`;
+                  })() : 'Ongoing'
+              }}
+              contextUrl={`https://bbapp.bizarrebeasts.io/contests/${contest.id}`}
+              buttonSize="md"
+              showLabels={false}
+            />
+          </div>
+        </div>
+
         <div className="mt-6 space-y-3">
           <button
             onClick={() => {

@@ -52,6 +52,10 @@ export const SHARE_TEMPLATES = {
     milestone15: `🏆 15-DAY STREAK on BizarreBeasts!\nBonus {bonus} $BB earned!\n\nThe grind pays off! Join /bizarrebeasts\nCC @bizarrebeast`,
     milestone30: `👑 30-DAY PERFECT STREAK COMPLETE!\n\n✅ 30 days checked in\n💰 {totalRewards} $BB earned\n🔄 Ready for next cycle!\n\nJoin the most dedicated community at /bizarrebeasts!\nCC @bizarrebeast`,
     streakbreak: `🔄 Back on the grind! Starting fresh on BizarreBeasts.\n\nPrevious best: {bestStreak} days\nLet's beat it this time! 💪\n\nJoin /bizarrebeasts and build your streak!\nCC @bizarrebeast`,
+    contest: `🏆 Check out the {name} contest on BizarreBeasts!\n\n{description}\n\n⏰ {timeLeft}\n💰 Prize: {prize}\n\nEnter now at /bizarrebeasts!\nCC @bizarrebeast`,
+    contestEntry: `📸 Just entered the {name} contest on BizarreBeasts!\n\n{description}\n\n💰 Prize pool: {prize}\n⏰ {timeLeft}\n\nJoin the competition at /bizarrebeasts!\nCC @bizarrebeast`,
+    contestPosition: `🏆 Currently #{position} in the {name} contest on BizarreBeasts!\n\n💪 Score: {score}\n⏰ {timeLeft}\n\nJoin and compete at /bizarrebeasts!\nCC @bizarrebeast`,
+    contestWinner: `🎉 I WON the {name} contest on BizarreBeasts!\n\n🥇 Final position: #{position}\n💰 Prize won: {prize}\n🔥 Score: {score}\n\nJoin the next contest at /bizarrebeasts!\nCC @bizarrebeast`,
   },
   twitter: {
     default: `Check out @bizarrebeasts_ ( $BB ) - The weirdest, wildest meme generator in crypto! 👹🚀`,
@@ -64,6 +68,10 @@ export const SHARE_TEMPLATES = {
     milestone15: `🏆 15-DAY STREAK on @bizarrebeasts_!\nBonus {bonus} $BB earned!\n\nThe grind pays off!`,
     milestone30: `👑 30-DAY PERFECT STREAK COMPLETE on @bizarrebeasts_!\n\n✅ 30 days checked in\n💰 {totalRewards} $BB earned\n🔄 Ready for next cycle!`,
     streakbreak: `🔄 Back on the grind! Starting fresh on @bizarrebeasts_.\n\nPrevious best: {bestStreak} days\nLet's beat it this time! 💪`,
+    contest: `🏆 Check out the {name} contest on @bizarrebeasts_!\n\n{description}\n\n⏰ {timeLeft}\n💰 Prize: {prize}`,
+    contestEntry: `📸 Just entered the {name} contest on @bizarrebeasts_!\n\n💰 Prize pool: {prize}\n⏰ {timeLeft}\n\nJoin the competition!`,
+    contestPosition: `🏆 Currently #{position} in the {name} contest on @bizarrebeasts_!\n\n💪 Score: {score}\n⏰ {timeLeft}`,
+    contestWinner: `🎉 I WON the {name} contest on @bizarrebeasts_!\n\n🥇 Final position: #{position}\n💰 Prize won: {prize}`,
   },
   telegram: {
     default: `Check out @bizarrebeast ($BB) - The ultimate meme generator! 👹`,
@@ -76,6 +84,10 @@ export const SHARE_TEMPLATES = {
     milestone15: `🏆 15-DAY STREAK on @bizarrebeast!\nBonus {bonus} ($BB) earned!`,
     milestone30: `👑 30-DAY PERFECT STREAK COMPLETE!\n\n✅ 30 days checked in\n💰 {totalRewards} ($BB) earned\n🔄 Ready for next cycle!`,
     streakbreak: `🔄 Back on the grind! Starting fresh on @bizarrebeast.\n\nPrevious best: {bestStreak} days`,
+    contest: `🏆 Check out the {name} contest on @bizarrebeast!\n\n{description}\n\n⏰ {timeLeft}\n💰 Prize: {prize}`,
+    contestEntry: `📸 Just entered the {name} contest on @bizarrebeast ($BB)!\n\n💰 Prize pool: {prize}\n⏰ {timeLeft}`,
+    contestPosition: `🏆 Currently #{position} in the {name} contest on @bizarrebeast!\n\n💪 Score: {score}\n⏰ {timeLeft}`,
+    contestWinner: `🎉 I WON the {name} contest on @bizarrebeast ($BB)!\n\n🥇 Final position: #{position}\n💰 Prize won: {prize}`,
   }
 };
 

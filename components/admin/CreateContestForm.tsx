@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { X, Loader2, Trophy, Calendar, Coins, Users, FileText } from 'lucide-react';
+import { X, Loader2, Trophy, Calendar, Coins, Users, FileText, Upload, Image } from 'lucide-react';
 
 interface CreateContestFormProps {
   isOpen: boolean;
@@ -30,8 +30,70 @@ export default function CreateContestForm({ isOpen, onClose, onSuccess }: Create
     status: 'active' as 'draft' | 'active' | 'ended' | 'cancelled',
     is_recurring: false,
     recurrence_interval: 'weekly' as 'daily' | 'weekly' | 'monthly',
-    is_test: false
+    is_test: false,
+    banner_image_url: ''
   });
+
+  const [bannerFile, setBannerFile] = useState<File | null>(null);
+  const [bannerPreview, setBannerPreview] = useState<string | null>(null);
+  const [uploadingBanner, setUploadingBanner] = useState(false);
+
+  const handleBannerSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Validate file type
+      const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
+      if (!validTypes.includes(file.type)) {
+        setError('Invalid file type. Only JPEG, PNG, WebP, and GIF are allowed.');
+        return;
+      }
+
+      // Validate file size (max 5MB)
+      const maxSize = 5 * 1024 * 1024;
+      if (file.size > maxSize) {
+        setError('File too large. Maximum size is 5MB.');
+        return;
+      }
+
+      setBannerFile(file);
+      setError(null);
+
+      // Create preview
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setBannerPreview(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const uploadBanner = async (): Promise<string | undefined> => {
+    if (!bannerFile) return undefined;
+
+    setUploadingBanner(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', bannerFile);
+
+      const response = await fetch('/api/admin/contests/upload-banner', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to upload banner');
+      }
+
+      return data.url;
+    } catch (error) {
+      console.error('Error uploading banner:', error);
+      throw error;
+    } finally {
+      setUploadingBanner(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,6 +101,18 @@ export default function CreateContestForm({ isOpen, onClose, onSuccess }: Create
     setError(null);
 
     try {
+      // Upload banner image if selected
+      let bannerUrl: string | undefined;
+      if (bannerFile) {
+        try {
+          bannerUrl = await uploadBanner();
+        } catch (uploadError) {
+          setError('Failed to upload banner image. Please try again.');
+          setLoading(false);
+          return;
+        }
+      }
+
       // Get admin wallet - try multiple sources
       let adminWallet = localStorage.getItem('walletAddress');
 
@@ -64,6 +138,7 @@ export default function CreateContestForm({ isOpen, onClose, onSuccess }: Create
         },
         body: JSON.stringify({
           ...formData,
+          banner_image_url: bannerUrl || formData.banner_image_url || undefined,
           created_by: adminWallet.toLowerCase(),
           min_bb_required: formData.min_bb_required ? Number(formData.min_bb_required) : 0,
           max_bb_required: formData.max_bb_required ? Number(formData.max_bb_required) : undefined,
@@ -101,8 +176,11 @@ export default function CreateContestForm({ isOpen, onClose, onSuccess }: Create
         status: 'active',
         is_recurring: false,
         recurrence_interval: 'weekly',
-        is_test: false
+        is_test: false,
+        banner_image_url: ''
       });
+      setBannerFile(null);
+      setBannerPreview(null);
     } catch (err) {
       console.error('Error creating contest:', err);
       setError(err instanceof Error ? err.message : 'Failed to create contest');
@@ -199,6 +277,71 @@ export default function CreateContestForm({ isOpen, onClose, onSuccess }: Create
                        focus:outline-none transition resize-none"
               placeholder="Describe the contest and how to win..."
             />
+          </div>
+
+          {/* Banner Image Upload */}
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              <Image className="inline w-4 h-4 mr-1" />
+              Contest Banner Image
+            </label>
+            <div className="space-y-3">
+              {/* Preview */}
+              {bannerPreview && (
+                <div className="relative w-full h-48 rounded-lg overflow-hidden border border-gray-700">
+                  <img
+                    src={bannerPreview}
+                    alt="Banner preview"
+                    className="w-full h-full object-cover"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setBannerFile(null);
+                      setBannerPreview(null);
+                    }}
+                    className="absolute top-2 right-2 p-1 bg-black/50 rounded-lg
+                             text-white hover:bg-black/70 transition"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              )}
+
+              {/* Upload Button */}
+              {!bannerPreview && (
+                <label className="flex flex-col items-center justify-center w-full h-32
+                                 border-2 border-dashed border-gray-700 rounded-lg
+                                 cursor-pointer hover:border-gem-crystal/50 transition
+                                 bg-dark-bg/50">
+                  <Upload className="w-8 h-8 text-gray-400 mb-2" />
+                  <span className="text-sm text-gray-400">Click to upload banner</span>
+                  <span className="text-xs text-gray-500 mt-1">JPEG, PNG, WebP or GIF (Max 5MB)</span>
+                  <input
+                    type="file"
+                    className="hidden"
+                    accept="image/jpeg,image/jpg,image/png,image/webp,image/gif"
+                    onChange={handleBannerSelect}
+                  />
+                </label>
+              )}
+
+              {/* URL Input (Optional) */}
+              <div>
+                <input
+                  type="url"
+                  value={formData.banner_image_url}
+                  onChange={(e) => setFormData({ ...formData, banner_image_url: e.target.value })}
+                  className="w-full px-4 py-2 bg-dark-bg border border-gray-700 rounded-lg
+                           text-white placeholder-gray-500 focus:border-gem-crystal
+                           focus:outline-none transition text-sm"
+                  placeholder="Or paste banner image URL (optional)"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Upload a file or provide a URL for the contest banner
+                </p>
+              </div>
+            </div>
           </div>
 
           {/* Dates */}
@@ -424,7 +567,7 @@ export default function CreateContestForm({ isOpen, onClose, onSuccess }: Create
               {loading ? (
                 <>
                   <Loader2 className="w-5 h-5 animate-spin" />
-                  Creating...
+                  {uploadingBanner ? 'Uploading Banner...' : 'Creating...'}
                 </>
               ) : (
                 <>

@@ -44,7 +44,7 @@ export default function ContestsPage() {
 
       // Fetch all contest types in parallel
       const [active, upcoming, ended] = await Promise.all([
-        contestQueries.getActiveContestsWithStats(),
+        contestQueries.getActiveContestsWithStats(),  // Back to using the view with stats
         contestQueries.getUpcomingContests(),
         contestQueries.getEndedContests(5),
       ]);
@@ -120,20 +120,49 @@ export default function ContestsPage() {
 
     return (
       <Link href={`/contests/${contest.id}`}>
-        <div className="bg-dark-card border border-gem-crystal/20 rounded-lg p-6 hover:border-gem-crystal/40 transition-all duration-300 cursor-pointer group">
-          {/* Header */}
-          <div className="flex items-start justify-between mb-4">
-            <div className="flex items-center gap-3">
-              <span className="text-2xl">{getContestTypeIcon(contest.type)}</span>
-              <div>
+        <div className="bg-dark-card border border-gem-crystal/20 rounded-lg overflow-hidden hover:border-gem-crystal/40 transition-all duration-300 cursor-pointer group">
+          {/* Banner Image */}
+          {contest.banner_image_url ? (
+            <div className="relative w-full h-48 bg-gradient-to-br from-gem-crystal/20 to-gem-purple/20">
+              <img
+                src={contest.banner_image_url}
+                alt={contest.name}
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  // Fallback to gradient if image fails to load
+                  (e.target as HTMLImageElement).style.display = 'none';
+                }}
+              />
+              {/* Status badge overlay */}
+              <div className="absolute top-3 right-3">
+                <span className={`px-2 py-1 bg-black/50 backdrop-blur-sm text-xs rounded-full ${status.color}`}>
+                  {status.label}
+                </span>
+              </div>
+            </div>
+          ) : (
+            <div className="relative w-full h-48 bg-gradient-to-br from-gem-crystal/20 to-gem-purple/20 flex items-center justify-center">
+              <span className="text-6xl opacity-50">{getContestTypeIcon(contest.type)}</span>
+              {/* Status badge overlay */}
+              <div className="absolute top-3 right-3">
+                <span className={`px-2 py-1 bg-black/50 backdrop-blur-sm text-xs rounded-full ${status.color}`}>
+                  {status.label}
+                </span>
+              </div>
+            </div>
+          )}
+
+          {/* Content */}
+          <div className="p-6">
+            {/* Header */}
+            <div className="flex items-start justify-between mb-4">
+              <div className="flex-1">
                 <h3 className="text-xl font-bold text-white group-hover:text-gem-crystal transition-colors">
                   {contest.name}
                 </h3>
-                <span className={`text-xs ${status.color}`}>{status.label}</span>
               </div>
+              <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-gem-crystal transition-colors ml-2 flex-shrink-0" />
             </div>
-            <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-gem-crystal transition-colors" />
-          </div>
 
           {/* Description */}
           {contest.description && (
@@ -206,16 +235,17 @@ export default function ContestsPage() {
             </div>
           )}
 
-          {/* Prize Type Badge */}
-          <div className="flex gap-2 mt-4">
-            <span className="px-2 py-1 bg-gem-crystal/10 text-gem-crystal text-xs rounded-full">
-              {contest.type.replace('_', ' ')}
-            </span>
-            {contest.prize_type === 'nft' && (
-              <span className="px-2 py-1 bg-gem-gold/10 text-gem-gold text-xs rounded-full">
-                NFT Reward
+            {/* Prize Type Badge */}
+            <div className="flex gap-2 mt-4">
+              <span className="px-2 py-1 bg-gem-crystal/10 text-gem-crystal text-xs rounded-full">
+                {contest.type.replace('_', ' ')}
               </span>
-            )}
+              {contest.prize_type === 'nft' && (
+                <span className="px-2 py-1 bg-gem-gold/10 text-gem-gold text-xs rounded-full">
+                  NFT Reward
+                </span>
+              )}
+            </div>
           </div>
         </div>
       </Link>

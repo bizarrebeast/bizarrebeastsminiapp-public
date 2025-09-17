@@ -19,13 +19,15 @@ import {
   ArrowRight,
   Calendar,
   Target,
-  Award
+  Award,
+  Search
 } from 'lucide-react';
 import { useWallet } from '@/hooks/useWallet';
 import { contestQueries, Contest, ContestSubmission, ContestLeaderboard, ContestWinner } from '@/lib/supabase';
 import { formatTokenBalance, getCachedBBBalance, meetsTokenRequirement } from '@/lib/tokenBalance';
 import { FEATURES } from '@/lib/feature-flags';
 import SubmissionForm from '@/components/contests/SubmissionForm';
+import ShareButtons from '@/components/ShareButtons';
 
 export default function ContestDetailPage() {
   const { id } = useParams();
@@ -40,6 +42,7 @@ export default function ContestDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'details' | 'leaderboard' | 'submit'>('details');
+  const [searchTerm, setSearchTerm] = useState('');
 
   // Check if contests are enabled
   if (!FEATURES.CONTESTS) {
@@ -174,25 +177,21 @@ export default function ContestDetailPage() {
     return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
   };
 
-  const shareContest = async () => {
-    const shareText = `🏆 Check out this contest on @bizarrebeasts!\n\n${contest?.name}\n\nPrize: ${contest?.prize_amount ? formatTokenBalance(contest.prize_amount.toString()) + ' $BB' : 'NFT'}\n\nJoin now: `;
-    const shareUrl = `https://bbapp.bizarrebeasts.io/contests/${id}`;
+  // Calculate time left for sharing
+  const getTimeLeftText = () => {
+    if (!contest) return '';
+    if (contest.status === 'ended') return 'Contest ended';
+    if (contest.status === 'draft') return 'Coming soon';
+    return timeRemaining || 'Active now';
+  };
 
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: contest?.name,
-          text: shareText,
-          url: shareUrl,
-        });
-      } catch (err) {
-        console.log('Share cancelled');
-      }
-    } else {
-      // Fallback to copying link
-      navigator.clipboard.writeText(shareText + shareUrl);
-      alert('Contest link copied to clipboard!');
+  // Format prize for sharing
+  const formatPrizeText = () => {
+    if (!contest) return '';
+    if (contest.prize_amount) {
+      return `${formatTokenBalance(contest.prize_amount.toString())} $BB`;
     }
+    return contest.prize_type || 'Amazing prizes';
   };
 
   if (loading) {
@@ -240,6 +239,23 @@ export default function ContestDetailPage() {
           Back to Contests
         </Link>
 
+        {/* Banner Image */}
+        {contest.banner_image_url && (
+          <div className="relative w-full h-64 md:h-80 rounded-lg overflow-hidden mb-6">
+            <img
+              src={contest.banner_image_url}
+              alt={contest.name}
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                // Hide image if it fails to load
+                (e.target as HTMLImageElement).style.display = 'none';
+              }}
+            />
+            {/* Gradient overlay for better text readability if needed */}
+            <div className="absolute inset-0 bg-gradient-to-t from-dark-bg/80 to-transparent" />
+          </div>
+        )}
+
         {/* Contest Header */}
         <div className="bg-dark-card border border-gem-crystal/20 rounded-lg p-6 mb-6">
           <div className="flex items-start justify-between mb-4">
@@ -249,12 +265,20 @@ export default function ContestDetailPage() {
                 <p className="text-gray-400">{contest.description}</p>
               )}
             </div>
-            <button
-              onClick={shareContest}
-              className="p-2 bg-gem-crystal/10 text-gem-crystal rounded-lg hover:bg-gem-crystal/20 transition"
-            >
-              <Share2 className="w-5 h-5" />
-            </button>
+            {contest && (
+              <ShareButtons
+                shareType="contest"
+                contestData={{
+                  name: contest.name,
+                  description: contest.description || 'Join this exciting contest!',
+                  timeLeft: getTimeLeftText(),
+                  prize: formatPrizeText()
+                }}
+                contextUrl={`https://bbapp.bizarrebeasts.io/contests/${id}`}
+                buttonSize="sm"
+                showLabels={false}
+              />
+            )}
           </div>
 
           {/* Status and Time */}
@@ -460,18 +484,72 @@ export default function ContestDetailPage() {
                 <p className="text-gray-500 text-sm mt-2">Be the first to enter!</p>
               </div>
             ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead className="bg-dark-bg">
-                    <tr>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase">Rank</th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase">Player</th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase">Score</th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase">Submitted</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-700">
-                    {leaderboard.map((entry, index) => {
+              <div>
+                {/* Search Bar */}
+                <div className="p-4 bg-dark-bg border-b border-gray-700">
+                  <div className="relative max-w-md mx-auto">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                    <input
+                      type="text"
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      placeholder="Search by username or wallet address..."
+                      className="w-full pl-10 pr-4 py-2 bg-dark-card border border-gray-700 rounded-lg
+                               text-white placeholder-gray-500 focus:border-gem-crystal
+                               focus:outline-none transition"
+                    />
+                    {searchTerm && (
+                      <button
+                        onClick={() => setSearchTerm('')}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400
+                                 hover:text-white transition"
+                      >
+                        <XCircle className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {/* Table */}
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead className="bg-dark-bg">
+                      <tr>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase">Rank</th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase">Player</th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase">Score</th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase">Submitted</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-700">
+                      {(() => {
+                        const filteredEntries = leaderboard.filter(entry => {
+                          if (!searchTerm) return true;
+                          const term = searchTerm.toLowerCase();
+                          return (
+                            entry.wallet_address.toLowerCase().includes(term) ||
+                            (entry.username && entry.username.toLowerCase().includes(term))
+                          );
+                        });
+
+                        if (filteredEntries.length === 0 && searchTerm) {
+                          return (
+                            <tr>
+                              <td colSpan={4} className="px-4 py-8 text-center">
+                                <Search className="w-8 h-8 text-gray-500 mx-auto mb-2" />
+                                <p className="text-gray-400">No results found for "{searchTerm}"</p>
+                                <button
+                                  onClick={() => setSearchTerm('')}
+                                  className="text-gem-crystal hover:text-gem-crystal/80 text-sm mt-2"
+                                >
+                                  Clear search
+                                </button>
+                              </td>
+                            </tr>
+                          );
+                        }
+
+                        return filteredEntries.map((entry, index) => {
                       const isUser = address && entry.wallet_address.toLowerCase() === address.toLowerCase();
                       const isTop3 = entry.rank <= 3;
 
@@ -520,10 +598,12 @@ export default function ContestDetailPage() {
                           </td>
                         </tr>
                       );
-                    })}
+                    });
+                      })()}
                   </tbody>
                 </table>
               </div>
+            </div>
             )}
           </div>
         )}

@@ -9,7 +9,7 @@ import { sdk } from '@/lib/sdk-init';
 interface ShareButtonsProps {
   imageDataUrl?: string;
   customText?: string;
-  shareType?: 'default' | 'meme' | 'rank' | 'ritual' | 'checkin' | 'claim' | 'milestone5' | 'milestone15' | 'milestone30' | 'streakbreak';
+  shareType?: 'default' | 'meme' | 'rank' | 'ritual' | 'checkin' | 'claim' | 'milestone5' | 'milestone15' | 'milestone30' | 'streakbreak' | 'contest' | 'contestEntry' | 'contestPosition' | 'contestWinner';
   rank?: number;
   ritualData?: {
     id: number;
@@ -33,6 +33,14 @@ interface ShareButtonsProps {
     totalRewards?: string; // For 30-day
     bestStreak?: number; // For streak break
   };
+  contestData?: {
+    name: string;
+    description?: string;
+    timeLeft?: string;
+    prize?: string;
+    position?: number;
+    score?: string | number;
+  };
   className?: string;
   showLabels?: boolean;
   buttonSize?: 'sm' | 'md' | 'lg';
@@ -48,6 +56,7 @@ export default function ShareButtons({
   checkInData,
   claimData,
   milestoneData,
+  contestData,
   className = '',
   showLabels = true,
   buttonSize = 'md',
@@ -102,6 +111,25 @@ export default function ShareButtons({
             }
             if (shareType === 'streakbreak' && milestoneData.bestStreak) {
               shareText = shareText.replace('{bestStreak}', milestoneData.bestStreak.toString());
+            }
+          }
+          // Contest placeholders for Farcaster
+          if (contestData && (shareType === 'contest' || shareType === 'contestEntry' || shareType === 'contestPosition' || shareType === 'contestWinner')) {
+            shareText = shareText.replace(/\{name\}/g, contestData.name);
+            if (contestData.description) {
+              shareText = shareText.replace(/\{description\}/g, contestData.description);
+            }
+            if (contestData.timeLeft) {
+              shareText = shareText.replace(/\{timeLeft\}/g, contestData.timeLeft);
+            }
+            if (contestData.prize) {
+              shareText = shareText.replace(/\{prize\}/g, contestData.prize);
+            }
+            if (contestData.position) {
+              shareText = shareText.replace(/#\{position\}/g, `#${contestData.position}`);
+            }
+            if (contestData.score) {
+              shareText = shareText.replace(/\{score\}/g, contestData.score.toString());
             }
           }
         }
@@ -169,6 +197,25 @@ export default function ShareButtons({
             }
             if (shareType === 'streakbreak' && milestoneData.bestStreak) {
               text = text.replace('{bestStreak}', milestoneData.bestStreak.toString());
+            }
+          }
+          // Contest placeholders
+          if (contestData && (shareType === 'contest' || shareType === 'contestEntry' || shareType === 'contestPosition' || shareType === 'contestWinner')) {
+            text = text.replace(/\{name\}/g, contestData.name);
+            if (contestData.description) {
+              text = text.replace(/\{description\}/g, contestData.description);
+            }
+            if (contestData.timeLeft) {
+              text = text.replace(/\{timeLeft\}/g, contestData.timeLeft);
+            }
+            if (contestData.prize) {
+              text = text.replace(/\{prize\}/g, contestData.prize);
+            }
+            if (contestData.position) {
+              text = text.replace(/#\{position\}/g, `#${contestData.position}`);
+            }
+            if (contestData.score) {
+              text = text.replace(/\{score\}/g, contestData.score.toString());
             }
           }
         }
