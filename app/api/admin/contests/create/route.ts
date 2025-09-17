@@ -1,0 +1,73 @@
+import { NextResponse } from 'next/server';
+import { supabaseAdmin } from '@/lib/supabase-admin';
+import { validateAdminAccess } from '@/lib/admin';
+
+export async function POST(request: Request) {
+  try {
+    const body = await request.json();
+    
+    // Validate admin access
+    if (!validateAdminAccess(body.created_by)) {
+      return NextResponse.json(
+        { error: 'Unauthorized: Admin access required' },
+        { status: 403 }
+      );
+    }
+
+    // Prepare contest data
+    const contestData = {
+      name: body.name,
+      type: body.type,
+      description: body.description || null,
+      game_name: body.game_name || null,
+      start_date: body.start_date || new Date().toISOString(),
+      end_date: body.end_date,
+      min_bb_required: body.min_bb_required || 0,
+      max_bb_required: body.max_bb_required || null,
+      prize_amount: body.prize_amount || null,
+      prize_type: body.prize_type || 'tokens',
+      nft_contract_address: body.nft_contract_address || null,
+      status: body.status || 'active',
+      rules: body.rules || null,
+      max_entries_per_wallet: body.max_entries_per_wallet || 1,
+      is_recurring: body.is_recurring || false,
+      recurrence_interval: body.recurrence_interval || null,
+      created_by: body.created_by.toLowerCase(),
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    };
+
+    // Insert contest into database
+    const { data: contest, error } = await supabaseAdmin
+      .from('contests')
+      .insert(contestData)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error creating contest:', error);
+      return NextResponse.json(
+        { 
+          error: 'Failed to create contest', 
+          details: error.message 
+        },
+        { status: 500 }
+      );
+    }
+
+    console.log('Contest created successfully:', contest.id, contest.name);
+
+    return NextResponse.json({
+      success: true,
+      contest,
+      message: `Contest "${contest.name}" created successfully!`
+    });
+
+  } catch (error) {
+    console.error('Create contest error:', error);
+    return NextResponse.json(
+      { error: 'An unexpected error occurred' },
+      { status: 500 }
+    );
+  }
+}

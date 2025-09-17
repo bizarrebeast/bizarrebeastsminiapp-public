@@ -14,13 +14,15 @@ import {
   AlertCircle,
   Loader2,
   RefreshCw,
-  Camera
+  Camera,
+  Plus
 } from 'lucide-react';
 import { useWallet } from '@/hooks/useWallet';
 import { isAdmin } from '@/lib/admin';
 import { contestQueries, Contest, ContestSubmission } from '@/lib/supabase';
 import { formatTokenBalance } from '@/lib/tokenBalance';
 import ScreenshotModal from '@/components/admin/ScreenshotModal';
+import CreateContestForm from '@/components/admin/CreateContestForm';
 
 export default function AdminContestsPage() {
   const router = useRouter();
@@ -49,6 +51,7 @@ export default function AdminContestsPage() {
   });
 
   const [thumbnailSize, setThumbnailSize] = useState<'small' | 'medium' | 'large'>('medium');
+  const [showCreateForm, setShowCreateForm] = useState(false);
 
   // Check admin access
   useEffect(() => {
@@ -239,13 +242,22 @@ export default function AdminContestsPage() {
             <Shield className="w-8 h-8 text-gem-crystal" />
             <h1 className="text-3xl font-bold">Contest Admin Panel</h1>
           </div>
-          <button
-            onClick={fetchContests}
-            className="flex items-center gap-2 px-4 py-2 bg-dark-card border border-gray-700 rounded-lg hover:bg-dark-bg transition"
-          >
-            <RefreshCw className="w-4 h-4" />
-            Refresh
-          </button>
+          <div className="flex gap-3">
+            <button
+              onClick={() => setShowCreateForm(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink text-dark-bg font-bold rounded-lg hover:opacity-90 transition"
+            >
+              <Plus className="w-4 h-4" />
+              Create Contest
+            </button>
+            <button
+              onClick={fetchContests}
+              className="flex items-center gap-2 px-4 py-2 bg-dark-card border border-gray-700 rounded-lg hover:bg-dark-bg transition"
+            >
+              <RefreshCw className="w-4 h-4" />
+              Refresh
+            </button>
+          </div>
         </div>
 
         {/* Stats Cards */}
@@ -538,6 +550,16 @@ export default function AdminContestsPage() {
           screenshotUrl={screenshotModal.url}
           walletAddress={screenshotModal.wallet}
           score={screenshotModal.score}
+        />
+
+        {/* Create Contest Form Modal */}
+        <CreateContestForm
+          isOpen={showCreateForm}
+          onClose={() => setShowCreateForm(false)}
+          onSuccess={() => {
+            setShowCreateForm(false);
+            fetchContests();
+          }}
         />
       </div>
     </div>
