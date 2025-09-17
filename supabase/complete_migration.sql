@@ -138,12 +138,12 @@ CREATE TABLE IF NOT EXISTS contest_cta_clicks (
     wallet_address TEXT,
     clicked_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     ip_address INET,
-    user_agent TEXT,
-
-    -- Index for analytics queries
-    INDEX idx_cta_clicks_contest_id (contest_id),
-    INDEX idx_cta_clicks_clicked_at (clicked_at)
+    user_agent TEXT
 );
+
+-- Create indexes for analytics queries
+CREATE INDEX IF NOT EXISTS idx_cta_clicks_contest_id ON contest_cta_clicks(contest_id);
+CREATE INDEX IF NOT EXISTS idx_cta_clicks_clicked_at ON contest_cta_clicks(clicked_at);
 
 -- ================================================
 -- 6. ROW LEVEL SECURITY (RLS) POLICIES
