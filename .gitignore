@@ -43,12 +43,24 @@ next-env.d.ts
 # OS
 Thumbs.db
 
-# Private Planning Documents & Guides
-*.md
+# Documentation
+# Ignore private planning docs but keep important ones
+*PLAN*.md
+*AUDIT*.md
+*STATUS*.md
+*FIX*.md
+*GUIDE*.md
+*SPEC*.md
+*CHECKLIST*.md
+# But explicitly keep these important docs
 !README.md
 !README.nextjs.md
+!SESSION_SUMMARY.md
+!MIGRATION_GUIDE.md
+!SHARING-IMPLEMENTATION-GUIDE.md
 /scripts/
-/supabase/
+# Don't ignore supabase migration files - they need to be tracked
+# /supabase/
 cors.json
 remove-white-backgrounds.js
 update-bizarrebeasts-metadata-correct.js

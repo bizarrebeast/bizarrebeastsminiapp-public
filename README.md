@@ -6,6 +6,8 @@ A production-ready Farcaster miniapp for the BizarreBeasts ecosystem featuring a
 
 ## 📚 Important Documentation
 
+- **[SESSION_SUMMARY.md](./SESSION_SUMMARY.md)** - Latest contest system implementation details
+- **[MIGRATION_GUIDE.md](./MIGRATION_GUIDE.md)** - Database migration and setup guide for contest system
 - **[SHARING-IMPLEMENTATION-GUIDE.md](./SHARING-IMPLEMENTATION-GUIDE.md)** - Complete guide to sharing features and implementation
 
 ## 🚀 Core Features
@@ -68,6 +70,16 @@ A production-ready Farcaster miniapp for the BizarreBeasts ecosystem featuring a
 - **Album Artwork**: Visual covers for each track
 - **NFT Collections**: Links to music NFTs
 
+### 🏆 Contest System (NEW)
+- **Dual Button System**: Separate CTA and submission buttons for clarity
+- **Contest Types**: Game score, creative/meme, onboarding, and tiered contests
+- **CTA Tracking**: Analytics for button clicks and user engagement
+- **Voting System**: Community voting with one-vote-per-wallet restriction
+- **Admin Panel**: Full CRUD operations for contest management
+- **Smart Defaults**: Contest-type-specific button text and icons
+- **External Links**: Support for games, tools, and third-party integrations
+- **Mobile Optimized**: Responsive layouts with stacked button variants
+
 ## 🛠️ Technical Stack
 
 - **Framework**: Next.js 15 with TypeScript and React 19
@@ -84,9 +96,18 @@ A production-ready Farcaster miniapp for the BizarreBeasts ecosystem featuring a
 ```
 /app                    # Next.js 15 app directory
   /api                 # API routes
+    /admin            # Admin endpoints
+      /contests       # Contest CRUD operations
+    /contests         # Contest APIs
+      /track-cta      # CTA click tracking
+      /vote           # Voting system
     /empire           # Empire API proxy
     /upload-temp      # Temporary image storage
     /image            # Image serving endpoint
+  /admin              # Admin panel
+    /contests         # Contest management
+  /contests           # Contest pages
+    /[id]             # Contest detail page
   /meme-generator     # Meme creation with canvas
   /swap               # Token swap interface
   /games              # Games hub
@@ -94,24 +115,36 @@ A production-ready Farcaster miniapp for the BizarreBeasts ecosystem featuring a
   /rituals            # Daily challenges
   /music              # Soundtracks
   /resources          # Community links
-  
+
 /components
+  /admin              # Admin components
+    CreateContestForm.tsx # Contest creation
+    EditContestForm.tsx   # Contest editing
   /canvas             # Meme canvas components
     MemeCanvas.tsx    # Main canvas with Fabric.js
     StickerGallery.tsx # Tier-gated collections
+  /contests           # Contest components
+    ContestActionButtons.tsx # Dual button system
+    VotingGallery.tsx        # Voting interface
   /wallet             # Wallet connection UI
   /navigation         # Navigation components
-  
+
 /lib
+  supabase.ts         # Supabase client & types
   web3.ts             # Wallet configuration
   farcaster.ts        # Farcaster integration
   sdk-ultimate.ts     # Bulletproof SDK init
   mobile-utils.ts     # Mobile helpers
-  
+
 /contexts
   FarcasterContext.tsx # Farcaster state
   SDKContext.tsx       # SDK management
-  
+
+/supabase             # Database migrations
+  complete_migration.sql     # Full contest system
+  add_cta_fields.sql        # CTA fields
+  create_voting_tables.sql  # Voting system
+
 /public
   /assets             # Images and media
   manifest.json       # PWA manifest
@@ -148,9 +181,19 @@ npm run build
 ### Environment Variables
 
 ```env
+# Wallet & Web3
 NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID=your_project_id
+
+# API Endpoints
 NEXT_PUBLIC_EMPIRE_API_URL=https://bizarrebeasts.win/api
 NEXT_PUBLIC_FARCASTER_MANIFEST_URL=/farcaster.json
+
+# Supabase (for Contest System)
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
+
+# Admin Configuration
+NEXT_PUBLIC_ADMIN_WALLETS=comma,separated,admin,wallets
 ```
 
 ## 🎯 Key Features Explained
