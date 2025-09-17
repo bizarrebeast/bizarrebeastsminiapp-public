@@ -42,3 +42,11 @@ next-env.d.ts
 
 # OS
 Thumbs.db
+
+# Private Planning Documents
+CONTEST_*.md
+*_PLAN.md
+*_PROGRESS_*.md
+*_REPORT.md
+/scripts/*.sql
+/supabase/*.sql
