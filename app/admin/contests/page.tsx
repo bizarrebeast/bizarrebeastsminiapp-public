@@ -430,10 +430,10 @@ export default function AdminContestsPage() {
                                     onError={(e) => {
                                       const target = e.target as HTMLImageElement;
                                       target.style.display = 'none';
-                                      const size = '${thumbnailSize}' === 'small' ? 'w-12 h-12' :
-                                                    '${thumbnailSize}' === 'medium' ? 'w-20 h-20' : 'w-32 h-32';
-                                      const iconSize = '${thumbnailSize}' === 'small' ? 'w-5 h-5' :
-                                                       '${thumbnailSize}' === 'medium' ? 'w-6 h-6' : 'w-8 h-8';
+                                      const size = thumbnailSize === 'small' ? 'w-12 h-12' :
+                                                    thumbnailSize === 'medium' ? 'w-20 h-20' : 'w-32 h-32';
+                                      const iconSize = thumbnailSize === 'small' ? 'w-5 h-5' :
+                                                       thumbnailSize === 'medium' ? 'w-6 h-6' : 'w-8 h-8';
                                       target.parentElement?.insertAdjacentHTML('afterbegin', `
                                         <div class="${size} bg-dark-bg rounded flex items-center justify-center">
                                           <svg class="${iconSize} text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -448,7 +448,7 @@ export default function AdminContestsPage() {
                               <button
                                 onClick={() => setScreenshotModal({
                                   isOpen: true,
-                                  url: submission.screenshot_url,
+                                  url: submission.screenshot_url || null,
                                   wallet: submission.wallet_address,
                                   score: submission.score || undefined
                                 })}

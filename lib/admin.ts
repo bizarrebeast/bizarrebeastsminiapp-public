@@ -14,7 +14,7 @@ if (!ADMIN_WALLET) {
  * Check if a wallet address is an admin
  */
 export function isAdmin(walletAddress: string | null | undefined): boolean {
-  if (!walletAddress) return false;
+  if (!walletAddress || !ADMIN_WALLET) return false;
   return walletAddress.toLowerCase() === ADMIN_WALLET.toLowerCase();
 }
 
