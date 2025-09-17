@@ -55,7 +55,25 @@ export default function ContestActionButtons({
     // Track CTA click if enabled
     if (contest.track_cta_clicks) {
       setCtaClicked(true);
-      // Could add analytics tracking here
+
+      // Send tracking request
+      try {
+        const walletAddress = typeof window !== 'undefined'
+          ? localStorage.getItem('walletAddress')
+          : null;
+
+        await fetch('/api/contests/track-cta', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contestId: contest.id,
+            walletAddress
+          })
+        });
+      } catch (error) {
+        console.error('Error tracking CTA click:', error);
+      }
+
       onCtaClick?.();
     }
 
