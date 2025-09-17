@@ -3,7 +3,12 @@
  */
 
 // Admin wallet address - should match .env.local ADMIN_WALLET
-export const ADMIN_WALLET = process.env.NEXT_PUBLIC_ADMIN_WALLET?.toLowerCase() || '0x4f2ecda8c10ec8fbe711f6664970826998b81c3e';
+// Use NEXT_PUBLIC_CONTEST_ADMIN_WALLET environment variable
+export const ADMIN_WALLET = process.env.NEXT_PUBLIC_CONTEST_ADMIN_WALLET?.toLowerCase();
+
+if (!ADMIN_WALLET) {
+  console.error('❌ NEXT_PUBLIC_CONTEST_ADMIN_WALLET not configured in environment variables');
+}
 
 /**
  * Check if a wallet address is an admin

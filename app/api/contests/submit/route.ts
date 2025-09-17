@@ -1,9 +1,32 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 import { uploadToR2, generateScreenshotKey, getFileExtension, validateImageFile, isR2Configured } from '@/lib/r2-storage';
+import { rateLimit, getClientIp } from '@/lib/rate-limit';
 
 export async function POST(request: Request) {
   try {
+    // Rate limiting: 5 submissions per minute per IP
+    const clientIp = getClientIp(request);
+    const { success, remaining, reset } = await rateLimit(clientIp, {
+      interval: 60 * 1000, // 1 minute
+      uniqueTokenPerInterval: 5 // 5 submissions per minute
+    });
+
+    if (!success) {
+      return NextResponse.json(
+        {
+          error: 'Too many submissions. Please try again later.',
+          retryAfter: Math.ceil((reset - Date.now()) / 1000)
+        },
+        {
+          status: 429,
+          headers: {
+            'X-RateLimit-Remaining': remaining.toString(),
+            'X-RateLimit-Reset': new Date(reset).toISOString()
+          }
+        }
+      );
+    }
     // Parse form data
     const formData = await request.formData();
 

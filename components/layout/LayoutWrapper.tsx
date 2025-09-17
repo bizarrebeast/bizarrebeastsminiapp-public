@@ -9,10 +9,10 @@ interface LayoutWrapperProps {
 
 export function LayoutWrapper({ children }: LayoutWrapperProps) {
   const pathname = usePathname();
-  
-  // Allow full width for meme generator, constrain others to 800px
-  const isFullWidth = pathname === '/meme-generator';
-  
+
+  // Allow full width for meme generator and admin pages, constrain others to 800px
+  const isFullWidth = pathname === '/meme-generator' || pathname.startsWith('/admin');
+
   return (
     <div className={isFullWidth ? '' : 'max-w-[800px] mx-auto'}>
       {children}

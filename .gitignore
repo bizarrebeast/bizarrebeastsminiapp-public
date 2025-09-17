@@ -50,3 +50,5 @@ Thumbs.db
 /scripts/
 /supabase/
 cors.json
+remove-white-backgrounds.js
+update-bizarrebeasts-metadata-correct.js

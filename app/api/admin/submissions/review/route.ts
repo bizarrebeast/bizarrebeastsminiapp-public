@@ -1,9 +1,23 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase-admin';
 import { validateAdminAccess } from '@/lib/admin';
+import { rateLimit, getClientIp } from '@/lib/rate-limit';
 
 export async function POST(request: Request) {
   try {
+    // Rate limiting: 30 admin actions per minute
+    const clientIp = getClientIp(request);
+    const { success, remaining, reset } = await rateLimit(`admin:${clientIp}`, {
+      interval: 60 * 1000,
+      uniqueTokenPerInterval: 30
+    });
+
+    if (!success) {
+      return NextResponse.json(
+        { error: 'Rate limit exceeded. Please slow down.' },
+        { status: 429 }
+      );
+    }
     const body = await request.json();
     const { submissionId, status, reviewerWallet, notes } = body;
 
