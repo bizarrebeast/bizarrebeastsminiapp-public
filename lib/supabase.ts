@@ -31,6 +31,16 @@ export interface Contest {
   created_by?: string;
   updated_at: string;
   banner_image_url?: string;
+  voting_enabled?: boolean;
+  voting_start_date?: string;
+  voting_end_date?: string;
+  min_votes_required?: number;
+  voting_type?: 'single' | 'multiple' | 'ranked';
+  cta_url?: string;
+  cta_button_text?: string;
+  cta_type?: 'internal' | 'external' | 'game' | 'tool';
+  cta_new_tab?: boolean;
+  track_cta_clicks?: boolean;
 }
 
 export interface ContestSubmission {
@@ -47,6 +57,16 @@ export interface ContestSubmission {
   reviewed_at?: string;
   reviewed_by?: string;
   reviewer_notes?: string;
+  vote_count?: number;
+}
+
+export interface ContestVote {
+  id: string;
+  contest_id: string;
+  submission_id: string;
+  voter_address: string;
+  vote_power?: number;
+  created_at: string;
 }
 
 export interface ContestWinner {
@@ -297,6 +317,70 @@ export const contestQueries = {
 
     if (error) throw error;
     return data as Contest;
+  },
+
+  // Voting: Cast a vote
+  async castVote(contestId: string, submissionId: string, voterAddress: string) {
+    const { data, error } = await supabase
+      .from('contest_votes')
+      .insert({
+        contest_id: contestId,
+        submission_id: submissionId,
+        voter_address: voterAddress
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  },
+
+  // Voting: Remove vote
+  async removeVote(contestId: string, voterAddress: string) {
+    const { error } = await supabase
+      .from('contest_votes')
+      .delete()
+      .eq('contest_id', contestId)
+      .eq('voter_address', voterAddress);
+
+    if (error) throw error;
+    return true;
+  },
+
+  // Voting: Get user's vote for a contest
+  async getUserVote(contestId: string, voterAddress: string) {
+    const { data, error } = await supabase
+      .from('contest_votes')
+      .select('*')
+      .eq('contest_id', contestId)
+      .eq('voter_address', voterAddress)
+      .single();
+
+    if (error && error.code !== 'PGRST116') throw error;
+    return data;
+  },
+
+  // Voting: Get all votes for a contest
+  async getContestVotes(contestId: string) {
+    const { data, error } = await supabase
+      .from('contest_votes')
+      .select('*')
+      .eq('contest_id', contestId);
+
+    if (error) throw error;
+    return data || [];
+  },
+
+  // Voting: Get submissions with vote counts
+  async getVotingResults(contestId: string) {
+    const { data, error } = await supabase
+      .from('contest_voting_results')
+      .select('*')
+      .eq('contest_id', contestId)
+      .order('votes', { ascending: false });
+
+    if (error) throw error;
+    return data || [];
   }
 };
 

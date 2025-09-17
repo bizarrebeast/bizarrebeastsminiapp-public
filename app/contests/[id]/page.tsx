@@ -28,6 +28,9 @@ import { formatTokenBalance, getCachedBBBalance, meetsTokenRequirement } from '@
 import { FEATURES } from '@/lib/feature-flags';
 import SubmissionForm from '@/components/contests/SubmissionForm';
 import ShareButtons from '@/components/ShareButtons';
+import VotingGallery from '@/components/contests/VotingGallery';
+import ContestActionButtons from '@/components/contests/ContestActionButtons';
+import { isBetweenDates } from '@/lib/utils';
 
 export default function ContestDetailPage() {
   const { id } = useParams();
@@ -41,8 +44,10 @@ export default function ContestDetailPage() {
   const [userBalance, setUserBalance] = useState<string>('0');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'details' | 'leaderboard' | 'submit'>('details');
+  const [activeTab, setActiveTab] = useState<'details' | 'leaderboard' | 'submit' | 'voting'>('details');
   const [searchTerm, setSearchTerm] = useState('');
+  const [searchedUser, setSearchedUser] = useState<ContestLeaderboard | null>(null);
+  const [approvedSubmissions, setApprovedSubmissions] = useState<ContestSubmission[]>([]);
 
   // Check if contests are enabled
   if (!FEATURES.CONTESTS) {
@@ -79,6 +84,12 @@ export default function ContestDetailPage() {
       if (contestData.status === 'ended') {
         const winnersData = await contestQueries.getContestWinners(id as string);
         setWinners(winnersData || []);
+      }
+
+      // If voting is enabled, fetch approved submissions
+      if (contestData.voting_enabled) {
+        const submissions = await contestQueries.getContestSubmissions(id as string, 'approved');
+        setApprovedSubmissions(submissions || []);
       }
 
       // If user is connected, check their submission
@@ -349,10 +360,10 @@ export default function ContestDetailPage() {
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex gap-2 mb-6 border-b border-gray-700">
+        <div className="flex gap-2 mb-6 border-b border-gray-700 overflow-x-auto">
           <button
             onClick={() => setActiveTab('details')}
-            className={`px-4 py-2 font-semibold transition-colors relative ${
+            className={`px-4 py-2 font-semibold transition-colors relative whitespace-nowrap ${
               activeTab === 'details'
                 ? 'text-gem-crystal'
                 : 'text-gray-400 hover:text-white'
@@ -365,7 +376,7 @@ export default function ContestDetailPage() {
           </button>
           <button
             onClick={() => setActiveTab('leaderboard')}
-            className={`px-4 py-2 font-semibold transition-colors relative ${
+            className={`px-4 py-2 font-semibold transition-colors relative whitespace-nowrap ${
               activeTab === 'leaderboard'
                 ? 'text-gem-crystal'
                 : 'text-gray-400 hover:text-white'
@@ -376,16 +387,31 @@ export default function ContestDetailPage() {
               <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gem-crystal" />
             )}
           </button>
-          {isContestActive && !userSubmission && (
+          {contest.voting_enabled && (
+            <button
+              onClick={() => setActiveTab('voting')}
+              className={`px-4 py-2 font-semibold transition-colors relative whitespace-nowrap ${
+                activeTab === 'voting'
+                  ? 'text-gem-crystal'
+                  : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              Vote ({approvedSubmissions?.length || 0})
+              {activeTab === 'voting' && (
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gem-crystal" />
+              )}
+            </button>
+          )}
+          {isContestActive && (!userSubmission || (contest.max_entries_per_wallet > 1)) && (
             <button
               onClick={() => setActiveTab('submit')}
-              className={`px-4 py-2 font-semibold transition-colors relative ${
+              className={`px-4 py-2 font-semibold transition-colors relative whitespace-nowrap ${
                 activeTab === 'submit'
                   ? 'text-gem-crystal'
                   : 'text-gray-400 hover:text-white'
               }`}
             >
-              Submit Entry
+              {userSubmission && contest.max_entries_per_wallet > 1 ? 'Submit Another Entry' : 'Submit Entry'}
               {activeTab === 'submit' && (
                 <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gem-crystal" />
               )}
@@ -434,8 +460,8 @@ export default function ContestDetailPage() {
               )}
             </div>
 
-            {/* Entry Button */}
-            {isContestActive && !userSubmission && (
+            {/* Action Buttons */}
+            {isContestActive && (!userSubmission || (contest.max_entries_per_wallet > 1)) && (
               <div className="mt-6">
                 {!isConnected ? (
                   <div className="p-4 bg-gem-crystal/10 border border-gem-crystal/30 rounded-lg text-center">
@@ -443,13 +469,12 @@ export default function ContestDetailPage() {
                     <p className="text-white mb-2">Connect your wallet to enter this contest</p>
                   </div>
                 ) : canEnterContest() ? (
-                  <button
-                    onClick={() => setActiveTab('submit')}
-                    className="w-full bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink text-dark-bg py-3 rounded-lg font-semibold hover:opacity-90 transition flex items-center justify-center gap-2"
-                  >
-                    Enter Contest
-                    <ArrowRight className="w-5 h-5" />
-                  </button>
+                  <ContestActionButtons
+                    contest={contest}
+                    contestId={id as string}
+                    variant="stacked"
+                    className="w-full"
+                  />
                 ) : (
                   <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-lg text-center">
                     <XCircle className="w-8 h-8 text-red-400 mx-auto mb-2" />
@@ -492,7 +517,16 @@ export default function ContestDetailPage() {
                     <input
                       type="text"
                       value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
+                      onChange={(e) => {
+                        setSearchTerm(e.target.value);
+                        // Find the user in leaderboard for sharing
+                        const term = e.target.value.toLowerCase();
+                        const found = leaderboard.find(entry =>
+                          entry.wallet_address.toLowerCase().includes(term) ||
+                          (entry.username && entry.username.toLowerCase().includes(term))
+                        );
+                        setSearchedUser(found || null);
+                      }}
                       placeholder="Search by username or wallet address..."
                       className="w-full pl-10 pr-4 py-2 bg-dark-card border border-gray-700 rounded-lg
                                text-white placeholder-gray-500 focus:border-gem-crystal
@@ -500,7 +534,10 @@ export default function ContestDetailPage() {
                     />
                     {searchTerm && (
                       <button
-                        onClick={() => setSearchTerm('')}
+                        onClick={() => {
+                          setSearchTerm('');
+                          setSearchedUser(null);
+                        }}
                         className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400
                                  hover:text-white transition"
                       >
@@ -509,6 +546,52 @@ export default function ContestDetailPage() {
                     )}
                   </div>
                 </div>
+
+                {/* Share Your Rank Section */}
+                {searchedUser && (
+                  <div className="p-4 bg-gradient-to-r from-gem-crystal/10 via-gem-gold/10 to-gem-pink/10 border-b border-gem-gold/30">
+                    <h3 className="text-white font-semibold mb-3 flex items-center gap-2">
+                      <Share2 className="w-5 h-5 text-gem-gold" />
+                      {searchedUser.wallet_address.toLowerCase() === address?.toLowerCase() ? 'Your' : 'Player'} Contest Position
+                    </h3>
+                    <div className="flex flex-col gap-3">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <span className="text-2xl font-bold text-gem-crystal">
+                            #{searchedUser.rank}
+                          </span>
+                          <div>
+                            <p className="text-white font-medium">
+                              {searchedUser.username || formatAddress(searchedUser.wallet_address)}
+                            </p>
+                            {searchedUser.username && (
+                              <p className="text-gray-400 text-sm">{formatAddress(searchedUser.wallet_address)}</p>
+                            )}
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-white font-bold">{searchedUser.score.toLocaleString()}</p>
+                          <p className="text-gray-400 text-sm">points</p>
+                        </div>
+                      </div>
+                      <div className="flex flex-col gap-2">
+                        <p className="text-xs text-gray-400">Share this rank:</p>
+                        <ShareButtons
+                          shareType="contestPosition"
+                          contestData={{
+                            name: contest.name,
+                            description: contest.description || '',
+                            position: searchedUser.rank,
+                            score: searchedUser.score.toLocaleString()
+                          }}
+                          contextUrl={`https://bbapp.bizarrebeasts.io/contests/${id}`}
+                          buttonSize="md"
+                          showLabels={false}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 {/* Table */}
                 <div className="overflow-x-auto">
@@ -556,7 +639,7 @@ export default function ContestDetailPage() {
                       return (
                         <tr
                           key={entry.wallet_address}
-                          className={`${isUser ? 'bg-gem-crystal/5' : ''} hover:bg-dark-bg/50 transition`}
+                          className={`${isUser ? 'bg-gem-crystal/5' : ''} hover:bg-dark-bg/50 transition group`}
                         >
                           <td className="px-4 py-3">
                             <div className="flex items-center gap-2">
@@ -577,15 +660,31 @@ export default function ContestDetailPage() {
                             </div>
                           </td>
                           <td className="px-4 py-3">
-                            <div className="flex items-center gap-2">
-                              <span className="text-white">
-                                {entry.username || formatAddress(entry.wallet_address)}
-                              </span>
-                              {isUser && (
-                                <span className="px-2 py-0.5 bg-gem-crystal/20 text-gem-crystal text-xs rounded-full">
-                                  YOU
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-2">
+                                <span className="text-white">
+                                  {entry.username || formatAddress(entry.wallet_address)}
                                 </span>
-                              )}
+                                {isUser && (
+                                  <span className="px-2 py-0.5 bg-gem-crystal/20 text-gem-crystal text-xs rounded-full">
+                                    YOU
+                                  </span>
+                                )}
+                              </div>
+                              {/* Share button for each row */}
+                              <button
+                                onClick={() => {
+                                  // Set this entry as searched to show share section
+                                  setSearchedUser(entry);
+                                  setSearchTerm(entry.username || entry.wallet_address);
+                                  // Scroll to top to see share section
+                                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                                }}
+                                className="ml-2 p-1 text-gray-400 hover:text-gem-crystal transition opacity-0 group-hover:opacity-100"
+                                title="Share this rank"
+                              >
+                                <Share2 className="w-4 h-4" />
+                              </button>
                             </div>
                           </td>
                           <td className="px-4 py-3">
@@ -608,7 +707,7 @@ export default function ContestDetailPage() {
           </div>
         )}
 
-        {activeTab === 'submit' && isContestActive && !userSubmission && (
+        {activeTab === 'submit' && isContestActive && (!userSubmission || (contest.max_entries_per_wallet > 1)) && (
           <SubmissionForm
             contest={contest}
             onSuccess={() => {
@@ -616,6 +715,73 @@ export default function ContestDetailPage() {
               setActiveTab('leaderboard'); // Switch to leaderboard
             }}
           />
+        )}
+
+        {/* Message when user has already submitted to single-submission contest */}
+        {activeTab === 'submit' && isContestActive && userSubmission && contest.max_entries_per_wallet === 1 && (
+          <div className="bg-dark-card border border-gem-crystal/20 rounded-lg p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <CheckCircle className="w-6 h-6 text-gem-crystal" />
+              <h2 className="text-xl font-bold text-white">Submission Complete</h2>
+            </div>
+            <p className="text-gray-300 mb-4">
+              You've already submitted to this contest. This contest only allows one submission per wallet.
+            </p>
+            <div className="bg-dark-bg rounded-lg p-4 mb-4">
+              <p className="text-gray-400 text-sm mb-1">Your Score</p>
+              <p className="text-2xl font-bold text-white">{userSubmission.score?.toLocaleString() || 'Pending'}</p>
+            </div>
+            <button
+              onClick={() => setActiveTab('leaderboard')}
+              className="px-4 py-2 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink text-dark-bg font-semibold rounded-lg hover:opacity-90 transition"
+            >
+              View Leaderboard
+            </button>
+          </div>
+        )}
+
+        {/* Voting Tab */}
+        {activeTab === 'voting' && contest.voting_enabled && (
+          <div>
+            {/* Voting Status */}
+            {contest.voting_start_date || contest.voting_end_date ? (
+              <div className="mb-4 p-4 bg-dark-card border border-gem-crystal/20 rounded-lg">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-lg font-semibold text-white mb-2">Voting Period</h3>
+                    {contest.voting_start_date && new Date(contest.voting_start_date) > new Date() ? (
+                      <p className="text-yellow-400">
+                        Voting starts: {new Date(contest.voting_start_date).toLocaleDateString()}
+                      </p>
+                    ) : contest.voting_end_date && new Date(contest.voting_end_date) < new Date() ? (
+                      <p className="text-red-400">Voting has ended</p>
+                    ) : (
+                      <p className="text-gem-crystal">Voting is open!</p>
+                    )}
+                    {contest.voting_end_date && new Date(contest.voting_end_date) > new Date() && (
+                      <p className="text-gray-400 text-sm mt-1">
+                        Ends: {new Date(contest.voting_end_date).toLocaleDateString()}
+                      </p>
+                    )}
+                  </div>
+                  {contest.min_votes_required && contest.min_votes_required > 1 && (
+                    <div className="text-right">
+                      <p className="text-sm text-gray-400">Min votes required</p>
+                      <p className="text-xl font-bold text-white">{contest.min_votes_required}</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ) : null}
+
+            {/* Voting Gallery */}
+            <VotingGallery
+              contestId={contest.id}
+              submissions={approvedSubmissions}
+              votingEnabled={isBetweenDates(contest.voting_start_date, contest.voting_end_date)}
+              votingType={contest.voting_type}
+            />
+          </div>
         )}
 
         {/* Winners Section (for ended contests) */}

@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
-import { Menu, X, Palette, Gamepad2, FileText, Crown, ArrowDownUp, Music, Sparkles } from 'lucide-react';
+import { Menu, X, Palette, Gamepad2, FileText, Crown, ArrowDownUp, Music, Sparkles, Trophy } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import { WalletButton } from '@/components/wallet/WalletButton';
 import { EmpireBadges } from '@/components/wallet/EmpireBadges';
@@ -12,6 +12,7 @@ const navItems = [
   { href: '/meme-generator', label: 'Stickers & Meme Creator', icon: Palette },
   { href: '/games', label: 'BizarreBeasts Games', icon: Gamepad2 },
   { href: '/rituals', label: 'BIZARRE Rituals', icon: Sparkles },
+  { href: '/contests', label: 'Contests & Competitions', icon: Trophy },
   { href: '/swap', label: 'Token Swap', icon: ArrowDownUp },
   { href: '/empire', label: 'Empire Leaderboard', icon: Crown },
   { href: '/music', label: 'Music & Soundtracks', icon: Music },

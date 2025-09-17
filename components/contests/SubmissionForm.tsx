@@ -186,25 +186,27 @@ export default function SubmissionForm({ contest, onSuccess }: SubmissionFormPro
         </div>
 
         <div className="mt-6 space-y-3">
-          <button
-            onClick={() => {
-              setSuccess(false);
-              setScore('');
-              setScreenshot(null);
-              setScreenshotPreview('');
-            }}
-            className="px-6 py-2 bg-dark-bg border border-gray-700 rounded-lg
-                     hover:border-gem-crystal/50 transition text-sm"
-          >
-            Submit Another Entry
-          </button>
+          {contest.max_entries_per_wallet > 1 && (
+            <button
+              onClick={() => {
+                setSuccess(false);
+                setScore('');
+                setScreenshot(null);
+                setScreenshotPreview('');
+              }}
+              className="px-6 py-2 bg-dark-bg border border-gray-700 rounded-lg
+                       hover:border-gem-crystal/50 transition text-sm"
+            >
+              Submit Another Entry
+            </button>
+          )}
 
           {onSuccess && (
             <button
               onClick={onSuccess}
               className="px-6 py-2 text-gray-500 hover:text-gray-300 transition text-sm block w-full"
             >
-              Back to Contest
+              {contest.max_entries_per_wallet === 1 ? 'View Leaderboard' : 'Back to Contest'}
             </button>
           )}
         </div>

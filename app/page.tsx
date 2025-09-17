@@ -1,14 +1,32 @@
 'use client';
 
 import Link from 'next/link';
-import { Palette, Gamepad2, Trophy, TrendingUp, Users, Sparkles, ArrowDownUp, Music, ExternalLink, FileText, Coins, ChevronDown } from 'lucide-react';
+import { Palette, Gamepad2, Trophy, TrendingUp, Users, Sparkles, ArrowDownUp, Music, ExternalLink, FileText, Coins, ChevronDown, Clock, Award } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { contestQueries, ActiveContestView } from '@/lib/supabase';
+import { formatTokenBalance } from '@/lib/tokenBalance';
 
 export default function Home() {
   const [marketCap, setMarketCap] = useState<string>('--');
   const [showEcosystemTokens, setShowEcosystemTokens] = useState(false);
+  const [activeContests, setActiveContests] = useState<ActiveContestView[]>([]);
+  const [loadingContests, setLoadingContests] = useState(true);
 
   useEffect(() => {
+    // Fetch active contests
+    const fetchContests = async () => {
+      try {
+        setLoadingContests(true);
+        const active = await contestQueries.getActiveContestsWithStats();
+        setActiveContests(active?.slice(0, 3) || []); // Show top 3 contests
+      } catch (error) {
+        console.error('Error fetching contests:', error);
+      } finally {
+        setLoadingContests(false);
+      }
+    };
+    fetchContests();
+
     const fetchMarketCap = async () => {
       try {
         // Using DexScreener API to get BB token price data
@@ -100,6 +118,15 @@ export default function Home() {
               <Gamepad2 className="w-5 h-5" />
               Play Games
             </Link>
+            {activeContests.length > 0 && (
+              <Link
+                href="/contests"
+                className="bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink text-black px-8 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2"
+              >
+                <Trophy className="w-5 h-5" />
+                Enter Contests
+              </Link>
+            )}
           </div>
         </div>
       </section>
@@ -264,30 +291,134 @@ export default function Home() {
               </div>
             </Link>
 
-            {/* Community Hub */}
-            <div 
-              className="relative rounded-lg overflow-hidden h-full flex items-end opacity-60"
-              style={{
-                backgroundImage: 'url(/assets/page-assets/banners/feature-boxes/community-feature-box.png)',
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                minHeight: '200px'
-              }}
-            >
-              {/* Dark overlay for text readability */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent"></div>
-              
-              {/* Content */}
-              <div className="relative z-10 p-6">
-                <h3 className="text-2xl font-bold mb-2 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent drop-shadow-lg">Community Hub</h3>
-                <p className="text-white font-medium drop-shadow-md">
-                  Contests, rewards, and social features coming soon
-                </p>
+            {/* Contests */}
+            <Link href="/contests" className="group">
+              <div
+                className="relative rounded-lg overflow-hidden h-full flex items-end transition-all duration-300 cursor-pointer hover:scale-105"
+                style={{
+                  backgroundImage: 'url(/assets/page-assets/banners/feature-boxes/contests-feature-box.png)',
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  minHeight: '200px',
+                  backgroundColor: '#1a0d26' // Fallback color
+                }}
+              >
+                {/* Dark overlay for text readability */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/80 to-black/30"></div>
+
+                {/* Active contest indicator */}
+                {activeContests.length > 0 && (
+                  <div className="absolute top-4 right-4 px-3 py-1 bg-gem-crystal/90 text-dark-bg rounded-full text-xs font-bold flex items-center gap-1">
+                    <span className="w-2 h-2 bg-dark-bg rounded-full animate-pulse"></span>
+                    {activeContests.length} ACTIVE
+                  </div>
+                )}
+
+                {/* Content */}
+                <div className="relative z-10 p-6">
+                  <h3 className="text-2xl font-bold mb-2 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent drop-shadow-lg">Contests & Prizes</h3>
+                  <p className="text-white font-medium drop-shadow-md">
+                    Compete in challenges and win $BB tokens and NFT prizes
+                  </p>
+                </div>
               </div>
-            </div>
+            </Link>
           </div>
         </div>
       </section>
+
+      {/* Active Contests Section */}
+      {activeContests.length > 0 && (
+        <section className="px-4 py-8">
+          <div className="max-w-6xl mx-auto">
+            <h2 className="text-3xl font-bold text-center mb-8 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent">
+              🏆 Active Contests
+            </h2>
+
+            <div className="grid md:grid-cols-3 gap-6 mb-6">
+              {activeContests.map((contest) => (
+                <Link key={contest.id} href={`/contests/${contest.id}`}>
+                  <div className="bg-dark-card border border-gem-crystal/20 rounded-lg overflow-hidden hover:border-gem-crystal/40 transition cursor-pointer">
+                    {/* Banner Image */}
+                    {contest.banner_image_url ? (
+                      <div className="relative w-full h-32 bg-gradient-to-br from-gem-crystal/20 to-gem-purple/20">
+                        <img
+                          src={contest.banner_image_url}
+                          alt={contest.name}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).style.display = 'none';
+                          }}
+                        />
+                      </div>
+                    ) : (
+                      <div className="relative w-full h-32 bg-gradient-to-br from-gem-crystal/20 to-gem-purple/20 flex items-center justify-center">
+                        <span className="text-4xl opacity-50">
+                          {contest.type === 'game_score' ? '🎮' :
+                           contest.type === 'creative' ? '🎨' :
+                           contest.type === 'onboarding' ? '🚀' : '🏆'}
+                        </span>
+                      </div>
+                    )}
+
+                    {/* Content */}
+                    <div className="p-6">
+                      <div className="flex items-start justify-between mb-3">
+                      {contest.end_date && (
+                        <div className="flex items-center gap-1 text-xs text-gray-400">
+                          <Clock className="w-3 h-3" />
+                          <span>
+                            {(() => {
+                              const end = new Date(contest.end_date);
+                              const now = new Date();
+                              const diff = end.getTime() - now.getTime();
+                              const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                              const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                              if (days > 0) return `${days}d left`;
+                              if (hours > 0) return `${hours}h left`;
+                              return 'Ending soon';
+                            })()}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+
+                      <h3 className="text-lg font-bold mb-2 text-white">{contest.name}</h3>
+                      {contest.description && (
+                        <p className="text-gray-400 text-sm mb-3 line-clamp-2">{contest.description}</p>
+                      )}
+
+                      {/* Stats */}
+                      <div className="flex items-center justify-between text-xs">
+                        <div className="flex items-center gap-1 text-gray-400">
+                          <Users className="w-3 h-3" />
+                          <span>{contest.participant_count || 0} entries</span>
+                        </div>
+                        {contest.prize_amount && (
+                          <div className="flex items-center gap-1 text-gem-gold">
+                            <Coins className="w-3 h-3" />
+                            <span>{formatTokenBalance(contest.prize_amount.toString())} $BB</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+
+            <div className="text-center">
+              <Link
+                href="/contests"
+                className="inline-flex items-center gap-2 px-6 py-2 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink text-dark-bg font-bold rounded-lg hover:opacity-90 transition"
+              >
+                <Trophy className="w-5 h-5" />
+                View All Contests
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Featured Game Banner - Treasure Quest */}
       <section className="px-4 py-8">

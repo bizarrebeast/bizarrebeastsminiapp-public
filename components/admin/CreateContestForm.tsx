@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { X, Loader2, Trophy, Calendar, Coins, Users, FileText, Upload, Image } from 'lucide-react';
+import { X, Loader2, Trophy, Calendar, Coins, Users, FileText, Upload, Image, ExternalLink, Link } from 'lucide-react';
 
 interface CreateContestFormProps {
   isOpen: boolean;
@@ -31,7 +31,17 @@ export default function CreateContestForm({ isOpen, onClose, onSuccess }: Create
     is_recurring: false,
     recurrence_interval: 'weekly' as 'daily' | 'weekly' | 'monthly',
     is_test: false,
-    banner_image_url: ''
+    banner_image_url: '',
+    voting_enabled: false,
+    voting_start_date: '',
+    voting_end_date: '',
+    voting_type: 'single' as 'single' | 'multiple' | 'ranked',
+    min_votes_required: '1',
+    cta_url: '',
+    cta_button_text: '',
+    cta_type: 'internal' as 'internal' | 'external' | 'game' | 'tool',
+    cta_new_tab: false,
+    track_cta_clicks: true
   });
 
   const [bannerFile, setBannerFile] = useState<File | null>(null);
@@ -145,6 +155,11 @@ export default function CreateContestForm({ isOpen, onClose, onSuccess }: Create
           prize_amount: formData.prize_amount ? Number(formData.prize_amount) : undefined,
           max_entries_per_wallet: formData.max_entries_per_wallet ? Number(formData.max_entries_per_wallet) : 1,
           nft_contract_address: formData.nft_contract_address || undefined,
+          cta_url: formData.cta_url || undefined,
+          cta_button_text: formData.cta_button_text || undefined,
+          cta_type: formData.cta_type || 'internal',
+          cta_new_tab: formData.cta_new_tab,
+          track_cta_clicks: formData.track_cta_clicks,
         }),
       });
 
@@ -177,7 +192,17 @@ export default function CreateContestForm({ isOpen, onClose, onSuccess }: Create
         is_recurring: false,
         recurrence_interval: 'weekly',
         is_test: false,
-        banner_image_url: ''
+        banner_image_url: '',
+        voting_enabled: false,
+        voting_start_date: '',
+        voting_end_date: '',
+        voting_type: 'single',
+        min_votes_required: '1',
+        cta_url: '',
+        cta_button_text: '',
+        cta_type: 'internal',
+        cta_new_tab: false,
+        track_cta_clicks: true
       });
       setBannerFile(null);
       setBannerPreview(null);
@@ -277,6 +302,89 @@ export default function CreateContestForm({ isOpen, onClose, onSuccess }: Create
                        focus:outline-none transition resize-none"
               placeholder="Describe the contest and how to win..."
             />
+          </div>
+
+          {/* CTA Settings */}
+          <div className="space-y-4 p-4 bg-dark-bg/50 rounded-lg border border-gray-700">
+            <h3 className="text-lg font-semibold text-white">Call-to-Action Settings</h3>
+
+            {/* CTA URL */}
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                CTA URL (Where the action button takes users)
+              </label>
+              <input
+                type="url"
+                value={formData.cta_url}
+                onChange={(e) => setFormData({ ...formData, cta_url: e.target.value })}
+                className="w-full px-4 py-2 bg-dark-bg border border-gray-700 rounded-lg
+                         text-white placeholder-gray-500 focus:border-gem-crystal
+                         focus:outline-none transition"
+                placeholder="e.g., /games/treasure-quest or https://meme-creator.example.com"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                The main action link - where users go to play the game, use the tool, or complete the task
+              </p>
+            </div>
+
+            {/* CTA Button Text and Type */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Button Text
+                </label>
+                <input
+                  type="text"
+                  value={formData.cta_button_text}
+                  onChange={(e) => setFormData({ ...formData, cta_button_text: e.target.value })}
+                  className="w-full px-4 py-2 bg-dark-bg border border-gray-700 rounded-lg
+                           text-white placeholder-gray-500 focus:border-gem-crystal
+                           focus:outline-none transition"
+                  placeholder={formData.type === 'game_score' ? 'Play Game' :
+                               formData.type === 'creative' ? 'Create Entry' : 'Start Contest'}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Link Type
+                </label>
+                <select
+                  value={formData.cta_type}
+                  onChange={(e) => setFormData({ ...formData, cta_type: e.target.value as any })}
+                  className="w-full px-4 py-2 bg-dark-bg border border-gray-700 rounded-lg
+                           text-white focus:border-gem-crystal focus:outline-none transition"
+                >
+                  <option value="internal">Internal Link</option>
+                  <option value="external">External Link</option>
+                  <option value="game">Game</option>
+                  <option value="tool">Tool/Creator</option>
+                </select>
+              </div>
+            </div>
+
+            {/* CTA Options */}
+            <div className="flex gap-4">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={formData.cta_new_tab}
+                  onChange={(e) => setFormData({ ...formData, cta_new_tab: e.target.checked })}
+                  className="rounded border-gray-700 bg-dark-bg text-gem-crystal
+                           focus:ring-gem-crystal focus:ring-offset-0"
+                />
+                <span className="text-sm text-gray-300">Open in new tab</span>
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={formData.track_cta_clicks}
+                  onChange={(e) => setFormData({ ...formData, track_cta_clicks: e.target.checked })}
+                  className="rounded border-gray-700 bg-dark-bg text-gem-crystal
+                           focus:ring-gem-crystal focus:ring-offset-0"
+                />
+                <span className="text-sm text-gray-300">Track button clicks</span>
+              </label>
+            </div>
           </div>
 
           {/* Banner Image Upload */}
@@ -447,6 +555,88 @@ export default function CreateContestForm({ isOpen, onClose, onSuccess }: Create
               />
             </div>
           </div>
+
+          {/* Voting Settings (for creative contests) */}
+          {formData.type === 'creative' && (
+            <div className="space-y-4 p-4 bg-dark-bg/50 rounded-lg border border-gray-700">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-white">Voting Settings</h3>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={formData.voting_enabled || false}
+                    onChange={(e) => setFormData({ ...formData, voting_enabled: e.target.checked })}
+                    className="rounded border-gray-700 bg-dark-bg text-gem-crystal
+                             focus:ring-gem-crystal focus:ring-offset-0"
+                  />
+                  <span className="text-sm text-gray-300">Enable Voting</span>
+                </label>
+              </div>
+
+              {formData.voting_enabled && (
+                <>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">
+                        Voting Start Date
+                      </label>
+                      <input
+                        type="datetime-local"
+                        value={formData.voting_start_date || ''}
+                        onChange={(e) => setFormData({ ...formData, voting_start_date: e.target.value })}
+                        className="w-full px-4 py-2 bg-dark-bg border border-gray-700 rounded-lg
+                                 text-white focus:border-gem-crystal focus:outline-none transition"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">
+                        Voting End Date
+                      </label>
+                      <input
+                        type="datetime-local"
+                        value={formData.voting_end_date || ''}
+                        onChange={(e) => setFormData({ ...formData, voting_end_date: e.target.value })}
+                        className="w-full px-4 py-2 bg-dark-bg border border-gray-700 rounded-lg
+                                 text-white focus:border-gem-crystal focus:outline-none transition"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">
+                        Voting Type
+                      </label>
+                      <select
+                        value={formData.voting_type || 'single'}
+                        onChange={(e) => setFormData({ ...formData, voting_type: e.target.value as any })}
+                        className="w-full px-4 py-2 bg-dark-bg border border-gray-700 rounded-lg
+                                 text-white focus:border-gem-crystal focus:outline-none transition"
+                      >
+                        <option value="single">Single Vote (1 per wallet)</option>
+                        <option value="multiple">Multiple Votes</option>
+                        <option value="ranked">Ranked Choice</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">
+                        Min Votes Required
+                      </label>
+                      <input
+                        type="number"
+                        min="1"
+                        value={formData.min_votes_required || 1}
+                        onChange={(e) => setFormData({ ...formData, min_votes_required: e.target.value })}
+                        className="w-full px-4 py-2 bg-dark-bg border border-gray-700 rounded-lg
+                                 text-white focus:border-gem-crystal focus:outline-none transition"
+                        placeholder="Minimum votes to determine winner"
+                      />
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+          )}
 
           {/* Rules */}
           <div>

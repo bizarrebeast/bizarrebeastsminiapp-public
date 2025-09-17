@@ -16,7 +16,8 @@ import {
   RefreshCw,
   Camera,
   Plus,
-  Trash2
+  Trash2,
+  BarChart3
 } from 'lucide-react';
 import { useWallet } from '@/hooks/useWallet';
 import { isAdmin } from '@/lib/admin';
@@ -349,9 +350,9 @@ export default function AdminContestsPage() {
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-3">
-            <Shield className="w-8 h-8 text-gem-crystal" />
-            <h1 className="text-3xl font-bold">Contest Admin Panel</h1>
+          <div>
+            <h1 className="text-3xl font-bold">Contest Management</h1>
+            <p className="text-gray-400 mt-1">Create, manage, and review contest submissions</p>
           </div>
           <div className="flex gap-3">
             <button
@@ -366,7 +367,7 @@ export default function AdminContestsPage() {
               className="flex items-center gap-2 px-4 py-2 bg-orange-500/20 text-orange-300 border border-orange-500/40 rounded-lg hover:bg-orange-500/30 transition"
             >
               <Trash2 className="w-4 h-4" />
-              Manage Test Contests
+              Test Manager
             </button>
             <button
               onClick={fetchContests}

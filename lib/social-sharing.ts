@@ -54,7 +54,7 @@ export const SHARE_TEMPLATES = {
     streakbreak: `🔄 Back on the grind! Starting fresh on BizarreBeasts.\n\nPrevious best: {bestStreak} days\nLet's beat it this time! 💪\n\nJoin /bizarrebeasts and build your streak!\nCC @bizarrebeast`,
     contest: `🏆 Check out the {name} contest on BizarreBeasts!\n\n{description}\n\n⏰ {timeLeft}\n💰 Prize: {prize}\n\nEnter now at /bizarrebeasts!\nCC @bizarrebeast`,
     contestEntry: `📸 Just entered the {name} contest on BizarreBeasts!\n\n{description}\n\n💰 Prize pool: {prize}\n⏰ {timeLeft}\n\nJoin the competition at /bizarrebeasts!\nCC @bizarrebeast`,
-    contestPosition: `🏆 Currently #{position} in the {name} contest on BizarreBeasts!\n\n💪 Score: {score}\n⏰ {timeLeft}\n\nJoin and compete at /bizarrebeasts!\nCC @bizarrebeast`,
+    contestPosition: `🏆 {playerText} ranked #{rank} in the {name} contest on BizarreBeasts!\n\n💪 Score: {score}\n\nJoin and compete at /bizarrebeasts!\nCC @bizarrebeast`,
     contestWinner: `🎉 I WON the {name} contest on BizarreBeasts!\n\n🥇 Final position: #{position}\n💰 Prize won: {prize}\n🔥 Score: {score}\n\nJoin the next contest at /bizarrebeasts!\nCC @bizarrebeast`,
   },
   twitter: {
@@ -70,7 +70,7 @@ export const SHARE_TEMPLATES = {
     streakbreak: `🔄 Back on the grind! Starting fresh on @bizarrebeasts_.\n\nPrevious best: {bestStreak} days\nLet's beat it this time! 💪`,
     contest: `🏆 Check out the {name} contest on @bizarrebeasts_!\n\n{description}\n\n⏰ {timeLeft}\n💰 Prize: {prize}`,
     contestEntry: `📸 Just entered the {name} contest on @bizarrebeasts_!\n\n💰 Prize pool: {prize}\n⏰ {timeLeft}\n\nJoin the competition!`,
-    contestPosition: `🏆 Currently #{position} in the {name} contest on @bizarrebeasts_!\n\n💪 Score: {score}\n⏰ {timeLeft}`,
+    contestPosition: `🏆 {playerText} ranked #{rank} in the {name} contest on @bizarrebeasts_!\n\n💪 Score: {score}`,
     contestWinner: `🎉 I WON the {name} contest on @bizarrebeasts_!\n\n🥇 Final position: #{position}\n💰 Prize won: {prize}`,
   },
   telegram: {
@@ -86,7 +86,7 @@ export const SHARE_TEMPLATES = {
     streakbreak: `🔄 Back on the grind! Starting fresh on @bizarrebeast.\n\nPrevious best: {bestStreak} days`,
     contest: `🏆 Check out the {name} contest on @bizarrebeast!\n\n{description}\n\n⏰ {timeLeft}\n💰 Prize: {prize}`,
     contestEntry: `📸 Just entered the {name} contest on @bizarrebeast ($BB)!\n\n💰 Prize pool: {prize}\n⏰ {timeLeft}`,
-    contestPosition: `🏆 Currently #{position} in the {name} contest on @bizarrebeast!\n\n💪 Score: {score}\n⏰ {timeLeft}`,
+    contestPosition: `🏆 {playerText} ranked #{rank} in the {name} contest on @bizarrebeast!\n\n💪 Score: {score}`,
     contestWinner: `🎉 I WON the {name} contest on @bizarrebeast ($BB)!\n\n🥇 Final position: #{position}\n💰 Prize won: {prize}`,
   }
 };
