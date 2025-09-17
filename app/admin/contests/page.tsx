@@ -423,7 +423,7 @@ export default function AdminContestsPage() {
                                     } object-cover rounded cursor-pointer hover:opacity-80`}
                                     onClick={() => setScreenshotModal({
                                       isOpen: true,
-                                      url: submission.screenshot_url,
+                                      url: submission.screenshot_url || null,
                                       wallet: submission.wallet_address,
                                       score: submission.score || undefined
                                     })}
