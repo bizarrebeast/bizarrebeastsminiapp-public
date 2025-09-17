@@ -4,14 +4,14 @@
  */
 
 export const FEATURES = {
-  // Contest system - hidden by default in production
-  CONTESTS: process.env.NEXT_PUBLIC_ENABLE_CONTESTS === 'true',
+  // Contest system - now enabled by default!
+  CONTESTS: process.env.NEXT_PUBLIC_ENABLE_CONTESTS !== 'false', // Enable by default, disable with 'false'
 
-  // Admin panel - only enabled for admin wallet
-  CONTEST_ADMIN: process.env.NEXT_PUBLIC_ENABLE_CONTEST_ADMIN === 'true',
+  // Admin panel - enabled by default for simplicity
+  CONTEST_ADMIN: process.env.NEXT_PUBLIC_ENABLE_CONTEST_ADMIN !== 'false', // Enable by default
 
-  // Voting system for creative contests (future)
-  CONTEST_VOTING: process.env.NEXT_PUBLIC_ENABLE_CONTEST_VOTING === 'true',
+  // Voting system for creative contests - enabled!
+  CONTEST_VOTING: process.env.NEXT_PUBLIC_ENABLE_CONTEST_VOTING !== 'false', // Enable by default
 };
 
 // Admin wallet for contest management
