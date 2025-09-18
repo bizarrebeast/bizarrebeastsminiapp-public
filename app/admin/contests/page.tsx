@@ -25,6 +25,7 @@ import { contestQueries, Contest, ContestSubmission } from '@/lib/supabase';
 import { formatTokenBalance } from '@/lib/tokenBalance';
 import ScreenshotModal from '@/components/admin/ScreenshotModal';
 import CreateContestForm from '@/components/admin/CreateContestForm';
+import EditContestForm from '@/components/admin/EditContestForm';
 import WinnerSelectionModal from '@/components/admin/WinnerSelectionModal';
 import TestContestManager from '@/components/admin/TestContestManager';
 
@@ -60,6 +61,8 @@ export default function AdminContestsPage() {
 
   const [thumbnailSize, setThumbnailSize] = useState<'small' | 'medium' | 'large'>('medium');
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [showEditForm, setShowEditForm] = useState(false);
+  const [editingContest, setEditingContest] = useState<Contest | null>(null);
   const [showWinnerModal, setShowWinnerModal] = useState(false);
   const [showTestManager, setShowTestManager] = useState(false);
 
@@ -536,6 +539,15 @@ export default function AdminContestsPage() {
             {selectedContest && (
               <div className="flex gap-2">
                 <button
+                  onClick={() => {
+                    setEditingContest(selectedContest);
+                    setShowEditForm(true);
+                  }}
+                  className="px-3 py-1 bg-gem-crystal text-dark-bg rounded-lg hover:bg-gem-crystal/80 transition flex items-center gap-1 text-sm font-semibold"
+                >
+                  ✏️ Edit
+                </button>
+                <button
                   onClick={() => exportToCSV(false)}
                   className="px-3 py-1 bg-dark-bg border border-gray-600 rounded-lg hover:bg-gray-800 transition flex items-center gap-1 text-sm"
                 >
@@ -847,6 +859,23 @@ export default function AdminContestsPage() {
             fetchContests();
           }}
         />
+
+        {/* Edit Contest Form Modal */}
+        {editingContest && (
+          <EditContestForm
+            isOpen={showEditForm}
+            onClose={() => {
+              setShowEditForm(false);
+              setEditingContest(null);
+            }}
+            onSuccess={() => {
+              setShowEditForm(false);
+              setEditingContest(null);
+              fetchContests();
+            }}
+            contest={editingContest}
+          />
+        )}
 
         {/* Winner Selection Modal */}
         {selectedContest && (
