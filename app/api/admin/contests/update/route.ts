@@ -1,19 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { contestQueries } from '@/lib/supabase';
-
-const ADMIN_WALLETS = (process.env.NEXT_PUBLIC_ADMIN_WALLETS || '').toLowerCase().split(',');
+import { validateAdminAccess } from '@/lib/admin';
+import { supabaseAdmin } from '@/lib/supabase-admin';
 
 export async function PUT(request: NextRequest) {
   try {
     // Check admin authorization
     const adminWallet = request.headers.get('x-admin-wallet')?.toLowerCase();
 
-    if (!adminWallet || !ADMIN_WALLETS.includes(adminWallet)) {
+    if (!adminWallet || !validateAdminAccess(adminWallet)) {
       // Try to get from request body as fallback
       const body = await request.json();
       const walletFromBody = body.adminWallet?.toLowerCase();
 
-      if (!walletFromBody || !ADMIN_WALLETS.includes(walletFromBody)) {
+      if (!walletFromBody || !validateAdminAccess(walletFromBody)) {
         return NextResponse.json(
           { error: 'Unauthorized - Admin access required' },
           { status: 401 }
@@ -30,8 +30,18 @@ export async function PUT(request: NextRequest) {
         );
       }
 
-      // Update contest
-      const updatedContest = await contestQueries.updateContest(contestId, updates);
+      // Update contest using supabaseAdmin to bypass RLS
+      const { data: updatedContest, error: updateError } = await supabaseAdmin
+        .from('contests')
+        .update(updates)
+        .eq('id', contestId)
+        .select()
+        .single();
+
+      if (updateError) {
+        console.error('Supabase update error:', updateError);
+        throw updateError;
+      }
 
       return NextResponse.json({
         success: true,
@@ -49,8 +59,18 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    // Update contest
-    const updatedContest = await contestQueries.updateContest(contestId, updates);
+    // Update contest using supabaseAdmin to bypass RLS
+    const { data: updatedContest, error: updateError } = await supabaseAdmin
+      .from('contests')
+      .update(updates)
+      .eq('id', contestId)
+      .select()
+      .single();
+
+    if (updateError) {
+      console.error('Supabase update error:', updateError);
+      throw updateError;
+    }
 
     console.log(`Contest ${contestId} updated by ${adminWallet}`);
 

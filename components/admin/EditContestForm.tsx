@@ -52,25 +52,62 @@ export default function EditContestForm({ contest, isOpen, onClose, onSuccess }:
     setError(null);
 
     try {
+      // Get admin wallet from localStorage
+      const adminWallet = localStorage.getItem('walletAddress') || localStorage.getItem('adminWallet');
+
+      // Prepare updates, filtering out empty values
+      const updates: any = {
+        name: formData.name,
+        type: formData.type,
+        description: formData.description || null,
+        game_name: formData.game_name || null,
+        min_bb_required: Number(formData.min_bb_required) || 0,
+        max_bb_required: formData.max_bb_required ? Number(formData.max_bb_required) : null,
+        prize_amount: formData.prize_amount ? Number(formData.prize_amount) : null,
+        prize_type: formData.prize_type,
+        nft_contract_address: formData.nft_contract_address || null,
+        max_entries_per_wallet: Number(formData.max_entries_per_wallet) || 1,
+        rules: formData.rules || null,
+        status: formData.status,
+        is_recurring: formData.is_recurring,
+        recurrence_interval: formData.recurrence_interval || null,
+        is_test: formData.is_test,
+        banner_image_url: formData.banner_image_url || null,
+        voting_enabled: formData.voting_enabled,
+        voting_type: formData.voting_type || 'single',
+        min_votes_required: formData.min_votes_required ? Number(formData.min_votes_required) : 1,
+        cta_url: formData.cta_url || null,
+        cta_button_text: formData.cta_button_text || null,
+        cta_type: formData.cta_type || 'internal',
+        cta_new_tab: formData.cta_new_tab || false,
+        track_cta_clicks: formData.track_cta_clicks ?? true,
+        updated_at: new Date().toISOString()
+      };
+
+      // Only add date fields if they have values
+      if (formData.start_date) {
+        updates.start_date = formData.start_date;
+      }
+      if (formData.end_date) {
+        updates.end_date = formData.end_date;
+      }
+      if (formData.voting_start_date) {
+        updates.voting_start_date = formData.voting_start_date;
+      }
+      if (formData.voting_end_date) {
+        updates.voting_end_date = formData.voting_end_date;
+      }
+
       const response = await fetch('/api/admin/contests/update', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
+          'x-admin-wallet': adminWallet || '',
         },
         body: JSON.stringify({
           contestId: contest.id,
-          updates: {
-            ...formData,
-            min_bb_required: Number(formData.min_bb_required) || 0,
-            max_bb_required: formData.max_bb_required ? Number(formData.max_bb_required) : undefined,
-            prize_amount: formData.prize_amount ? Number(formData.prize_amount) : undefined,
-            max_entries_per_wallet: Number(formData.max_entries_per_wallet) || 1,
-            min_votes_required: formData.min_votes_required ? Number(formData.min_votes_required) : 1,
-            nft_contract_address: formData.nft_contract_address || undefined,
-            cta_url: formData.cta_url || undefined,
-            cta_button_text: formData.cta_button_text || undefined,
-            updated_at: new Date().toISOString()
-          }
+          adminWallet: adminWallet, // Also include in body as fallback
+          updates: updates
         }),
       });
 
