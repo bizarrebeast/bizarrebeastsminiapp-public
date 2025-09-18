@@ -21,6 +21,7 @@ interface ContestActionButtonsProps {
   showIcons?: boolean;
   className?: string;
   onCtaClick?: () => void;
+  onSubmitClick?: () => void;
 }
 
 export default function ContestActionButtons({
@@ -29,7 +30,8 @@ export default function ContestActionButtons({
   variant = 'default',
   showIcons = true,
   className = '',
-  onCtaClick
+  onCtaClick,
+  onSubmitClick
 }: ContestActionButtonsProps) {
   const router = useRouter();
   const [ctaClicked, setCtaClicked] = useState(false);
@@ -85,7 +87,13 @@ export default function ContestActionButtons({
   };
 
   const handleSubmitClick = () => {
-    router.push(`/contests/${contestId}?tab=submit`);
+    // If a custom handler is provided, use it
+    // Otherwise navigate to the contest page (fallback)
+    if (onSubmitClick) {
+      onSubmitClick();
+    } else {
+      router.push(`/contests/${contestId}`);
+    }
   };
 
   // Determine button text
@@ -100,7 +108,7 @@ export default function ContestActionButtons({
   if (variant === 'stacked') {
     return (
       <div className={`flex flex-col gap-2 ${className}`}>
-        {contest.cta_url && (
+        {contest.cta_url ? (
           <>
             {isCtaExternal ? (
               <button
@@ -127,6 +135,21 @@ export default function ContestActionButtons({
               </Link>
             )}
           </>
+        ) : (
+          // Default CTA button when no URL is set - shows contest type specific action
+          <button
+            onClick={() => {
+              // For contests without a CTA URL, the main action is to submit
+              if (onSubmitClick) onSubmitClick();
+            }}
+            className="w-full px-4 py-3 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink
+                     text-dark-bg font-semibold rounded-lg hover:opacity-90 transition
+                     flex items-center justify-center gap-2 group"
+          >
+            {showIcons && getCtaIcon()}
+            <span>{ctaButtonText}</span>
+            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+          </button>
         )}
         <button
           onClick={handleSubmitClick}

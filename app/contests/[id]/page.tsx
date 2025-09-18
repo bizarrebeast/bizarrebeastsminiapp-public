@@ -269,26 +269,27 @@ export default function ContestDetailPage() {
 
         {/* Contest Header */}
         <div className="bg-dark-card border border-gem-crystal/20 rounded-lg p-6 mb-6">
-          <div className="flex items-start justify-between mb-4">
-            <div>
-              <h1 className="text-3xl font-bold text-white mb-2">{contest.name}</h1>
-              {contest.description && (
-                <p className="text-gray-400">{contest.description}</p>
-              )}
-            </div>
+          <div className="mb-4">
+            <h1 className="text-3xl font-bold text-white mb-2">{contest.name}</h1>
+            {contest.description && (
+              <p className="text-gray-400 mb-4">{contest.description}</p>
+            )}
+            {/* Share buttons moved below description for better mobile layout */}
             {contest && (
-              <ShareButtons
-                shareType="contest"
-                contestData={{
-                  name: contest.name,
-                  description: contest.description || 'Join this exciting contest!',
-                  timeLeft: getTimeLeftText(),
-                  prize: formatPrizeText()
-                }}
-                contextUrl={`https://bbapp.bizarrebeasts.io/contests/${id}`}
-                buttonSize="sm"
-                showLabels={false}
-              />
+              <div className="flex justify-start">
+                <ShareButtons
+                  shareType="contest"
+                  contestData={{
+                    name: contest.name,
+                    description: contest.description || 'Join this exciting contest!',
+                    timeLeft: getTimeLeftText(),
+                    prize: formatPrizeText()
+                  }}
+                  contextUrl={`https://bbapp.bizarrebeastsminiapp.com/contests/${id}`}
+                  buttonSize="sm"
+                  showLabels={false}
+                />
+              </div>
             )}
           </div>
 
@@ -474,6 +475,7 @@ export default function ContestDetailPage() {
                     contestId={id as string}
                     variant="stacked"
                     className="w-full"
+                    onSubmitClick={() => setActiveTab('submit')}
                   />
                 ) : (
                   <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-lg text-center">

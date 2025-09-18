@@ -34,6 +34,18 @@ export async function POST(request: Request) {
       recurrence_interval: body.recurrence_interval || null,
       is_test: body.is_test || false,
       banner_image_url: body.banner_image_url || null,
+      // CTA fields
+      cta_url: body.cta_url || null,
+      cta_button_text: body.cta_button_text || null,
+      cta_type: body.cta_type || 'internal',
+      cta_new_tab: body.cta_new_tab || false,
+      track_cta_clicks: body.track_cta_clicks !== false, // Default to true
+      // Voting fields
+      voting_enabled: body.voting_enabled || false,
+      voting_start_date: body.voting_start_date || null,
+      voting_end_date: body.voting_end_date || null,
+      voting_type: body.voting_type || 'single',
+      min_votes_required: body.min_votes_required || 1,
       created_by: body.created_by.toLowerCase(),
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
