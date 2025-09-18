@@ -285,7 +285,7 @@ export default function ContestDetailPage() {
                     timeLeft: getTimeLeftText(),
                     prize: formatPrizeText()
                   }}
-                  contextUrl={`https://bbapp.bizarrebeastsminiapp.com/contests/${id}`}
+                  contextUrl={`https://bbapp.bizarrebeasts.io/contests/${id}`}
                   buttonSize="sm"
                   showLabels={false}
                 />
