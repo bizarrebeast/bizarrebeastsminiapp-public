@@ -34,6 +34,16 @@ body {
   background: rgba(68, 208, 167, 0.7);
 }
 
+/* Hide scrollbars but maintain functionality */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;  /* Chrome, Safari and Opera */
+}
+
 /* Prevent zoom on input focus for mobile */
 @media (max-width: 768px) {
   input[type="text"],

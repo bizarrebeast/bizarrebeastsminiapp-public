@@ -239,8 +239,8 @@ export default function ContestDetailPage() {
   const isContestActive = status?.label === 'Active';
 
   return (
-    <div className="min-h-[calc(100vh-64px)] px-4 py-8">
-      <div className="max-w-4xl mx-auto">
+    <div className="min-h-[calc(100vh-64px)] overflow-x-hidden">
+      <div className="max-w-4xl mx-auto px-4 py-8">
         {/* Back Button */}
         <Link
           href="/contests"
@@ -252,7 +252,7 @@ export default function ContestDetailPage() {
 
         {/* Banner Image */}
         {contest.banner_image_url && (
-          <div className="relative w-full h-64 md:h-80 rounded-lg overflow-hidden mb-6">
+          <div className="relative w-full h-48 sm:h-64 md:h-80 rounded-lg overflow-hidden mb-6">
             <img
               src={contest.banner_image_url}
               alt={contest.name}
@@ -307,10 +307,10 @@ export default function ContestDetailPage() {
           </div>
 
           {/* Key Info Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4">
             {/* Prize */}
             {contest.prize_amount && (
-              <div className="bg-dark-bg rounded-lg p-3">
+              <div className="bg-dark-bg rounded-lg p-2 sm:p-3">
                 <div className="flex items-center gap-2 text-gem-gold mb-1">
                   <Coins className="w-4 h-4" />
                   <span className="text-xs">Prize Pool</span>
@@ -322,7 +322,7 @@ export default function ContestDetailPage() {
             )}
 
             {/* Entry Requirement */}
-            <div className="bg-dark-bg rounded-lg p-3">
+            <div className="bg-dark-bg rounded-lg p-2 sm:p-3">
               <div className="flex items-center gap-2 text-gem-purple mb-1">
                 <Lock className="w-4 h-4" />
                 <span className="text-xs">Entry Requirement</span>
@@ -335,7 +335,7 @@ export default function ContestDetailPage() {
             </div>
 
             {/* Participants */}
-            <div className="bg-dark-bg rounded-lg p-3">
+            <div className="bg-dark-bg rounded-lg p-2 sm:p-3">
               <div className="flex items-center gap-2 text-gem-blue mb-1">
                 <Users className="w-4 h-4" />
                 <span className="text-xs">Participants</span>
@@ -344,7 +344,7 @@ export default function ContestDetailPage() {
             </div>
 
             {/* Your Status */}
-            <div className="bg-dark-bg rounded-lg p-3">
+            <div className="bg-dark-bg rounded-lg p-2 sm:p-3">
               <div className="flex items-center gap-2 text-gem-crystal mb-1">
                 <Trophy className="w-4 h-4" />
                 <span className="text-xs">Your Status</span>
@@ -361,7 +361,7 @@ export default function ContestDetailPage() {
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex gap-2 mb-6 border-b border-gray-700 overflow-x-auto">
+        <div className="flex gap-2 mb-6 border-b border-gray-700 overflow-x-auto scrollbar-hide">
           <button
             onClick={() => setActiveTab('details')}
             className={`px-4 py-2 font-semibold transition-colors relative whitespace-nowrap ${
@@ -596,14 +596,14 @@ export default function ContestDetailPage() {
                 )}
 
                 {/* Table */}
-                <div className="overflow-x-auto">
-                  <table className="w-full">
+                <div className="overflow-x-auto scrollbar-hide">
+                  <table className="w-full min-w-[400px]">
                     <thead className="bg-dark-bg">
                       <tr>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase">Rank</th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase">Player</th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase">Score</th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase">Submitted</th>
+                        <th className="px-2 sm:px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase">Rank</th>
+                        <th className="px-2 sm:px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase">Player</th>
+                        <th className="px-2 sm:px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase">Score</th>
+                        <th className="px-2 sm:px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase hidden sm:table-cell">Submitted</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-700">
@@ -643,11 +643,11 @@ export default function ContestDetailPage() {
                           key={entry.wallet_address}
                           className={`${isUser ? 'bg-gem-crystal/5' : ''} hover:bg-dark-bg/50 transition group`}
                         >
-                          <td className="px-4 py-3">
-                            <div className="flex items-center gap-2">
+                          <td className="px-2 sm:px-4 py-3">
+                            <div className="flex items-center gap-1 sm:gap-2">
                               {isTop3 && (
                                 <Award
-                                  className={`w-5 h-5 ${
+                                  className={`w-4 sm:w-5 h-4 sm:h-5 ${
                                     entry.rank === 1
                                       ? 'text-gem-gold'
                                       : entry.rank === 2
@@ -656,19 +656,19 @@ export default function ContestDetailPage() {
                                   }`}
                                 />
                               )}
-                              <span className={`font-semibold ${isTop3 ? 'text-white' : 'text-gray-400'}`}>
+                              <span className={`font-semibold text-sm sm:text-base ${isTop3 ? 'text-white' : 'text-gray-400'}`}>
                                 #{entry.rank}
                               </span>
                             </div>
                           </td>
-                          <td className="px-4 py-3">
+                          <td className="px-2 sm:px-4 py-3">
                             <div className="flex items-center justify-between">
-                              <div className="flex items-center gap-2">
-                                <span className="text-white">
+                              <div className="flex items-center gap-1 sm:gap-2">
+                                <span className="text-white text-sm sm:text-base truncate max-w-[100px] sm:max-w-none">
                                   {entry.username || formatAddress(entry.wallet_address)}
                                 </span>
                                 {isUser && (
-                                  <span className="px-2 py-0.5 bg-gem-crystal/20 text-gem-crystal text-xs rounded-full">
+                                  <span className="px-1.5 sm:px-2 py-0.5 bg-gem-crystal/20 text-gem-crystal text-xs rounded-full">
                                     YOU
                                   </span>
                                 )}
@@ -682,19 +682,19 @@ export default function ContestDetailPage() {
                                   // Scroll to top to see share section
                                   window.scrollTo({ top: 0, behavior: 'smooth' });
                                 }}
-                                className="ml-2 p-1 text-gray-400 hover:text-gem-crystal transition opacity-0 group-hover:opacity-100"
+                                className="ml-1 sm:ml-2 p-1 text-gray-400 hover:text-gem-crystal transition opacity-0 group-hover:opacity-100"
                                 title="Share this rank"
                               >
-                                <Share2 className="w-4 h-4" />
+                                <Share2 className="w-3 sm:w-4 h-3 sm:h-4" />
                               </button>
                             </div>
                           </td>
-                          <td className="px-4 py-3">
-                            <span className="text-white font-mono font-semibold">
+                          <td className="px-2 sm:px-4 py-3">
+                            <span className="text-white font-mono font-semibold text-sm sm:text-base">
                               {entry.score.toLocaleString()}
                             </span>
                           </td>
-                          <td className="px-4 py-3 text-gray-400 text-sm">
+                          <td className="px-2 sm:px-4 py-3 text-gray-400 text-sm hidden sm:table-cell">
                             {new Date(entry.submitted_at).toLocaleDateString()}
                           </td>
                         </tr>
