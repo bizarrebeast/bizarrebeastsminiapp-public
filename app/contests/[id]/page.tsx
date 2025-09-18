@@ -239,8 +239,8 @@ export default function ContestDetailPage() {
   const isContestActive = status?.label === 'Active';
 
   return (
-    <div className="min-h-[calc(100vh-64px)] overflow-x-hidden">
-      <div className="max-w-4xl mx-auto px-4 py-8">
+    <div className="min-h-[calc(100vh-64px)] overflow-x-hidden w-full">
+      <div className="max-w-4xl mx-auto px-4 py-8 w-full">
         {/* Back Button */}
         <Link
           href="/contests"

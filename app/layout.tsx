@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 // Initialize SDK immediately on app load with ultimate solution
@@ -12,12 +12,18 @@ import { SDKProvider } from "@/contexts/SDKContext";
 
 const inter = Inter({ subsets: ["latin"] });
 
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+}
+
 export const metadata: Metadata = {
   metadataBase: new URL('https://bbapp.bizarrebeasts.io'),
   title: "BizarreBeasts ($BB)",
   description: "The OFFICIAL BizarreBeasts app! Create BizarreBeasts memes, play games, swap BB tokens, collect art, win contests, and join the most BIZARRE community in web3!",
   keywords: "BizarreBeasts, meme generator, Farcaster, Base, Web3",
-  viewport: 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0',
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
