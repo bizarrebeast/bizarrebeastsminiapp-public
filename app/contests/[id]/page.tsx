@@ -361,7 +361,7 @@ export default function ContestDetailPage() {
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex gap-2 mb-6 border-b border-gray-700 overflow-x-auto scrollbar-hide">
+        <div className="flex flex-wrap gap-2 mb-6 border-b border-gray-700">
           <button
             onClick={() => setActiveTab('details')}
             className={`px-4 py-2 font-semibold transition-colors relative whitespace-nowrap ${
@@ -596,8 +596,8 @@ export default function ContestDetailPage() {
                 )}
 
                 {/* Table */}
-                <div className="overflow-x-auto scrollbar-hide">
-                  <table className="w-full min-w-[400px]">
+                <div className="w-full">
+                  <table className="w-full">
                     <thead className="bg-dark-bg">
                       <tr>
                         <th className="px-2 sm:px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase">Rank</th>
