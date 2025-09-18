@@ -54,35 +54,41 @@ export default function ContestActionButtons({
   };
 
   const handleCtaClick = async (e: React.MouseEvent) => {
+    // Prevent default for all button clicks to handle navigation manually
+    e.preventDefault();
+
     // Track CTA click if enabled
     if (contest.track_cta_clicks) {
       setCtaClicked(true);
 
-      // Send tracking request
-      try {
-        const walletAddress = typeof window !== 'undefined'
-          ? localStorage.getItem('walletAddress')
-          : null;
-
-        await fetch('/api/contests/track-cta', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contestId: contest.id,
-            walletAddress
-          })
-        });
-      } catch (error) {
+      // Send tracking request (don't await to not block navigation)
+      fetch('/api/contests/track-cta', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contestId: contest.id,
+          walletAddress: typeof window !== 'undefined' ? localStorage.getItem('walletAddress') : null
+        })
+      }).catch(error => {
         console.error('Error tracking CTA click:', error);
-      }
-
-      onCtaClick?.();
+      });
     }
 
-    // Handle external links
-    if (contest.cta_type === 'external' || contest.cta_new_tab) {
-      e.preventDefault();
-      window.open(contest.cta_url, '_blank', 'noopener,noreferrer');
+    // Call optional handler
+    onCtaClick?.();
+
+    // Handle navigation
+    if (contest.cta_url) {
+      // Check if URL is external (starts with http/https)
+      const isExternal = contest.cta_url.startsWith('http://') || contest.cta_url.startsWith('https://');
+
+      if (isExternal || contest.cta_type === 'external' || contest.cta_new_tab) {
+        // Open in new tab/window
+        window.open(contest.cta_url, '_blank', 'noopener,noreferrer');
+      } else {
+        // Navigate internally
+        window.location.href = contest.cta_url;
+      }
     }
   };
 
@@ -109,32 +115,20 @@ export default function ContestActionButtons({
     return (
       <div className={`flex flex-col gap-2 ${className}`}>
         {contest.cta_url ? (
-          <>
+          <button
+            onClick={handleCtaClick}
+            className="w-full px-4 py-3 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink
+                     text-dark-bg font-semibold rounded-lg hover:opacity-90 transition
+                     flex items-center justify-center gap-2 group"
+          >
+            {showIcons && getCtaIcon()}
+            <span>{ctaButtonText}</span>
             {isCtaExternal ? (
-              <button
-                onClick={handleCtaClick}
-                className="w-full px-4 py-3 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink
-                         text-dark-bg font-semibold rounded-lg hover:opacity-90 transition
-                         flex items-center justify-center gap-2 group"
-              >
-                {showIcons && getCtaIcon()}
-                <span>{ctaButtonText}</span>
-                {isCtaExternal && <ExternalLink className="w-3 h-3 opacity-70" />}
-              </button>
+              <ExternalLink className="w-3 h-3 opacity-70" />
             ) : (
-              <Link
-                href={contest.cta_url}
-                onClick={handleCtaClick}
-                className="w-full px-4 py-3 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink
-                         text-dark-bg font-semibold rounded-lg hover:opacity-90 transition
-                         flex items-center justify-center gap-2 group"
-              >
-                {showIcons && getCtaIcon()}
-                <span>{ctaButtonText}</span>
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </Link>
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             )}
-          </>
+          </button>
         ) : (
           // Default CTA button when no URL is set - shows contest type specific action
           <button
@@ -169,32 +163,16 @@ export default function ContestActionButtons({
     return (
       <div className={`flex gap-2 ${className}`}>
         {contest.cta_url && (
-          <>
-            {isCtaExternal ? (
-              <button
-                onClick={handleCtaClick}
-                className="flex-1 px-3 py-2 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink
-                         text-dark-bg text-sm font-semibold rounded-lg hover:opacity-90 transition
-                         flex items-center justify-center gap-1"
-                title={ctaButtonText}
-              >
-                {showIcons && getCtaIcon()}
-                <span className="truncate">{ctaButtonText}</span>
-              </button>
-            ) : (
-              <Link
-                href={contest.cta_url}
-                onClick={handleCtaClick}
-                className="flex-1 px-3 py-2 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink
-                         text-dark-bg text-sm font-semibold rounded-lg hover:opacity-90 transition
-                         flex items-center justify-center gap-1"
-                title={ctaButtonText}
-              >
-                {showIcons && getCtaIcon()}
-                <span className="truncate">{ctaButtonText}</span>
-              </Link>
-            )}
-          </>
+          <button
+            onClick={handleCtaClick}
+            className="flex-1 px-3 py-2 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink
+                     text-dark-bg text-sm font-semibold rounded-lg hover:opacity-90 transition
+                     flex items-center justify-center gap-1"
+            title={ctaButtonText}
+          >
+            {showIcons && getCtaIcon()}
+            <span className="truncate">{ctaButtonText}</span>
+          </button>
         )}
         <button
           onClick={handleSubmitClick}
@@ -214,32 +192,20 @@ export default function ContestActionButtons({
   return (
     <div className={`flex gap-3 ${className}`}>
       {contest.cta_url && (
-        <>
+        <button
+          onClick={handleCtaClick}
+          className="flex-1 px-4 py-2.5 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink
+                   text-dark-bg font-semibold rounded-lg hover:opacity-90 transition
+                   flex items-center justify-center gap-2 group"
+        >
+          {showIcons && getCtaIcon()}
+          <span>{ctaButtonText}</span>
           {isCtaExternal ? (
-            <button
-              onClick={handleCtaClick}
-              className="flex-1 px-4 py-2.5 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink
-                       text-dark-bg font-semibold rounded-lg hover:opacity-90 transition
-                       flex items-center justify-center gap-2 group"
-            >
-              {showIcons && getCtaIcon()}
-              <span>{ctaButtonText}</span>
-              {isCtaExternal && <ExternalLink className="w-3.5 h-3.5 opacity-70" />}
-            </button>
+            <ExternalLink className="w-3.5 h-3.5 opacity-70" />
           ) : (
-            <Link
-              href={contest.cta_url}
-              onClick={handleCtaClick}
-              className="flex-1 px-4 py-2.5 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink
-                       text-dark-bg font-semibold rounded-lg hover:opacity-90 transition
-                       flex items-center justify-center gap-2 group"
-            >
-              {showIcons && getCtaIcon()}
-              <span>{ctaButtonText}</span>
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </Link>
+            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           )}
-        </>
+        </button>
       )}
       <button
         onClick={handleSubmitClick}
