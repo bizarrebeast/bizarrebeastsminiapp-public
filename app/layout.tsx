@@ -9,6 +9,7 @@ import Footer from "@/components/layout/Footer";
 import { FarcasterSDK } from "@/components/FarcasterSDK";
 import { FarcasterProvider } from "@/contexts/FarcasterContext";
 import { SDKProvider } from "@/contexts/SDKContext";
+import { Analytics } from "@vercel/analytics/next";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -102,6 +103,7 @@ export default function RootLayout({
             </LayoutWrapper>
           </FarcasterProvider>
         </SDKProvider>
+        <Analytics />
       </body>
     </html>
   );
