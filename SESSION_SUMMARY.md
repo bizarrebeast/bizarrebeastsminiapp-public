@@ -160,10 +160,10 @@ Run `supabase/complete_migration.sql` in Supabase SQL Editor
 - [x] Build passes without errors
 - [x] TypeScript compilation successful
 - [x] All tests passing
-- [ ] Database migration executed in production
-- [ ] Environment variables configured
-- [ ] Admin wallets whitelisted
-- [ ] Deployed to Vercel/hosting platform
+- [x] Database migration executed in production
+- [x] Environment variables configured
+- [x] Admin wallets whitelisted
+- [x] Deployed to Vercel/hosting platform
 
 ## 📈 Impact & Benefits
 
@@ -213,6 +213,11 @@ Run `supabase/complete_migration.sql` in Supabase SQL Editor
 2. **Function Names**: Corrected `getContestLeaderboard` → `getLeaderboard`
 3. **Type Mismatches**: Resolved ShareButtons component issues
 4. **Git Ignore**: Force-added important migration files
+5. **CTA Button Missing**: Fixed API not saving CTA fields on contest creation
+6. **Mobile Layout Issues**: Removed min-w-[400px] and overflow-x-auto causing width problems
+7. **Authentication Errors**: Fixed admin update route using validateAdminAccess
+8. **Click Handler Bug**: Fixed CTA button navigation trapped in tracking conditional
+9. **Farcaster Embedding**: Fixed URL mismatch (bizarrebeastsminiapp.com → bizarrebeasts.io)
 
 ### Key Decisions
 1. Used three button variants for different contexts

@@ -7,6 +7,7 @@ import { sdk } from '@/lib/sdk-init';
 import ShareButtons from '@/components/ShareButtons';
 import RewardsTable from '@/components/RewardsTable';
 import dynamic from 'next/dynamic';
+import { getActiveCampaign } from '@/config/featured-ritual-config';
 
 // Dynamically import CheckIn to avoid SSR issues with Web3
 const CheckIn = dynamic(() => import('@/components/CheckIn'), { ssr: false });
@@ -108,29 +109,9 @@ interface FeaturedRitual {
   sponsorTagline?: string; // Optional tagline like "Powered by X"
 }
 
-// Featured ritual - can be easily updated or removed
-// Set to null to hide the featured section
-// For sponsored content, add sponsorType, sponsorName, etc.
-const featuredRitual: FeaturedRitual | null = {
-  title: "Vote for BizarreBeasts for the DCP Base Creators Award!",
-  description: `There's less than 48 hours left to vote for BizarreBeasts ($BB) to receive the DCP Onchain Creators Award from @dcpfoundation! 🤯
-
-This is a huge opportunity to bring BizarreBeasts to life as animated shorts, with potential funding and exposure from @dcpfoundation and @zora.
-
-We are up to 171 votes, and YOUR VOTE is absolutely crucial and makes a direct impact for the BIZARRE future!
-
-❓Have questions about the BizarreBeasts submission or voting process? Check out the @paragraph article for more details and screenshots!`,
-  actionText: "Vote Now on DCP",
-  actionUrl: "https://app.decentralized.pictures/project/68694bbba0073d7cf1048a2b",
-  image: "/assets/page-assets/banners/rituals-boxes/featured-ritual-banner.png",
-  expiresAt: "2025-01-13", // Optional: auto-hide after this date
-
-  // Sponsorship fields (uncomment and fill for sponsored content)
-  // sponsorType: 'sponsored', // or 'collab' or 'partner'
-  // sponsorName: 'Partner Name',
-  // sponsorLogo: '/path/to/logo.png',
-  // sponsorTagline: 'Powered by Partner'
-};
+// Get the featured ritual from the centralized config
+// Now managed in config/featured-ritual-config.ts
+const featuredRitual = getActiveCampaign();
 
 export default function RitualsPage() {
   // Initialize both states from localStorage
@@ -440,7 +421,9 @@ export default function RitualsPage() {
                   
                   <div className="text-gray-300 mb-3 text-xs leading-relaxed line-clamp-2 md:line-clamp-none">
                     {featuredRitual.description.split('\n\n')[0]} {/* Show just first paragraph */}
-                    <span className="text-gray-400"> • Less than 48 hours left!</span>
+                    {featuredRitual.urgencyText && (
+                      <span className="text-gray-400"> • {featuredRitual.urgencyText}</span>
+                    )}
                   </div>
 
                   <div className="space-y-3">
@@ -460,7 +443,7 @@ export default function RitualsPage() {
                         {featuredCompleted ? (
                           <>
                             <Check className="w-3 h-3" />
-                            Voted
+                            Completed
                           </>
                         ) : (
                           <>
@@ -470,24 +453,26 @@ export default function RitualsPage() {
                         )}
                       </button>
 
-                      <button
-                        onClick={() => window.open('https://paragraph.com/@bizarrebeasts/bizarrebeasts-applies-for-dcps-onchain-creators-award', '_blank')}
-                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg font-semibold text-sm transition-all duration-300 bg-dark-card border border-gem-crystal/50 text-gem-crystal hover:bg-gem-crystal/20"
-                      >
-                        Learn More
-                        <ExternalLink className="w-3 h-3" />
-                      </button>
+                      {featuredRitual.learnMoreUrl && (
+                        <button
+                          onClick={() => window.open(featuredRitual.learnMoreUrl, '_blank')}
+                          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg font-semibold text-sm transition-all duration-300 bg-dark-card border border-gem-crystal/50 text-gem-crystal hover:bg-gem-crystal/20"
+                        >
+                          {featuredRitual.learnMoreText || 'Learn More'}
+                          <ExternalLink className="w-3 h-3" />
+                        </button>
+                      )}
                     </div>
 
                     {/* Share Buttons */}
                     <div className="flex items-center gap-2">
                       <span className="text-sm text-gray-400 font-semibold">Share:</span>
                       <ShareButtons
-                        customText={`🚨 FEATURED RITUAL ALERT! 🚨\n\nVote for BizarreBeasts for the DCP @dcpfoundation Base Creators Award! 🏆\n\nLess than 48 hours left to support BizarreBeasts ($BB) for potential funding and exposure from @dcpfoundation and @zora!\n\nYour vote makes a direct impact for the BIZARRE future! 👹`}
+                        customText={featuredRitual.shareText || `🚨 FEATURED RITUAL ALERT! 🚨\n\n${featuredRitual.shareTitle || featuredRitual.title}\n\n${featuredRitual.description.split('\n\n')[0]}`}
                         shareType="default"
                         buttonSize="sm"
                         showLabels={false}
-                        contextUrl="https://bbapp.bizarrebeasts.io/rituals"
+                        contextUrl={featuredRitual.shareEmbed || "https://bbapp.bizarrebeasts.io/rituals"}
                       />
                     </div>
                   </div>

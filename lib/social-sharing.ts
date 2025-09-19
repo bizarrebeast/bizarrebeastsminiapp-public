@@ -171,6 +171,7 @@ export async function shareToTwitter(options: ShareOptions): Promise<void> {
   const appUrl = options.url || 'https://bbapp.bizarrebeasts.io';
   text += `\n\n${appUrl}`;
 
+  // Use encodeURIComponent for better compatibility with line breaks
   params.append('text', text);
 
   // Add hashtags

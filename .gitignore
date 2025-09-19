@@ -52,6 +52,7 @@ Thumbs.db
 *GUIDE*.md
 *SPEC*.md
 *CHECKLIST*.md
+docs/NEYNAR-*.md
 # But explicitly keep these important docs
 !README.md
 !README.nextjs.md
