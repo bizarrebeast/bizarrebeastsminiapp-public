@@ -183,6 +183,7 @@ export const useUnifiedAuthStore = create<UnifiedAuthState>()(
 
       // Connect Farcaster
       connectFarcaster: async (userData: any) => {
+        console.log('🏪 [Store] connectFarcaster called with:', userData);
         set({ isLoading: true, error: null });
 
         try {

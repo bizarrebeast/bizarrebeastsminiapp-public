@@ -21,6 +21,7 @@ export function UnifiedAuthButton() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [isFarcasterCheckComplete, setIsFarcasterCheckComplete] = useState(false);
+  const [isInMiniapp, setIsInMiniapp] = useState(false);
 
   // Get Neynar context
   const neynarContext = useNeynarContext();
@@ -72,6 +73,7 @@ export function UnifiedAuthButton() {
     const checkMiniappAuth = async () => {
       // Properly check if in miniapp using async function
       const inMiniapp = await checkIsInFarcasterMiniapp();
+      setIsInMiniapp(inMiniapp);
       const shouldAutoLogin = await shouldAutoLoginWithFarcaster();
       console.log('🎯 Miniapp Detection:', {
         inMiniapp,
@@ -83,6 +85,8 @@ export function UnifiedAuthButton() {
       if (inMiniapp) {
         const context = await initializeFarcasterSDK();
         console.log('📱 Farcaster SDK context:', context);
+        console.log('📱 Current farcasterConnected state:', farcasterConnected);
+        console.log('📱 Condition check - context?.user:', !!context?.user, '!farcasterConnected:', !farcasterConnected);
 
         // If we have user data from SDK, sync it
         if (context?.user && !farcasterConnected) {
@@ -91,6 +95,18 @@ export function UnifiedAuthButton() {
 
           // Connect with SDK user data
           const userDataWithAddresses = userData as any;
+          console.log('📱 Calling storeConnectFarcaster with:', {
+            fid: userData.fid,
+            username: userData.username,
+            display_name: userData.displayName,
+            displayName: userData.displayName,
+            pfp_url: userData.pfpUrl,
+            pfpUrl: userData.pfpUrl,
+            bio: userDataWithAddresses.profile?.bio || '',
+            verified_addresses: userDataWithAddresses.verifiedAddresses || {},
+            verifiedAddresses: userDataWithAddresses.verifiedAddresses?.ethereum || []
+          });
+
           storeConnectFarcaster({
             fid: userData.fid,
             username: userData.username,
@@ -103,10 +119,20 @@ export function UnifiedAuthButton() {
             verifiedAddresses: userDataWithAddresses.verifiedAddresses?.ethereum || []
           });
 
+          console.log('📱 storeConnectFarcaster called successfully');
+
           // If we have verified addresses, use the first one
           if (userDataWithAddresses.verifiedAddresses?.ethereum?.[0]) {
+            console.log('📱 Connecting wallet:', userDataWithAddresses.verifiedAddresses.ethereum[0]);
             storeConnectWallet(userDataWithAddresses.verifiedAddresses.ethereum[0]);
+          } else {
+            console.log('📱 No verified Ethereum addresses found');
           }
+        } else {
+          console.log('📱 Skipping auto-connect because:', {
+            hasUser: !!context?.user,
+            alreadyConnected: farcasterConnected
+          });
         }
       } else {
         // Check if we should auto-login with URL data
@@ -147,15 +173,18 @@ export function UnifiedAuthButton() {
 
   // Sync wallet with unified store (skip in miniapp if using Farcaster wallet)
   useEffect(() => {
-    const inMiniapp = isInFarcasterMiniapp();
-    if (!inMiniapp && wallet.isConnected && wallet.address && !walletConnected) {
-      storeConnectWallet(wallet.address);
-    }
+    const syncWallet = async () => {
+      const inMiniapp = await checkIsInFarcasterMiniapp();
+      if (!inMiniapp && wallet.isConnected && wallet.address && !walletConnected) {
+        storeConnectWallet(wallet.address);
+      }
+    };
+    syncWallet();
   }, [wallet.isConnected, wallet.address, walletConnected, storeConnectWallet]);
 
   // Handle wallet connection
   const handleWalletConnect = async () => {
-    const inMiniapp = isInFarcasterMiniapp();
+    const inMiniapp = await checkIsInFarcasterMiniapp();
 
     if (inMiniapp) {
       console.log('📱 In miniapp - using Farcaster wallet');
@@ -198,8 +227,7 @@ export function UnifiedAuthButton() {
     );
   }
 
-  // Check if we're in miniapp
-  const inMiniapp = isInFarcasterMiniapp();
+  // Use state-based miniapp detection (set async in useEffect)
 
   // Not connected state
   if (!walletConnected && !farcasterConnected) {
@@ -210,7 +238,7 @@ export function UnifiedAuthButton() {
           className="flex items-center gap-1 px-3 py-1.5 text-xs bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink text-black font-semibold rounded hover:opacity-90 transition-all duration-300"
         >
           <Wallet className="w-3 h-3" />
-          <span>{inMiniapp ? 'Sign In' : 'Connect'}</span>
+          <span>{isInMiniapp ? 'Sign In' : 'Connect'}</span>
         </button>
 
         {/* Auth Modal - Farcaster Primary */}
@@ -218,10 +246,10 @@ export function UnifiedAuthButton() {
           <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
             <div className="bg-dark-card border border-gem-crystal/20 rounded-lg p-6 max-w-sm w-full mx-4">
               <h2 className="text-xl font-bold text-white mb-4">
-                {inMiniapp ? 'Sign in with Farcaster' : 'Connect to BizarreBeasts'}
+                {isInMiniapp ? 'Sign in with Farcaster' : 'Connect to BizarreBeasts'}
               </h2>
 
-              {inMiniapp && (
+              {isInMiniapp && (
                 <p className="text-sm text-gem-crystal mb-4">
                   📱 Farcaster miniapp detected - Sign in to continue
                 </p>
@@ -232,7 +260,7 @@ export function UnifiedAuthButton() {
                   className="w-full"
                 />
 
-                {!inMiniapp && (
+                {!isInMiniapp && (
                   <>
                     <div className="relative">
                       <div className="absolute inset-0 flex items-center">
