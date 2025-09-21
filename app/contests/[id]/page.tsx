@@ -730,7 +730,11 @@ export default function ContestDetailPage() {
             userSubmissions={userSubmissions}
             onSuccess={() => {
               fetchContestData(); // Refresh data after submission
-              setActiveTab('leaderboard'); // Switch to leaderboard
+              // Only switch to leaderboard if max submissions reached
+              if (userSubmissions.length + 1 >= contest.max_entries_per_wallet) {
+                setActiveTab('leaderboard');
+              }
+              // Otherwise stay on submit tab for additional entries
             }}
           />
         )}
