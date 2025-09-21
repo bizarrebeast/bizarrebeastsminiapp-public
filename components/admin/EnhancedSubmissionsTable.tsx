@@ -83,21 +83,19 @@ export default function EnhancedSubmissionsTable({
         suspiciousReasons.push(...imageFraudDetection.suspicious_reasons);
       }
 
-      // Multiple submissions from same wallet
-      if (walletSubs.length > 1) {
-        suspiciousReasons.push(`${walletSubs.length} submissions from same wallet`);
-      }
+      // NOTE: Multiple submissions are allowed - not flagging this
+      // Only flag rapid-fire submissions that might be bot activity
 
-      // Submissions within short time frame (< 5 minutes)
+      // Submissions within very short time frame (< 30 seconds) - likely bot
       const subTime = new Date(sub.submitted_at).getTime();
-      const closeTimeSubs = walletSubs.filter(s => {
+      const rapidFireSubs = walletSubs.filter(s => {
         const otherTime = new Date(s.submitted_at).getTime();
         const diff = Math.abs(subTime - otherTime);
-        return diff > 0 && diff < 5 * 60 * 1000; // 5 minutes
+        return diff > 0 && diff < 30 * 1000; // 30 seconds
       });
 
-      if (closeTimeSubs.length > 0) {
-        suspiciousReasons.push('Multiple submissions within 5 minutes');
+      if (rapidFireSubs.length > 0) {
+        suspiciousReasons.push('Rapid-fire submissions (< 30 seconds apart)');
       }
 
       // Unusually high score
@@ -503,7 +501,19 @@ export default function EnhancedSubmissionsTable({
                   </td>
                   <td className="px-4 py-3">
                     {submission.username ? (
-                      <span className="text-white">{submission.username}</span>
+                      <div className="flex items-center gap-2">
+                        {/* Platform icon */}
+                        {(() => {
+                          const platform = (submission.metadata as any)?.username_platform;
+                          if (platform === 'farcaster') {
+                            return <span className="text-sm" title="Farcaster">🟣</span>;
+                          } else if (platform === 'x') {
+                            return <span className="text-sm" title="X (Twitter)">𝕏</span>;
+                          }
+                          return null;
+                        })()}
+                        <span className="text-white">{submission.username}</span>
+                      </div>
                     ) : (
                       <span className="text-gray-500">-</span>
                     )}

@@ -29,6 +29,13 @@ export default function SubmissionForm({ contest, userSubmissions = [], onSucces
   const [checkingBalance, setCheckingBalance] = useState(false);
   const [authSyncing, setAuthSyncing] = useState(false);
 
+  // Username platform selection
+  const [usernamePlatform, setUsernamePlatform] = useState<'farcaster' | 'x'>('farcaster');
+  const [manualUsername, setManualUsername] = useState('');
+  const [validatingUsername, setValidatingUsername] = useState(false);
+  const [usernameValid, setUsernameValid] = useState<boolean | null>(null);
+  const [usernameError, setUsernameError] = useState<string | null>(null);
+
   // Sync Farcaster auth if needed when component mounts
   useEffect(() => {
     // If we're in Warpcast and Neynar has user but store is empty, wait a bit for sync
@@ -47,6 +54,74 @@ export default function SubmissionForm({ contest, userSubmissions = [], onSucces
       setAuthSyncing(false);
     }
   }, [neynarContext?.user, farcasterUsername]);
+
+  // Auto-fill username when Farcaster is connected
+  useEffect(() => {
+    if (usernamePlatform === 'farcaster') {
+      // Prioritize Neynar context
+      if (neynarContext?.user?.username) {
+        setManualUsername(neynarContext.user.username);
+        setUsernameValid(true);
+      }
+      // Fall back to store data
+      else if (farcasterUsername) {
+        setManualUsername(farcasterUsername);
+        setUsernameValid(true);
+      }
+    } else {
+      // Clear validation when switching to X
+      setUsernameValid(null);
+      setUsernameError(null);
+    }
+  }, [usernamePlatform, neynarContext?.user, farcasterUsername]);
+
+  // Validate Farcaster username
+  const validateFarcasterUsername = async (username: string) => {
+    if (!username) {
+      setUsernameValid(false);
+      setUsernameError('Username is required');
+      return false;
+    }
+
+    setValidatingUsername(true);
+    setUsernameError(null);
+
+    try {
+      // Clean username (remove @ if present)
+      const cleanUsername = username.replace('@', '').trim();
+
+      // Call API to validate
+      const response = await fetch(`/api/neynar/user/${cleanUsername}`);
+
+      if (response.ok) {
+        setUsernameValid(true);
+        setUsernameError(null);
+        return true;
+      } else {
+        setUsernameValid(false);
+        setUsernameError('Username not found on Farcaster. Please switch to X.');
+        return false;
+      }
+    } catch (error) {
+      console.error('Username validation error:', error);
+      setUsernameValid(false);
+      setUsernameError('Could not validate username. Please switch to X.');
+      return false;
+    } finally {
+      setValidatingUsername(false);
+    }
+  };
+
+  // Debounced username validation
+  useEffect(() => {
+    if (usernamePlatform === 'farcaster' && manualUsername) {
+      const timer = setTimeout(() => {
+        validateFarcasterUsername(manualUsername);
+      }, 500); // Wait 500ms after user stops typing
+
+      return () => clearTimeout(timer);
+    }
+  }, [manualUsername, usernamePlatform]);
 
   // Check token balance when wallet connects
   const verifyTokenBalance = async () => {
@@ -123,6 +198,21 @@ export default function SubmissionForm({ contest, userSubmissions = [], onSucces
       return;
     }
 
+    // Validate username requirement
+    if (!manualUsername.trim()) {
+      setError('Please enter your username');
+      return;
+    }
+
+    // Validate Farcaster username if selected
+    if (usernamePlatform === 'farcaster') {
+      const isValid = await validateFarcasterUsername(manualUsername);
+      if (!isValid) {
+        setError('Invalid Farcaster username. Please check or switch to X.');
+        return;
+      }
+    }
+
     // Verify token balance
     const hasBalance = await verifyTokenBalance();
     if (!hasBalance) return;
@@ -136,47 +226,29 @@ export default function SubmissionForm({ contest, userSubmissions = [], onSucces
       formData.append('contestId', contest.id);
       formData.append('walletAddress', address);
 
-      // Try to get Farcaster data from multiple sources (prioritize Neynar context)
-      let finalUsername = null;
-      let finalFid = null;
+      // Clean username (remove @ if present)
+      const cleanUsername = manualUsername.replace('@', '').trim();
 
-      // Check Neynar context first (most up-to-date in Warpcast)
-      if (neynarContext?.user) {
-        finalUsername = neynarContext.user.username;
-        finalFid = neynarContext.user.fid;
-        console.log('📱 Using Farcaster data from Neynar context');
-      }
-      // Fall back to store data if Neynar is empty
-      else if (farcasterUsername) {
-        finalUsername = farcasterUsername;
-        finalFid = farcasterFid;
-        console.log('💾 Using Farcaster data from store');
-      }
+      // Add username with platform info
+      if (usernamePlatform === 'farcaster') {
+        formData.append('farcasterUsername', cleanUsername);
 
-      // Debug logging for Farcaster data
-      console.log('🎯 Submission Form - Farcaster state:', {
-        storeConnected: farcasterConnected,
-        storeUsername: farcasterUsername,
-        storeFid: farcasterFid,
-        neynarUser: neynarContext?.user?.username,
-        neynarFid: neynarContext?.user?.fid,
-        finalUsername,
-        finalFid,
-        address,
-        userAgent: navigator.userAgent
-      });
-
-      // Include Farcaster profile - be more permissive
-      // Send username if we have it from ANY source
-      if (finalUsername) {
-        console.log('✅ Adding Farcaster username to submission:', finalUsername);
-        formData.append('farcasterUsername', finalUsername);
-        if (finalFid) {
-          formData.append('farcasterFid', finalFid.toString());
+        // Try to get FID if available
+        if (neynarContext?.user?.fid && neynarContext.user.username === cleanUsername) {
+          formData.append('farcasterFid', neynarContext.user.fid.toString());
+        } else if (farcasterFid && farcasterUsername === cleanUsername) {
+          formData.append('farcasterFid', farcasterFid.toString());
         }
+
+        console.log('✅ Submitting with Farcaster username:', cleanUsername);
       } else {
-        console.warn('⚠️ No Farcaster username available from any source');
+        // For X (Twitter), just send as username
+        formData.append('username', cleanUsername);
+        console.log('✅ Submitting with X username:', cleanUsername);
       }
+
+      // Store platform in metadata
+      formData.append('usernamePlatform', usernamePlatform);
 
       if (score) {
         formData.append('score', score);
@@ -303,6 +375,84 @@ export default function SubmissionForm({ contest, userSubmissions = [], onSucces
         </div>
       ) : (
         <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Username Platform Selection - REQUIRED */}
+          <div className="space-y-3">
+            <label className="block text-sm font-medium text-gray-300">
+              Select Your Platform <span className="text-red-400">*</span>
+            </label>
+
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                type="button"
+                onClick={() => setUsernamePlatform('farcaster')}
+                className={`p-3 rounded-lg border-2 transition flex items-center justify-center gap-2 ${
+                  usernamePlatform === 'farcaster'
+                    ? 'border-gem-crystal bg-gem-crystal/10 text-gem-crystal'
+                    : 'border-gray-700 bg-dark-bg text-gray-400 hover:border-gray-600'
+                }`}
+              >
+                <span className="text-lg">🟣</span>
+                <span className="font-medium">Farcaster</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setUsernamePlatform('x')}
+                className={`p-3 rounded-lg border-2 transition flex items-center justify-center gap-2 ${
+                  usernamePlatform === 'x'
+                    ? 'border-gem-crystal bg-gem-crystal/10 text-gem-crystal'
+                    : 'border-gray-700 bg-dark-bg text-gray-400 hover:border-gray-600'
+                }`}
+              >
+                <span className="text-lg">𝕏</span>
+                <span className="font-medium">X (Twitter)</span>
+              </button>
+            </div>
+
+            {/* Username Input */}
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                {usernamePlatform === 'farcaster' ? 'Farcaster' : 'X'} Username <span className="text-red-400">*</span>
+              </label>
+              <div className="relative">
+                <input
+                  type="text"
+                  value={manualUsername}
+                  onChange={(e) => setManualUsername(e.target.value)}
+                  className="w-full px-4 py-3 bg-dark-bg border border-gray-700 rounded-lg
+                           text-white placeholder-gray-500 focus:border-gem-crystal
+                           focus:outline-none transition pr-10"
+                  placeholder={usernamePlatform === 'farcaster' ? 'username (without @)' : '@username'}
+                  required
+                />
+
+                {/* Validation indicator */}
+                {usernamePlatform === 'farcaster' && manualUsername && (
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                    {validatingUsername ? (
+                      <Loader2 className="w-5 h-5 animate-spin text-gray-400" />
+                    ) : usernameValid === true ? (
+                      <CheckCircle className="w-5 h-5 text-green-400" />
+                    ) : usernameValid === false ? (
+                      <AlertCircle className="w-5 h-5 text-red-400" />
+                    ) : null}
+                  </div>
+                )}
+              </div>
+
+              {/* Validation message */}
+              {usernamePlatform === 'farcaster' && usernameError && (
+                <p className="text-xs text-red-400 mt-1">{usernameError}</p>
+              )}
+              {usernamePlatform === 'farcaster' && usernameValid && (
+                <p className="text-xs text-green-400 mt-1">✓ Valid Farcaster username</p>
+              )}
+              {usernamePlatform === 'x' && (
+                <p className="text-xs text-gray-500 mt-1">Enter your X (Twitter) username</p>
+              )}
+            </div>
+          </div>
+
           {/* Score Input (for game contests only) */}
           {contest.type === 'game_score' && (
             <div>

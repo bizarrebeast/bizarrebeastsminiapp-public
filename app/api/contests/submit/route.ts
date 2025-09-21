@@ -40,6 +40,8 @@ export async function POST(request: Request) {
     const tokenBalance = formData.get('tokenBalance') as string;
     const farcasterUsername = formData.get('farcasterUsername') as string;
     const farcasterFid = formData.get('farcasterFid') as string;
+    const xUsername = formData.get('username') as string; // X username if platform is X
+    const usernamePlatform = formData.get('usernamePlatform') as string;
 
     console.log('📝 Form data parsed:', {
       contestId,
@@ -48,7 +50,9 @@ export async function POST(request: Request) {
       hasScreenshot: !!screenshot,
       tokenBalance,
       farcasterUsername,
-      farcasterFid
+      farcasterFid,
+      xUsername,
+      usernamePlatform
     });
 
     // Validate required fields
@@ -222,7 +226,7 @@ export async function POST(request: Request) {
     const submissionData = {
       contest_id: contestId,
       wallet_address: walletAddress.toLowerCase(),
-      username: farcasterUsername || null, // Store Farcaster username if available
+      username: farcasterUsername || xUsername || null, // Store username from either platform
       score: score ? parseInt(score) : null,
       screenshot_url: screenshotUrl,
       token_balance: tokenBalance,
@@ -231,7 +235,8 @@ export async function POST(request: Request) {
         submitted_from: 'web',
         user_agent: request.headers.get('user-agent'),
         timestamp: new Date().toISOString(),
-        farcaster_fid: farcasterFid || null, // Store FID in metadata
+        username_platform: usernamePlatform || 'unknown', // Store which platform the username is from
+        farcaster_fid: farcasterFid || null, // Store FID in metadata if Farcaster
         // Enhanced fraud detection metadata
         image_metadata: imageMetadata ? {
           file_size: imageMetadata.fileSize,
