@@ -1,12 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Trophy, Upload, Loader2, AlertCircle, CheckCircle, Camera } from 'lucide-react';
 import { useWallet } from '@/hooks/useWallet';
 import { useUnifiedAuthStore } from '@/store/useUnifiedAuthStore';
 import { Contest } from '@/lib/supabase';
 import { getCachedBBBalance, formatTokenBalance } from '@/lib/tokenBalance';
 import ShareButtons from '@/components/ShareButtons';
+import { useNeynarContext } from '@neynar/react';
 
 interface SubmissionFormProps {
   contest: Contest;
@@ -17,6 +18,7 @@ interface SubmissionFormProps {
 export default function SubmissionForm({ contest, userSubmissions = [], onSuccess }: SubmissionFormProps) {
   const { address, isConnected } = useWallet();
   const { farcasterUsername, farcasterFid, farcasterConnected } = useUnifiedAuthStore();
+  const neynarContext = useNeynarContext();
   const [score, setScore] = useState('');
   const [screenshot, setScreenshot] = useState<File | null>(null);
   const [screenshotPreview, setScreenshotPreview] = useState<string>('');
@@ -25,6 +27,26 @@ export default function SubmissionForm({ contest, userSubmissions = [], onSucces
   const [success, setSuccess] = useState(false);
   const [tokenBalance, setTokenBalance] = useState<string>('0');
   const [checkingBalance, setCheckingBalance] = useState(false);
+  const [authSyncing, setAuthSyncing] = useState(false);
+
+  // Sync Farcaster auth if needed when component mounts
+  useEffect(() => {
+    // If we're in Warpcast and Neynar has user but store is empty, wait a bit for sync
+    if (neynarContext?.user && !farcasterUsername) {
+      console.log('⏳ Waiting for Farcaster auth sync...');
+      setAuthSyncing(true);
+
+      // Give NeynarAuthIntegration component time to sync
+      const syncTimeout = setTimeout(() => {
+        setAuthSyncing(false);
+        console.log('✅ Auth sync timeout complete');
+      }, 1500); // 1.5 seconds should be enough
+
+      return () => clearTimeout(syncTimeout);
+    } else {
+      setAuthSyncing(false);
+    }
+  }, [neynarContext?.user, farcasterUsername]);
 
   // Check token balance when wallet connects
   const verifyTokenBalance = async () => {
@@ -114,12 +136,46 @@ export default function SubmissionForm({ contest, userSubmissions = [], onSucces
       formData.append('contestId', contest.id);
       formData.append('walletAddress', address);
 
-      // Include Farcaster profile if connected
-      if (farcasterConnected && farcasterUsername) {
-        formData.append('farcasterUsername', farcasterUsername);
-        if (farcasterFid) {
-          formData.append('farcasterFid', farcasterFid.toString());
+      // Try to get Farcaster data from multiple sources (prioritize Neynar context)
+      let finalUsername = null;
+      let finalFid = null;
+
+      // Check Neynar context first (most up-to-date in Warpcast)
+      if (neynarContext?.user) {
+        finalUsername = neynarContext.user.username;
+        finalFid = neynarContext.user.fid;
+        console.log('📱 Using Farcaster data from Neynar context');
+      }
+      // Fall back to store data if Neynar is empty
+      else if (farcasterUsername) {
+        finalUsername = farcasterUsername;
+        finalFid = farcasterFid;
+        console.log('💾 Using Farcaster data from store');
+      }
+
+      // Debug logging for Farcaster data
+      console.log('🎯 Submission Form - Farcaster state:', {
+        storeConnected: farcasterConnected,
+        storeUsername: farcasterUsername,
+        storeFid: farcasterFid,
+        neynarUser: neynarContext?.user?.username,
+        neynarFid: neynarContext?.user?.fid,
+        finalUsername,
+        finalFid,
+        address,
+        userAgent: navigator.userAgent
+      });
+
+      // Include Farcaster profile - be more permissive
+      // Send username if we have it from ANY source
+      if (finalUsername) {
+        console.log('✅ Adding Farcaster username to submission:', finalUsername);
+        formData.append('farcasterUsername', finalUsername);
+        if (finalFid) {
+          formData.append('farcasterFid', finalFid.toString());
         }
+      } else {
+        console.warn('⚠️ No Farcaster username available from any source');
       }
 
       if (score) {
@@ -354,13 +410,18 @@ export default function SubmissionForm({ contest, userSubmissions = [], onSucces
           {/* Submit Button */}
           <button
             type="submit"
-            disabled={submitting || checkingBalance}
+            disabled={submitting || checkingBalance || authSyncing}
             className="w-full py-3 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink
                      text-dark-bg font-bold rounded-lg hover:opacity-90
                      disabled:opacity-50 disabled:cursor-not-allowed transition
                      flex items-center justify-center gap-2"
           >
-            {submitting ? (
+            {authSyncing ? (
+              <>
+                <Loader2 className="w-5 h-5 animate-spin" />
+                Syncing authentication...
+              </>
+            ) : submitting ? (
               <>
                 <Loader2 className="w-5 h-5 animate-spin" />
                 Submitting...
