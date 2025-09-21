@@ -129,7 +129,8 @@ export function UnifiedAuthButton() {
 
           // Try to get wallet from Farcaster SDK
           try {
-            const sdk = await import('@farcaster/miniapp-sdk');
+            const sdkModule = await import('@farcaster/miniapp-sdk');
+            const sdk = sdkModule.default;
             const provider = await sdk.wallet.getEthereumProvider();
 
             if (provider) {
@@ -215,7 +216,8 @@ export function UnifiedAuthButton() {
       console.log('📱 In miniapp - trying to get wallet from Farcaster SDK');
 
       try {
-        const sdk = await import('@farcaster/miniapp-sdk');
+        const sdkModule = await import('@farcaster/miniapp-sdk');
+        const sdk = sdkModule.default;
         const provider = await sdk.wallet.getEthereumProvider();
 
         if (provider) {
