@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
-import { Menu, X, Palette, Gamepad2, FileText, Crown, ArrowDownUp, Music, Sparkles, Trophy } from 'lucide-react';
+import { Menu, X, Palette, Gamepad2, FileText, Crown, ArrowDownUp, Music, Sparkles, Trophy, Bug } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import { UnifiedAuthButton } from '@/components/auth/UnifiedAuthButton';
 import { EmpireBadges } from '@/components/wallet/EmpireBadges';
@@ -17,6 +17,7 @@ const navItems = [
   { href: '/empire', label: 'Empire Leaderboard', icon: Crown },
   { href: '/music', label: 'Music & Soundtracks', icon: Music },
   { href: '/resources', label: 'Community Resources', icon: FileText },
+  { href: '/test-neynar', label: '🔧 Debug Farcaster Auth', icon: Bug },
 ];
 
 export function Navbar() {

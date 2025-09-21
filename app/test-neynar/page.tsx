@@ -8,24 +8,41 @@ export default function TestNeynarPage() {
   const { user } = useNeynarContext();
   const [farcasterUser, setFarcasterUser] = useState<any>(null);
   const [sdkLoaded, setSdkLoaded] = useState(false);
+  const [debugLogs, setDebugLogs] = useState<string[]>([]);
+
+  const addLog = (message: string) => {
+    setDebugLogs(prev => [...prev, `${new Date().toLocaleTimeString()}: ${message}`]);
+  };
 
   useEffect(() => {
     // Try to get user from Farcaster Miniapp SDK
     const initSDK = async () => {
       try {
+        addLog('Starting SDK initialization...');
+
         // Check if we're in a miniapp
         const isInMiniApp = await sdk.isInMiniApp();
+        addLog(`Is in Farcaster miniapp: ${isInMiniApp}`);
         console.log('Is in Farcaster miniapp:', isInMiniApp);
 
         if (isInMiniApp) {
+          addLog('Attempting to get SDK context...');
           const context = await sdk.context;
+          addLog(`SDK context received: ${context ? 'SUCCESS' : 'FAILED'}`);
           console.log('Farcaster SDK Context:', context);
+
           if (context?.user) {
+            addLog(`User data found: FID ${context.user.fid}, username: ${context.user.username}`);
             setFarcasterUser(context.user);
+          } else {
+            addLog('No user data in context');
           }
         }
         setSdkLoaded(true);
+        addLog('SDK initialization complete');
       } catch (error) {
+        const errorMsg = error instanceof Error ? error.message : String(error);
+        addLog(`SDK error: ${errorMsg}`);
         console.log('Not in Farcaster miniapp or SDK error:', error);
         setSdkLoaded(true);
       }
@@ -71,6 +88,21 @@ export default function TestNeynarPage() {
       <div className="mb-8">
         <h2 className="text-lg font-semibold mb-4">Login Button (Direct Neynar):</h2>
         <NeynarAuthButton />
+      </div>
+
+      <div className="mb-8">
+        <h2 className="text-lg font-semibold mb-4">Debug Logs:</h2>
+        <div className="bg-gray-900 rounded p-4 max-h-64 overflow-y-auto">
+          {debugLogs.length === 0 ? (
+            <p className="text-gray-500 text-sm">No logs yet...</p>
+          ) : (
+            debugLogs.map((log, index) => (
+              <div key={index} className="text-xs text-green-400 mb-1">
+                {log}
+              </div>
+            ))
+          )}
+        </div>
       </div>
 
       <div className="mt-8 text-sm text-gray-500">
