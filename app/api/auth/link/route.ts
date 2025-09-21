@@ -23,10 +23,10 @@ export async function POST(request: NextRequest) {
       farcasterData
     } = body;
 
-    // Validate required fields
-    if (!walletAddress) {
+    // Validate required fields - either wallet or Farcaster required
+    if (!walletAddress && !farcasterFid) {
       return NextResponse.json(
-        { error: 'Wallet address is required' },
+        { error: 'Either wallet address or Farcaster ID is required' },
         { status: 400 }
       );
     }
@@ -49,12 +49,16 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Check if wallet address is already linked to another user
-    const { data: existingWalletUser, error: walletError } = await supabase
-      .from('unified_users')
-      .select('*')
-      .eq('wallet_address', walletAddress)
-      .single();
+    // Check if wallet address is already linked to another user (if wallet provided)
+    let existingWalletUser = null;
+    if (walletAddress) {
+      const { data, error } = await supabase
+        .from('unified_users')
+        .select('*')
+        .eq('wallet_address', walletAddress)
+        .single();
+      existingWalletUser = data;
+    }
 
     // Check if Farcaster FID is already linked to another user
     let existingFarcasterUser = null;
@@ -123,11 +127,16 @@ export async function POST(request: NextRequest) {
     } else {
       // Create new unified user
       const insertData: any = {
-        wallet_address: walletAddress,
         primary_identity: farcasterFid ? 'farcaster' : 'wallet',
         created_at: new Date().toISOString()
       };
 
+      // Add wallet if provided
+      if (walletAddress) {
+        insertData.wallet_address = walletAddress;
+      }
+
+      // Add Farcaster data if provided
       if (farcasterFid && farcasterData) {
         insertData.farcaster_fid = farcasterFid;
         insertData.farcaster_username = farcasterData.username;
@@ -135,8 +144,12 @@ export async function POST(request: NextRequest) {
         insertData.farcaster_pfp_url = farcasterData.pfpUrl;
         insertData.farcaster_bio = farcasterData.bio;
         insertData.verified_addresses = farcasterData.verifiedAddresses || [];
-        insertData.identities_linked = true;
-        insertData.linked_at = new Date().toISOString();
+
+        // Mark as linked only if both wallet and Farcaster are present
+        if (walletAddress) {
+          insertData.identities_linked = true;
+          insertData.linked_at = new Date().toISOString();
+        }
       }
 
       const { data: newUser, error: insertError } = await supabase
@@ -177,8 +190,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if auto-linking should occur
-    if (updatedUser.verified_addresses && updatedUser.wallet_address) {
+    // Only check auto-linking if we have both wallet and verified addresses
+    if (updatedUser && updatedUser.verified_addresses && updatedUser.wallet_address) {
       const isVerified = updatedUser.verified_addresses.includes(updatedUser.wallet_address);
 
       if (isVerified && !updatedUser.identities_linked) {
