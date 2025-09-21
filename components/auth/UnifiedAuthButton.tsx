@@ -68,6 +68,9 @@ export function UnifiedAuthButton() {
   //   }
   // }, [farcasterUser, storeConnectFarcaster]);
 
+  // Track if we've already synced to prevent loops
+  const [hasSyncedFromSDK, setHasSyncedFromSDK] = useState(false);
+
   // Detect miniapp context and handle auto-login
   useEffect(() => {
     console.log('🎯 UnifiedAuthButton useEffect started');
@@ -79,7 +82,8 @@ export function UnifiedAuthButton() {
       console.log('🎯 Miniapp Detection:', {
         inMiniapp,
         shouldAutoLogin,
-        farcasterConnected
+        farcasterConnected,
+        hasSyncedFromSDK
       });
 
       // Initialize SDK if in miniapp
@@ -87,10 +91,11 @@ export function UnifiedAuthButton() {
         const context = await initializeFarcasterSDK();
         console.log('📱 Farcaster SDK context:', context);
         console.log('📱 Current farcasterConnected state:', farcasterConnected);
-        console.log('📱 Condition check - context?.user:', !!context?.user, '!farcasterConnected:', !farcasterConnected);
+        console.log('📱 Has already synced:', hasSyncedFromSDK);
 
-        // If we have user data from SDK, sync it
-        if (context?.user && !farcasterConnected) {
+        // If we have user data from SDK, sync it ONLY ONCE
+        if (context?.user && !hasSyncedFromSDK) {
+          setHasSyncedFromSDK(true);
           const userData = context.user;
           console.log('📱 Auto-connecting with Farcaster SDK user:', userData);
 
@@ -157,13 +162,13 @@ export function UnifiedAuthButton() {
         } else {
           console.log('📱 Skipping auto-connect because:', {
             hasUser: !!context?.user,
-            alreadyConnected: farcasterConnected
+            alreadySynced: hasSyncedFromSDK
           });
         }
       } else {
         // Check if we should auto-login with URL data
         const shouldAutoLogin = await shouldAutoLoginWithFarcaster();
-        if (shouldAutoLogin && !farcasterConnected) {
+        if (shouldAutoLogin && !farcasterConnected && !hasSyncedFromSDK) {
           // Not in miniapp but have URL data
           const urlData = await getFarcasterDataFromUrl();
           console.log('📱 Auto-login with Farcaster URL data:', urlData);
@@ -195,7 +200,7 @@ export function UnifiedAuthButton() {
     return () => {
       cleanupPromise.then(cleanup => cleanup());
     };
-  }, [farcasterConnected, storeConnectWallet, storeConnectFarcaster]);
+  }, [storeConnectWallet, storeConnectFarcaster]); // Removed farcasterConnected to prevent re-runs
 
   // Sync wallet with unified store (skip in miniapp if using Farcaster wallet)
   useEffect(() => {

@@ -9,12 +9,20 @@ export function FarcasterSDKSync() {
   const store = useUnifiedAuthStore();
   const { isSDKReady } = useFarcasterSDK();
   const lastSyncedFid = useRef<number | null>(null);
+  const lastSyncedUsername = useRef<string | null>(null);
   const syncAttempts = useRef(0);
+  const isSyncing = useRef(false);
 
   useEffect(() => {
     if (!isSDKReady) return;
 
     const syncFromSDK = async () => {
+      // Prevent concurrent syncs
+      if (isSyncing.current) {
+        console.log('🔄 Sync already in progress, skipping');
+        return;
+      }
+
       try {
         // Check if we're in a miniapp
         const isInMiniApp = await sdk.isInMiniApp();
@@ -29,6 +37,14 @@ export function FarcasterSDKSync() {
 
         if (!sdkUser) {
           console.log('📱 No SDK user available');
+          return;
+        }
+
+        // Check if we've already synced this exact user
+        if (lastSyncedFid.current === sdkUser.fid &&
+            lastSyncedUsername.current === sdkUser.username &&
+            store.farcasterUsername !== 'testuser') {
+          console.log('🔄 Already synced this user, skipping');
           return;
         }
 
@@ -47,6 +63,7 @@ export function FarcasterSDKSync() {
           (!store.walletAddress && sdkUser.fid === 357897);
 
         if (needsSync) {
+          isSyncing.current = true;
           console.log('⚡ SYNCING FROM SDK - Fixing authentication data');
 
           // SDK doesn't provide verifiedAddresses in the same way
@@ -82,7 +99,9 @@ export function FarcasterSDKSync() {
           });
 
           lastSyncedFid.current = sdkUser.fid;
+          lastSyncedUsername.current = sdkUser.username;
           syncAttempts.current = 0;
+          isSyncing.current = false;
 
           console.log('✅ SDK sync complete - Fixed user data:', {
             username: sdkUser.username,
@@ -109,6 +128,7 @@ export function FarcasterSDKSync() {
         }
       } catch (error) {
         console.error('SDK sync error:', error);
+        isSyncing.current = false;
         syncAttempts.current++;
 
         // Retry a few times if it fails
@@ -118,12 +138,15 @@ export function FarcasterSDKSync() {
       }
     };
 
-    // Run sync immediately and after a short delay to catch any timing issues
+    // Run sync immediately
     syncFromSDK();
-    const timeout = setTimeout(syncFromSDK, 2000);
 
-    return () => clearTimeout(timeout);
-  }, [isSDKReady, store.farcasterUsername, store.farcasterFid, store.walletAddress]);
+    // Only run a delayed sync if username is still 'testuser'
+    if (store.farcasterUsername === 'testuser') {
+      const timeout = setTimeout(syncFromSDK, 2000);
+      return () => clearTimeout(timeout);
+    }
+  }, [isSDKReady]); // Only re-run when SDK becomes ready
 
   return null;
 }
