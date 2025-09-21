@@ -69,6 +69,12 @@ const navigationItems = [
     icon: '🛠️',
     children: [
       {
+        title: 'Creative Assets',
+        href: '/admin/creative-assets',
+        icon: '🎨',
+        description: 'Gradient text generator'
+      },
+      {
         title: 'Export Data',
         href: '/admin/export',
         icon: '💾',

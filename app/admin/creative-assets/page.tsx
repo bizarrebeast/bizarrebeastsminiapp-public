@@ -11,7 +11,9 @@ import {
   Sliders,
   RefreshCw,
   Copy,
-  Check
+  Check,
+  ZoomIn,
+  ZoomOut
 } from 'lucide-react';
 import { useWallet } from '@/hooks/useWallet';
 import { isAdmin } from '@/lib/admin';
@@ -105,6 +107,7 @@ export default function CreativeAssetsPage() {
   const [customWidth, setCustomWidth] = useState(1920);
   const [customHeight, setCustomHeight] = useState(1080);
   const [scale, setScale] = useState(0.5); // Display scale for preview
+  const [zoom, setZoom] = useState(1); // Zoom for preview canvas
 
   // Check admin access
   useEffect(() => {
@@ -141,11 +144,36 @@ export default function CreativeAssetsPage() {
       ctx.fillRect(0, 0, width, height);
     }
 
-    // Create gradient
+    // Create gradient across full text width
+    const textLines = text.split('\n');
+    let maxTextWidth = 0;
+
+    // Calculate max text width
+    ctx.font = `${fontWeight} ${fontSize}px ${fontFamily}`;
+    textLines.forEach(line => {
+      const metrics = ctx.measureText(line);
+      if (letterSpacing > 0) {
+        maxTextWidth = Math.max(maxTextWidth, metrics.width + letterSpacing * (line.length - 1));
+      } else {
+        maxTextWidth = Math.max(maxTextWidth, metrics.width);
+      }
+    });
+
+    // Position gradient based on text alignment and width
+    let gradientStartX = 0;
+    if (textAlign === 'center') {
+      gradientStartX = (width - maxTextWidth) / 2;
+    } else if (textAlign === 'left') {
+      gradientStartX = fontSize;
+    } else {
+      gradientStartX = width - maxTextWidth - fontSize;
+    }
+
+    // Create gradient from left to right of text
     const gradient = ctx.createLinearGradient(
-      0,
+      gradientStartX,
       height / 2,
-      width * Math.cos(gradientAngle * Math.PI / 180),
+      gradientStartX + maxTextWidth,
       height / 2
     );
 
@@ -263,49 +291,49 @@ export default function CreativeAssetsPage() {
           {/* Controls Panel */}
           <div className="space-y-6">
             {/* Text Input */}
-            <div className="bg-dark-card border border-gray-700 rounded-lg p-6">
-              <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
-                <Type className="w-5 h-5" />
+            <div className="bg-dark-card border border-gray-700 rounded-lg p-4">
+              <h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
+                <Type className="w-4 h-4" />
                 Text Content
-              </h2>
+              </h3>
               <textarea
                 value={text}
                 onChange={(e) => setText(e.target.value)}
                 placeholder="Enter your text..."
-                className="w-full px-4 py-3 bg-dark-bg border border-gray-700 rounded-lg
+                className="w-full px-3 py-2 bg-dark-bg border border-gray-700 rounded-lg
                          text-white placeholder-gray-500 focus:border-gem-crystal
-                         focus:outline-none transition resize-none"
-                rows={3}
+                         focus:outline-none transition resize-none text-sm"
+                rows={2}
               />
             </div>
 
             {/* Gradient Selection */}
-            <div className="bg-dark-card border border-gray-700 rounded-lg p-6">
-              <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
-                <Palette className="w-5 h-5" />
+            <div className="bg-dark-card border border-gray-700 rounded-lg p-4">
+              <h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
+                <Palette className="w-4 h-4" />
                 Gradient Style
-              </h2>
-              <div className="grid grid-cols-2 gap-2 mb-4">
+              </h3>
+              <div className="grid grid-cols-3 gap-1.5 mb-3">
                 {GRADIENT_PRESETS.map((preset) => (
                   <button
                     key={preset.name}
                     onClick={() => setSelectedGradient(preset)}
-                    className={`p-3 rounded-lg border transition ${
+                    className={`p-2 rounded border transition ${
                       selectedGradient.name === preset.name
                         ? 'border-gem-crystal bg-gem-crystal/10'
                         : 'border-gray-700 hover:border-gray-600'
                     }`}
                   >
                     <div
-                      className="w-full h-6 rounded mb-2"
+                      className="w-full h-4 rounded mb-1"
                       style={{ background: preset.value }}
                     />
-                    <p className="text-xs">{preset.name}</p>
+                    <p className="text-[10px]">{preset.name}</p>
                   </button>
                 ))}
               </div>
-              <div className="flex items-center gap-4">
-                <label className="text-sm">Angle:</label>
+              <div className="flex items-center gap-2">
+                <label className="text-xs">Angle:</label>
                 <input
                   type="range"
                   min="0"
@@ -314,33 +342,33 @@ export default function CreativeAssetsPage() {
                   onChange={(e) => setGradientAngle(Number(e.target.value))}
                   className="flex-1"
                 />
-                <span className="text-sm w-12">{gradientAngle}°</span>
+                <span className="text-xs w-10">{gradientAngle}°</span>
               </div>
             </div>
 
             {/* Typography Controls */}
-            <div className="bg-dark-card border border-gray-700 rounded-lg p-6">
-              <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
-                <Sliders className="w-5 h-5" />
+            <div className="bg-dark-card border border-gray-700 rounded-lg p-4">
+              <h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
+                <Sliders className="w-4 h-4" />
                 Typography
-              </h2>
-              <div className="space-y-4">
+              </h3>
+              <div className="space-y-3">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm mb-1">Size</label>
+                    <label className="block text-xs mb-1">Size</label>
                     <input
                       type="number"
                       value={fontSize}
                       onChange={(e) => setFontSize(Number(e.target.value))}
-                      className="w-full px-3 py-2 bg-dark-bg border border-gray-700 rounded"
+                      className="w-full px-2 py-1.5 bg-dark-bg border border-gray-700 rounded text-sm"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm mb-1">Weight</label>
+                    <label className="block text-xs mb-1">Weight</label>
                     <select
                       value={fontWeight}
                       onChange={(e) => setFontWeight(Number(e.target.value))}
-                      className="w-full px-3 py-2 bg-dark-bg border border-gray-700 rounded"
+                      className="w-full px-2 py-1.5 bg-dark-bg border border-gray-700 rounded text-sm"
                     >
                       <option value={300}>Light</option>
                       <option value={400}>Regular</option>
@@ -354,11 +382,11 @@ export default function CreativeAssetsPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm mb-1">Font</label>
+                  <label className="block text-xs mb-1">Font</label>
                   <select
                     value={fontFamily}
                     onChange={(e) => setFontFamily(e.target.value)}
-                    className="w-full px-3 py-2 bg-dark-bg border border-gray-700 rounded"
+                    className="w-full px-2 py-1.5 bg-dark-bg border border-gray-700 rounded text-sm"
                   >
                     {FONT_PRESETS.map(font => (
                       <option key={font.name} value={font.value}>
@@ -370,7 +398,7 @@ export default function CreativeAssetsPage() {
 
                 <div className="grid grid-cols-3 gap-4">
                   <div>
-                    <label className="block text-sm mb-1">Line Height</label>
+                    <label className="block text-xs mb-1">Line Height</label>
                     <input
                       type="number"
                       value={lineHeight}
@@ -378,24 +406,24 @@ export default function CreativeAssetsPage() {
                       step="0.1"
                       min="0.5"
                       max="3"
-                      className="w-full px-3 py-2 bg-dark-bg border border-gray-700 rounded"
+                      className="w-full px-2 py-1.5 bg-dark-bg border border-gray-700 rounded text-sm"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm mb-1">Letter Spacing</label>
+                    <label className="block text-xs mb-1">Letter Spacing</label>
                     <input
                       type="number"
                       value={letterSpacing}
                       onChange={(e) => setLetterSpacing(Number(e.target.value))}
-                      className="w-full px-3 py-2 bg-dark-bg border border-gray-700 rounded"
+                      className="w-full px-2 py-1.5 bg-dark-bg border border-gray-700 rounded text-sm"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm mb-1">Align</label>
+                    <label className="block text-xs mb-1">Align</label>
                     <select
                       value={textAlign}
                       onChange={(e) => setTextAlign(e.target.value as CanvasTextAlign)}
-                      className="w-full px-3 py-2 bg-dark-bg border border-gray-700 rounded"
+                      className="w-full px-2 py-1.5 bg-dark-bg border border-gray-700 rounded text-sm"
                     >
                       <option value="left">Left</option>
                       <option value="center">Center</option>
@@ -407,22 +435,22 @@ export default function CreativeAssetsPage() {
             </div>
 
             {/* Canvas Settings */}
-            <div className="bg-dark-card border border-gray-700 rounded-lg p-6">
-              <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
-                <Square className="w-5 h-5" />
+            <div className="bg-dark-card border border-gray-700 rounded-lg p-4">
+              <h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
+                <Square className="w-4 h-4" />
                 Canvas Settings
-              </h2>
+              </h3>
 
-              <div className="space-y-4">
+              <div className="space-y-3">
                 <div>
-                  <label className="block text-sm mb-2">Size Preset</label>
+                  <label className="block text-xs mb-1">Size Preset</label>
                   <select
                     value={canvasSize.name}
                     onChange={(e) => {
                       const preset = SIZE_PRESETS.find(p => p.name === e.target.value);
                       if (preset) setCanvasSize(preset);
                     }}
-                    className="w-full px-3 py-2 bg-dark-bg border border-gray-700 rounded"
+                    className="w-full px-2 py-1.5 bg-dark-bg border border-gray-700 rounded text-sm"
                   >
                     {SIZE_PRESETS.map(size => (
                       <option key={size.name} value={size.name}>
@@ -432,40 +460,56 @@ export default function CreativeAssetsPage() {
                   </select>
                 </div>
 
-                {canvasSize.name === 'Custom' && (
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm mb-1">Width</label>
-                      <input
-                        type="number"
-                        value={customWidth}
-                        onChange={(e) => setCustomWidth(Number(e.target.value))}
-                        className="w-full px-3 py-2 bg-dark-bg border border-gray-700 rounded"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm mb-1">Height</label>
-                      <input
-                        type="number"
-                        value={customHeight}
-                        onChange={(e) => setCustomHeight(Number(e.target.value))}
-                        className="w-full px-3 py-2 bg-dark-bg border border-gray-700 rounded"
-                      />
-                    </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="block text-xs mb-1">Width (px)</label>
+                    <input
+                      type="number"
+                      value={canvasSize.name === 'Custom' ? customWidth : canvasSize.width}
+                      onChange={(e) => {
+                        const newWidth = Number(e.target.value);
+                        if (canvasSize.name === 'Custom') {
+                          setCustomWidth(newWidth);
+                        } else {
+                          setCanvasSize({ name: 'Custom', width: newWidth, height: canvasSize.height });
+                          setCustomWidth(newWidth);
+                          setCustomHeight(canvasSize.height);
+                        }
+                      }}
+                      className="w-full px-2 py-1.5 bg-dark-bg border border-gray-700 rounded text-sm"
+                    />
                   </div>
-                )}
+                  <div>
+                    <label className="block text-xs mb-1">Height (px)</label>
+                    <input
+                      type="number"
+                      value={canvasSize.name === 'Custom' ? customHeight : canvasSize.height}
+                      onChange={(e) => {
+                        const newHeight = Number(e.target.value);
+                        if (canvasSize.name === 'Custom') {
+                          setCustomHeight(newHeight);
+                        } else {
+                          setCanvasSize({ name: 'Custom', width: canvasSize.width, height: newHeight });
+                          setCustomWidth(canvasSize.width);
+                          setCustomHeight(newHeight);
+                        }
+                      }}
+                      className="w-full px-2 py-1.5 bg-dark-bg border border-gray-700 rounded text-sm"
+                    />
+                  </div>
+                </div>
 
                 <div className="flex items-center justify-between">
-                  <span className="text-sm">Background</span>
-                  <div className="flex items-center gap-4">
-                    <label className="flex items-center gap-2">
+                  <span className="text-xs">Background</span>
+                  <div className="flex items-center gap-2">
+                    <label className="flex items-center gap-1">
                       <input
                         type="checkbox"
                         checked={hasBackground}
                         onChange={(e) => setHasBackground(e.target.checked)}
                         className="rounded"
                       />
-                      <span className="text-sm">Enable</span>
+                      <span className="text-xs">Enable</span>
                     </label>
                     {hasBackground && (
                       <input
@@ -484,29 +528,44 @@ export default function CreativeAssetsPage() {
           {/* Preview Panel */}
           <div className="space-y-6">
             {/* Canvas Preview */}
-            <div className="bg-dark-card border border-gray-700 rounded-lg p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-bold">Preview</h2>
+            <div className="bg-dark-card border border-gray-700 rounded-lg p-4">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-sm font-semibold">Preview</h3>
                 <div className="flex items-center gap-2">
-                  <label className="text-sm">Scale:</label>
-                  <select
-                    value={scale}
-                    onChange={(e) => setScale(Number(e.target.value))}
-                    className="px-2 py-1 bg-dark-bg border border-gray-700 rounded text-sm"
+                  <button
+                    onClick={() => setZoom(Math.max(0.1, zoom - 0.1))}
+                    className="p-1 bg-dark-bg border border-gray-700 rounded hover:border-gem-crystal transition"
                   >
-                    <option value={0.25}>25%</option>
-                    <option value={0.5}>50%</option>
-                    <option value={0.75}>75%</option>
-                    <option value={1}>100%</option>
-                  </select>
+                    <ZoomOut className="w-4 h-4" />
+                  </button>
+                  <span className="text-xs w-12 text-center">{Math.round(zoom * 100)}%</span>
+                  <button
+                    onClick={() => setZoom(Math.min(2, zoom + 0.1))}
+                    className="p-1 bg-dark-bg border border-gray-700 rounded hover:border-gem-crystal transition"
+                  >
+                    <ZoomIn className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => {
+                      const actualWidth = canvasSize.name === 'Custom' ? customWidth : canvasSize.width;
+                      const actualHeight = canvasSize.name === 'Custom' ? customHeight : canvasSize.height;
+                      const containerWidth = window.innerWidth * 0.45; // Roughly half screen
+                      const containerHeight = 500;
+                      const fitZoom = Math.min(containerWidth / actualWidth, containerHeight / actualHeight);
+                      setZoom(Math.min(1, fitZoom));
+                    }}
+                    className="px-2 py-1 bg-dark-bg border border-gray-700 rounded text-xs hover:border-gem-crystal transition"
+                  >
+                    Fit
+                  </button>
                 </div>
               </div>
 
-              <div className="relative overflow-auto max-h-[600px] bg-dark-bg rounded-lg p-4">
+              <div className="relative overflow-auto max-h-[500px] bg-dark-bg rounded-lg p-4">
                 <div
                   className="mx-auto"
                   style={{
-                    width: `${(canvasSize.name === 'Custom' ? customWidth : canvasSize.width) * scale}px`
+                    width: `${(canvasSize.name === 'Custom' ? customWidth : canvasSize.width) * zoom}px`
                   }}
                 >
                   <canvas
@@ -529,53 +588,52 @@ export default function CreativeAssetsPage() {
             </div>
 
             {/* Export Options */}
-            <div className="bg-dark-card border border-gray-700 rounded-lg p-6">
-              <h2 className="text-lg font-bold mb-4">Export Options</h2>
+            <div className="bg-dark-card border border-gray-700 rounded-lg p-4">
+              <h3 className="text-sm font-semibold mb-3">Export Options</h3>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <button
                   onClick={exportAsPNG}
-                  className="flex items-center justify-center gap-2 px-4 py-3
+                  className="flex items-center justify-center gap-2 px-3 py-2
                            bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink
-                           text-dark-bg font-bold rounded-lg hover:opacity-90 transition"
+                           text-dark-bg font-semibold text-sm rounded-lg hover:opacity-90 transition"
                 >
-                  <Download className="w-5 h-5" />
+                  <Download className="w-4 h-4" />
                   Download PNG
                 </button>
 
                 <button
                   onClick={copyToClipboard}
-                  className="flex items-center justify-center gap-2 px-4 py-3
-                           bg-dark-bg border border-gray-700 rounded-lg
+                  className="flex items-center justify-center gap-2 px-3 py-2
+                           bg-dark-bg border border-gray-700 rounded-lg text-sm
                            hover:border-gem-crystal transition"
                 >
                   {copied ? (
                     <>
-                      <Check className="w-5 h-5 text-green-400" />
+                      <Check className="w-4 h-4 text-green-400" />
                       Copied!
                     </>
                   ) : (
                     <>
-                      <Copy className="w-5 h-5" />
+                      <Copy className="w-4 h-4" />
                       Copy to Clipboard
                     </>
                   )}
                 </button>
               </div>
 
-              <div className="mt-4 p-3 bg-dark-bg rounded-lg">
-                <p className="text-xs text-gray-400">
-                  💡 Tip: {hasBackground ? 'Background color is included' : 'Transparent background enabled'}.
-                  The PNG will maintain full quality at the selected canvas size.
+              <div className="mt-3 p-2 bg-dark-bg rounded">
+                <p className="text-[10px] text-gray-400">
+                  💡 {hasBackground ? 'Background color included' : 'Transparent background'}.
                 </p>
               </div>
             </div>
 
             {/* Quick Actions */}
-            <div className="bg-dark-card border border-gray-700 rounded-lg p-6">
-              <h2 className="text-lg font-bold mb-4">Quick Actions</h2>
+            <div className="bg-dark-card border border-gray-700 rounded-lg p-4">
+              <h3 className="text-sm font-semibold mb-3">Quick Actions</h3>
 
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-3 gap-2">
                 <button
                   onClick={() => {
                     setText('BIZARRE\nBEASTS');
@@ -583,10 +641,10 @@ export default function CreativeAssetsPage() {
                     setFontWeight(800);
                     setSelectedGradient(GRADIENT_PRESETS[0]);
                   }}
-                  className="px-3 py-2 bg-dark-bg border border-gray-700 rounded text-sm
+                  className="px-2 py-1.5 bg-dark-bg border border-gray-700 rounded text-xs
                            hover:border-gem-crystal transition"
                 >
-                  Reset to Default
+                  Reset
                 </button>
 
                 <button
@@ -595,7 +653,7 @@ export default function CreativeAssetsPage() {
                     setSelectedGradient(randomGradient);
                     setGradientAngle(Math.floor(Math.random() * 360));
                   }}
-                  className="px-3 py-2 bg-dark-bg border border-gray-700 rounded text-sm
+                  className="px-2 py-1.5 bg-dark-bg border border-gray-700 rounded text-xs
                            hover:border-gem-crystal transition flex items-center justify-center gap-1"
                 >
                   <RefreshCw className="w-3 h-3" />
@@ -604,7 +662,7 @@ export default function CreativeAssetsPage() {
 
                 <button
                   onClick={() => setText(text.toUpperCase())}
-                  className="px-3 py-2 bg-dark-bg border border-gray-700 rounded text-sm
+                  className="px-2 py-1.5 bg-dark-bg border border-gray-700 rounded text-xs
                            hover:border-gem-crystal transition"
                 >
                   UPPERCASE
