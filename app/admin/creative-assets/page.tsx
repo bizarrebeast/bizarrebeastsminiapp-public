@@ -282,14 +282,104 @@ export default function CreativeAssetsPage() {
     <div className="min-h-[calc(100vh-64px)] px-4 py-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-8">
+        <div className="mb-6">
           <h1 className="text-3xl font-bold mb-2">Creative Assets Generator</h1>
           <p className="text-gray-400">Create gradient text graphics with your brand styles</p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Controls Panel */}
-          <div className="space-y-6">
+        {/* Canvas Preview - Now at the top */}
+        <div className="mb-8">
+          <div className="bg-dark-card border border-gray-700 rounded-lg p-4">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-sm font-semibold">Preview</h3>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setZoom(Math.max(0.1, zoom - 0.1))}
+                  className="p-1 bg-dark-bg border border-gray-700 rounded hover:border-gem-crystal transition"
+                >
+                  <ZoomOut className="w-4 h-4" />
+                </button>
+                <span className="text-xs w-12 text-center">{Math.round(zoom * 100)}%</span>
+                <button
+                  onClick={() => setZoom(Math.min(2, zoom + 0.1))}
+                  className="p-1 bg-dark-bg border border-gray-700 rounded hover:border-gem-crystal transition"
+                >
+                  <ZoomIn className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => {
+                    const actualWidth = canvasSize.name === 'Custom' ? customWidth : canvasSize.width;
+                    const actualHeight = canvasSize.name === 'Custom' ? customHeight : canvasSize.height;
+                    const containerWidth = window.innerWidth * 0.9; // Most of screen width
+                    const containerHeight = 400;
+                    const fitZoom = Math.min(containerWidth / actualWidth, containerHeight / actualHeight);
+                    setZoom(Math.min(1, fitZoom));
+                  }}
+                  className="px-2 py-1 bg-dark-bg border border-gray-700 rounded text-xs hover:border-gem-crystal transition"
+                >
+                  Fit
+                </button>
+                <div className="ml-4 flex gap-2">
+                  <button
+                    onClick={exportAsPNG}
+                    className="flex items-center gap-1 px-3 py-1.5
+                             bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink
+                             text-dark-bg font-semibold text-xs rounded hover:opacity-90 transition"
+                  >
+                    <Download className="w-3 h-3" />
+                    Export PNG
+                  </button>
+                  <button
+                    onClick={copyToClipboard}
+                    className="flex items-center gap-1 px-3 py-1.5
+                             bg-dark-bg border border-gray-700 rounded text-xs
+                             hover:border-gem-crystal transition"
+                  >
+                    {copied ? (
+                      <>
+                        <Check className="w-3 h-3 text-green-400" />
+                        Copied!
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-3 h-3" />
+                        Copy
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div className="relative overflow-auto max-h-[400px] bg-dark-bg rounded-lg p-4">
+              <div
+                className="mx-auto"
+                style={{
+                  width: `${(canvasSize.name === 'Custom' ? customWidth : canvasSize.width) * zoom}px`
+                }}
+              >
+                <canvas
+                  ref={canvasRef}
+                  style={{
+                    width: '100%',
+                    height: 'auto',
+                    background: hasBackground ? undefined :
+                      'repeating-conic-gradient(#1a1a1a 0% 25%, #0d0d0d 0% 50%) 50% / 20px 20px'
+                  }}
+                  className="rounded"
+                />
+              </div>
+            </div>
+
+            <div className="mt-2 text-xs text-gray-500 text-center">
+              Actual size: {canvasSize.name === 'Custom' ? customWidth : canvasSize.width} × {' '}
+              {canvasSize.name === 'Custom' ? customHeight : canvasSize.height}px
+            </div>
+          </div>
+        </div>
+
+        {/* Controls Grid - Now below preview */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Text Input */}
             <div className="bg-dark-card border border-gray-700 rounded-lg p-4">
               <h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
@@ -523,154 +613,48 @@ export default function CreativeAssetsPage() {
                 </div>
               </div>
             </div>
-          </div>
 
-          {/* Preview Panel */}
-          <div className="space-y-6">
-            {/* Canvas Preview */}
-            <div className="bg-dark-card border border-gray-700 rounded-lg p-4">
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="text-sm font-semibold">Preview</h3>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => setZoom(Math.max(0.1, zoom - 0.1))}
-                    className="p-1 bg-dark-bg border border-gray-700 rounded hover:border-gem-crystal transition"
-                  >
-                    <ZoomOut className="w-4 h-4" />
-                  </button>
-                  <span className="text-xs w-12 text-center">{Math.round(zoom * 100)}%</span>
-                  <button
-                    onClick={() => setZoom(Math.min(2, zoom + 0.1))}
-                    className="p-1 bg-dark-bg border border-gray-700 rounded hover:border-gem-crystal transition"
-                  >
-                    <ZoomIn className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={() => {
-                      const actualWidth = canvasSize.name === 'Custom' ? customWidth : canvasSize.width;
-                      const actualHeight = canvasSize.name === 'Custom' ? customHeight : canvasSize.height;
-                      const containerWidth = window.innerWidth * 0.45; // Roughly half screen
-                      const containerHeight = 500;
-                      const fitZoom = Math.min(containerWidth / actualWidth, containerHeight / actualHeight);
-                      setZoom(Math.min(1, fitZoom));
-                    }}
-                    className="px-2 py-1 bg-dark-bg border border-gray-700 rounded text-xs hover:border-gem-crystal transition"
-                  >
-                    Fit
-                  </button>
-                </div>
-              </div>
+          {/* Quick Actions */}
+          <div className="bg-dark-card border border-gray-700 rounded-lg p-4">
+            <h3 className="text-sm font-semibold mb-3">Quick Actions</h3>
 
-              <div className="relative overflow-auto max-h-[500px] bg-dark-bg rounded-lg p-4">
-                <div
-                  className="mx-auto"
-                  style={{
-                    width: `${(canvasSize.name === 'Custom' ? customWidth : canvasSize.width) * zoom}px`
-                  }}
-                >
-                  <canvas
-                    ref={canvasRef}
-                    style={{
-                      width: '100%',
-                      height: 'auto',
-                      background: hasBackground ? undefined :
-                        'repeating-conic-gradient(#1a1a1a 0% 25%, #0d0d0d 0% 50%) 50% / 20px 20px'
-                    }}
-                    className="rounded"
-                  />
-                </div>
-              </div>
+            <div className="space-y-2">
+              <button
+                onClick={() => {
+                  setText('BIZARRE\nBEASTS');
+                  setFontSize(120);
+                  setFontWeight(800);
+                  setSelectedGradient(GRADIENT_PRESETS[0]);
+                }}
+                className="w-full px-2 py-1.5 bg-dark-bg border border-gray-700 rounded text-xs
+                         hover:border-gem-crystal transition"
+              >
+                Reset to Default
+              </button>
 
-              <div className="mt-4 text-xs text-gray-500 text-center">
-                Actual size: {canvasSize.name === 'Custom' ? customWidth : canvasSize.width} × {' '}
-                {canvasSize.name === 'Custom' ? customHeight : canvasSize.height}px
-              </div>
-            </div>
+              <button
+                onClick={() => {
+                  const randomGradient = GRADIENT_PRESETS[Math.floor(Math.random() * GRADIENT_PRESETS.length)];
+                  setSelectedGradient(randomGradient);
+                  setGradientAngle(Math.floor(Math.random() * 360));
+                }}
+                className="w-full px-2 py-1.5 bg-dark-bg border border-gray-700 rounded text-xs
+                         hover:border-gem-crystal transition flex items-center justify-center gap-1"
+              >
+                <RefreshCw className="w-3 h-3" />
+                Randomize Gradient
+              </button>
 
-            {/* Export Options */}
-            <div className="bg-dark-card border border-gray-700 rounded-lg p-4">
-              <h3 className="text-sm font-semibold mb-3">Export Options</h3>
-
-              <div className="grid grid-cols-2 gap-3">
-                <button
-                  onClick={exportAsPNG}
-                  className="flex items-center justify-center gap-2 px-3 py-2
-                           bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink
-                           text-dark-bg font-semibold text-sm rounded-lg hover:opacity-90 transition"
-                >
-                  <Download className="w-4 h-4" />
-                  Download PNG
-                </button>
-
-                <button
-                  onClick={copyToClipboard}
-                  className="flex items-center justify-center gap-2 px-3 py-2
-                           bg-dark-bg border border-gray-700 rounded-lg text-sm
-                           hover:border-gem-crystal transition"
-                >
-                  {copied ? (
-                    <>
-                      <Check className="w-4 h-4 text-green-400" />
-                      Copied!
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="w-4 h-4" />
-                      Copy to Clipboard
-                    </>
-                  )}
-                </button>
-              </div>
-
-              <div className="mt-3 p-2 bg-dark-bg rounded">
-                <p className="text-[10px] text-gray-400">
-                  💡 {hasBackground ? 'Background color included' : 'Transparent background'}.
-                </p>
-              </div>
-            </div>
-
-            {/* Quick Actions */}
-            <div className="bg-dark-card border border-gray-700 rounded-lg p-4">
-              <h3 className="text-sm font-semibold mb-3">Quick Actions</h3>
-
-              <div className="grid grid-cols-3 gap-2">
-                <button
-                  onClick={() => {
-                    setText('BIZARRE\nBEASTS');
-                    setFontSize(120);
-                    setFontWeight(800);
-                    setSelectedGradient(GRADIENT_PRESETS[0]);
-                  }}
-                  className="px-2 py-1.5 bg-dark-bg border border-gray-700 rounded text-xs
-                           hover:border-gem-crystal transition"
-                >
-                  Reset
-                </button>
-
-                <button
-                  onClick={() => {
-                    const randomGradient = GRADIENT_PRESETS[Math.floor(Math.random() * GRADIENT_PRESETS.length)];
-                    setSelectedGradient(randomGradient);
-                    setGradientAngle(Math.floor(Math.random() * 360));
-                  }}
-                  className="px-2 py-1.5 bg-dark-bg border border-gray-700 rounded text-xs
-                           hover:border-gem-crystal transition flex items-center justify-center gap-1"
-                >
-                  <RefreshCw className="w-3 h-3" />
-                  Random
-                </button>
-
-                <button
-                  onClick={() => setText(text.toUpperCase())}
-                  className="px-2 py-1.5 bg-dark-bg border border-gray-700 rounded text-xs
-                           hover:border-gem-crystal transition"
-                >
-                  UPPERCASE
-                </button>
-              </div>
+              <button
+                onClick={() => setText(text.toUpperCase())}
+                className="w-full px-2 py-1.5 bg-dark-bg border border-gray-700 rounded text-xs
+                         hover:border-gem-crystal transition"
+              >
+                Convert to UPPERCASE
+              </button>
             </div>
           </div>
-        </div>
+        </div> {/* End of grid */}
       </div>
     </div>
   );
