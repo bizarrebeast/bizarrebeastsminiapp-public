@@ -96,11 +96,16 @@ export function UnifiedAuthButton() {
 
           // Connect with SDK user data
           const userDataWithAddresses = userData as any;
+          // Use username as the display name if displayName is "Testuser" or not meaningful
+          const actualDisplayName = (userData.displayName && userData.displayName !== 'Testuser')
+            ? userData.displayName
+            : userData.username || 'Anon';
+
           console.log('📱 Calling storeConnectFarcaster with:', {
             fid: userData.fid,
             username: userData.username,
-            display_name: userData.displayName,
-            displayName: userData.displayName,
+            display_name: actualDisplayName,
+            displayName: actualDisplayName,
             pfp_url: userData.pfpUrl,
             pfpUrl: userData.pfpUrl,
             bio: userDataWithAddresses.profile?.bio || '',
@@ -111,8 +116,8 @@ export function UnifiedAuthButton() {
           storeConnectFarcaster({
             fid: userData.fid,
             username: userData.username,
-            display_name: userData.displayName,
-            displayName: userData.displayName,
+            display_name: actualDisplayName,
+            displayName: actualDisplayName,
             pfp_url: userData.pfpUrl,
             pfpUrl: userData.pfpUrl,
             bio: userDataWithAddresses.profile?.bio || '',
@@ -122,12 +127,31 @@ export function UnifiedAuthButton() {
 
           console.log('📱 storeConnectFarcaster called successfully');
 
-          // If we have verified addresses, use the first one
-          if (userDataWithAddresses.verifiedAddresses?.ethereum?.[0]) {
-            console.log('📱 Connecting wallet:', userDataWithAddresses.verifiedAddresses.ethereum[0]);
-            storeConnectWallet(userDataWithAddresses.verifiedAddresses.ethereum[0]);
-          } else {
-            console.log('📱 No verified Ethereum addresses found');
+          // Try to get wallet from Farcaster SDK
+          try {
+            const sdk = await import('@farcaster/miniapp-sdk');
+            const provider = await sdk.wallet.getEthereumProvider();
+
+            if (provider) {
+              console.log('📱 Got Ethereum provider from Farcaster SDK');
+              // Request accounts
+              const accounts = await provider.request({ method: 'eth_requestAccounts' });
+
+              if (accounts && accounts[0]) {
+                console.log('📱 Got wallet address from Farcaster SDK:', accounts[0]);
+                await storeConnectWallet(accounts[0]);
+              }
+            }
+          } catch (walletError) {
+            console.log('📱 Could not get wallet from SDK:', walletError);
+
+            // Fallback to verified addresses if available
+            if (userDataWithAddresses.verifiedAddresses?.ethereum?.[0]) {
+              console.log('📱 Using verified address:', userDataWithAddresses.verifiedAddresses.ethereum[0]);
+              storeConnectWallet(userDataWithAddresses.verifiedAddresses.ethereum[0]);
+            } else {
+              console.log('📱 No wallet available');
+            }
           }
         } else {
           console.log('📱 Skipping auto-connect because:', {
@@ -188,9 +212,28 @@ export function UnifiedAuthButton() {
     const inMiniapp = await checkIsInFarcasterMiniapp();
 
     if (inMiniapp) {
-      console.log('📱 In miniapp - using Farcaster wallet');
-      // In miniapp, wallet should come from Farcaster
-      // The NeynarAuthButton will handle this
+      console.log('📱 In miniapp - trying to get wallet from Farcaster SDK');
+
+      try {
+        const sdk = await import('@farcaster/miniapp-sdk');
+        const provider = await sdk.wallet.getEthereumProvider();
+
+        if (provider) {
+          console.log('📱 Got Ethereum provider from Farcaster SDK');
+          // Request accounts
+          const accounts = await provider.request({ method: 'eth_requestAccounts' });
+
+          if (accounts && accounts[0]) {
+            console.log('📱 Connecting wallet from Farcaster SDK:', accounts[0]);
+            await storeConnectWallet(accounts[0]);
+            return;
+          }
+        }
+      } catch (error) {
+        console.error('📱 Could not get wallet from Farcaster SDK:', error);
+      }
+
+      // Fallback to showing auth modal
       setShowAuthModal(true);
     } else {
       // Regular wallet connect flow
