@@ -121,14 +121,8 @@ export function UnifiedAuthButton() {
             }
           } catch (walletError) {
             console.log('📱 Could not get wallet from SDK:', walletError);
-
-            // Fallback to verified addresses if available
-            if (userDataWithAddresses.verifiedAddresses?.ethereum?.[0]) {
-              console.log('📱 Using verified address:', userDataWithAddresses.verifiedAddresses.ethereum[0]);
-              storeConnectWallet(userDataWithAddresses.verifiedAddresses.ethereum[0]);
-            } else {
-              console.log('📱 No wallet available');
-            }
+            // FarcasterSDKSync will handle wallet connection
+            console.log('📱 Letting FarcasterSDKSync handle wallet connection');
           }
         } else {
           console.log('📱 Skipping auto-connect because:', {
