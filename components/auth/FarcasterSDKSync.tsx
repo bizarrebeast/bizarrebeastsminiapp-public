@@ -36,7 +36,7 @@ export function FarcasterSDKSync() {
           fid: sdkUser.fid,
           username: sdkUser.username,
           displayName: sdkUser.displayName,
-          verifiedAddresses: sdkUser.verifiedAddresses
+          pfpUrl: sdkUser.pfpUrl
         });
 
         // Check if we need to sync (data mismatch or "testuser" detected)
@@ -44,12 +44,14 @@ export function FarcasterSDKSync() {
           store.farcasterFid !== sdkUser.fid ||
           store.farcasterUsername !== sdkUser.username ||
           store.farcasterUsername === 'testuser' ||
-          (!store.walletAddress && sdkUser.verifiedAddresses?.length > 0);
+          (!store.walletAddress && sdkUser.fid === 357897);
 
         if (needsSync) {
           console.log('⚡ SYNCING FROM SDK - Fixing authentication data');
 
-          const verifiedAddresses = sdkUser.verifiedAddresses || [];
+          // SDK doesn't provide verifiedAddresses in the same way
+          // For now, we'll use an empty array and rely on known wallet for specific users
+          const verifiedAddresses: string[] = [];
 
           // For @bizarrebeast, use the specific wallet
           let walletToConnect = store.walletAddress;

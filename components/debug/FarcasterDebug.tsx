@@ -74,7 +74,7 @@ export function FarcasterDebug() {
                 <div className="text-yellow-400">SDK User:</div>
                 <div>FID: {sdkContext.user.fid}</div>
                 <div>Username: {sdkContext.user.username}</div>
-                <div>Verified Addrs: {sdkContext.user.verifiedAddresses?.length || 0}</div>
+                <div>Has PFP: {sdkContext.user.pfpUrl ? '✅' : '❌'}</div>
               </div>
             )}
           </div>
