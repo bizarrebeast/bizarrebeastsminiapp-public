@@ -206,7 +206,7 @@ export const useUnifiedAuthStore = create<UnifiedAuthState>()(
               walletConnected: true,
               // Note if wallet is not verified
               walletIsVerified: state.verifiedAddresses.some(
-                addr => addr.toLowerCase() === newAddress.toLowerCase()
+                (addr: string) => addr.toLowerCase() === newAddress.toLowerCase()
               )
             });
 
@@ -292,7 +292,7 @@ export const useUnifiedAuthStore = create<UnifiedAuthState>()(
               walletAddress: autoWalletAddress,
               walletConnected: !!autoWalletAddress,
               walletIsVerified: autoWalletAddress ? verifiedAddresses.some(
-                addr => addr.toLowerCase() === autoWalletAddress.toLowerCase()
+                (addr: string) => addr.toLowerCase() === autoWalletAddress.toLowerCase()
               ) : undefined,
               identitiesLinked: data.user?.identities_linked || data.alreadyLinked || !!autoWalletAddress,
               linkedAt: data.user?.linked_at,
