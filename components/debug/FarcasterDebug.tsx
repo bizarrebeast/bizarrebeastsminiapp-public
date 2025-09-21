@@ -146,7 +146,8 @@ export function FarcasterDebug() {
             <div className="mt-2 pt-2 border-t border-yellow-700">
               <div className="text-white font-bold">
                 Issue: {
-                  !user ? '❌ Not logged into Farcaster' :
+                  farcasterContext.isInFarcaster && !sdkContext?.user ? '❌ SDK user not available' :
+                  !farcasterContext.isInFarcaster && !user ? '❌ Neynar auth required' :
                   !store.farcasterConnected ? '❌ Farcaster data not synced to store' :
                   !store.walletAddress && store.verifiedAddresses?.length > 0 ? '❌ Has verified addresses but wallet not connected' :
                   !store.walletAddress ? '❌ No wallet address available' :
