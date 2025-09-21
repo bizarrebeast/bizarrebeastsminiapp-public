@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Trophy, Upload, Loader2, AlertCircle, CheckCircle, Camera } from 'lucide-react';
 import { useWallet } from '@/hooks/useWallet';
+import { useUnifiedAuthStore } from '@/store/useUnifiedAuthStore';
 import { Contest } from '@/lib/supabase';
 import { getCachedBBBalance, formatTokenBalance } from '@/lib/tokenBalance';
 import ShareButtons from '@/components/ShareButtons';
@@ -14,6 +15,7 @@ interface SubmissionFormProps {
 
 export default function SubmissionForm({ contest, onSuccess }: SubmissionFormProps) {
   const { address, isConnected } = useWallet();
+  const { farcasterUsername, farcasterFid, farcasterConnected } = useUnifiedAuthStore();
   const [score, setScore] = useState('');
   const [screenshot, setScreenshot] = useState<File | null>(null);
   const [screenshotPreview, setScreenshotPreview] = useState<string>('');
@@ -110,6 +112,14 @@ export default function SubmissionForm({ contest, onSuccess }: SubmissionFormPro
       const formData = new FormData();
       formData.append('contestId', contest.id);
       formData.append('walletAddress', address);
+
+      // Include Farcaster profile if connected
+      if (farcasterConnected && farcasterUsername) {
+        formData.append('farcasterUsername', farcasterUsername);
+        if (farcasterFid) {
+          formData.append('farcasterFid', farcasterFid.toString());
+        }
+      }
 
       if (score) {
         formData.append('score', score);

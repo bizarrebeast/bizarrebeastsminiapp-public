@@ -9,6 +9,7 @@ import { useWallet } from '@/hooks/useWallet';
 import { web3Service } from '@/lib/web3';
 import ShareButtons from './ShareButtons';
 import { isBetaTester, BETA_PHASE_ACTIVE } from '@/lib/beta-testers';
+import { useUnifiedAuthStore } from '@/store/useUnifiedAuthStore';
 
 interface CheckInProps {
   userTier?: keyof typeof EMPIRE_TIERS;
@@ -18,6 +19,7 @@ interface CheckInProps {
 export default function CheckIn({ userTier = 'NORMIE', completedRituals }: CheckInProps) {
   // Use your existing wallet connection
   const wallet = useWallet();
+  const { userId, walletAddress, farcasterFid } = useUnifiedAuthStore();
 
   const [checkInContract, setCheckInContract] = useState<ethers.Contract | null>(null);
   const [gatekeeperContract, setGatekeeperContract] = useState<ethers.Contract | null>(null);
@@ -34,6 +36,15 @@ export default function CheckIn({ userTier = 'NORMIE', completedRituals }: Check
   const [showShareAfterClaim, setShowShareAfterClaim] = useState(false);
   const [lastClaimedAmount, setLastClaimedAmount] = useState('');
   const [totalEarned, setTotalEarned] = useState('0');
+
+  // Share-based unlock state
+  const [shareUnlockStatus, setShareUnlockStatus] = useState({
+    qualifiedShares: 0,
+    sharesRequired: 3,
+    meetsRequirements: false,
+    loading: false
+  });
+  const [unlockMethod, setUnlockMethod] = useState<'ritual' | 'share'>('share'); // Default to share method
 
   // Initialize contracts when wallet connects
   useEffect(() => {
@@ -135,6 +146,9 @@ export default function CheckIn({ userTier = 'NORMIE', completedRituals }: Check
           setMessage('');
         }
 
+        // Also check share-based unlock status
+        checkShareUnlockStatus();
+
       } catch (error) {
         console.error('Status check error:', error);
       } finally {
@@ -157,8 +171,8 @@ export default function CheckIn({ userTier = 'NORMIE', completedRituals }: Check
 
     try {
       // Use the actual empire tier from wallet, fallback to prop
-      // wallet.empireTier is already the tier key (e.g., "BIZARRE", "WEIRDO", etc.)
-      const tierToUse = wallet.empireTier || userTier;
+      // wallet.empireTier comes as lowercase from AccessTier enum, convert to uppercase
+      const tierToUse = (wallet.empireTier || userTier).toUpperCase();
 
       const tx = await checkInContract.checkIn(tierToUse);
       setMessage('Transaction sent! Confirming on blockchain...');
@@ -184,6 +198,116 @@ export default function CheckIn({ userTier = 'NORMIE', completedRituals }: Check
       } else {
         setMessage('❌ ' + (error.message || 'Check-in failed'));
       }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Check share-based unlock status
+  const checkShareUnlockStatus = async () => {
+    if (!userId && !walletAddress) return;
+
+    setShareUnlockStatus(prev => ({ ...prev, loading: true }));
+
+    try {
+      const params = new URLSearchParams();
+      if (userId) params.append('userId', userId);
+      if (walletAddress) params.append('wallet', walletAddress);
+
+      const response = await fetch(`/api/shares/unlock-checkin?${params}`);
+      const data = await response.json();
+
+      setShareUnlockStatus({
+        qualifiedShares: data.qualifiedShares || 0,
+        sharesRequired: data.sharesRequired || 3,
+        meetsRequirements: data.meetsRequirements || false,
+        loading: false
+      });
+    } catch (error) {
+      console.error('Failed to check share unlock status:', error);
+      setShareUnlockStatus(prev => ({ ...prev, loading: false }));
+    }
+  };
+
+  // Handle share-based unlock
+  const handleShareUnlock = async () => {
+    if (!userId && !walletAddress) return;
+
+    setLoading(true);
+    setMessage('Checking share requirements...');
+
+    try {
+      const response = await fetch('/api/shares/unlock-checkin', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId,
+          walletAddress,
+          farcasterFid
+        })
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setMessage('✅ Check-ins unlocked via shares!');
+        setIsUnlocked(true);
+
+        // Force re-check status after a moment
+        setTimeout(async () => {
+          if (gatekeeperContract && wallet.address) {
+            const unlocked = await gatekeeperContract.canUserCheckIn(wallet.address);
+            setIsUnlocked(unlocked);
+            setMessage('');
+          }
+        }, 3000);
+      } else {
+        setMessage(`❌ ${data.message || 'Share unlock failed'}`);
+      }
+    } catch (error: any) {
+      console.error('Share unlock error:', error);
+      setMessage('❌ Share unlock failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Handle ritual-based unlock (existing logic)
+  const handleUnlock = async () => {
+    if (!wallet.address || completedRituals < 3) return;
+    setLoading(true);
+    setMessage('Unlocking check-ins...');
+    try {
+      const response = await fetch('/api/unlock-checkin', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          walletAddress: wallet.address,
+          ritualsCompleted: completedRituals,
+        }),
+      });
+      const data = await response.json();
+      if (data.success) {
+        setMessage('✅ Check-ins unlocked!');
+        setIsUnlocked(true);
+        // Force re-check status after a moment
+        setTimeout(async () => {
+          if (gatekeeperContract && wallet.address) {
+            const unlocked = await gatekeeperContract.canUserCheckIn(wallet.address);
+            setIsUnlocked(unlocked);
+            setMessage('');
+          }
+        }, 3000);
+      } else {
+        setMessage('❌ ' + (data.error || 'Unlock failed'));
+      }
+    } catch (error) {
+      console.error('Unlock error:', error);
+      setMessage('❌ Network error');
     } finally {
       setLoading(false);
     }
@@ -247,50 +371,6 @@ export default function CheckIn({ userTier = 'NORMIE', completedRituals }: Check
     }
   }, [currentStreak, wallet.address]);
 
-  // Handle unlock request
-  const handleUnlock = async () => {
-    if (!wallet.address || completedRituals < 3) return;
-
-    setLoading(true);
-    setMessage('Unlocking check-ins...');
-
-    try {
-      const response = await fetch('/api/unlock-checkin', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          walletAddress: wallet.address,
-          ritualsCompleted: completedRituals,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        setMessage('✅ Check-ins unlocked!');
-        setIsUnlocked(true); // Update state immediately
-
-        // Force re-check status after a moment
-        setTimeout(async () => {
-          if (gatekeeperContract && wallet.address) {
-            const unlocked = await gatekeeperContract.canUserCheckIn(wallet.address);
-            setIsUnlocked(unlocked);
-            setMessage('');
-          }
-        }, 1000);
-      } else {
-        setMessage('❌ ' + (data.error || 'Failed to unlock'));
-      }
-    } catch (error) {
-      console.error('Unlock error:', error);
-      setMessage('❌ Failed to unlock check-ins');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   // Format time remaining
   const formatTimeRemaining = (seconds: number) => {
     const hours = Math.floor(seconds / 3600);
@@ -301,7 +381,9 @@ export default function CheckIn({ userTier = 'NORMIE', completedRituals }: Check
   // Get tier info - use wallet tier if available and capitalize it
   const actualTier = wallet.empireTier || userTier;
   const displayTier = actualTier.toUpperCase();
-  const tierInfo = EMPIRE_TIERS[actualTier as keyof typeof EMPIRE_TIERS] || EMPIRE_TIERS.NORMIE;
+  // Convert lowercase tier (from AccessTier enum) to uppercase for EMPIRE_TIERS lookup
+  const tierKey = actualTier.toUpperCase() as keyof typeof EMPIRE_TIERS;
+  const tierInfo = EMPIRE_TIERS[tierKey] || EMPIRE_TIERS.NORMIE;
 
   // If wallet not connected, show coming soon for beta phase
   if (!wallet.isConnected) {
@@ -530,7 +612,7 @@ export default function CheckIn({ userTier = 'NORMIE', completedRituals }: Check
             </>
           ) : (
             <p className="text-gray-400 italic">
-              📊 Engagement tracking only (no BB rewards for {displayTier} tier)
+              📊 Streak tracking only (BB rewards require higher tier - currently {displayTier})
             </p>
           )}
         </div>

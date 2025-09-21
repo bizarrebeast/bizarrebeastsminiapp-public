@@ -234,9 +234,23 @@ export default function VotingGallery({
         <div className="p-4 bg-dark-bg/50">
           <div className="flex items-start justify-between mb-4">
             <div>
-              <p className="text-white font-medium">
-                {currentSubmission.username || formatAddress(currentSubmission.wallet_address)}
-              </p>
+              <div className="flex items-center gap-2 mb-1">
+                <p className="text-white font-medium">
+                  {currentSubmission.username ? (
+                    <>
+                      <span className="text-gem-crystal">@</span>
+                      {currentSubmission.username}
+                    </>
+                  ) : (
+                    formatAddress(currentSubmission.wallet_address)
+                  )}
+                </p>
+                {currentSubmission.metadata?.farcaster_fid && (
+                  <span className="text-xs px-2 py-0.5 bg-gem-crystal/10 text-gem-crystal rounded-full">
+                    FID: {currentSubmission.metadata.farcaster_fid}
+                  </span>
+                )}
+              </div>
               {currentSubmission.username && (
                 <p className="text-gray-500 text-xs">{formatAddress(currentSubmission.wallet_address)}</p>
               )}

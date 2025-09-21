@@ -1,13 +1,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { ExternalLink, Check, Share2, Share } from 'lucide-react';
+import { ExternalLink, Check, Share2, Share, ShieldCheck, AlertCircle } from 'lucide-react';
 import { ultimateShare } from '@/lib/sdk-ultimate';
 import { sdk } from '@/lib/sdk-init';
 import ShareButtons from '@/components/ShareButtons';
 import RewardsTable from '@/components/RewardsTable';
 import dynamic from 'next/dynamic';
 import { getActiveCampaign } from '@/config/featured-ritual-config';
+import { useUnifiedAuthStore } from '@/store/useUnifiedAuthStore';
 
 // Dynamically import CheckIn to avoid SSR issues with Web3
 const CheckIn = dynamic(() => import('@/components/CheckIn'), { ssr: false });
@@ -153,6 +154,60 @@ export default function RitualsPage() {
   // Extract individual states for easier use
   const [completedRituals, setCompletedRituals] = useState<Set<number>>(ritualsData.completedRituals);
   const [featuredCompleted, setFeaturedCompleted] = useState<boolean>(ritualsData.featuredCompleted);
+  const [verifiedRituals, setVerifiedRituals] = useState<Set<number>>(new Set());
+  const [pendingVerification, setPendingVerification] = useState<Set<number>>(new Set());
+  const [verifyingRituals, setVerifyingRituals] = useState<Set<number>>(new Set());
+  // Get unified auth state
+  const { farcasterConnected, farcasterUsername, farcasterFid } = useUnifiedAuthStore();
+  const isAuthenticated = farcasterConnected;
+
+  // Callback for when a ritual share is verified
+  const handleRitualVerified = (ritualId: number) => {
+    console.log('Ritual share verified:', ritualId);
+
+    // Mark ritual as complete after verification
+    setCompletedRituals(prev => {
+      const newCompleted = new Set([...prev, ritualId]);
+
+      // Save to localStorage
+      const savedData = {
+        date: new Date().toDateString(),
+        completedRituals: Array.from(newCompleted),
+        featuredCompleted: featuredCompleted
+      };
+      localStorage.setItem('bizarreRituals', JSON.stringify(savedData));
+      console.log('Marked ritual as complete after verification:', ritualId, 'Total completed:', newCompleted.size);
+
+      return newCompleted;
+    });
+
+    // Mark as verified
+    setVerifiedRituals(prev => new Set([...prev, ritualId]));
+
+    // Remove from pending
+    setPendingVerification(prev => {
+      const newPending = new Set(prev);
+      newPending.delete(ritualId);
+      return newPending;
+    });
+  };
+
+  // Callback for when featured ritual share is verified
+  const handleFeaturedRitualVerified = () => {
+    console.log('Featured ritual share verified');
+
+    // Mark featured ritual as complete after verification
+    setFeaturedCompleted(true);
+
+    // Save to localStorage
+    const savedData = {
+      date: new Date().toDateString(),
+      completedRituals: Array.from(completedRituals),
+      featuredCompleted: true
+    };
+    localStorage.setItem('bizarreRituals', JSON.stringify(savedData));
+    console.log('Marked featured ritual as complete after verification');
+  };
 
   // Save to localStorage whenever rituals or featured ritual change
   useEffect(() => {
@@ -171,17 +226,17 @@ export default function RitualsPage() {
 
   const handleRitualAction = (ritual: Ritual) => {
     console.log('Ritual action clicked:', ritual.title);
-    
-    // Mark as completed (now persists to localStorage)
-    setCompletedRituals(prev => new Set([...prev, ritual.id]));
-    
+
+    // Don't mark as completed here - only after share verification
+    // setCompletedRituals(prev => new Set([...prev, ritual.id]));
+
     // For internal routes, prepend the full URL
-    const url = ritual.actionUrl.startsWith('/') 
+    const url = ritual.actionUrl.startsWith('/')
       ? `${window.location.origin}${ritual.actionUrl}`
       : ritual.actionUrl;
-    
+
     console.log('Opening URL:', url);
-    
+
     // Always open in new tab
     window.open(url, '_blank');
   };
@@ -241,20 +296,8 @@ export default function RitualsPage() {
   const handleShareRitual = async (ritual: Ritual) => {
     console.log('Share ritual clicked:', ritual.title);
 
-    // Mark ritual as complete when shared
-    setCompletedRituals(prev => {
-      const newCompleted = new Set([...prev, ritual.id]);
-
-      // Save to localStorage
-      const savedData = {
-        date: new Date().toDateString(),
-        completedRituals: Array.from(newCompleted)
-      };
-      localStorage.setItem('bizarreRituals', JSON.stringify(savedData));
-      console.log('Marked ritual as complete:', ritual.id, 'Total completed:', newCompleted.size);
-
-      return newCompleted;
-    });
+    // Don't mark as complete here - wait for verification
+    // Will be handled by onRitualVerified callback
 
     // Build the action URL (same logic as handleRitualAction)
     let actionUrl = ritual.actionUrl.startsWith('/')
@@ -431,7 +474,8 @@ export default function RitualsPage() {
                     <div className="flex gap-2 flex-wrap">
                       <button
                         onClick={() => {
-                          setFeaturedCompleted(true);
+                          // Don't mark as completed here - only after share verification
+                          // setFeaturedCompleted(true);
                           window.open(featuredRitual.actionUrl, '_blank');
                         }}
                         className={`inline-flex items-center gap-1 px-4 py-1.5 rounded-lg font-semibold text-sm transition-all duration-300 transform ${
@@ -469,10 +513,17 @@ export default function RitualsPage() {
                       <span className="text-sm text-gray-400 font-semibold">Share:</span>
                       <ShareButtons
                         customText={featuredRitual.shareText || `🚨 FEATURED RITUAL ALERT! 🚨\n\n${featuredRitual.shareTitle || featuredRitual.title}\n\n${featuredRitual.description.split('\n\n')[0]}`}
-                        shareType="default"
+                        shareType="ritual"
+                        ritualData={{
+                          id: 999, // Special ID for featured ritual
+                          title: featuredRitual.title,
+                          description: featuredRitual.description,
+                          actionUrl: featuredRitual.actionUrl
+                        }}
                         buttonSize="sm"
                         showLabels={false}
                         contextUrl={featuredRitual.shareEmbed || "https://bbapp.bizarrebeasts.io/rituals"}
+                        onVerified={() => handleFeaturedRitualVerified()}
                       />
                     </div>
                   </div>
@@ -531,6 +582,33 @@ export default function RitualsPage() {
         <div className="mb-8">
           <RewardsTable />
         </div>
+
+        {/* Share Verification Notice */}
+        {!farcasterConnected && (
+          <div className="mb-8 bg-gradient-to-br from-gem-crystal/10 to-gem-gold/10 border border-gem-crystal/30 rounded-xl p-4">
+            <div className="mb-3">
+              <h3 className="font-bold text-gem-crystal mb-1">🔐 Enable Share Verification</h3>
+              <p className="text-xs text-gray-400">
+                Connect with Farcaster using the button in the navigation bar to verify your ritual shares and earn real rewards!
+              </p>
+            </div>
+            <p className="text-xs text-gray-500 text-center">
+              {farcasterUsername ? `Connected as @${farcasterUsername}` : 'No Farcaster account? Shares will be marked but not verified.'}
+            </p>
+          </div>
+        )}
+
+        {/* Show connected status */}
+        {farcasterConnected && (
+          <div className="mb-8 bg-dark-card border border-gem-crystal/30 rounded-xl p-4">
+            <div className="flex items-center gap-2">
+              <span className="text-gem-crystal">✅</span>
+              <p className="text-sm text-gray-300">
+                Signed in as <span className="font-bold text-white">@{farcasterUsername}</span> (FID: {farcasterFid}) - Your shares will be verified automatically
+              </p>
+            </div>
+          </div>
+        )}
 
         {/* Progress Tracker */}
         <div className="text-center mb-8">
@@ -692,6 +770,7 @@ export default function RitualsPage() {
                           buttonSize="sm"
                           showLabels={false}
                           contextUrl="https://bbapp.bizarrebeasts.io/rituals"
+                          onVerified={() => handleRitualVerified(ritual.id)}
                         />
                       </div>
                     </div>

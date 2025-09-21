@@ -5,6 +5,7 @@ import { SharePlatform, shareToSocial, shareMemeWithImage, SHARE_TEMPLATES, form
 import { shareMemeToFarcaster } from '@/lib/farcaster';
 import { ultimateShare } from '@/lib/sdk-ultimate';
 import { sdk } from '@/lib/sdk-init';
+import { useUnifiedAuthStore } from '@/store/useUnifiedAuthStore';
 
 interface ShareButtonsProps {
   imageDataUrl?: string;
@@ -45,6 +46,7 @@ interface ShareButtonsProps {
   showLabels?: boolean;
   buttonSize?: 'sm' | 'md' | 'lg';
   contextUrl?: string; // Optional: specific URL for the current page/content
+  onVerified?: () => void; // Callback when share is verified
 }
 
 export default function ShareButtons({
@@ -60,9 +62,77 @@ export default function ShareButtons({
   className = '',
   showLabels = true,
   buttonSize = 'md',
-  contextUrl
+  contextUrl,
+  onVerified
 }: ShareButtonsProps) {
   const [sharing, setSharing] = useState<SharePlatform | null>(null);
+  const { userId, walletAddress, farcasterFid } = useUnifiedAuthStore();
+
+  // Track share with our verification system
+  const trackShare = async (platform: SharePlatform, shareText: string, shareUrl: string) => {
+    try {
+      const response = await fetch('/api/shares/track', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId,
+          shareType: shareType === 'contestEntry' ? 'contest_entry' :
+                    shareType === 'contestPosition' ? 'contest_position' :
+                    shareType === 'contestWinner' ? 'contest_winner' :
+                    shareType,
+          sharePlatform: platform,
+          contentId: ritualData?.id?.toString() || contestData?.name,
+          contentData: {
+            ritualData,
+            checkInData,
+            claimData,
+            milestoneData,
+            contestData,
+            rank
+          },
+          shareUrl,
+          shareText,
+          walletAddress,
+          farcasterFid
+        })
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        console.log('Share tracked:', result.shareId);
+
+        // Auto-verify for eligible platforms
+        if (platform === 'farcaster' || platform === 'telegram') {
+          const verifyResponse = await fetch('/api/shares/verify', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              shareId: result.shareId,
+              platform,
+              verificationData: platform === 'telegram' ? { miniapp: true } : {}
+            })
+          });
+
+          const verifyResult = await verifyResponse.json();
+          if (verifyResult.success && verifyResult.verified) {
+            console.log('Share verified:', verifyResult.pointsAwarded, 'points awarded');
+            // Call the onVerified callback if provided (for ritual completion)
+            if (onVerified) {
+              onVerified();
+            }
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Share tracking failed:', error);
+      // Don't block sharing if tracking fails
+    }
+  };
 
   const handleShare = async (platform: SharePlatform) => {
     setSharing(platform);
@@ -139,11 +209,12 @@ export default function ShareButtons({
 
         // Determine the URL to share based on context
         const shareUrl = contextUrl || 'https://bbapp.bizarrebeasts.io';
+        const finalShareText = shareText || SHARE_TEMPLATES.farcaster.default;
 
         if (isInMiniApp) {
           // Use ultimateShare for native Farcaster sharing (works on mobile!)
           await ultimateShare({
-            text: shareText || SHARE_TEMPLATES.farcaster.default,
+            text: finalShareText,
             embeds: [shareUrl],
             channelKey: 'bizarrebeasts'
           });
@@ -152,11 +223,14 @@ export default function ShareButtons({
           // Use shareToSocial instead of shareMemeToFarcaster to ensure URL embeds
           await shareToSocial({
             platform: 'farcaster',
-            text: shareText || SHARE_TEMPLATES.farcaster.default,
+            text: finalShareText,
             url: shareUrl,
             channelKey: 'bizarrebeasts'
           });
         }
+
+        // Track the share after successful sharing
+        await trackShare(platform, finalShareText, shareUrl);
       } else {
         // For other platforms, use the new social sharing
         let text = customText;
@@ -247,6 +321,9 @@ export default function ShareButtons({
           url: shareUrl,
           hashtags: undefined, // Removed hashtags for X/Twitter per 2025 best practices
         });
+
+        // Track the share after successful sharing
+        await trackShare(platform, text || '', shareUrl);
       }
     } catch (error) {
       console.error(`Failed to share to ${platform}:`, error);

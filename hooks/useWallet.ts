@@ -3,8 +3,13 @@
 import { useState, useEffect } from 'react';
 import { web3Service, WalletState } from '@/lib/web3';
 import { AccessTier } from '@/lib/empire';
+import { useUnifiedAuthStore } from '@/store/useUnifiedAuthStore';
+import { isInFarcasterMiniapp } from '@/lib/farcaster-miniapp';
 
 export function useWallet() {
+  // Get unified auth state
+  const unifiedAuth = useUnifiedAuthStore();
+
   const [walletState, setWalletState] = useState<WalletState>({
     isConnected: false,
     address: null,
@@ -15,6 +20,22 @@ export function useWallet() {
   useEffect(() => {
     // Initialize web3 service
     const init = async () => {
+      // Skip initialization in Farcaster miniapp
+      const inMiniapp = isInFarcasterMiniapp();
+      if (inMiniapp) {
+        console.log('📱 In Farcaster miniapp - skipping web3 initialization');
+        setIsInitializing(false);
+        // Use Farcaster wallet if available
+        if (unifiedAuth.walletAddress) {
+          setWalletState({
+            isConnected: true,
+            address: unifiedAuth.walletAddress,
+            empireTier: unifiedAuth.empireTier as AccessTier || AccessTier.NORMIE
+          });
+        }
+        return;
+      }
+
       // Set a maximum timeout for the entire initialization
       const initTimeout = setTimeout(() => {
         console.warn('Wallet initialization timed out');
@@ -75,6 +96,13 @@ export function useWallet() {
   }, []);
 
   const connect = async () => {
+    // In miniapp, wallet comes from Farcaster
+    const inMiniapp = isInFarcasterMiniapp();
+    if (inMiniapp) {
+      console.log('📱 In miniapp - wallet will be connected via Farcaster');
+      return;
+    }
+
     // Prevent connecting while still initializing
     if (isInitializing) {
       console.log('Wallet still initializing, please wait...');
@@ -99,6 +127,17 @@ export function useWallet() {
   };
 
   const disconnect = async () => {
+    const inMiniapp = isInFarcasterMiniapp();
+    if (inMiniapp) {
+      console.log('📱 In miniapp - clearing wallet state');
+      setWalletState({
+        isConnected: false,
+        address: null,
+        empireTier: AccessTier.NORMIE
+      });
+      return;
+    }
+
     try {
       await web3Service.disconnect();
     } catch (error) {
@@ -114,12 +153,20 @@ export function useWallet() {
     }
   };
 
+  // If Farcaster is connected with a verified address, use that instead
+  const isConnectedViaFarcaster = unifiedAuth.farcasterConnected && unifiedAuth.walletAddress;
+
   return {
     ...walletState,
+    // Override with Farcaster verified address if available
+    isConnected: walletState.isConnected || isConnectedViaFarcaster,
+    address: isConnectedViaFarcaster ? unifiedAuth.walletAddress : walletState.address,
     isInitializing,
     connect,
     disconnect,
     refreshEmpireData,
-    formatAddress: web3Service.formatAddress
+    formatAddress: web3Service.formatAddress,
+    // Add a flag to indicate if connection is via Farcaster
+    isViaFarcaster: isConnectedViaFarcaster
   };
 }

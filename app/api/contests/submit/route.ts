@@ -35,6 +35,8 @@ export async function POST(request: Request) {
     const score = formData.get('score') as string;
     const screenshot = formData.get('screenshot') as File | null;
     const tokenBalance = formData.get('tokenBalance') as string;
+    const farcasterUsername = formData.get('farcasterUsername') as string;
+    const farcasterFid = formData.get('farcasterFid') as string;
 
     // Validate required fields
     if (!contestId || !walletAddress) {
@@ -146,6 +148,7 @@ export async function POST(request: Request) {
     const submissionData = {
       contest_id: contestId,
       wallet_address: walletAddress.toLowerCase(),
+      username: farcasterUsername || null, // Store Farcaster username if available
       score: score ? parseInt(score) : null,
       screenshot_url: screenshotUrl,
       token_balance: tokenBalance,
@@ -153,7 +156,8 @@ export async function POST(request: Request) {
       metadata: {
         submitted_from: 'web',
         user_agent: request.headers.get('user-agent'),
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        farcaster_fid: farcasterFid || null // Store FID in metadata
       }
     };
 

@@ -202,11 +202,8 @@ export default function EmpirePage() {
                       </span>
                       <div>
                         <p className="text-white font-medium">
-                          {searchResult.farcasterUsername ? `@${searchResult.farcasterUsername}` : empireService.formatAddress(searchResult.address)}
+                          {empireService.formatAddress(searchResult.address)}
                         </p>
-                        {searchResult.farcasterUsername && (
-                          <p className="text-gray-400 text-sm">{empireService.formatAddress(searchResult.address)}</p>
-                        )}
                       </div>
                     </div>
                     <div className="text-right">
@@ -288,9 +285,18 @@ export default function EmpirePage() {
                 </div>
                 <div className="space-y-2">
                   <p className="text-3xl font-bold text-white">#{holder.rank}</p>
-                  <p className="text-white font-medium truncate">
-                    {holder.farcasterUsername ? `@${holder.farcasterUsername}` : empireService.formatAddress(holder.address)}
-                  </p>
+                  <div>
+                    <p className="text-white font-medium truncate">
+                      {holder.farcasterUsername ? (
+                        <span className="text-gem-crystal">@{holder.farcasterUsername}</span>
+                      ) : (
+                        empireService.formatAddress(holder.address)
+                      )}
+                    </p>
+                    {holder.farcasterUsername && (
+                      <p className="text-gray-500 text-xs truncate">{empireService.formatAddress(holder.address)}</p>
+                    )}
+                  </div>
                   <p className="text-2xl font-bold bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent">
                     {empireService.formatScore(holder.balance)}
                   </p>

@@ -33,7 +33,7 @@ NEXT_PUBLIC_FARCASTER_MANIFEST_URL
 - Value: /farcaster.json
 ```
 
-#### Supabase Configuration
+#### Supabase Configuration (Required for unified auth & contests)
 ```
 NEXT_PUBLIC_SUPABASE_URL
 - Type: Plaintext
@@ -53,7 +53,30 @@ SUPABASE_SERVICE_ROLE_KEY
 - Type: Encrypted (SENSITIVE!)
 - Environments: Production only
 - Value: [Your Supabase Service Role Key]
-- ⚠️ NEVER expose this publicly
+- ⚠️ NEVER expose this publicly - required for admin operations and bypassing RLS
+```
+
+#### Unified Authentication (Farcaster Integration)
+```
+NEYNAR_API_KEY
+- Type: Encrypted (SENSITIVE!)
+- Environments: Production only
+- Value: [Your Neynar API Key]
+- ⚠️ Server-side only - required for Farcaster profile data
+```
+
+```
+NEXT_PUBLIC_NEYNAR_CLIENT_ID
+- Type: Plaintext
+- Environments: Production, Preview, Development
+- Value: [Your Neynar Client ID]
+```
+
+```
+NEXT_PUBLIC_APP_URL
+- Type: Plaintext
+- Environments: Production, Preview, Development
+- Value: [Your app URL - https://bbapp.bizarrebeasts.io for production]
 ```
 
 #### Admin Configuration
@@ -65,11 +88,40 @@ NEXT_PUBLIC_ADMIN_WALLETS
 ```
 
 ```
+NEXT_PUBLIC_CONTEST_ADMIN_WALLET
+- Type: Plaintext
+- Environments: Production, Preview
+- Value: [Single contest admin wallet address]
+```
+
+```
 RITUAL_ADMIN_PRIVATE_KEY
 - Type: Encrypted (SENSITIVE!)
 - Environments: Production only
 - Value: [Admin wallet private key]
 - ⚠️ CRITICAL: Use a different key than local development
+```
+
+#### Feature Flags
+```
+NEXT_PUBLIC_ENABLE_CONTESTS
+- Type: Plaintext
+- Environments: Production, Preview, Development
+- Value: true (default: enabled)
+```
+
+```
+NEXT_PUBLIC_ENABLE_CONTEST_ADMIN
+- Type: Plaintext
+- Environments: Production, Preview, Development
+- Value: true (default: enabled)
+```
+
+```
+NEXT_PUBLIC_ENABLE_CONTEST_VOTING
+- Type: Plaintext
+- Environments: Production, Preview, Development
+- Value: true (default: enabled)
 ```
 
 #### Cloudflare R2 Storage (if using)

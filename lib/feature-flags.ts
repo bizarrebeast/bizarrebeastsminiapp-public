@@ -1,17 +1,34 @@
 /**
  * Feature flags for controlled rollout of new features
  * Allows us to build and test features without affecting production users
+ *
+ * USAGE:
+ * - Set environment variables to 'false' to disable features
+ * - Features are enabled by default for production readiness
+ * - Use these flags in components: if (FEATURES.CONTESTS) { ... }
  */
 
 export const FEATURES = {
-  // Contest system - now enabled by default!
-  CONTESTS: process.env.NEXT_PUBLIC_ENABLE_CONTESTS !== 'false', // Enable by default, disable with 'false'
+  // Contest system - Production ready, enabled by default
+  CONTESTS: process.env.NEXT_PUBLIC_ENABLE_CONTESTS !== 'false',
 
-  // Admin panel - enabled by default for simplicity
-  CONTEST_ADMIN: process.env.NEXT_PUBLIC_ENABLE_CONTEST_ADMIN !== 'false', // Enable by default
+  // Contest admin panel - Restricted to admin wallets
+  CONTEST_ADMIN: process.env.NEXT_PUBLIC_ENABLE_CONTEST_ADMIN !== 'false',
 
-  // Voting system for creative contests - enabled!
-  CONTEST_VOTING: process.env.NEXT_PUBLIC_ENABLE_CONTEST_VOTING !== 'false', // Enable by default
+  // Voting system for creative contests - Production ready
+  CONTEST_VOTING: process.env.NEXT_PUBLIC_ENABLE_CONTEST_VOTING !== 'false',
+
+  // Unified authentication system - Always enabled (core feature)
+  UNIFIED_AUTH: true, // Cannot be disabled - core functionality
+
+  // Profile pages - Individual user profile pages
+  PROFILES: process.env.NEXT_PUBLIC_ENABLE_PROFILES !== 'false',
+
+  // Meme gallery - User-generated content galleries (planned)
+  MEME_GALLERY: process.env.NEXT_PUBLIC_ENABLE_MEME_GALLERY === 'true', // Opt-in for now
+
+  // Analytics tracking - User behavior and feature usage
+  ANALYTICS: process.env.NEXT_PUBLIC_ENABLE_ANALYTICS !== 'false',
 };
 
 // Admin wallet for contest management

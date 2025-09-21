@@ -4,7 +4,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { Menu, X, Palette, Gamepad2, FileText, Crown, ArrowDownUp, Music, Sparkles, Trophy } from 'lucide-react';
 import { cn } from '@/utils/cn';
-import { WalletButton } from '@/components/wallet/WalletButton';
+import { UnifiedAuthButton } from '@/components/auth/UnifiedAuthButton';
 import { EmpireBadges } from '@/components/wallet/EmpireBadges';
 
 // Navigation items in order
@@ -59,7 +59,7 @@ export function Navbar() {
           {/* Right side - Badges, Wallet and Hamburger */}
           <div className="flex items-center gap-3">
             <EmpireBadges />
-            <WalletButton />
+            <UnifiedAuthButton />
             <button
               onClick={() => setIsOpen(!isOpen)}
               className="relative p-2 hover:opacity-80 focus:outline-none transition-all duration-300 rounded-lg overflow-hidden group"

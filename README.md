@@ -12,7 +12,14 @@ A production-ready Farcaster miniapp for the BizarreBeasts ecosystem featuring a
 
 ## 🚀 Core Features
 
-### 💳 Base Smart Wallet Integration (NEW)
+### 🔐 Unified Authentication System (NEW)
+- **Dual Identity Support**: Combines Farcaster (social) and Wallet (financial) identities
+- **Auto-Linking**: Automatically links accounts using verified addresses from Farcaster
+- **Persistent Sessions**: Sessions maintained across browser refreshes and app visits
+- **Profile Unification**: Single profile displaying both wallet and Farcaster information
+- **Smart Wallet Integration**: Coinbase Smart Wallet support with no seed phrases required
+
+### 💳 Base Smart Wallet Integration
 - **Coinbase Smart Wallet**: No seed phrases required - create wallets with just a Coinbase account
 - **One-Click Connect**: Seamless wallet connection via Reown AppKit
 - **Auto-Reconnection**: Wallet persists across sessions
@@ -188,15 +195,38 @@ NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID=your_project_id
 NEXT_PUBLIC_EMPIRE_API_URL=https://bizarrebeasts.win/api
 NEXT_PUBLIC_FARCASTER_MANIFEST_URL=/farcaster.json
 
-# Supabase (for Contest System)
+# Supabase (Database with Unified Auth & Contests)
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key  # Server-side only
+
+# Unified Authentication (Farcaster Integration)
+NEYNAR_API_KEY=your_neynar_api_key              # Server-side only
+NEXT_PUBLIC_NEYNAR_CLIENT_ID=your_client_id
 
 # Admin Configuration
 NEXT_PUBLIC_ADMIN_WALLETS=comma,separated,admin,wallets
+
+# Feature Flags
+NEXT_PUBLIC_ENABLE_CONTESTS=true                # Contest system toggle
+NEXT_PUBLIC_ENABLE_CONTEST_ADMIN=true          # Admin panel toggle
+NEXT_PUBLIC_CONTEST_ADMIN_WALLET=0x...         # Contest admin wallet
+
+# Optional: Storage (for contest submissions)
+R2_ACCESS_KEY_ID=your_r2_access_key            # Server-side only
+R2_SECRET_ACCESS_KEY=your_r2_secret            # Server-side only
+R2_BUCKET_NAME=your_bucket_name
+NEXT_PUBLIC_R2_PUBLIC_URL=your_public_url
 ```
 
 ## 🎯 Key Features Explained
+
+### Unified Authentication System
+The app combines Farcaster (social) and Wallet (financial) identities into a single user experience:
+- **Auto-Linking**: When users connect both a wallet and Farcaster account, the system automatically links them if the wallet address is verified on Farcaster
+- **Persistent Sessions**: User sessions are maintained across browser refreshes and app visits using Zustand with localStorage
+- **Profile Unification**: Single profile page showing both wallet info (Empire tier, $BB holdings) and Farcaster info (username, FID, display name)
+- **Database Integration**: All user data stored in Supabase with the `unified_users` table structure
 
 ### Smart Wallet Support
 The app uses Coinbase Smart Wallet as the primary wallet option, eliminating the need for seed phrases. Users can create and access wallets using just their Coinbase account, making Web3 onboarding seamless.
@@ -210,11 +240,18 @@ Features are progressively unlocked based on $BB token holdings:
 - **Elite**: Custom background uploads
 
 ### Farcaster Integration
-Full miniapp support with:
-- Native sharing via composeCast API
-- Platform detection (mobile/desktop)
-- Bulletproof SDK initialization
-- Fallback mechanisms for all environments
+Full miniapp support with bulletproof SDK integration:
+- **Ultimate SDK Wrapper**: Multi-layer initialization system solving the "first-click error"
+- **Native Sharing**: Direct sharing via composeCast API without leaving the app
+- **Profile Integration**: Farcaster usernames and FIDs displayed throughout the app
+- **Verified Addresses**: Uses Farcaster's verified addresses for auto-linking accounts
+
+### Contest System
+Comprehensive contest platform with dual-action design:
+- **CTA System**: Separate buttons for contest actions (play game, create meme) and submissions
+- **Voting System**: Community voting with one-vote-per-wallet restriction
+- **Admin Panel**: Full CRUD operations for contest management
+- **Analytics**: Click tracking and conversion rate monitoring
 
 ### Mobile Optimization
 - Progressive Web App (PWA) support
