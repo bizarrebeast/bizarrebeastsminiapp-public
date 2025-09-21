@@ -44,7 +44,9 @@ next-env.d.ts
 Thumbs.db
 
 # Documentation
-# Ignore private planning docs but keep important ones
+# Ignore all development and internal docs
+*PROGRESS*.md
+*TODO*.md
 *PLAN*.md
 *AUDIT*.md
 *STATUS*.md
@@ -52,13 +54,31 @@ Thumbs.db
 *GUIDE*.md
 *SPEC*.md
 *CHECKLIST*.md
-docs/NEYNAR-*.md
-# But explicitly keep these important docs
+*REPORT*.md
+*REVIEW*.md
+*DOCUMENTATION*.md
+*EVALUATION*.md
+*IMPLEMENTATION*.md
+*TRANSFORMATION*.md
+*VERIFICATION*.md
+*INTEGRATION*.md
+*SUMMARY*.md
+*FEATURE*.md
+*IMPROVEMENTS*.md
+*REFERENCE*.md
+docs/*.md
+API_DOCUMENTATION.md
+DOCUMENTATION_INDEX.md
+CONTEST_*.md
+TREASURE_*.md
+UNIFIED_*.md
+VERCEL_ENV_*.md
+SHARE*.md
+RESOURCES*.md
+# Keep only essential docs
 !README.md
 !README.nextjs.md
-!SESSION_SUMMARY.md
-!MIGRATION_GUIDE.md
-!SHARING-IMPLEMENTATION-GUIDE.md
+!.env.local.example
 /scripts/
 # Don't ignore supabase migration files - they need to be tracked
 # /supabase/
