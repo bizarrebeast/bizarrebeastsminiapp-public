@@ -99,7 +99,7 @@ export function FarcasterSDKSync() {
           });
 
           lastSyncedFid.current = sdkUser.fid;
-          lastSyncedUsername.current = sdkUser.username;
+          lastSyncedUsername.current = sdkUser.username || null;
           syncAttempts.current = 0;
           isSyncing.current = false;
 

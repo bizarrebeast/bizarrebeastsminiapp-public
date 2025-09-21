@@ -28,6 +28,7 @@ import CreateContestForm from '@/components/admin/CreateContestForm';
 import EditContestForm from '@/components/admin/EditContestForm';
 import WinnerSelectionModal from '@/components/admin/WinnerSelectionModal';
 import TestContestManager from '@/components/admin/TestContestManager';
+import EnhancedSubmissionsTable from '@/components/admin/EnhancedSubmissionsTable';
 
 export default function AdminContestsPage() {
   const router = useRouter();
@@ -653,185 +654,39 @@ export default function AdminContestsPage() {
 
         {/* Submissions Table */}
         {selectedContest && (
-          <div className="bg-dark-card border border-gray-700 rounded-lg overflow-hidden">
-            <div className="px-6 py-4 border-b border-gray-700 flex justify-between items-center">
-              <h2 className="text-xl font-bold">Submissions for {selectedContest.name}</h2>
-              <button
-                onClick={() => setShowWinnerModal(true)}
-                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-gem-gold to-gem-crystal text-dark-bg font-bold rounded-lg hover:opacity-90 transition"
-              >
-                <Trophy className="w-4 h-4" />
-                Select Winners
-              </button>
+          <div className="space-y-4">
+            <div className="bg-dark-card border border-gray-700 rounded-lg overflow-hidden">
+              <div className="px-6 py-4 border-b border-gray-700 flex justify-between items-center">
+                <h2 className="text-xl font-bold">Submissions for {selectedContest.name}</h2>
+                <button
+                  onClick={() => setShowWinnerModal(true)}
+                  className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-gem-gold to-gem-crystal text-dark-bg font-bold rounded-lg hover:opacity-90 transition"
+                >
+                  <Trophy className="w-4 h-4" />
+                  Select Winners
+                </button>
+              </div>
             </div>
 
             {submissions.length === 0 ? (
-              <div className="p-12 text-center">
+              <div className="bg-dark-card border border-gray-700 rounded-lg p-12 text-center">
                 <Users className="w-12 h-12 text-gray-500 mx-auto mb-4" />
                 <p className="text-gray-400">No submissions yet</p>
               </div>
             ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead className="bg-dark-bg">
-                    <tr>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase">Username</th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase">Wallet</th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase">Score</th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase">Image</th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase">$BB Balance</th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase">Status</th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase">Submitted</th>
-                      <th className="px-4 py-3 text-center text-xs font-semibold text-gray-400 uppercase">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-700">
-                    {submissions.map((submission) => (
-                      <tr key={submission.id} className="hover:bg-dark-bg/50 transition">
-                        <td className="px-4 py-3">
-                          {submission.username ? (
-                            <span className="text-white">{submission.username}</span>
-                          ) : (
-                            <span className="text-gray-500">-</span>
-                          )}
-                        </td>
-                        <td className="px-4 py-3">
-                          <span className="text-gray-300 font-mono text-sm">
-                            {submission.wallet_address.slice(0, 6)}...{submission.wallet_address.slice(-4)}
-                          </span>
-                        </td>
-                        <td className="px-4 py-3">
-                          <span className="text-white font-mono font-bold">
-                            {submission.score?.toLocaleString() || 'N/A'}
-                          </span>
-                        </td>
-                        <td className="px-4 py-3">
-                          {submission.screenshot_url ? (
-                            <div className="flex items-center gap-2">
-                              {/* Thumbnail preview */}
-                              {submission.screenshot_url === 'pending-upload' ? (
-                                <div className={`${
-                                  thumbnailSize === 'small' ? 'w-12 h-12' :
-                                  thumbnailSize === 'medium' ? 'w-20 h-20' :
-                                  'w-32 h-32'
-                                } bg-dark-bg rounded flex items-center justify-center`}>
-                                  <Camera className={`${
-                                    thumbnailSize === 'small' ? 'w-5 h-5' :
-                                    thumbnailSize === 'medium' ? 'w-6 h-6' :
-                                    'w-8 h-8'
-                                  } text-gray-500`} />
-                                </div>
-                              ) : (
-                                <div className="relative group">
-                                  <img
-                                    src={submission.screenshot_url}
-                                    alt="Thumbnail"
-                                    className={`${
-                                      thumbnailSize === 'small' ? 'w-12 h-12' :
-                                      thumbnailSize === 'medium' ? 'w-20 h-20' :
-                                      'w-32 h-32'
-                                    } object-cover rounded cursor-pointer hover:opacity-80`}
-                                    onClick={() => setScreenshotModal({
-                                      isOpen: true,
-                                      url: submission.screenshot_url || null,
-                                      wallet: submission.wallet_address,
-                                      score: submission.score || undefined
-                                    })}
-                                    onError={(e) => {
-                                      const target = e.target as HTMLImageElement;
-                                      target.style.display = 'none';
-                                      const size = thumbnailSize === 'small' ? 'w-12 h-12' :
-                                                    thumbnailSize === 'medium' ? 'w-20 h-20' : 'w-32 h-32';
-                                      const iconSize = thumbnailSize === 'small' ? 'w-5 h-5' :
-                                                       thumbnailSize === 'medium' ? 'w-6 h-6' : 'w-8 h-8';
-                                      target.parentElement?.insertAdjacentHTML('afterbegin', `
-                                        <div class="${size} bg-dark-bg rounded flex items-center justify-center">
-                                          <svg class="${iconSize} text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                          </svg>
-                                        </div>
-                                      `);
-                                    }}
-                                  />
-                                </div>
-                              )}
-                              <button
-                                onClick={() => setScreenshotModal({
-                                  isOpen: true,
-                                  url: submission.screenshot_url || null,
-                                  wallet: submission.wallet_address,
-                                  score: submission.score || undefined
-                                })}
-                                className="flex items-center gap-1 text-gem-crystal hover:text-gem-crystal/80 text-sm"
-                              >
-                                <Eye className="w-4 h-4" />
-                                Expand
-                              </button>
-                            </div>
-                          ) : (
-                            <span className="text-gray-500">No image</span>
-                          )}
-                        </td>
-                        <td className="px-4 py-3">
-                          <span className="text-gray-400 text-sm">
-                            {submission.token_balance
-                              ? formatTokenBalance(submission.token_balance.toString())
-                              : '0'} $BB
-                          </span>
-                        </td>
-                        <td className="px-4 py-3">
-                          <span className={`px-2 py-1 text-xs rounded-full ${
-                            submission.status === 'approved'
-                              ? 'bg-green-500/20 text-green-400'
-                              : submission.status === 'rejected'
-                              ? 'bg-red-500/20 text-red-400'
-                              : 'bg-yellow-500/20 text-yellow-400'
-                          }`}>
-                            {submission.status}
-                          </span>
-                        </td>
-                        <td className="px-4 py-3 text-gray-400 text-sm">
-                          {new Date(submission.submitted_at).toLocaleDateString()}
-                        </td>
-                        <td className="px-4 py-3">
-                          {submission.status === 'pending' ? (
-                            <div className="flex gap-2 justify-center">
-                              <button
-                                onClick={() => handleApprove(submission.id)}
-                                disabled={processingId === submission.id}
-                                className="p-1.5 bg-green-500/20 text-green-400 rounded hover:bg-green-500/30 disabled:opacity-50"
-                                title="Approve"
-                              >
-                                {processingId === submission.id ? (
-                                  <Loader2 className="w-4 h-4 animate-spin" />
-                                ) : (
-                                  <CheckCircle className="w-4 h-4" />
-                                )}
-                              </button>
-                              <button
-                                onClick={() => handleReject(submission.id)}
-                                disabled={processingId === submission.id}
-                                className="p-1.5 bg-red-500/20 text-red-400 rounded hover:bg-red-500/30 disabled:opacity-50"
-                                title="Reject"
-                              >
-                                <XCircle className="w-4 h-4" />
-                              </button>
-                            </div>
-                          ) : (
-                            <div className="text-center">
-                              {submission.status === 'approved' ? (
-                                <span className="text-green-400 text-sm">✓</span>
-                              ) : (
-                                <span className="text-red-400 text-sm">✗</span>
-                              )}
-                            </div>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+              <EnhancedSubmissionsTable
+                submissions={submissions}
+                onApprove={handleApprove}
+                onReject={handleReject}
+                processingId={processingId}
+                onViewScreenshot={(submission) => setScreenshotModal({
+                  isOpen: true,
+                  url: submission.screenshot_url || null,
+                  wallet: submission.wallet_address,
+                  score: submission.score || undefined
+                })}
+                thumbnailSize={thumbnailSize}
+              />
             )}
           </div>
         )}
