@@ -100,7 +100,7 @@ export default function RootLayout({
           <FarcasterProvider>
             <NeynarProviderWrapper>
               <NeynarAuthIntegration />
-              {/* <FarcasterDebug /> */}
+              <FarcasterDebug />
               <LayoutWrapper>
                 <Navbar />
                 <main className="flex-1">

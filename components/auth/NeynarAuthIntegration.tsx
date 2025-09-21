@@ -43,6 +43,19 @@ export function NeynarAuthIntegration() {
         actual: { username: user.username, fid: user.fid, pfp: user.pfp_url }
       });
 
+      // Get verified addresses
+      const verifiedAddresses = user.verified_addresses?.eth_addresses || [];
+
+      // Auto-connect the first verified address as wallet if user doesn't have one
+      const currentWallet = store.walletAddress;
+      const shouldAutoConnectWallet = !currentWallet && verifiedAddresses.length > 0;
+
+      console.log('🔗 Auto-wallet logic:', {
+        currentWallet,
+        verifiedAddresses,
+        shouldAutoConnect: shouldAutoConnectWallet
+      });
+
       // Directly update store state WITHOUT calling connectFarcaster
       // This avoids database calls and refreshProfile that might overwrite with stale data
       useUnifiedAuthStore.setState({
@@ -52,7 +65,13 @@ export function NeynarAuthIntegration() {
         farcasterPfpUrl: user.pfp_url || '',
         farcasterBio: user.profile?.bio?.text || '',
         farcasterConnected: true,
-        verifiedAddresses: user.verified_addresses?.eth_addresses || []
+        verifiedAddresses: verifiedAddresses,
+        // Auto-connect wallet if user doesn't have one but has verified addresses
+        walletAddress: shouldAutoConnectWallet ? verifiedAddresses[0] : currentWallet,
+        walletConnected: shouldAutoConnectWallet ? true : store.walletConnected,
+        walletIsVerified: currentWallet ? verifiedAddresses.some(
+          (addr: string) => addr.toLowerCase() === currentWallet.toLowerCase()
+        ) : shouldAutoConnectWallet
       });
 
       lastSyncedFid.current = user.fid;
