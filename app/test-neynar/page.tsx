@@ -2,6 +2,8 @@
 
 import { NeynarAuthButton, useNeynarContext } from '@neynar/react';
 import { FarcasterAwareAuthButton } from '@/components/auth/FarcasterAwareAuthButton';
+import { UnifiedAuthButton } from '@/components/auth/UnifiedAuthButton';
+import { useUnifiedAuthStore } from '@/store/useUnifiedAuthStore';
 import { useEffect, useState } from 'react';
 import sdk from '@farcaster/miniapp-sdk';
 
@@ -10,6 +12,9 @@ export default function TestNeynarPage() {
   const [farcasterUser, setFarcasterUser] = useState<any>(null);
   const [sdkLoaded, setSdkLoaded] = useState(false);
   const [debugLogs, setDebugLogs] = useState<string[]>([]);
+
+  // Get unified auth store state for debugging
+  const unifiedAuthStore = useUnifiedAuthStore();
 
   const addLog = (message: string) => {
     setDebugLogs(prev => [...prev, `${new Date().toLocaleTimeString()}: ${message}`]);
@@ -70,6 +75,24 @@ export default function TestNeynarPage() {
         </pre>
       </div>
 
+      <div className="mb-8 p-4 bg-gray-900 rounded">
+        <h2 className="text-lg font-semibold mb-4">Unified Auth Store State:</h2>
+        <pre className="text-xs text-gray-400">
+          {JSON.stringify({
+            userId: unifiedAuthStore.userId,
+            walletConnected: unifiedAuthStore.walletConnected,
+            walletAddress: unifiedAuthStore.walletAddress,
+            farcasterConnected: unifiedAuthStore.farcasterConnected,
+            farcasterFid: unifiedAuthStore.farcasterFid,
+            farcasterUsername: unifiedAuthStore.farcasterUsername,
+            farcasterDisplayName: unifiedAuthStore.farcasterDisplayName,
+            farcasterPfpUrl: unifiedAuthStore.farcasterPfpUrl,
+            identitiesLinked: unifiedAuthStore.identitiesLinked,
+            isLoading: unifiedAuthStore.isLoading
+          }, null, 2)}
+        </pre>
+      </div>
+
       <div className="mb-8">
         <h2 className="text-lg font-semibold mb-4">Auth Status:</h2>
         {user ? (
@@ -94,6 +117,11 @@ export default function TestNeynarPage() {
       <div className="mb-8">
         <h2 className="text-lg font-semibold mb-4">Smart Auth Button (With Farcaster Detection):</h2>
         <FarcasterAwareAuthButton />
+      </div>
+
+      <div className="mb-8">
+        <h2 className="text-lg font-semibold mb-4">Main App Auth Button (UnifiedAuthButton):</h2>
+        <UnifiedAuthButton />
       </div>
 
       <div className="mb-8">
