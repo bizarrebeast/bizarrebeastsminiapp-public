@@ -185,17 +185,32 @@ export const contestQueries = {
     return data as ContestSubmission[];
   },
 
-  // Get user's submission for a contest
+  // Get user's submission for a contest (returns first submission for backwards compatibility)
   async getUserSubmission(contestId: string, walletAddress: string) {
     const { data, error } = await supabase
       .from('contest_submissions')
       .select('*')
       .eq('contest_id', contestId)
       .eq('wallet_address', walletAddress)
+      .order('submitted_at', { ascending: true })
+      .limit(1)
       .single();
 
     if (error && error.code !== 'PGRST116') throw error; // PGRST116 = no rows returned
     return data as ContestSubmission | null;
+  },
+
+  // Get all user's submissions for a contest
+  async getUserSubmissions(contestId: string, walletAddress: string) {
+    const { data, error } = await supabase
+      .from('contest_submissions')
+      .select('*')
+      .eq('contest_id', contestId)
+      .eq('wallet_address', walletAddress)
+      .order('submitted_at', { ascending: false });
+
+    if (error) throw error;
+    return data as ContestSubmission[];
   },
 
   // Get leaderboard for a contest

@@ -40,6 +40,7 @@ export default function ContestDetailPage() {
   const [contest, setContest] = useState<Contest | null>(null);
   const [leaderboard, setLeaderboard] = useState<ContestLeaderboard[]>([]);
   const [userSubmission, setUserSubmission] = useState<ContestSubmission | null>(null);
+  const [userSubmissions, setUserSubmissions] = useState<ContestSubmission[]>([]);
   const [winners, setWinners] = useState<ContestWinner[]>([]);
   const [userBalance, setUserBalance] = useState<string>('0');
   const [loading, setLoading] = useState(true);
@@ -92,10 +93,13 @@ export default function ContestDetailPage() {
         setApprovedSubmissions(submissions || []);
       }
 
-      // If user is connected, check their submission
+      // If user is connected, check their submissions
       if (address) {
         const submission = await contestQueries.getUserSubmission(id as string, address);
         setUserSubmission(submission);
+
+        const submissions = await contestQueries.getUserSubmissions(id as string, address);
+        setUserSubmissions(submissions);
       }
     } catch (err) {
       console.error('Error fetching contest data:', err);
@@ -403,7 +407,7 @@ export default function ContestDetailPage() {
               )}
             </button>
           )}
-          {isContestActive && (!userSubmission || (contest.max_entries_per_wallet > 1)) && (
+          {isContestActive && (userSubmissions.length < contest.max_entries_per_wallet) && (
             <button
               onClick={() => setActiveTab('submit')}
               className={`px-4 py-2 font-semibold transition-colors relative whitespace-nowrap ${
@@ -412,7 +416,7 @@ export default function ContestDetailPage() {
                   : 'text-gray-400 hover:text-white'
               }`}
             >
-              {userSubmission && contest.max_entries_per_wallet > 1 ? 'Submit Another Entry' : 'Submit Entry'}
+              {userSubmissions.length > 0 ? `Submit Entry (${userSubmissions.length + 1}/${contest.max_entries_per_wallet})` : 'Submit Entry'}
               {activeTab === 'submit' && (
                 <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gem-crystal" />
               )}
@@ -462,7 +466,7 @@ export default function ContestDetailPage() {
             </div>
 
             {/* Action Buttons */}
-            {isContestActive && (!userSubmission || (contest.max_entries_per_wallet > 1)) && (
+            {isContestActive && (userSubmissions.length < contest.max_entries_per_wallet) && (
               <div className="mt-6">
                 {!isConnected ? (
                   <div className="p-4 bg-gem-crystal/10 border border-gem-crystal/30 rounded-lg text-center">
@@ -564,7 +568,11 @@ export default function ContestDetailPage() {
                           </span>
                           <div>
                             <p className="text-white font-medium">
-                              {searchedUser.username || formatAddress(searchedUser.wallet_address)}
+                              {searchedUser.username ? (
+                                <span className="text-gem-crystal">@{searchedUser.username}</span>
+                              ) : (
+                                formatAddress(searchedUser.wallet_address)
+                              )}
                             </p>
                             {searchedUser.username && (
                               <p className="text-gray-400 text-sm">{formatAddress(searchedUser.wallet_address)}</p>
@@ -665,8 +673,15 @@ export default function ContestDetailPage() {
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-1 sm:gap-2">
                                 <span className="text-white text-sm sm:text-base truncate max-w-[100px] sm:max-w-none">
-                                  {entry.username || formatAddress(entry.wallet_address)}
+                                  {entry.username ? (
+                                    <span className="text-gem-crystal">@{entry.username}</span>
+                                  ) : (
+                                    formatAddress(entry.wallet_address)
+                                  )}
                                 </span>
+                                {entry.username && (
+                                  <p className="text-gray-400 text-xs truncate">{formatAddress(entry.wallet_address)}</p>
+                                )}
                                 {isUser && (
                                   <span className="px-1.5 sm:px-2 py-0.5 bg-gem-crystal/20 text-gem-crystal text-xs rounded-full">
                                     YOU
@@ -709,9 +724,10 @@ export default function ContestDetailPage() {
           </div>
         )}
 
-        {activeTab === 'submit' && isContestActive && (!userSubmission || (contest.max_entries_per_wallet > 1)) && (
+        {activeTab === 'submit' && isContestActive && (userSubmissions.length < contest.max_entries_per_wallet) && (
           <SubmissionForm
             contest={contest}
+            userSubmissions={userSubmissions}
             onSuccess={() => {
               fetchContestData(); // Refresh data after submission
               setActiveTab('leaderboard'); // Switch to leaderboard
@@ -719,19 +735,30 @@ export default function ContestDetailPage() {
           />
         )}
 
-        {/* Message when user has already submitted to single-submission contest */}
-        {activeTab === 'submit' && isContestActive && userSubmission && contest.max_entries_per_wallet === 1 && (
+        {/* Message when user has reached submission limit */}
+        {activeTab === 'submit' && isContestActive && userSubmissions.length >= contest.max_entries_per_wallet && (
           <div className="bg-dark-card border border-gem-crystal/20 rounded-lg p-6">
             <div className="flex items-center gap-3 mb-4">
               <CheckCircle className="w-6 h-6 text-gem-crystal" />
               <h2 className="text-xl font-bold text-white">Submission Complete</h2>
             </div>
             <p className="text-gray-300 mb-4">
-              You've already submitted to this contest. This contest only allows one submission per wallet.
+              You've reached the maximum number of submissions ({contest.max_entries_per_wallet}) for this contest.
             </p>
-            <div className="bg-dark-bg rounded-lg p-4 mb-4">
-              <p className="text-gray-400 text-sm mb-1">Your Score</p>
-              <p className="text-2xl font-bold text-white">{userSubmission.score?.toLocaleString() || 'Pending'}</p>
+            <div className="space-y-3 mb-4">
+              {userSubmissions.map((submission, index) => (
+                <div key={submission.id} className="bg-dark-bg rounded-lg p-4">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <p className="text-gray-400 text-sm">Entry #{index + 1}</p>
+                      <p className="text-xl font-bold text-white">{submission.score?.toLocaleString() || 'Pending'}</p>
+                    </div>
+                    <div className="text-gray-400 text-xs">
+                      {new Date(submission.submitted_at).toLocaleDateString()}
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
             <button
               onClick={() => setActiveTab('leaderboard')}

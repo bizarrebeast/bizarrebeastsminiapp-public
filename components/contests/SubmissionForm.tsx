@@ -10,10 +10,11 @@ import ShareButtons from '@/components/ShareButtons';
 
 interface SubmissionFormProps {
   contest: Contest;
+  userSubmissions?: any[];
   onSuccess?: () => void;
 }
 
-export default function SubmissionForm({ contest, onSuccess }: SubmissionFormProps) {
+export default function SubmissionForm({ contest, userSubmissions = [], onSuccess }: SubmissionFormProps) {
   const { address, isConnected } = useWallet();
   const { farcasterUsername, farcasterFid, farcasterConnected } = useUnifiedAuthStore();
   const [score, setScore] = useState('');
@@ -226,9 +227,16 @@ export default function SubmissionForm({ contest, onSuccess }: SubmissionFormPro
 
   return (
     <div className="bg-dark-card border border-gem-crystal/20 rounded-xl p-6">
-      <div className="flex items-center gap-3 mb-6">
-        <Trophy className="w-6 h-6 text-gem-gold" />
-        <h2 className="text-xl font-bold">Submit Your Entry</h2>
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-3">
+          <Trophy className="w-6 h-6 text-gem-gold" />
+          <h2 className="text-xl font-bold">Submit Your Entry</h2>
+        </div>
+        {contest.max_entries_per_wallet > 1 && (
+          <div className="text-sm text-gray-400">
+            Entry {userSubmissions.length + 1} of {contest.max_entries_per_wallet}
+          </div>
+        )}
       </div>
 
       {!isConnected ? (

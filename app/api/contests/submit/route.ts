@@ -92,17 +92,20 @@ export async function POST(request: Request) {
       }
     }
 
-    // Check for existing submission (enforce one per wallet)
-    const { data: existingSubmission } = await supabase
+    // Check submission limit based on max_entries_per_wallet
+    const { count } = await supabase
       .from('contest_submissions')
-      .select('id')
+      .select('id', { count: 'exact' })
       .eq('contest_id', contestId)
-      .eq('wallet_address', walletAddress.toLowerCase())
-      .single();
+      .eq('wallet_address', walletAddress.toLowerCase());
 
-    if (existingSubmission) {
+    const submissionCount = count || 0;
+
+    if (submissionCount >= contest.max_entries_per_wallet) {
       return NextResponse.json(
-        { error: 'You have already submitted an entry for this contest' },
+        {
+          error: `Maximum ${contest.max_entries_per_wallet} ${contest.max_entries_per_wallet === 1 ? 'entry' : 'entries'} allowed per wallet. You have already submitted ${submissionCount}.`
+        },
         { status: 400 }
       );
     }

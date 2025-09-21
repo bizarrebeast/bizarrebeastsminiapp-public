@@ -20,6 +20,7 @@ import { FEATURE_FLAGS } from '@/config/features';
 export function UnifiedAuthButton() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [isFarcasterCheckComplete, setIsFarcasterCheckComplete] = useState(false);
 
   // Get Neynar context
   const neynarContext = useNeynarContext();
@@ -122,7 +123,10 @@ export function UnifiedAuthButton() {
       }
     };
 
-    checkMiniappAuth();
+    checkMiniappAuth().finally(() => {
+      // Mark Farcaster check as complete regardless of outcome
+      setIsFarcasterCheckComplete(true);
+    });
 
     // Listen for messages from Farcaster parent (fallback for non-SDK)
     const setupMessageListener = async () => {
@@ -179,8 +183,8 @@ export function UnifiedAuthButton() {
     }
   };
 
-  // Loading state
-  if (wallet.isInitializing || isLoading) {
+  // Loading state - include Farcaster check
+  if (wallet.isInitializing || isLoading || !isFarcasterCheckComplete) {
     return (
       <button
         disabled
