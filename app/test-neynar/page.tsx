@@ -1,9 +1,31 @@
 'use client';
 
 import { NeynarAuthButton, useNeynarContext } from '@neynar/react';
+import { useEffect, useState } from 'react';
+import sdk from '@farcaster/miniapp-sdk';
 
 export default function TestNeynarPage() {
   const { user } = useNeynarContext();
+  const [farcasterUser, setFarcasterUser] = useState<any>(null);
+  const [sdkLoaded, setSdkLoaded] = useState(false);
+
+  useEffect(() => {
+    // Try to get user from Farcaster Miniapp SDK
+    const initSDK = async () => {
+      try {
+        const context = await sdk.context;
+        console.log('Farcaster SDK Context:', context);
+        if (context?.user) {
+          setFarcasterUser(context.user);
+        }
+        setSdkLoaded(true);
+      } catch (error) {
+        console.log('Not in Farcaster miniapp or SDK error:', error);
+        setSdkLoaded(true);
+      }
+    };
+    initSDK();
+  }, []);
 
   return (
     <div className="min-h-screen bg-black text-white p-8">
@@ -17,7 +39,9 @@ export default function TestNeynarPage() {
             currentUrl: typeof window !== 'undefined' ? window.location.href : 'SSR',
             userAgent: typeof window !== 'undefined' ? navigator.userAgent : 'SSR',
             isMobile: typeof window !== 'undefined' && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent),
-            isIframe: typeof window !== 'undefined' && window.parent !== window
+            isIframe: typeof window !== 'undefined' && window.parent !== window,
+            farcasterSDKLoaded: sdkLoaded,
+            farcasterSDKUser: farcasterUser
           }, null, 2)}
         </pre>
       </div>
