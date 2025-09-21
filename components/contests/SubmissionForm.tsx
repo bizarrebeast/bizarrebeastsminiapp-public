@@ -90,8 +90,8 @@ export default function SubmissionForm({ contest, userSubmissions = [], onSucces
       // Clean username (remove @ if present)
       const cleanUsername = username.replace('@', '').trim();
 
-      // Call API to validate
-      const response = await fetch(`/api/neynar/user/${cleanUsername}`);
+      // Call API to validate username (not FID)
+      const response = await fetch(`/api/neynar/username/${cleanUsername}`);
 
       if (response.ok) {
         setUsernameValid(true);
