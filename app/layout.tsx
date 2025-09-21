@@ -11,6 +11,7 @@ import { FarcasterProvider } from "@/contexts/FarcasterContext";
 import { SDKProvider } from "@/contexts/SDKContext";
 import { NeynarProviderWrapper } from "@/components/providers/NeynarProvider";
 import { NeynarAuthIntegration } from "@/components/auth/NeynarAuthIntegration";
+import { FarcasterSDKSync } from "@/components/auth/FarcasterSDKSync";
 import { FarcasterDebug } from "@/components/debug/FarcasterDebug";
 import "@neynar/react/dist/style.css";
 import { Analytics } from "@vercel/analytics/next";
@@ -100,6 +101,7 @@ export default function RootLayout({
           <FarcasterProvider>
             <NeynarProviderWrapper>
               <NeynarAuthIntegration />
+              <FarcasterSDKSync />
               <FarcasterDebug />
               <LayoutWrapper>
                 <Navbar />

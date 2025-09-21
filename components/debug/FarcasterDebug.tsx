@@ -31,9 +31,15 @@ export function FarcasterDebug() {
     }
   }, [isSDKReady]);
 
-  // Always show in development OR if there's an issue
+  // Only show for @bizarrebeast (FID 357897) or in development
+  const isBizarreBeast = store.farcasterFid === 357897 || sdkContext?.user?.fid === 357897;
   const hasIssue = store.farcasterConnected && !store.walletAddress;
-  if (process.env.NODE_ENV !== 'development' && !hasIssue) {
+
+  // Show only for bizarrebeast or in development with issues
+  if (!isBizarreBeast && process.env.NODE_ENV !== 'development') {
+    return null;
+  }
+  if (!isBizarreBeast && !hasIssue && process.env.NODE_ENV === 'development') {
     return null;
   }
 
