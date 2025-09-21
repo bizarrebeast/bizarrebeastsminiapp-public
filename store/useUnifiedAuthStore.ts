@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { AccessTier } from '@/lib/empire';
+import { debounceAsync } from '@/lib/debounce';
 
 // Types
 export interface UnifiedAuthState {
@@ -22,6 +23,7 @@ export interface UnifiedAuthState {
 
   // Verified Addresses (from Farcaster)
   verifiedAddresses: string[];
+  walletIsVerified?: boolean; // Whether current wallet is in verified addresses
 
   // Connection Status
   identitiesLinked: boolean;
@@ -51,6 +53,7 @@ export interface UnifiedAuthState {
 
   // Actions - Wallet
   connectWallet: (address: string) => Promise<void>;
+  changeWallet: (newAddress: string) => Promise<void>;
   disconnectWallet: () => void;
 
   // Actions - Farcaster
@@ -104,6 +107,13 @@ const initialState = {
   error: null,
   preferences: {}
 };
+
+// Create debounced refresh function (shared across all store instances)
+const debouncedRefreshProfile = debounceAsync(async (params: URLSearchParams) => {
+  const response = await fetch(`/api/auth/profile?${params}`);
+  const data = await response.json();
+  return data;
+}, 1000); // 1 second debounce
 
 // Create the store
 export const useUnifiedAuthStore = create<UnifiedAuthState>()(
@@ -164,6 +174,55 @@ export const useUnifiedAuthStore = create<UnifiedAuthState>()(
         }
       },
 
+      // Change wallet (for Farcaster users who want to use a different wallet)
+      changeWallet: async (newAddress: string) => {
+        const state = get();
+
+        // Only allow wallet change if Farcaster is connected
+        if (!state.farcasterConnected) {
+          set({ error: 'Must be connected with Farcaster to change wallet' });
+          return;
+        }
+
+        set({ isLoading: true, error: null });
+
+        try {
+          // Use the update-wallet endpoint
+          const response = await fetch('/api/auth/update-wallet', {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              farcasterFid: state.farcasterFid,
+              newWalletAddress: newAddress,
+              oldWalletAddress: state.walletAddress
+            })
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            set({
+              walletAddress: newAddress,
+              walletConnected: true,
+              // Note if wallet is not verified
+              walletIsVerified: state.verifiedAddresses.some(
+                addr => addr.toLowerCase() === newAddress.toLowerCase()
+              )
+            });
+
+            // Refresh profile to get updated Empire data
+            await get().refreshProfile();
+          } else {
+            set({ error: data.error || 'Failed to change wallet' });
+          }
+        } catch (error) {
+          console.error('Change wallet error:', error);
+          set({ error: 'Failed to change wallet' });
+        } finally {
+          set({ isLoading: false });
+        }
+      },
+
       // Disconnect wallet
       disconnectWallet: () => {
         set({
@@ -216,10 +275,10 @@ export const useUnifiedAuthStore = create<UnifiedAuthState>()(
                                      userData.verifiedAddresses ||
                                      [];
 
-            // Auto-select first verified address as wallet if user doesn't have one
-            const autoWalletAddress = !get().walletConnected && verifiedAddresses.length > 0
-              ? verifiedAddresses[0]
-              : get().walletAddress;
+            // Don't auto-select wallet if user already has a different one connected
+            // This allows users to keep their non-verified wallet
+            const autoWalletAddress = get().walletAddress ||
+              (!get().walletConnected && verifiedAddresses.length > 0 ? verifiedAddresses[0] : null);
 
             set({
               userId: data.user?.id || null,
@@ -232,6 +291,9 @@ export const useUnifiedAuthStore = create<UnifiedAuthState>()(
               verifiedAddresses: verifiedAddresses,
               walletAddress: autoWalletAddress,
               walletConnected: !!autoWalletAddress,
+              walletIsVerified: autoWalletAddress ? verifiedAddresses.some(
+                addr => addr.toLowerCase() === autoWalletAddress.toLowerCase()
+              ) : undefined,
               identitiesLinked: data.user?.identities_linked || data.alreadyLinked || !!autoWalletAddress,
               linkedAt: data.user?.linked_at,
               primaryIdentity: data.user?.primary_identity || 'farcaster'
@@ -386,7 +448,7 @@ export const useUnifiedAuthStore = create<UnifiedAuthState>()(
         }
       },
 
-      // Refresh profile
+      // Refresh profile (with debouncing)
       refreshProfile: async () => {
         const state = get();
 
@@ -403,8 +465,8 @@ export const useUnifiedAuthStore = create<UnifiedAuthState>()(
           else if (state.farcasterFid) params.append('farcasterFid', state.farcasterFid.toString());
           params.append('refresh', 'true');
 
-          const response = await fetch(`/api/auth/profile?${params}`);
-          const data = await response.json();
+          // Use debounced version to prevent excessive API calls
+          const data = await debouncedRefreshProfile(params);
 
           if (data.success) {
             const { profile } = data;
@@ -428,9 +490,12 @@ export const useUnifiedAuthStore = create<UnifiedAuthState>()(
               preferences: profile.preferences || {}
             });
           }
-        } catch (error) {
-          console.error('Refresh profile error:', error);
-          set({ error: 'Failed to refresh profile' });
+        } catch (error: any) {
+          // Ignore debounce cancellation errors
+          if (error?.message !== 'Debounced') {
+            console.error('Refresh profile error:', error);
+            set({ error: 'Failed to refresh profile' });
+          }
         } finally {
           set({ isLoading: false });
         }

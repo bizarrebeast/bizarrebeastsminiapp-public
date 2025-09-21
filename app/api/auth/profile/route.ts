@@ -36,22 +36,62 @@ interface UnifiedProfile {
 }
 
 /**
- * Fetch Empire protocol data for a wallet address
+ * Fetch Empire protocol data for a wallet address with timeout and retry
  */
-async function fetchEmpireData(walletAddress: string) {
-  try {
-    const response = await fetch(`https://api.empireprotocol.io/users/${walletAddress}`);
-    if (response.ok) {
-      const data = await response.json();
-      return {
-        tier: data.tier || null,
-        rank: data.rank || null,
-        score: data.score || null
-      };
+async function fetchEmpireData(walletAddress: string, retries: number = 2) {
+  const timeout = 5000; // 5 second timeout
+
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      // Create an AbortController for timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+      const response = await fetch(`https://api.empireprotocol.io/users/${walletAddress}`, {
+        signal: controller.signal,
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+
+      clearTimeout(timeoutId);
+
+      if (response.ok) {
+        const data = await response.json();
+        return {
+          tier: data.tier || null,
+          rank: data.rank || null,
+          score: data.score || null
+        };
+      }
+
+      // If not ok but not a network error, don't retry
+      if (response.status >= 400 && response.status < 500) {
+        console.warn(`Empire API returned ${response.status} for ${walletAddress}`);
+        break;
+      }
+    } catch (error: any) {
+      // Log the error but continue
+      if (error.name === 'AbortError') {
+        console.warn(`Empire API timeout (attempt ${attempt + 1}/${retries + 1}) for ${walletAddress}`);
+      } else if (error.code === 'ENOTFOUND' || error.message?.includes('ENOTFOUND')) {
+        console.warn(`Empire API DNS resolution failed (attempt ${attempt + 1}/${retries + 1})`);
+      } else {
+        console.warn(`Empire API error (attempt ${attempt + 1}/${retries + 1}):`, error.message);
+      }
+
+      // If this was the last attempt, break
+      if (attempt === retries) {
+        console.error('Empire API failed after all retries:', error.message);
+        break;
+      }
+
+      // Wait a bit before retrying (exponential backoff)
+      await new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, attempt)));
     }
-  } catch (error) {
-    console.error('Failed to fetch Empire data:', error);
   }
+
+  // Return null values if all attempts failed
   return { tier: null, rank: null, score: null };
 }
 
