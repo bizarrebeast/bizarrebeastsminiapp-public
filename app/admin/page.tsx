@@ -13,7 +13,8 @@ import {
   Clock,
   CheckCircle,
   XCircle,
-  AlertCircle
+  AlertCircle,
+  Palette
 } from 'lucide-react';
 import { contestQueries, Contest } from '@/lib/supabase';
 import { formatTokenBalance } from '@/lib/tokenBalance';
@@ -210,11 +211,13 @@ export default function AdminDashboard() {
               </button>
             </Link>
 
-            <button className="w-full p-4 bg-dark-bg rounded-lg opacity-50 cursor-not-allowed text-left">
-              <Users className="w-6 h-6 text-gem-blue mb-2" />
-              <p className="font-medium">User Management</p>
-              <p className="text-xs text-gray-400">Coming soon</p>
-            </button>
+            <Link href="/admin/creative-assets">
+              <button className="w-full p-4 bg-dark-bg rounded-lg hover:bg-gem-blue/10 transition text-left">
+                <Palette className="w-6 h-6 text-gem-blue mb-2" />
+                <p className="font-medium">Creative Assets</p>
+                <p className="text-xs text-gray-400">Create gradient text</p>
+              </button>
+            </Link>
 
             <button className="w-full p-4 bg-dark-bg rounded-lg opacity-50 cursor-not-allowed text-left">
               <DollarSign className="w-6 h-6 text-gem-pink mb-2" />
