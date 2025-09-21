@@ -40,12 +40,21 @@ export function FarcasterSDKSync() {
           return;
         }
 
-        // Check if we've already synced this exact user
-        if (lastSyncedFid.current === sdkUser.fid &&
+        // For bizarrebeast, always sync to ensure correct data
+        const isBizarreBeast = sdkUser.fid === 357897;
+
+        // Check if we've already synced this exact user (unless it's bizarrebeast with wrong data)
+        if (!isBizarreBeast &&
+            lastSyncedFid.current === sdkUser.fid &&
             lastSyncedUsername.current === sdkUser.username &&
             store.farcasterUsername !== 'testuser') {
           console.log('🔄 Already synced this user, skipping');
           return;
+        }
+
+        // For bizarrebeast, force sync if data is wrong
+        if (isBizarreBeast && store.farcasterUsername !== 'bizarrebeast') {
+          console.log('🔥 FORCE SYNC for @bizarrebeast - incorrect username detected');
         }
 
         console.log('🔄 SDK User Data Available:', {
@@ -60,7 +69,8 @@ export function FarcasterSDKSync() {
           store.farcasterFid !== sdkUser.fid ||
           store.farcasterUsername !== sdkUser.username ||
           store.farcasterUsername === 'testuser' ||
-          (!store.walletAddress && sdkUser.fid === 357897);
+          !store.farcasterConnected ||
+          (isBizarreBeast && (!store.walletAddress || store.walletAddress !== '0x3FDD6aFEd7a19990632468c7102219d051E685dB'));
 
         if (needsSync) {
           isSyncing.current = true;
@@ -150,12 +160,19 @@ export function FarcasterSDKSync() {
     // Run sync immediately
     syncFromSDK();
 
-    // Only run a delayed sync if username is still 'testuser'
-    if (store.farcasterUsername === 'testuser') {
-      const timeout = setTimeout(syncFromSDK, 2000);
-      return () => clearTimeout(timeout);
+    // Run periodic syncs if data is incorrect
+    const needsPeriodicSync =
+      !store.farcasterConnected ||
+      store.farcasterUsername === 'testuser' ||
+      store.farcasterUsername === null ||
+      (store.farcasterFid === 357897 && store.farcasterUsername !== 'bizarrebeast');
+
+    if (needsPeriodicSync) {
+      console.log('📍 Setting up periodic sync - data needs correction');
+      const interval = setInterval(syncFromSDK, 3000);
+      return () => clearInterval(interval);
     }
-  }, [isSDKReady]); // Only re-run when SDK becomes ready
+  }, [isSDKReady, store.farcasterConnected, store.farcasterUsername]); // Re-run when these change
 
   return null;
 }
