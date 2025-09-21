@@ -1,6 +1,7 @@
 'use client';
 
 import { NeynarAuthButton, useNeynarContext } from '@neynar/react';
+import { FarcasterAwareAuthButton } from '@/components/auth/FarcasterAwareAuthButton';
 import { useEffect, useState } from 'react';
 import sdk from '@farcaster/miniapp-sdk';
 
@@ -88,6 +89,11 @@ export default function TestNeynarPage() {
       <div className="mb-8">
         <h2 className="text-lg font-semibold mb-4">Login Button (Direct Neynar):</h2>
         <NeynarAuthButton />
+      </div>
+
+      <div className="mb-8">
+        <h2 className="text-lg font-semibold mb-4">Smart Auth Button (With Farcaster Detection):</h2>
+        <FarcasterAwareAuthButton />
       </div>
 
       <div className="mb-8">
