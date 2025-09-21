@@ -304,8 +304,9 @@ export const useUnifiedAuthStore = create<UnifiedAuthState>()(
               set({ identitiesLinked: true });
             }
 
-            // Refresh full profile
-            await get().refreshProfile();
+            // Skip refreshProfile to prevent overwriting correct SDK data
+            // The SDK data should be the source of truth in Farcaster miniapp
+            console.log('🚫 Skipping refreshProfile to preserve SDK data');
           }
 
           set({ isLoading: false });

@@ -99,38 +99,9 @@ export function UnifiedAuthButton() {
           const userData = context.user;
           console.log('📱 Auto-connecting with Farcaster SDK user:', userData);
 
-          // Connect with SDK user data
-          const userDataWithAddresses = userData as any;
-          // Use username as the display name if displayName is "Testuser" or not meaningful
-          const actualDisplayName = (userData.displayName && userData.displayName !== 'Testuser')
-            ? userData.displayName
-            : userData.username || 'Anon';
-
-          console.log('📱 Calling storeConnectFarcaster with:', {
-            fid: userData.fid,
-            username: userData.username,
-            display_name: actualDisplayName,
-            displayName: actualDisplayName,
-            pfp_url: userData.pfpUrl,
-            pfpUrl: userData.pfpUrl,
-            bio: userDataWithAddresses.profile?.bio || '',
-            verified_addresses: userDataWithAddresses.verifiedAddresses || {},
-            verifiedAddresses: userDataWithAddresses.verifiedAddresses?.ethereum || []
-          });
-
-          storeConnectFarcaster({
-            fid: userData.fid,
-            username: userData.username,
-            display_name: actualDisplayName,
-            displayName: actualDisplayName,
-            pfp_url: userData.pfpUrl,
-            pfpUrl: userData.pfpUrl,
-            bio: userDataWithAddresses.profile?.bio || '',
-            verified_addresses: userDataWithAddresses.verifiedAddresses || {},
-            verifiedAddresses: userDataWithAddresses.verifiedAddresses?.ethereum || []
-          });
-
-          console.log('📱 storeConnectFarcaster called successfully');
+          // DISABLED: Don't call storeConnectFarcaster as it triggers API calls
+          // Let FarcasterSDKSync handle this with direct state updates instead
+          console.log('📱 Skipping storeConnectFarcaster - letting FarcasterSDKSync handle auth');
 
           // Try to get wallet from Farcaster SDK
           try {

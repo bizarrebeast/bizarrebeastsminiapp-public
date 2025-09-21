@@ -20,7 +20,8 @@ export async function POST(request: NextRequest) {
       farcasterFid,
       signature,
       message,
-      farcasterData
+      farcasterData,
+      skipRefresh
     } = body;
 
     // Validate required fields - either wallet or Farcaster required

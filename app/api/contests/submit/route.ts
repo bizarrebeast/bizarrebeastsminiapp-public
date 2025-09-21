@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 import { uploadToR2, generateScreenshotKey, getFileExtension, validateImageFile, isR2Configured } from '@/lib/r2-storage';
 import { rateLimit, getClientIp } from '@/lib/rate-limit';
+import { extractImageMetadata, validateImageWithMetadata, createFraudDetectionSummary } from '@/lib/image-metadata';
 
 export async function POST(request: Request) {
   console.log('🎯 Contest submission API called at:', new Date().toISOString());
@@ -145,16 +146,51 @@ export async function POST(request: Request) {
       );
     }
 
-    // Handle screenshot upload
+    // Handle screenshot upload with enhanced validation
     let screenshotUrl = null;
+    let imageMetadata = null;
+    let fraudDetectionSummary = null;
+
     if (screenshot) {
-      // Validate the image file
-      const validation = validateImageFile(screenshot);
-      if (!validation.valid) {
+      // Basic validation first
+      const basicValidation = validateImageFile(screenshot);
+      if (!basicValidation.valid) {
         return NextResponse.json(
-          { error: validation.error },
+          { error: basicValidation.error },
           { status: 400 }
         );
+      }
+
+      // Extract image metadata for fraud detection
+      try {
+        console.log('📸 Extracting image metadata for fraud detection...');
+        imageMetadata = await extractImageMetadata(screenshot);
+        fraudDetectionSummary = createFraudDetectionSummary(imageMetadata);
+
+        console.log('📸 Metadata extraction result:', {
+          isSuspicious: imageMetadata.fraudDetection.isSuspicious,
+          riskScore: imageMetadata.fraudDetection.riskScore,
+          suspiciousReasons: imageMetadata.fraudDetection.suspiciousReasons
+        });
+
+        // Enhanced validation with metadata
+        const enhancedValidation = validateImageWithMetadata(screenshot, imageMetadata);
+        if (!enhancedValidation.valid) {
+          return NextResponse.json(
+            { error: enhancedValidation.error },
+            { status: 400 }
+          );
+        }
+
+        // Log warnings for admin review
+        if (enhancedValidation.warnings.length > 0) {
+          console.log('⚠️ Image validation warnings:', enhancedValidation.warnings);
+        }
+
+      } catch (metadataError) {
+        console.error('❌ Metadata extraction failed:', metadataError);
+        // Don't block submission, but log the issue
+        fraudDetectionSummary = 'Metadata extraction failed';
       }
 
       // Check if R2 is configured
@@ -195,7 +231,21 @@ export async function POST(request: Request) {
         submitted_from: 'web',
         user_agent: request.headers.get('user-agent'),
         timestamp: new Date().toISOString(),
-        farcaster_fid: farcasterFid || null // Store FID in metadata
+        farcaster_fid: farcasterFid || null, // Store FID in metadata
+        // Enhanced fraud detection metadata
+        image_metadata: imageMetadata ? {
+          file_size: imageMetadata.fileSize,
+          mime_type: imageMetadata.mimeType,
+          dimensions: imageMetadata.dimensions,
+          exif_data: imageMetadata.exif,
+          fraud_detection: {
+            is_suspicious: imageMetadata.fraudDetection.isSuspicious,
+            risk_score: imageMetadata.fraudDetection.riskScore,
+            suspicious_reasons: imageMetadata.fraudDetection.suspiciousReasons,
+            checks: imageMetadata.fraudDetection.checks,
+            summary: fraudDetectionSummary
+          }
+        } : null
       }
     };
 

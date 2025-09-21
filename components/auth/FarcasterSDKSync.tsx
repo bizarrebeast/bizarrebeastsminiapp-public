@@ -70,12 +70,12 @@ export function FarcasterSDKSync() {
           // For now, we'll use an empty array and rely on known wallet for specific users
           const verifiedAddresses: string[] = [];
 
-          // For @bizarrebeast, use the specific wallet
+          // For @bizarrebeast, always use the specific wallet
           let walletToConnect = store.walletAddress;
-          if (sdkUser.fid === 357897 && !walletToConnect) {
-            // Use the known wallet for @bizarrebeast
+          if (sdkUser.fid === 357897) {
+            // Always use the known wallet for @bizarrebeast, even if store has one
             walletToConnect = '0x3FDD6aFEd7a19990632468c7102219d051E685dB';
-            console.log('🎯 Using known wallet for @bizarrebeast');
+            console.log('🎯 Using authoritative wallet for @bizarrebeast');
           } else if (!walletToConnect && verifiedAddresses.length > 0) {
             walletToConnect = verifiedAddresses[0];
             console.log('🔗 Using first verified address:', walletToConnect);
@@ -109,20 +109,29 @@ export function FarcasterSDKSync() {
             wallet: walletToConnect
           });
 
-          // If this is bizarrebeast and we set the wallet, also update the database
-          if (sdkUser.fid === 357897 && walletToConnect) {
+          // If this is bizarrebeast, ensure database has correct data
+          if (sdkUser.fid === 357897) {
             try {
-              await fetch('/api/auth/update-wallet', {
+              // Update both Farcaster data and wallet
+              await fetch('/api/auth/link', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                   farcasterFid: sdkUser.fid,
-                  walletAddress: walletToConnect
+                  farcasterData: {
+                    username: sdkUser.username,
+                    displayName: sdkUser.displayName || sdkUser.username,
+                    pfpUrl: sdkUser.pfpUrl,
+                    bio: '',
+                    verifiedAddresses: [walletToConnect!].filter(Boolean)
+                  },
+                  walletAddress: walletToConnect,
+                  skipRefresh: true // Don't trigger refreshProfile
                 })
               });
-              console.log('✅ Updated wallet in database');
+              console.log('✅ Updated complete profile in database for @bizarrebeast');
             } catch (error) {
-              console.error('Failed to update wallet in database:', error);
+              console.error('Failed to update profile in database:', error);
             }
           }
         }

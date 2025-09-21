@@ -75,6 +75,14 @@ export default function EnhancedSubmissionsTable({
       // Check for suspicious patterns
       const suspiciousReasons = [];
 
+      // Check image metadata fraud detection first
+      const imageMetadata = (sub.metadata as any)?.image_metadata;
+      const imageFraudDetection = imageMetadata?.fraud_detection;
+
+      if (imageFraudDetection?.is_suspicious) {
+        suspiciousReasons.push(...imageFraudDetection.suspicious_reasons);
+      }
+
       // Multiple submissions from same wallet
       if (walletSubs.length > 1) {
         suspiciousReasons.push(`${walletSubs.length} submissions from same wallet`);
@@ -105,8 +113,10 @@ export default function EnhancedSubmissionsTable({
 
       return {
         ...sub,
-        isSuspicious: suspiciousReasons.length > 0,
-        suspiciousReasons
+        isSuspicious: suspiciousReasons.length > 0 || imageFraudDetection?.is_suspicious,
+        suspiciousReasons,
+        imageRiskScore: imageFraudDetection?.risk_score || 0,
+        imageFraudSummary: imageFraudDetection?.summary
       };
     });
   }, [submissions]);
@@ -473,7 +483,17 @@ export default function EnhancedSubmissionsTable({
                       <div className="relative group">
                         <AlertTriangle className="w-4 h-4 text-orange-400" />
                         <div className="absolute z-10 invisible group-hover:visible bg-dark-bg border border-orange-500/40
-                                      rounded-lg p-2 mt-1 w-48 text-xs text-orange-300">
+                                      rounded-lg p-3 mt-1 w-64 text-xs text-orange-300">
+                          {submission.imageRiskScore > 0 && (
+                            <div className="mb-2 pb-2 border-b border-orange-500/20">
+                              <div className="font-semibold">Image Analysis:</div>
+                              <div>Risk Score: {submission.imageRiskScore}/100</div>
+                              {submission.imageFraudSummary && (
+                                <div className="mt-1 text-gray-400">{submission.imageFraudSummary}</div>
+                              )}
+                            </div>
+                          )}
+                          <div className="font-semibold mb-1">Suspicious Activity:</div>
                           {submission.suspiciousReasons.map((reason, i) => (
                             <div key={i}>• {reason}</div>
                           ))}
