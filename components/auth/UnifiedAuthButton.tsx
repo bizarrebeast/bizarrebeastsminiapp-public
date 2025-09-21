@@ -70,6 +70,7 @@ export function UnifiedAuthButton() {
 
   // Detect miniapp context and handle auto-login
   useEffect(() => {
+    console.log('🎯 UnifiedAuthButton useEffect started');
     const checkMiniappAuth = async () => {
       // Properly check if in miniapp using async function
       const inMiniapp = await checkIsInFarcasterMiniapp();

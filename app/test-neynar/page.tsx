@@ -12,6 +12,7 @@ export default function TestNeynarPage() {
   const [farcasterUser, setFarcasterUser] = useState<any>(null);
   const [sdkLoaded, setSdkLoaded] = useState(false);
   const [debugLogs, setDebugLogs] = useState<string[]>([]);
+  const [unifiedAuthLogs, setUnifiedAuthLogs] = useState<string[]>([]);
 
   // Get unified auth store state for debugging
   const unifiedAuthStore = useUnifiedAuthStore();
@@ -19,6 +20,26 @@ export default function TestNeynarPage() {
   const addLog = (message: string) => {
     setDebugLogs(prev => [...prev, `${new Date().toLocaleTimeString()}: ${message}`]);
   };
+
+  // Capture console logs from UnifiedAuthButton
+  useEffect(() => {
+    const originalConsoleLog = console.log;
+    console.log = (...args) => {
+      originalConsoleLog(...args);
+      const message = args.map(arg =>
+        typeof arg === 'string' ? arg : JSON.stringify(arg, null, 2)
+      ).join(' ');
+
+      // Capture logs from UnifiedAuthButton and store
+      if (message.includes('🎯') || message.includes('📱') || message.includes('🏪')) {
+        setUnifiedAuthLogs(prev => [...prev, `${new Date().toLocaleTimeString()}: ${message}`]);
+      }
+    };
+
+    return () => {
+      console.log = originalConsoleLog;
+    };
+  }, []);
 
   useEffect(() => {
     // Try to get user from Farcaster Miniapp SDK
@@ -125,13 +146,28 @@ export default function TestNeynarPage() {
       </div>
 
       <div className="mb-8">
-        <h2 className="text-lg font-semibold mb-4">Debug Logs:</h2>
+        <h2 className="text-lg font-semibold mb-4">Debug Logs (SDK):</h2>
         <div className="bg-gray-900 rounded p-4 max-h-64 overflow-y-auto">
           {debugLogs.length === 0 ? (
             <p className="text-gray-500 text-sm">No logs yet...</p>
           ) : (
             debugLogs.map((log, index) => (
               <div key={index} className="text-xs text-green-400 mb-1">
+                {log}
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+
+      <div className="mb-8">
+        <h2 className="text-lg font-semibold mb-4">UnifiedAuthButton Debug Logs:</h2>
+        <div className="bg-gray-900 rounded p-4 max-h-64 overflow-y-auto">
+          {unifiedAuthLogs.length === 0 ? (
+            <p className="text-yellow-500 text-sm">No UnifiedAuthButton logs yet...</p>
+          ) : (
+            unifiedAuthLogs.map((log, index) => (
+              <div key={index} className="text-xs text-yellow-400 mb-1">
                 {log}
               </div>
             ))
