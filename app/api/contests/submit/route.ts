@@ -93,11 +93,19 @@ export async function POST(request: Request) {
     }
 
     // Check submission limit based on max_entries_per_wallet
-    const { count } = await supabase
+    const { count, error: countError } = await supabase
       .from('contest_submissions')
-      .select('id', { count: 'exact' })
+      .select('*', { count: 'exact', head: true })
       .eq('contest_id', contestId)
       .eq('wallet_address', walletAddress.toLowerCase());
+
+    if (countError) {
+      console.error('Error counting existing submissions:', countError);
+      return NextResponse.json(
+        { error: 'Failed to check existing submissions' },
+        { status: 500 }
+      );
+    }
 
     const submissionCount = count || 0;
 
