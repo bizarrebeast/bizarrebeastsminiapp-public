@@ -4,6 +4,7 @@ import { uploadToR2, generateScreenshotKey, getFileExtension, validateImageFile,
 import { rateLimit, getClientIp } from '@/lib/rate-limit';
 
 export async function POST(request: Request) {
+  console.log('🎯 Contest submission API called at:', new Date().toISOString());
   try {
     // Rate limiting: 5 submissions per minute per IP
     const clientIp = getClientIp(request);
@@ -28,6 +29,7 @@ export async function POST(request: Request) {
       );
     }
     // Parse form data
+    console.log('📝 Parsing form data...');
     const formData = await request.formData();
 
     const contestId = formData.get('contestId') as string;
@@ -38,6 +40,16 @@ export async function POST(request: Request) {
     const farcasterUsername = formData.get('farcasterUsername') as string;
     const farcasterFid = formData.get('farcasterFid') as string;
 
+    console.log('📝 Form data parsed:', {
+      contestId,
+      walletAddress: walletAddress?.substring(0, 6) + '...',
+      score,
+      hasScreenshot: !!screenshot,
+      tokenBalance,
+      farcasterUsername,
+      farcasterFid
+    });
+
     // Validate required fields
     if (!contestId || !walletAddress) {
       return NextResponse.json(
@@ -47,11 +59,19 @@ export async function POST(request: Request) {
     }
 
     // Check if contest exists and is active
+    console.log('🏆 Fetching contest:', contestId);
     const { data: contest, error: contestError } = await supabase
       .from('contests')
       .select('*')
       .eq('id', contestId)
       .single();
+
+    console.log('🏆 Contest fetch result:', {
+      contestFound: !!contest,
+      contestError: contestError?.message,
+      contestName: contest?.name,
+      maxEntries: contest?.max_entries_per_wallet
+    });
 
     if (contestError || !contest) {
       return NextResponse.json(
@@ -93,14 +113,21 @@ export async function POST(request: Request) {
     }
 
     // Check submission limit based on max_entries_per_wallet
+    console.log('📊 Checking existing submissions for wallet:', walletAddress?.substring(0, 6) + '...');
     const { data: existingSubmissions, error: countError } = await supabase
       .from('contest_submissions')
       .select('id')
       .eq('contest_id', contestId)
       .eq('wallet_address', walletAddress.toLowerCase());
 
+    console.log('📊 Existing submissions check result:', {
+      submissionsFound: existingSubmissions?.length || 0,
+      countError: countError?.message,
+      maxAllowed: contest.max_entries_per_wallet
+    });
+
     if (countError) {
-      console.error('Error counting existing submissions:', countError);
+      console.error('❌ Error counting existing submissions:', countError);
       return NextResponse.json(
         { error: 'Failed to check existing submissions' },
         { status: 500 }
@@ -217,7 +244,11 @@ export async function POST(request: Request) {
     });
 
   } catch (error) {
-    console.error('Contest submission error:', error);
+    console.error('❌ Contest submission FATAL error:', {
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+      error
+    });
     return NextResponse.json(
       { error: 'An unexpected error occurred' },
       { status: 500 }
