@@ -13,10 +13,16 @@ export default function TestNeynarPage() {
     // Try to get user from Farcaster Miniapp SDK
     const initSDK = async () => {
       try {
-        const context = await sdk.context;
-        console.log('Farcaster SDK Context:', context);
-        if (context?.user) {
-          setFarcasterUser(context.user);
+        // Check if we're in a miniapp
+        const isInMiniApp = await sdk.isInMiniApp();
+        console.log('Is in Farcaster miniapp:', isInMiniApp);
+
+        if (isInMiniApp) {
+          const context = await sdk.context;
+          console.log('Farcaster SDK Context:', context);
+          if (context?.user) {
+            setFarcasterUser(context.user);
+          }
         }
         setSdkLoaded(true);
       } catch (error) {

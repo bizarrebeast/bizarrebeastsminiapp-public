@@ -16,14 +16,6 @@ export function FarcasterAwareAuthButton() {
   useEffect(() => {
     const checkFarcasterContext = async () => {
       try {
-        // Initialize the Farcaster SDK
-        const ready = await sdk.ready;
-        if (!ready) {
-          console.log('Farcaster SDK not ready');
-          setLoading(false);
-          return;
-        }
-
         // Get the context which includes user info
         const context = await sdk.context;
         console.log('Farcaster SDK Context:', context);
@@ -42,9 +34,9 @@ export function FarcasterAwareAuthButton() {
               displayName: context.user.displayName,
               pfp_url: context.user.pfpUrl,
               pfpUrl: context.user.pfpUrl,
-              bio: context.user.profile?.bio || '',
-              verified_addresses: context.user.verifiedAddresses || {},
-              verifiedAddresses: context.user.verifiedAddresses?.ethereum || []
+              bio: '',
+              verified_addresses: {},
+              verifiedAddresses: []
             });
           }
         }
