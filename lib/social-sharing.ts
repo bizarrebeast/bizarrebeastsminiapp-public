@@ -52,7 +52,7 @@ export const SHARE_TEMPLATES = {
     milestone15: `🏆 15-DAY STREAK on BizarreBeasts!\nBonus {bonus} $BB earned!\n\nThe grind pays off! Join /bizarrebeasts\nCC @bizarrebeast`,
     milestone30: `👑 30-DAY PERFECT STREAK COMPLETE!\n\n✅ 30 days checked in\n💰 {totalRewards} $BB earned\n🔄 Ready for next cycle!\n\nJoin the most dedicated community at /bizarrebeasts!\nCC @bizarrebeast`,
     streakbreak: `🔄 Back on the grind! Starting fresh on BizarreBeasts.\n\nPrevious best: {bestStreak} days\nLet's beat it this time! 💪\n\nJoin /bizarrebeasts and build your streak!\nCC @bizarrebeast`,
-    contest: `🏆 Check out the {name} contest on BizarreBeasts!\n\n{description}\n\n⏰ {timeLeft}\n💰 Prize: {prize}\n\nEnter now at /bizarrebeasts!\nCC @bizarrebeast`,
+    contest: `🏆 Check out the {name} contest on BizarreBeasts!\n\n⏰ {timeLeft}\n💰 Prize: {prize}\n\nEnter now at /bizarrebeasts!\nCC @bizarrebeast`,
     contestEntry: `📸 Just entered the {name}!\n\nCheck out my BIZARRE creation and vote for me to help me gain access to the /bizarrebeasts community!\n\n💰 Prize pool: {prize}\n⏰ {timeLeft}\n\nJoin the competition at /bizarrebeasts!\nCC @bizarrebeast`,
     contestPosition: `🏆 {playerText} ranked #{rank} in the {name} contest on BizarreBeasts!\n\n💪 Score: {score}\n\nJoin and compete at /bizarrebeasts!\nCC @bizarrebeast`,
     contestWinner: `🎉 I WON the {name} contest on BizarreBeasts!\n\n🥇 Final position: #{position}\n💰 Prize won: {prize}\n🔥 Score: {score}\n\nJoin the next contest at /bizarrebeasts!\nCC @bizarrebeast`,
@@ -68,7 +68,7 @@ export const SHARE_TEMPLATES = {
     milestone15: `🏆 15-DAY STREAK on @bizarrebeasts_!\nBonus {bonus} $BB earned!\n\nThe grind pays off!`,
     milestone30: `👑 30-DAY PERFECT STREAK COMPLETE on @bizarrebeasts_!\n\n✅ 30 days checked in\n💰 {totalRewards} $BB earned\n🔄 Ready for next cycle!`,
     streakbreak: `🔄 Back on the grind! Starting fresh on @bizarrebeasts_.\n\nPrevious best: {bestStreak} days\nLet's beat it this time! 💪`,
-    contest: `🏆 Check out the {name} contest on @bizarrebeasts_!\n\n{description}\n\n⏰ {timeLeft}\n💰 Prize: {prize}`,
+    contest: `🏆 Check out the {name} contest on @bizarrebeasts_!\n\n⏰ {timeLeft}\n💰 Prize: {prize}`,
     contestEntry: `📸 Just entered the {name}!\n\nCheck out my BIZARRE creation and vote for me to help me gain access to the @bizarrebeasts_ community!\n\n💰 Prize pool: {prize}\n⏰ {timeLeft}\n\nJoin the competition!\nCC @bizarrebeasts_`,
     contestPosition: `🏆 {playerText} ranked #{rank} in the {name} contest on @bizarrebeasts_!\n\n💪 Score: {score}`,
     contestWinner: `🎉 I WON the {name} contest on @bizarrebeasts_!\n\n🥇 Final position: #{position}\n💰 Prize won: {prize}`,
@@ -84,7 +84,7 @@ export const SHARE_TEMPLATES = {
     milestone15: `🏆 15-DAY STREAK on @bizarrebeast!\nBonus {bonus} ($BB) earned!`,
     milestone30: `👑 30-DAY PERFECT STREAK COMPLETE!\n\n✅ 30 days checked in\n💰 {totalRewards} ($BB) earned\n🔄 Ready for next cycle!`,
     streakbreak: `🔄 Back on the grind! Starting fresh on @bizarrebeast.\n\nPrevious best: {bestStreak} days`,
-    contest: `🏆 Check out the {name} contest on @bizarrebeast!\n\n{description}\n\n⏰ {timeLeft}\n💰 Prize: {prize}`,
+    contest: `🏆 Check out the {name} contest on @bizarrebeast!\n\n⏰ {timeLeft}\n💰 Prize: {prize}`,
     contestEntry: `📸 Just entered the {name}!\n\nCheck out my BIZARRE creation and vote for me to help me gain access to the @bizarrebeast community!\n\n💰 Prize pool: {prize}\n⏰ {timeLeft}`,
     contestPosition: `🏆 {playerText} ranked #{rank} in the {name} contest on @bizarrebeast!\n\n💪 Score: {score}`,
     contestWinner: `🎉 I WON the {name} contest on @bizarrebeast ($BB)!\n\n🥇 Final position: #{position}\n💰 Prize won: {prize}`,
@@ -167,23 +167,16 @@ export async function shareToTwitter(options: ShareOptions): Promise<void> {
   // Use custom text or default template
   let text = options.text || SHARE_TEMPLATES.twitter.default;
 
-  // Twitter's web intent has limited support for line breaks
-  // Replace double line breaks with bullet points or periods for better formatting
-  // Keep single line breaks as spaces
-  text = text
-    .split('\n\n')
-    .map(paragraph => paragraph.replace(/\n/g, ' '))
-    .join(' • ');
-
   // IMPORTANT: Always include URL for link preview
   // Twitter will auto-generate preview card from the URL's meta tags
   const appUrl = options.url || 'https://bbapp.bizarrebeasts.io';
-  text += ` ${appUrl}`;
+  text += `\n\n${appUrl}`;
 
-  // Use encodeURIComponent for encoding
+  // Use encodeURIComponent which properly encodes \n as %0A
+  // Twitter DOES support line breaks when properly encoded
   const encodedText = encodeURIComponent(text);
 
-  // Build URL manually to ensure proper encoding
+  // Build URL manually
   let shareUrl = `${baseUrl}?text=${encodedText}`;
 
   // Add hashtags if provided

@@ -186,9 +186,7 @@ export default function ShareButtons({
           // Contest placeholders for Farcaster
           if (contestData && (shareType === 'contest' || shareType === 'contestEntry' || shareType === 'contestPosition' || shareType === 'contestWinner')) {
             shareText = shareText.replace(/\{name\}/g, contestData.name);
-            if (contestData.description) {
-              shareText = shareText.replace(/\{description\}/g, contestData.description);
-            }
+            // Description removed from all platforms to keep shares concise
             if (contestData.timeLeft) {
               shareText = shareText.replace(/\{timeLeft\}/g, contestData.timeLeft);
             }
@@ -276,9 +274,7 @@ export default function ShareButtons({
           // Contest placeholders
           if (contestData && (shareType === 'contest' || shareType === 'contestEntry' || shareType === 'contestPosition' || shareType === 'contestWinner')) {
             text = text.replace(/\{name\}/g, contestData.name);
-            if (contestData.description) {
-              text = text.replace(/\{description\}/g, contestData.description);
-            }
+            // Don't include description in shares - it's too long
             if (contestData.timeLeft) {
               text = text.replace(/\{timeLeft\}/g, contestData.timeLeft);
             }
