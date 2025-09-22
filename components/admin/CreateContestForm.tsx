@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
-import { X, Loader2, Trophy, Calendar, Coins, Users, FileText, Upload, Image, ExternalLink, Link } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { X, Loader2, Trophy, Calendar, Coins, Users, FileText, Upload, Image, ExternalLink, Link, ChevronDown, Save, Sparkles } from 'lucide-react';
+import { getAllTemplates, saveCustomTemplate, ContestTemplate } from '@/lib/contest-templates';
 
 interface CreateContestFormProps {
   isOpen: boolean;
@@ -12,6 +13,10 @@ interface CreateContestFormProps {
 export default function CreateContestForm({ isOpen, onClose, onSuccess }: CreateContestFormProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [templates, setTemplates] = useState<ContestTemplate[]>([]);
+  const [selectedTemplate, setSelectedTemplate] = useState<string>('');
+  const [showSaveTemplate, setShowSaveTemplate] = useState(false);
+  const [templateName, setTemplateName] = useState('');
   
   const [formData, setFormData] = useState({
     name: '',
@@ -47,6 +52,76 @@ export default function CreateContestForm({ isOpen, onClose, onSuccess }: Create
   const [bannerFile, setBannerFile] = useState<File | null>(null);
   const [bannerPreview, setBannerPreview] = useState<string | null>(null);
   const [uploadingBanner, setUploadingBanner] = useState(false);
+
+  // Load templates on mount
+  useEffect(() => {
+    setTemplates(getAllTemplates());
+  }, []);
+
+  // Apply selected template
+  const handleTemplateSelect = (templateId: string) => {
+    setSelectedTemplate(templateId);
+
+    if (templateId === '') {
+      // Clear form when no template selected
+      return;
+    }
+
+    const template = templates.find(t => t.id === templateId);
+    if (template) {
+      // Apply template data to form
+      setFormData(prev => ({
+        ...prev,
+        ...template.formData,
+        name: '', // Don't override the name
+        start_date: new Date().toISOString().slice(0, 16),
+        end_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 16),
+      }));
+    }
+  };
+
+  // Save current form as template
+  const handleSaveAsTemplate = async () => {
+    if (!templateName.trim()) {
+      setError('Please enter a template name');
+      return;
+    }
+
+    try {
+      const template = {
+        name: templateName,
+        category: 'custom' as const,
+        description: `Custom template: ${formData.description.slice(0, 50)}...`,
+        formData: {
+          type: formData.type,
+          description: formData.description,
+          game_name: formData.game_name,
+          min_bb_required: formData.min_bb_required,
+          max_bb_required: formData.max_bb_required,
+          prize_amount: formData.prize_amount,
+          prize_type: formData.prize_type,
+          max_entries_per_wallet: formData.max_entries_per_wallet,
+          rules: formData.rules,
+          is_recurring: formData.is_recurring,
+          recurrence_interval: formData.recurrence_interval,
+          voting_enabled: formData.voting_enabled,
+          voting_type: formData.voting_type,
+          min_votes_required: formData.min_votes_required,
+          cta_button_text: formData.cta_button_text,
+          cta_type: formData.cta_type,
+          track_cta_clicks: formData.track_cta_clicks,
+        }
+      };
+
+      saveCustomTemplate(template);
+      setTemplates(getAllTemplates());
+      setShowSaveTemplate(false);
+      setTemplateName('');
+      setError(null);
+    } catch (err) {
+      setError('Failed to save template');
+    }
+  };
 
   const handleBannerSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -235,6 +310,96 @@ export default function CreateContestForm({ isOpen, onClose, onSuccess }: Create
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
+          {/* Template Selector */}
+          <div className="bg-gradient-to-r from-gem-crystal/10 via-gem-gold/10 to-gem-pink/10 border border-gem-crystal/20 rounded-lg p-4">
+            <div className="flex items-center justify-between mb-3">
+              <label className="text-sm font-medium text-gem-crystal flex items-center gap-2">
+                <Sparkles className="w-4 h-4" />
+                Use Template (Optional)
+              </label>
+              {formData.name && (
+                <button
+                  type="button"
+                  onClick={() => setShowSaveTemplate(!showSaveTemplate)}
+                  className="text-xs px-2 py-1 bg-gem-crystal/20 text-gem-crystal border border-gem-crystal/30 rounded hover:bg-gem-crystal/30 transition flex items-center gap-1"
+                >
+                  <Save className="w-3 h-3" />
+                  Save as Template
+                </button>
+              )}
+            </div>
+
+            <select
+              value={selectedTemplate}
+              onChange={(e) => handleTemplateSelect(e.target.value)}
+              className="w-full px-4 py-2 bg-dark-bg border border-gray-700 rounded-lg text-white focus:border-gem-crystal focus:outline-none transition"
+            >
+              <option value="">None - Start from scratch</option>
+              <optgroup label="Gaming Templates">
+                {templates.filter(t => t.category === 'gaming').map(template => (
+                  <option key={template.id} value={template.id}>
+                    {template.name}
+                  </option>
+                ))}
+              </optgroup>
+              <optgroup label="Creative Templates">
+                {templates.filter(t => t.category === 'creative').map(template => (
+                  <option key={template.id} value={template.id}>
+                    {template.name}
+                  </option>
+                ))}
+              </optgroup>
+              <optgroup label="Engagement Templates">
+                {templates.filter(t => t.category === 'engagement').map(template => (
+                  <option key={template.id} value={template.id}>
+                    {template.name}
+                  </option>
+                ))}
+              </optgroup>
+              {templates.filter(t => t.category === 'custom').length > 0 && (
+                <optgroup label="Custom Templates">
+                  {templates.filter(t => t.category === 'custom').map(template => (
+                    <option key={template.id} value={template.id}>
+                      {template.name}
+                    </option>
+                  ))}
+                </optgroup>
+              )}
+            </select>
+
+            {/* Save as template form */}
+            {showSaveTemplate && (
+              <div className="mt-3 p-3 bg-dark-bg rounded-lg border border-gray-700">
+                <input
+                  type="text"
+                  value={templateName}
+                  onChange={(e) => setTemplateName(e.target.value)}
+                  placeholder="Template name..."
+                  className="w-full px-3 py-1 bg-dark-card border border-gray-600 rounded text-white text-sm placeholder-gray-500 focus:border-gem-crystal focus:outline-none"
+                />
+                <div className="flex gap-2 mt-2">
+                  <button
+                    type="button"
+                    onClick={handleSaveAsTemplate}
+                    className="px-3 py-1 bg-gem-crystal text-dark-bg text-xs font-semibold rounded hover:opacity-80 transition"
+                  >
+                    Save Template
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowSaveTemplate(false);
+                      setTemplateName('');
+                    }}
+                    className="px-3 py-1 bg-gray-700 text-white text-xs rounded hover:bg-gray-600 transition"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
           {/* Contest Name */}
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">

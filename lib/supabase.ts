@@ -110,8 +110,32 @@ export interface ContestLeaderboard {
 
 // Helper functions for common operations
 export const contestQueries = {
+  // Update expired contest statuses
+  async updateExpiredContestStatuses() {
+    const now = new Date().toISOString();
+
+    // Find and update expired active contests
+    const { data: expiredContests, error: fetchError } = await supabase
+      .from('contests')
+      .select('id')
+      .eq('status', 'active')
+      .lt('end_date', now);
+
+    if (!fetchError && expiredContests && expiredContests.length > 0) {
+      for (const contest of expiredContests) {
+        await supabase
+          .from('contests')
+          .update({ status: 'ended' })
+          .eq('id', contest.id);
+      }
+    }
+  },
+
   // Get ALL contests (for admin panel)
   async getAllContests() {
+    // First update any expired contests
+    await this.updateExpiredContestStatuses();
+
     const { data, error } = await supabase
       .from('contests')
       .select('*')
@@ -127,11 +151,15 @@ export const contestQueries = {
 
   // Get all active contests (excludes test by default)
   async getActiveContests(includeTest: boolean = false) {
+    // First update any expired contests
+    await this.updateExpiredContestStatuses();
+
+    const now = new Date().toISOString();
     let query = supabase
       .from('contests')
       .select('*')
       .eq('status', 'active')
-      .gte('end_date', new Date().toISOString());
+      .or(`end_date.gte.${now},end_date.is.null`); // Active if end_date is in future or null
 
     // Exclude test contests for production views
     if (!includeTest) {

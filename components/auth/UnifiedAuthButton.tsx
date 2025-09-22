@@ -22,6 +22,7 @@ export function UnifiedAuthButton() {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [isFarcasterCheckComplete, setIsFarcasterCheckComplete] = useState(false);
   const [isInMiniapp, setIsInMiniapp] = useState(false);
+  const dropdownRef = React.useRef<HTMLDivElement>(null);
 
   // Get Neynar context
   const neynarContext = useNeynarContext();
@@ -166,6 +167,21 @@ export function UnifiedAuthButton() {
       cleanupPromise.then(cleanup => cleanup());
     };
   }, [storeConnectWallet, storeConnectFarcaster]); // Removed farcasterConnected to prevent re-runs
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    if (isDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isDropdownOpen]);
 
   // Sync wallet with unified store (skip in miniapp if using Farcaster wallet)
   useEffect(() => {
@@ -319,7 +335,7 @@ export function UnifiedAuthButton() {
 
   return (
     <>
-      <div className="relative group">
+      <div className="relative group" ref={dropdownRef}>
         <button
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
           className="relative flex items-center gap-1 px-3 py-1.5 text-xs bg-dark-card rounded transition-all duration-300 hover:opacity-90 overflow-hidden"

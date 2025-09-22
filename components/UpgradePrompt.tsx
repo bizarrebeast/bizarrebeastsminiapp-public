@@ -139,8 +139,14 @@ export default function UpgradePrompt({
   const requirement = calculateRequirement();
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-      <div className="relative max-w-lg w-full bg-dark-card border border-gem-crystal/30 rounded-xl p-6 animate-fadeIn">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto"
+      onClick={onClose}
+    >
+      <div
+        className="relative max-w-lg w-full bg-dark-card border border-gem-crystal/30 rounded-xl p-6 animate-fadeIn my-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Close button */}
         <button
           onClick={onClose}
