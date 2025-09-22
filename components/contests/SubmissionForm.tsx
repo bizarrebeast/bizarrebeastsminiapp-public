@@ -28,6 +28,7 @@ export default function SubmissionForm({ contest, userSubmissions = [], onSucces
   const [tokenBalance, setTokenBalance] = useState<string>('0');
   const [checkingBalance, setCheckingBalance] = useState(false);
   const [authSyncing, setAuthSyncing] = useState(false);
+  const [submissionId, setSubmissionId] = useState<string | null>(null);
 
   // Username platform selection
   const [usernamePlatform, setUsernamePlatform] = useState<'farcaster' | 'x'>('farcaster');
@@ -273,6 +274,11 @@ export default function SubmissionForm({ contest, userSubmissions = [], onSucces
         throw new Error(data.error || 'Submission failed');
       }
 
+      // Capture the submission ID from the response
+      if (data.submission?.id) {
+        setSubmissionId(data.submission.id);
+      }
+
       setSuccess(true);
       setScore('');
       setScreenshot(null);
@@ -318,7 +324,7 @@ export default function SubmissionForm({ contest, userSubmissions = [], onSucces
                     return `${hours} hour${hours > 1 ? 's' : ''} left`;
                   })() : 'Ongoing'
               }}
-              contextUrl={`https://bbapp.bizarrebeasts.io/contests/${contest.id}`}
+              contextUrl={submissionId ? `https://bbapp.bizarrebeasts.io/contests/${contest.id}/submission/${submissionId}` : `https://bbapp.bizarrebeasts.io/contests/${contest.id}`}
               buttonSize="md"
               showLabels={false}
             />

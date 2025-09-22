@@ -191,7 +191,7 @@ export default function MemeGalleryGrid({
                         'BIZARRE NFT',
                       timeLeft: getTimeLeft(contest.end_date)
                     }}
-                    contextUrl={`https://bbapp.bizarrebeasts.io/contests/${contest.id}#${submission.id}`}
+                    contextUrl={`https://bbapp.bizarrebeasts.io/contests/${contest.id}/submission/${submission.id}`}
                     buttonSize="sm"
                     showLabels={false}
                     className="justify-center"
@@ -283,7 +283,7 @@ export default function MemeGalleryGrid({
                       'BIZARRE NFT',
                     timeLeft: getTimeLeft(contest.end_date)
                   }}
-                  contextUrl={`https://bbapp.bizarrebeasts.io/contests/${contest.id}#${selectedMeme.id}`}
+                  contextUrl={`https://bbapp.bizarrebeasts.io/contests/${contest.id}/submission/${selectedMeme.id}`}
                   buttonSize="md"
                   showLabels={false}
                 />
