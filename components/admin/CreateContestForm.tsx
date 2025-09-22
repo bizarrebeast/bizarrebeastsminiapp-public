@@ -80,11 +80,11 @@ export default function CreateContestForm({ isOpen, onClose, onSuccess, duplicat
         max_entries_per_wallet: duplicateFrom.max_entries_per_wallet?.toString() || '1',
         rules: duplicateFrom.rules || '',
         status: 'draft', // Always start as draft when duplicating
-        is_recurring: duplicateFrom.is_recurring || false,
+        is_recurring: duplicateFrom.is_recurring ?? false,
         recurrence_interval: duplicateFrom.recurrence_interval || 'weekly',
         is_test: false, // Don't duplicate test flag
         banner_image_url: duplicateFrom.banner_image_url || '',
-        voting_enabled: duplicateFrom.voting_enabled || false,
+        voting_enabled: duplicateFrom.voting_enabled ?? false,
         voting_start_date: '',
         voting_end_date: '',
         voting_type: duplicateFrom.voting_type || 'single',
@@ -92,9 +92,9 @@ export default function CreateContestForm({ isOpen, onClose, onSuccess, duplicat
         cta_url: duplicateFrom.cta_url || '',
         cta_button_text: duplicateFrom.cta_button_text || '',
         cta_type: duplicateFrom.cta_type || 'internal',
-        cta_new_tab: duplicateFrom.cta_new_tab || false,
+        cta_new_tab: duplicateFrom.cta_new_tab ?? false,
         track_cta_clicks: duplicateFrom.track_cta_clicks ?? true,
-        gallery_enabled: duplicateFrom.gallery_enabled || false,
+        gallery_enabled: duplicateFrom.gallery_enabled ?? false,
         display_votes: duplicateFrom.display_votes ?? true,
         gallery_view_type: duplicateFrom.gallery_view_type || 'grid'
       });

@@ -46,6 +46,10 @@ export async function POST(request: Request) {
       voting_end_date: body.voting_end_date || null,
       voting_type: body.voting_type || 'single',
       min_votes_required: body.min_votes_required || 1,
+      // Gallery fields
+      gallery_enabled: body.gallery_enabled || false,
+      display_votes: body.display_votes !== false, // Default to true
+      gallery_view_type: body.gallery_view_type || 'grid',
       created_by: body.created_by.toLowerCase(),
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
