@@ -296,6 +296,7 @@ export default function CreateContestForm({ isOpen, onClose, onSuccess, duplicat
       }
 
       // Success!
+      console.log('✅ Contest created successfully:', data.contest);
       onSuccess();
       onClose();
       

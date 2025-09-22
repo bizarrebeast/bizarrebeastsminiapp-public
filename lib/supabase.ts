@@ -135,22 +135,52 @@ export const contestQueries = {
     }
   },
 
-  // Get ALL contests (for admin panel)
+  // Get ALL contests (for admin panel - bypasses RLS)
   async getAllContests() {
     // First update any expired contests
     await this.updateExpiredContestStatuses();
 
-    const { data, error } = await supabase
-      .from('contests')
-      .select('*')
-      .order('created_at', { ascending: false });
+    // Try to import admin client for bypassing RLS
+    try {
+      const { supabaseAdmin } = await import('./supabase-admin');
+      const { data, error } = await supabaseAdmin
+        .from('contests')
+        .select('*')
+        .order('created_at', { ascending: false });
 
-    if (error) {
-      console.error('Error fetching all contests:', error);
-      return [];
+      if (error) {
+        console.error('Error fetching all contests with admin client:', error);
+        // Fall back to regular client
+        const { data: fallbackData, error: fallbackError } = await supabase
+          .from('contests')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (fallbackError) {
+          console.error('Error fetching contests with regular client:', fallbackError);
+          return [];
+        }
+        console.log(`📊 getAllContests fetched ${fallbackData?.length} contests (fallback to regular client)`);
+        return fallbackData as Contest[];
+      }
+
+      console.log(`📊 getAllContests fetched ${data?.length} contests from database (admin client)`);
+      return data as Contest[];
+    } catch (importError) {
+      // If admin client not available, use regular client
+      const { data, error } = await supabase
+        .from('contests')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching all contests:', error);
+        return [];
+      }
+
+      console.log(`📊 getAllContests fetched ${data?.length} contests from database (regular client)`);
+      return data as Contest[];
     }
-
-    return data as Contest[];
   },
 
   // Get all active contests (excludes test by default)

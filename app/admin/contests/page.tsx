@@ -89,8 +89,10 @@ export default function AdminContestsPage() {
   const fetchContests = async () => {
     try {
       setLoading(true);
+      console.log('🔄 Fetching all contests from database...');
       // For admin, fetch ALL contests regardless of status
       const allContests = await contestQueries.getAllContests();
+      console.log(`✅ Admin page received ${allContests?.length || 0} contests from getAllContests()`);
       setContests(allContests || []);
       setFilteredContests(allContests || []);
 
@@ -100,7 +102,7 @@ export default function AdminContestsPage() {
         await fetchSubmissions(allContests[0].id);
       }
     } catch (error) {
-      console.error('Error fetching contests:', error);
+      console.error('❌ Error fetching contests:', error);
     } finally {
       setLoading(false);
     }
@@ -108,26 +110,34 @@ export default function AdminContestsPage() {
 
   const filterContests = (search: string, status: string, includeTest: boolean) => {
     let filtered = [...contests];
+    console.log(`🔍 Filtering contests: Total=${contests.length}, Status=${status}, IncludeTest=${includeTest}`);
 
     // Filter out test contests if needed
     if (!includeTest) {
+      const beforeFilter = filtered.length;
       filtered = filtered.filter(c => !c.is_test);
+      console.log(`   Test filter: ${beforeFilter} → ${filtered.length} contests`);
     }
 
     // Filter by search term
     if (search) {
+      const beforeFilter = filtered.length;
       filtered = filtered.filter(c =>
         c.name.toLowerCase().includes(search.toLowerCase()) ||
         c.type.toLowerCase().includes(search.toLowerCase()) ||
         (c.game_name && c.game_name.toLowerCase().includes(search.toLowerCase()))
       );
+      console.log(`   Search filter "${search}": ${beforeFilter} → ${filtered.length} contests`);
     }
 
     // Filter by status
     if (status !== 'all') {
+      const beforeFilter = filtered.length;
       filtered = filtered.filter(c => c.status === status);
+      console.log(`   Status filter "${status}": ${beforeFilter} → ${filtered.length} contests`);
     }
 
+    console.log(`✅ Final filtered: ${filtered.length} contests`);
     setFilteredContests(filtered);
   };
 
