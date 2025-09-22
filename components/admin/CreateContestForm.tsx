@@ -79,7 +79,7 @@ export default function CreateContestForm({ isOpen, onClose, onSuccess, duplicat
         nft_contract_address: duplicateFrom.nft_contract_address || '',
         max_entries_per_wallet: duplicateFrom.max_entries_per_wallet?.toString() || '1',
         rules: duplicateFrom.rules || '',
-        status: 'draft', // Always start as draft when duplicating
+        status: 'active', // Default to active when duplicating
         is_recurring: duplicateFrom.is_recurring ?? false,
         recurrence_interval: duplicateFrom.recurrence_interval || 'weekly',
         is_test: false, // Don't duplicate test flag
