@@ -97,16 +97,10 @@ export default function ContestDetailPage() {
 
       // If user is connected, check their submissions and votes
       if (address) {
-        console.log(`🔍 Checking submissions for wallet address: "${address}"`);
-        console.log(`🔍 Address lowercase: "${address.toLowerCase()}"`);
-        console.log(`🔍 Contest ID: ${id}`);
-
         const submission = await contestQueries.getUserSubmission(id as string, address);
-        console.log(`👤 User submission check result:`, submission);
         setUserSubmission(submission);
 
         const submissions = await contestQueries.getUserSubmissions(id as string, address);
-        console.log(`📋 All user submissions:`, submissions);
         setUserSubmissions(submissions);
 
         // Fetch user's existing votes if voting is enabled

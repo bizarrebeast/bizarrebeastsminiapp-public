@@ -249,12 +249,12 @@ export const contestQueries = {
 
   // Get submissions with vote counts for gallery
   async getSubmissionsWithVotes(contestId: string) {
-    // First get approved submissions
+    // Get both pending and approved submissions (exclude rejected)
     const { data: submissions, error: subError } = await supabase
       .from('contest_submissions')
       .select('*')
       .eq('contest_id', contestId)
-      .eq('status', 'approved')
+      .in('status', ['pending', 'approved'])
       .order('submitted_at', { ascending: false });
 
     if (subError) throw subError;
@@ -282,20 +282,11 @@ export const contestQueries = {
     // Sort by vote count if needed
     submissionsWithVotes.sort((a, b) => (b.vote_count || 0) - (a.vote_count || 0));
 
-    console.log(`📊 Fetched ${submissionsWithVotes.length} submissions with vote counts:`,
-      submissionsWithVotes.map(s => ({ id: s.id, votes: s.vote_count })));
-
     return submissionsWithVotes;
   },
 
   // Get user's submission for a contest (returns first submission for backwards compatibility)
   async getUserSubmission(contestId: string, walletAddress: string) {
-    console.log(`🔍 getUserSubmission query:`, {
-      contestId,
-      walletAddress: walletAddress,
-      walletAddressLowercase: walletAddress.toLowerCase()
-    });
-
     const { data, error } = await supabase
       .from('contest_submissions')
       .select('*')
@@ -304,8 +295,6 @@ export const contestQueries = {
       .order('submitted_at', { ascending: true })
       .limit(1)
       .single();
-
-    console.log(`🔍 getUserSubmission result:`, { data, error: error?.message });
 
     if (error && error.code !== 'PGRST116') throw error; // PGRST116 = no rows returned
     return data as ContestSubmission | null;
