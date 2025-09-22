@@ -6,18 +6,22 @@ A production-ready Farcaster miniapp for the BizarreBeasts ecosystem featuring a
 
 ## 📚 Important Documentation
 
+- **[AUTHENTICATION_FIXES.md](./AUTHENTICATION_FIXES.md)** - Complete authentication system fixes and implementation details (Jan 2025)
 - **[SESSION_SUMMARY.md](./SESSION_SUMMARY.md)** - Latest contest system implementation details
 - **[MIGRATION_GUIDE.md](./MIGRATION_GUIDE.md)** - Database migration and setup guide for contest system
 - **[SHARING-IMPLEMENTATION-GUIDE.md](./SHARING-IMPLEMENTATION-GUIDE.md)** - Complete guide to sharing features and implementation
 
 ## 🚀 Core Features
 
-### 🔐 Unified Authentication System (NEW)
+### 🔐 Unified Authentication System (FIXED Jan 2025)
 - **Dual Identity Support**: Combines Farcaster (social) and Wallet (financial) identities
 - **Auto-Linking**: Automatically links accounts using verified addresses from Farcaster
 - **Persistent Sessions**: Sessions maintained across browser refreshes and app visits
 - **Profile Unification**: Single profile displaying both wallet and Farcaster information
 - **Smart Wallet Integration**: Coinbase Smart Wallet support with no seed phrases required
+- **Dual Authentication Paths**: SDK for Farcaster miniapp, Neynar OAuth for PWA/browser
+- **Automatic Wallet Connection**: Auto-connects verified addresses for Farcaster users
+- **Single Source of Truth**: FarcasterSDKSync manages all authentication state
 
 ### 💳 Base Smart Wallet Integration
 - **Coinbase Smart Wallet**: No seed phrases required - create wallets with just a Coinbase account
