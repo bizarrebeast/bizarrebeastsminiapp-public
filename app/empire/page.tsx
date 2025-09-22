@@ -66,16 +66,10 @@ export default function EmpirePage() {
     const shareText = `I'm ranked #${holder.rank} in the BizarreBeasts ($BB) Empire! 🏆\n\nTier: ${tierName} ${tierEmoji}\nScore: ${formattedBalance}\n${holder.finalMultiplier > 1 ? `Boost: ${holder.finalMultiplier.toFixed(1)}x 🚀\n` : ''}\nJoin the Empire and climb the ranks! 👹\n\nPowered by $GLANKER\n\n#BizarreBeasts #BBEmpire`;
     
     // Build URL with embeds
-    const params = new URLSearchParams();
-    params.append('text', shareText);
-    params.append('embeds[]', 'https://empire.bizarrebeasts.io');
-    params.append('embeds[]', 'https://bbapp.bizarrebeasts.io/empire');
-    
-    
     // Check if we're in Farcaster miniapp and use SDK if available
     try {
       const isInMiniApp = await sdk.isInMiniApp();
-      
+
       if (isInMiniApp) {
         // Use SDK for native sharing in Farcaster (works on mobile!)
         await ultimateShare({
@@ -84,16 +78,14 @@ export default function EmpirePage() {
           channelKey: 'bizarrebeasts'
         });
       } else {
-        // Browser fallback
-        params.append('channelKey', 'bizarrebeasts');
-        const shareUrl = `https://warpcast.com/~/compose?${params.toString()}`;
+        // Browser fallback - use proper encoding for line breaks
+        const shareUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}&embeds[]=${encodeURIComponent('https://empire.bizarrebeasts.io')}&embeds[]=${encodeURIComponent('https://bbapp.bizarrebeasts.io/empire')}&channelKey=bizarrebeasts`;
         window.open(shareUrl, '_blank');
       }
     } catch (error) {
       console.error('Share failed:', error);
-      // Fallback
-      params.append('channelKey', 'bizarrebeasts');
-      const shareUrl = `https://warpcast.com/~/compose?${params.toString()}`;
+      // Fallback - use proper encoding for line breaks
+      const shareUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}&embeds[]=${encodeURIComponent('https://empire.bizarrebeasts.io')}&embeds[]=${encodeURIComponent('https://bbapp.bizarrebeasts.io/empire')}&channelKey=bizarrebeasts`;
       window.open(shareUrl, '_blank');
     }
     

@@ -261,16 +261,10 @@ export default function RitualsPage() {
 
     const shareText = `I've completed ${completedCount} of 10 Daily BIZARRE Rituals! 👹\n\n${completedRitualsList.join('\n')}\n\nJoin me in the BizarreBeasts ($BB) Community and complete your daily $BIZARRE rituals!\n\n#BizarreBeasts #BBRituals`;
     
-    // Build URL with embeds[] parameter for proper link preview
-    const params = new URLSearchParams();
-    params.append('text', shareText);
-    params.append('embeds[]', 'https://bbapp.bizarrebeasts.io/rituals');
-    
-    
     // Check if we're in Farcaster miniapp and use SDK if available
     try {
       const isInMiniApp = await sdk.isInMiniApp();
-      
+
       if (isInMiniApp) {
         // Use SDK for native sharing in Farcaster (works on mobile!)
         await ultimateShare({
@@ -279,16 +273,14 @@ export default function RitualsPage() {
           channelKey: 'bizarrebeasts'
         });
       } else {
-        // Browser fallback
-        params.append('channelKey', 'bizarrebeasts');
-        const shareUrl = `https://warpcast.com/~/compose?${params.toString()}`;
+        // Browser fallback - use proper encoding for line breaks
+        const shareUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}&embeds[]=${encodeURIComponent('https://bbapp.bizarrebeasts.io/rituals')}&channelKey=bizarrebeasts`;
         window.open(shareUrl, '_blank');
       }
     } catch (error) {
       console.error('Share failed:', error);
-      // Fallback
-      params.append('channelKey', 'bizarrebeasts');
-      const shareUrl = `https://warpcast.com/~/compose?${params.toString()}`;
+      // Fallback - use proper encoding for line breaks
+      const shareUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}&embeds[]=${encodeURIComponent('https://bbapp.bizarrebeasts.io/rituals')}&channelKey=bizarrebeasts`;
       window.open(shareUrl, '_blank');
     }
   };
@@ -307,42 +299,35 @@ export default function RitualsPage() {
     // Clean text without URLs (Farcaster will add them as embeds)
     const shareText = `Daily BIZARRE Ritual #${ritual.id}: ${ritual.title}\n\n${ritual.description}\n\nJoin me in completing daily $BIZARRE rituals in the BizarreBeasts ($BB) Community! 👹\n\n#BizarreBeasts #BBRituals`;
     
-    // Build URL with embeds[] parameters for proper link previews
-    const baseUrl = 'https://warpcast.com/~/compose';
-    const params = new URLSearchParams();
-    params.append('text', shareText);
-    
+    // Build embeds array based on the ritual
+    const embeds: string[] = [];
+
     // Handle special cases for embed URLs
     if (ritual.id === 3) {
       // BRND Podium - use the direct brnd.land URL for the embed
-      params.append('embeds[]', 'https://brnd.land');
-      params.append('embeds[]', 'https://bbapp.bizarrebeasts.io/rituals');
+      embeds.push('https://brnd.land');
+      embeds.push('https://bbapp.bizarrebeasts.io/rituals');
     } else if (ritual.id === 4) {
       // Create GIVE - add the coordinape link as embed
-      params.append('embeds[]', 'https://dir.coordinape.com/creators/bizarrebeasts.base.eth');
-      params.append('embeds[]', 'https://bbapp.bizarrebeasts.io/rituals');
+      embeds.push('https://dir.coordinape.com/creators/bizarrebeasts.base.eth');
+      embeds.push('https://bbapp.bizarrebeasts.io/rituals');
     } else if (ritual.id === 1 || ritual.id === 6 || ritual.id === 8) {
       // Meme Generator, Games, Swap - these are on our site, only add the specific page URL
-      params.append('embeds[]', actionUrl);
+      embeds.push(actionUrl);
       // Don't add the main rituals page for these (avoid duplicate)
     } else if (!actionUrl.includes('~/compose')) {
       // For other rituals (Dexscreener, Believe), add both URLs
-      params.append('embeds[]', actionUrl);
-      params.append('embeds[]', 'https://bbapp.bizarrebeasts.io/rituals');
+      embeds.push(actionUrl);
+      embeds.push('https://bbapp.bizarrebeasts.io/rituals');
     } else {
       // For compose URLs (like rip pack), just add the rituals page
-      params.append('embeds[]', 'https://bbapp.bizarrebeasts.io/rituals');
+      embeds.push('https://bbapp.bizarrebeasts.io/rituals');
     }
-    
-    
-    // Build embeds array for SDK
-    const embeds: string[] = [];
-    params.getAll('embeds[]').forEach(embed => embeds.push(embed));
-    
+
     // Check if we're in Farcaster miniapp and use SDK if available
     try {
       const isInMiniApp = await sdk.isInMiniApp();
-      
+
       if (isInMiniApp) {
         console.log('Using SDK for native sharing');
         // Use SDK for native sharing in Farcaster (works on mobile!)
@@ -352,17 +337,31 @@ export default function RitualsPage() {
           channelKey: 'bizarrebeasts'
         });
       } else {
-        // Browser fallback
+        // Browser fallback - build URL with proper encoding for line breaks
         console.log('Using browser fallback');
-        params.append('channelKey', 'bizarrebeasts');
-        const shareUrl = `${baseUrl}?${params.toString()}`;
+        const baseUrl = 'https://warpcast.com/~/compose';
+        let shareUrl = `${baseUrl}?text=${encodeURIComponent(shareText)}`;
+
+        // Add each embed
+        embeds.forEach(embed => {
+          shareUrl += `&embeds[]=${encodeURIComponent(embed)}`;
+        });
+
+        shareUrl += '&channelKey=bizarrebeasts';
         window.open(shareUrl, '_blank');
       }
     } catch (error) {
       console.error('Share failed:', error);
-      // Fallback
-      params.append('channelKey', 'bizarrebeasts');
-      const shareUrl = `${baseUrl}?${params.toString()}`;
+      // Fallback - build URL with proper encoding for line breaks
+      const baseUrl = 'https://warpcast.com/~/compose';
+      let shareUrl = `${baseUrl}?text=${encodeURIComponent(shareText)}`;
+
+      // Add each embed
+      embeds.forEach(embed => {
+        shareUrl += `&embeds[]=${encodeURIComponent(embed)}`;
+      });
+
+      shareUrl += '&channelKey=bizarrebeasts';
       window.open(shareUrl, '_blank');
     }
   };

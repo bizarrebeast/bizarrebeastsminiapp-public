@@ -1107,14 +1107,9 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
             // Prepopulated text (user will attach meme manually)
             const shareText = `...\n\nCheck out BizarreBeasts ($BB) and hold 25M tokens to join /bizarrebeasts! 🚀 👹\n\nCC @bizarrebeast`;
 
-            // Create compose URL with proper URL embed for preview card
+            // Create compose URL with proper encoding for line breaks
             const baseUrl = 'https://warpcast.com/~/compose';
-            const params = new URLSearchParams();
-            params.append('text', shareText);
-            params.append('channelKey', 'bizarrebeasts');
-            // IMPORTANT: Add URL as embed for proper preview card generation - use meme-generator page
-            params.append('embeds[]', 'https://bbapp.bizarrebeasts.io/meme-generator');
-            const shareUrl = `${baseUrl}?${params.toString()}`;
+            const shareUrl = `${baseUrl}?text=${encodeURIComponent(shareText)}&channelKey=bizarrebeasts&embeds[]=${encodeURIComponent('https://bbapp.bizarrebeasts.io/meme-generator')}`;
             
             // Use official SDK detection for share
             let isInMiniApp = false;

@@ -54,19 +54,14 @@ export async function shareMemeToFarcaster(
     // const imageUrl = await uploadImageForSharing(imageDataUrl);
     
     const baseUrl = 'https://warpcast.com/~/compose';
-    const params = new URLSearchParams();
-    
-    // Add cast text
+
+    // Add cast text with proper line break encoding
     const defaultText = `(your text here)\n\nCheck out BizarreBeasts ($BB) and hold 25M tokens to join /bizarrebeasts! 🚀 👹\n\nCC @bizarrebeast\nhttps://bbapp.bizarrebeasts.io`;
-    params.append('text', customText || defaultText);
-    
-    // Add channel
-    params.append('channelKey', channelKey || 'bizarrebeasts');
-    
-    // Will add image embeds when hosting is configured
-    // params.append('embeds[]', imageUrl);
-    
-    const shareUrl = `${baseUrl}?${params.toString()}`;
+    const text = customText || defaultText;
+    const channel = channelKey || 'bizarrebeasts';
+
+    // Build URL with proper encoding for line breaks
+    const shareUrl = `${baseUrl}?text=${encodeURIComponent(text)}&channelKey=${encodeURIComponent(channel)}`;
     
     // Use existing window or open new one
     if (existingWindow) {
