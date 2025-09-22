@@ -95,13 +95,25 @@ export default function ContestDetailPage() {
         setApprovedSubmissions(submissions || []);
       }
 
-      // If user is connected, check their submissions
+      // If user is connected, check their submissions and votes
       if (address) {
         const submission = await contestQueries.getUserSubmission(id as string, address);
         setUserSubmission(submission);
 
         const submissions = await contestQueries.getUserSubmissions(id as string, address);
         setUserSubmissions(submissions);
+
+        // Fetch user's existing votes if voting is enabled
+        if (contestData.voting_enabled) {
+          try {
+            const userVotes = await contestQueries.getUserVotes(id as string, address);
+            setUserVoteIds(userVotes);
+            console.log('Loaded user votes:', userVotes);
+          } catch (voteErr) {
+            console.error('Error loading user votes:', voteErr);
+            // Don't fail the whole page load if votes can't be fetched
+          }
+        }
       }
     } catch (err) {
       console.error('Error fetching contest data:', err);

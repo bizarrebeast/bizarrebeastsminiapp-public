@@ -403,7 +403,7 @@ export const contestQueries = {
       .insert({
         contest_id: contestId,
         submission_id: submissionId,
-        voter_address: voterAddress
+        voter_address: voterAddress.toLowerCase()
       })
       .select()
       .single();
@@ -418,7 +418,7 @@ export const contestQueries = {
       .from('contest_votes')
       .delete()
       .eq('contest_id', contestId)
-      .eq('voter_address', voterAddress);
+      .eq('voter_address', voterAddress.toLowerCase());
 
     if (error) throw error;
     return true;
@@ -430,11 +430,23 @@ export const contestQueries = {
       .from('contest_votes')
       .select('*')
       .eq('contest_id', contestId)
-      .eq('voter_address', voterAddress)
+      .eq('voter_address', voterAddress.toLowerCase())
       .single();
 
     if (error && error.code !== 'PGRST116') throw error;
     return data;
+  },
+
+  // Voting: Get all user votes for a contest (for multiple voting)
+  async getUserVotes(contestId: string, voterAddress: string) {
+    const { data, error } = await supabase
+      .from('contest_votes')
+      .select('submission_id')
+      .eq('contest_id', contestId)
+      .eq('voter_address', voterAddress.toLowerCase());
+
+    if (error) throw error;
+    return data?.map(v => v.submission_id) || [];
   },
 
   // Voting: Get all votes for a contest
