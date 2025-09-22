@@ -290,14 +290,22 @@ export const contestQueries = {
 
   // Get user's submission for a contest (returns first submission for backwards compatibility)
   async getUserSubmission(contestId: string, walletAddress: string) {
+    console.log(`🔍 getUserSubmission query:`, {
+      contestId,
+      walletAddress: walletAddress,
+      walletAddressLowercase: walletAddress.toLowerCase()
+    });
+
     const { data, error } = await supabase
       .from('contest_submissions')
       .select('*')
       .eq('contest_id', contestId)
-      .eq('wallet_address', walletAddress)
+      .eq('wallet_address', walletAddress.toLowerCase())
       .order('submitted_at', { ascending: true })
       .limit(1)
       .single();
+
+    console.log(`🔍 getUserSubmission result:`, { data, error: error?.message });
 
     if (error && error.code !== 'PGRST116') throw error; // PGRST116 = no rows returned
     return data as ContestSubmission | null;
@@ -309,7 +317,7 @@ export const contestQueries = {
       .from('contest_submissions')
       .select('*')
       .eq('contest_id', contestId)
-      .eq('wallet_address', walletAddress)
+      .eq('wallet_address', walletAddress.toLowerCase())
       .order('submitted_at', { ascending: false });
 
     if (error) throw error;
