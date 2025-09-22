@@ -283,7 +283,10 @@ export default function CreateContestForm({ isOpen, onClose, onSuccess }: Create
         cta_button_text: '',
         cta_type: 'internal',
         cta_new_tab: false,
-        track_cta_clicks: true
+        track_cta_clicks: true,
+        gallery_enabled: false,
+        display_votes: true,
+        gallery_view_type: 'grid'
       });
       setBannerFile(null);
       setBannerPreview(null);

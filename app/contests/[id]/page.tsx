@@ -942,7 +942,7 @@ export default function ContestDetailPage() {
             <MemeGalleryGrid
               contest={contest}
               submissions={approvedSubmissions}
-              votingEnabled={contest.voting_enabled && isBetweenDates(contest.voting_start_date, contest.voting_end_date)}
+              votingEnabled={!!contest.voting_enabled && isBetweenDates(contest.voting_start_date, contest.voting_end_date)}
               displayVotes={contest.display_votes ?? true}
               onVote={handleVote}
               userVotes={userVoteIds}
