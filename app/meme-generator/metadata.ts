@@ -3,7 +3,7 @@ import { Metadata } from 'next';
 // Create the MiniAppEmbed structure for Farcaster sharing
 const miniAppEmbed = {
   version: '1',
-  imageUrl: 'https://bbapp.bizarrebeasts.io/farcaster-assets/hero.png',
+  imageUrl: 'https://bbapp.bizarrebeasts.io/farcaster-assets/meme-creator-hero.png',
   button: {
     title: '🎨 Create Meme',
     action: {
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     siteName: 'BizarreBeasts',
     images: [
       {
-        url: 'https://bbapp.bizarrebeasts.io/farcaster-assets/hero.png',
+        url: 'https://bbapp.bizarrebeasts.io/farcaster-assets/meme-creator-hero.png',
         width: 1200,
         height: 630,
         alt: 'BizarreBeasts Meme Generator',
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Meme Generator | BizarreBeasts',
     description: 'Create epic BIZARRE memes!',
-    images: ['https://bbapp.bizarrebeasts.io/farcaster-assets/hero.png'],
+    images: ['https://bbapp.bizarrebeasts.io/farcaster-assets/meme-creator-hero.png'],
     creator: '@bizarrebeasts_',
   },
   other: {
@@ -47,7 +47,7 @@ export const metadata: Metadata = {
     'fc:frame': JSON.stringify(miniAppEmbed), // Backward compatibility
 
     // Legacy frame metadata as fallback
-    'fc:frame:image': 'https://bbapp.bizarrebeasts.io/farcaster-assets/hero.png',
+    'fc:frame:image': 'https://bbapp.bizarrebeasts.io/farcaster-assets/meme-creator-hero.png',
     'fc:frame:button:1': '🎨 Create Meme',
     'fc:frame:button:1:action': 'link',
     'fc:frame:button:1:target': 'https://bbapp.bizarrebeasts.io/meme-generator',
