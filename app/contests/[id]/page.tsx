@@ -29,6 +29,7 @@ import { FEATURES } from '@/lib/feature-flags';
 import SubmissionForm from '@/components/contests/SubmissionForm';
 import ShareButtons from '@/components/ShareButtons';
 import VotingGallery from '@/components/contests/VotingGallery';
+import MemeGalleryGrid from '@/components/contests/MemeGalleryGrid';
 import ContestActionButtons from '@/components/contests/ContestActionButtons';
 import { isBetweenDates } from '@/lib/utils';
 
@@ -45,10 +46,11 @@ export default function ContestDetailPage() {
   const [userBalance, setUserBalance] = useState<string>('0');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'details' | 'leaderboard' | 'submit' | 'voting'>('details');
+  const [activeTab, setActiveTab] = useState<'details' | 'leaderboard' | 'submit' | 'voting' | 'gallery'>('details');
   const [searchTerm, setSearchTerm] = useState('');
   const [searchedUser, setSearchedUser] = useState<ContestLeaderboard | null>(null);
   const [approvedSubmissions, setApprovedSubmissions] = useState<ContestSubmission[]>([]);
+  const [userVoteIds, setUserVoteIds] = useState<string[]>([]);
 
   // Check if contests are enabled
   if (!FEATURES.CONTESTS) {
@@ -155,6 +157,67 @@ export default function ContestDetailPage() {
     if (days > 0) return `${days} day${days > 1 ? 's' : ''} ${hours} hour${hours > 1 ? 's' : ''}`;
     if (hours > 0) return `${hours} hour${hours > 1 ? 's' : ''} ${minutes} minute${minutes > 1 ? 's' : ''}`;
     return `${minutes} minute${minutes > 1 ? 's' : ''}`;
+  };
+
+  const handleVote = async (submissionId: string) => {
+    if (!isConnected || !address) {
+      alert('Please connect your wallet to vote');
+      return;
+    }
+
+    try {
+      // Check if user already voted
+      const isRemovingVote = userVoteIds.includes(submissionId);
+
+      const response = await fetch('/api/contests/vote', {
+        method: isRemovingVote ? 'DELETE' : 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          contestId: contest?.id,
+          submissionId,
+          walletAddress: address,
+        }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to vote');
+      }
+
+      // Update local state
+      if (isRemovingVote) {
+        setUserVoteIds(prev => prev.filter(id => id !== submissionId));
+        // Update vote count in submissions
+        setApprovedSubmissions(prev => prev.map(sub =>
+          sub.id === submissionId
+            ? { ...sub, vote_count: Math.max(0, (sub.vote_count || 0) - 1) }
+            : sub
+        ));
+      } else {
+        // Remove previous vote if single voting
+        if (contest?.voting_type === 'single' && userVoteIds.length > 0) {
+          const prevVoteId = userVoteIds[0];
+          setApprovedSubmissions(prev => prev.map(sub =>
+            sub.id === prevVoteId
+              ? { ...sub, vote_count: Math.max(0, (sub.vote_count || 0) - 1) }
+              : sub
+          ));
+        }
+
+        setUserVoteIds(contest?.voting_type === 'single' ? [submissionId] : [...userVoteIds, submissionId]);
+        // Update vote count in submissions
+        setApprovedSubmissions(prev => prev.map(sub =>
+          sub.id === submissionId
+            ? { ...sub, vote_count: (sub.vote_count || 0) + 1 }
+            : sub
+        ));
+      }
+    } catch (error) {
+      console.error('Voting error:', error);
+      alert(error instanceof Error ? error.message : 'Failed to vote');
+    }
   };
 
   const canEnterContest = () => {
@@ -392,7 +455,7 @@ export default function ContestDetailPage() {
               <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gem-crystal" />
             )}
           </button>
-          {contest.voting_enabled && (
+          {contest.voting_enabled && !contest.gallery_enabled && (
             <button
               onClick={() => setActiveTab('voting')}
               className={`px-4 py-2 font-semibold transition-colors relative whitespace-nowrap ${
@@ -403,6 +466,26 @@ export default function ContestDetailPage() {
             >
               Vote ({approvedSubmissions?.length || 0})
               {activeTab === 'voting' && (
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gem-crystal" />
+              )}
+            </button>
+          )}
+          {contest.gallery_enabled && approvedSubmissions.length > 0 && (
+            <button
+              onClick={() => setActiveTab('gallery')}
+              className={`px-4 py-2 font-semibold transition-colors relative whitespace-nowrap ${
+                activeTab === 'gallery'
+                  ? 'text-gem-crystal'
+                  : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              Gallery ({approvedSubmissions.length})
+              {contest.display_votes && (
+                <span className="ml-1 text-xs">
+                  • {approvedSubmissions.reduce((sum, sub) => sum + (sub.vote_count || 0), 0)} votes
+                </span>
+              )}
+              {activeTab === 'gallery' && (
                 <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gem-crystal" />
               )}
             </button>
@@ -813,6 +896,56 @@ export default function ContestDetailPage() {
               submissions={approvedSubmissions}
               votingEnabled={isBetweenDates(contest.voting_start_date, contest.voting_end_date)}
               votingType={contest.voting_type}
+            />
+          </div>
+        )}
+
+        {/* Gallery Tab - Grid View for Memes */}
+        {activeTab === 'gallery' && contest.gallery_enabled && (
+          <div>
+            {/* Voting Status */}
+            {contest.voting_enabled && (contest.voting_start_date || contest.voting_end_date) && (
+              <div className="mb-4 p-4 bg-dark-card border border-gem-crystal/20 rounded-lg">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-lg font-semibold text-white mb-2">Community Voting</h3>
+                    {contest.voting_start_date && new Date(contest.voting_start_date) > new Date() ? (
+                      <p className="text-yellow-400">
+                        Voting starts: {new Date(contest.voting_start_date).toLocaleDateString()}
+                      </p>
+                    ) : contest.voting_end_date && new Date(contest.voting_end_date) < new Date() ? (
+                      <p className="text-red-400">
+                        Voting ended: {new Date(contest.voting_end_date).toLocaleDateString()}
+                      </p>
+                    ) : (
+                      <p className="text-gem-crystal">
+                        Voting is open!
+                        {contest.voting_end_date && (
+                          <span className="text-gray-400">
+                            {' '}(ends {new Date(contest.voting_end_date).toLocaleDateString()})
+                          </span>
+                        )}
+                      </p>
+                    )}
+                  </div>
+                  {contest.min_votes_required && contest.min_votes_required > 0 && (
+                    <div className="text-right">
+                      <p className="text-sm text-gray-400">Min votes required</p>
+                      <p className="text-lg font-bold text-gem-crystal">{contest.min_votes_required}</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Meme Gallery Grid */}
+            <MemeGalleryGrid
+              contest={contest}
+              submissions={approvedSubmissions}
+              votingEnabled={contest.voting_enabled && isBetweenDates(contest.voting_start_date, contest.voting_end_date)}
+              displayVotes={contest.display_votes ?? true}
+              onVote={handleVote}
+              userVotes={userVoteIds}
             />
           </div>
         )}

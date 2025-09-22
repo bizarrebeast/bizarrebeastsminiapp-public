@@ -41,6 +41,9 @@ export interface Contest {
   cta_type?: 'internal' | 'external' | 'game' | 'tool';
   cta_new_tab?: boolean;
   track_cta_clicks?: boolean;
+  gallery_enabled?: boolean;
+  display_votes?: boolean;
+  gallery_view_type?: 'grid' | 'carousel';
 }
 
 export interface ContestSubmission {
@@ -58,6 +61,7 @@ export interface ContestSubmission {
   reviewed_by?: string;
   reviewer_notes?: string;
   vote_count?: number;
+  image_caption?: string;
 }
 
 export interface ContestVote {

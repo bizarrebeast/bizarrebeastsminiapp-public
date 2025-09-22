@@ -46,7 +46,10 @@ export default function CreateContestForm({ isOpen, onClose, onSuccess }: Create
     cta_button_text: '',
     cta_type: 'internal' as 'internal' | 'external' | 'game' | 'tool',
     cta_new_tab: false,
-    track_cta_clicks: true
+    track_cta_clicks: true,
+    gallery_enabled: false,
+    display_votes: true,
+    gallery_view_type: 'grid' as 'grid' | 'carousel'
   });
 
   const [bannerFile, setBannerFile] = useState<File | null>(null);
@@ -235,6 +238,9 @@ export default function CreateContestForm({ isOpen, onClose, onSuccess }: Create
           cta_type: formData.cta_type || 'internal',
           cta_new_tab: formData.cta_new_tab,
           track_cta_clicks: formData.track_cta_clicks,
+          gallery_enabled: formData.gallery_enabled,
+          display_votes: formData.display_votes,
+          gallery_view_type: formData.gallery_view_type,
         }),
       });
 
@@ -551,6 +557,68 @@ export default function CreateContestForm({ isOpen, onClose, onSuccess }: Create
               </label>
             </div>
           </div>
+
+          {/* Gallery Settings - Only for creative and onboarding contests */}
+          {(formData.type === 'creative' || formData.type === 'onboarding') && (
+            <div className="bg-gradient-to-r from-gem-crystal/10 via-gem-gold/10 to-gem-pink/10
+                          border border-gem-crystal/20 rounded-lg p-4">
+              <h3 className="text-sm font-medium text-gem-crystal mb-3 flex items-center gap-2">
+                <Image className="w-4 h-4" />
+                Gallery Settings
+              </h3>
+
+              <div className="space-y-3">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={formData.gallery_enabled}
+                    onChange={(e) => setFormData({
+                      ...formData,
+                      gallery_enabled: e.target.checked
+                    })}
+                    className="rounded border-gray-700 bg-dark-bg text-gem-crystal
+                             focus:ring-gem-crystal focus:ring-offset-0"
+                  />
+                  <span className="text-white">Enable Meme Gallery</span>
+                  <span className="text-xs text-gray-400">(Shows submissions in a visual grid)</span>
+                </label>
+
+                {formData.gallery_enabled && (
+                  <>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={formData.display_votes}
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          display_votes: e.target.checked
+                        })}
+                        className="rounded border-gray-700 bg-dark-bg text-gem-crystal
+                                 focus:ring-gem-crystal focus:ring-offset-0"
+                      />
+                      <span className="text-white">Display vote counts publicly</span>
+                    </label>
+
+                    <div className="flex items-center gap-3">
+                      <label className="text-sm text-gray-300">View Type:</label>
+                      <select
+                        value={formData.gallery_view_type}
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          gallery_view_type: e.target.value as 'grid' | 'carousel'
+                        })}
+                        className="px-3 py-1 bg-dark-bg border border-gray-700 rounded
+                                 text-white focus:border-gem-crystal focus:outline-none transition"
+                      >
+                        <option value="grid">Grid View</option>
+                        <option value="carousel">Carousel View</option>
+                      </select>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* Banner Image Upload */}
           <div>

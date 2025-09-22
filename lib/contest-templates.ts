@@ -109,6 +109,28 @@ export const defaultTemplates: ContestTemplate[] = [
       cta_type: 'internal',
       track_cta_clicks: true
     }
+  },
+  {
+    id: 'bizarre-nft-meme-onboarding',
+    name: 'BIZARRE NFT Meme Challenge',
+    category: 'engagement',
+    description: 'Create quality memes to earn exclusive BIZARRE NFT for Farcaster channel access',
+    formData: {
+      type: 'onboarding',
+      description: 'Create a quality BizarreBeasts meme and earn an exclusive BIZARRE NFT! This NFT grants you access to the /bizarrebeasts Farcaster channel and channel rewards - bypassing the 5M $BB token requirement. Show your creativity and join our exclusive community!',
+      min_bb_required: '0',
+      prize_amount: '0',
+      prize_type: 'nft',
+      max_entries_per_wallet: '1',
+      rules: '• Create an original, high-quality meme using BizarreBeasts characters or themes\n• Meme must be funny, creative, and showcase understanding of BB culture\n• No offensive, NSFW, or copyright-infringing content\n• Only 1 submission per wallet allowed\n• Community votes determine quality threshold (minimum 3 votes required)\n• Top quality memes earn the BIZARRE NFT\n• NFT holders get permanent access to /bizarrebeasts Farcaster channel\n• NFT holders eligible for channel rewards and exclusive perks\n• This NFT bypasses the 5M $BB token requirement for channel access',
+      is_recurring: false,
+      voting_enabled: true,
+      voting_type: 'ranked',
+      min_votes_required: '3',
+      cta_button_text: 'Create Your Meme',
+      cta_type: 'tool',
+      track_cta_clicks: true
+    }
   }
 ];
 
