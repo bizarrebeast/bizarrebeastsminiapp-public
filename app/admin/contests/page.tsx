@@ -148,7 +148,11 @@ export default function AdminContestsPage() {
 
   const fetchSubmissions = async (contestId: string) => {
     try {
-      const subs = await contestQueries.getContestSubmissions(contestId);
+      // Use getSubmissionsWithVotes for gallery contests to include vote counts
+      const contest = contests.find(c => c.id === contestId);
+      const subs = contest?.gallery_enabled
+        ? await contestQueries.getSubmissionsWithVotes(contestId)
+        : await contestQueries.getContestSubmissions(contestId);
       setSubmissions(subs || []);
 
       // Calculate stats
@@ -696,6 +700,7 @@ export default function AdminContestsPage() {
             ) : (
               <EnhancedSubmissionsTable
                 submissions={submissions}
+                contest={selectedContest}
                 onApprove={handleApprove}
                 onReject={handleReject}
                 processingId={processingId}

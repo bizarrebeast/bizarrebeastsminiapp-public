@@ -210,26 +210,28 @@ export default function MemeGalleryGrid({
           onClick={() => setSelectedMeme(null)}
         >
           <div
-            className="relative max-w-4xl w-full"
+            className="relative max-w-4xl w-full max-h-[90vh] flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Close button */}
             <button
               onClick={() => setSelectedMeme(null)}
               className="absolute -top-12 right-0 text-white hover:text-gem-crystal
-                       transition-colors"
+                       transition-colors z-10"
             >
               <X className="w-8 h-8" />
             </button>
 
-            {/* Image */}
-            {selectedMeme.screenshot_url && (
-              <img
-                src={selectedMeme.screenshot_url}
-                alt="Full size meme"
-                className="w-full h-auto rounded-lg"
-              />
-            )}
+            {/* Image container with max height */}
+            <div className="relative flex-1 min-h-0 overflow-hidden rounded-lg">
+              {selectedMeme.screenshot_url && (
+                <img
+                  src={selectedMeme.screenshot_url}
+                  alt="Full size meme"
+                  className="w-full h-full object-contain bg-black/50 rounded-lg"
+                />
+              )}
+            </div>
 
             {/* Info Bar */}
             <div className="mt-4 p-4 bg-dark-card rounded-lg flex items-center justify-between">

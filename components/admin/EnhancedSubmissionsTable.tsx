@@ -19,11 +19,12 @@ import {
   Wallet,
   Image as ImageIcon
 } from 'lucide-react';
-import { ContestSubmission } from '@/lib/supabase';
+import { Contest, ContestSubmission } from '@/lib/supabase';
 import { formatTokenBalance } from '@/lib/tokenBalance';
 
 interface EnhancedSubmissionsTableProps {
   submissions: ContestSubmission[];
+  contest?: Contest;
   onApprove: (id: string) => void;
   onReject: (id: string, reason?: string) => void;
   processingId: string | null;
@@ -36,6 +37,7 @@ type SortOrder = 'asc' | 'desc';
 
 export default function EnhancedSubmissionsTable({
   submissions,
+  contest,
   onApprove,
   onReject,
   processingId,
@@ -425,7 +427,7 @@ export default function EnhancedSubmissionsTable({
                     className="flex items-center gap-1 text-xs font-semibold text-gray-400 uppercase hover:text-white"
                   >
                     <Hash className="w-3 h-3" />
-                    Score
+                    {contest?.gallery_enabled ? 'Votes' : 'Score'}
                     <SortIcon field="score" />
                   </button>
                 </th>
@@ -525,7 +527,9 @@ export default function EnhancedSubmissionsTable({
                   </td>
                   <td className="px-4 py-3">
                     <span className="text-white font-mono font-bold">
-                      {submission.score?.toLocaleString() || 'N/A'}
+                      {contest?.gallery_enabled
+                        ? (submission.vote_count?.toLocaleString() || '0')
+                        : (submission.score?.toLocaleString() || 'N/A')}
                     </span>
                   </td>
                   <td className="px-4 py-3">
