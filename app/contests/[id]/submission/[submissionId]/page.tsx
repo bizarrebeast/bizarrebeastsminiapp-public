@@ -49,6 +49,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const description = submission.image_caption ||
       `Vote for this entry in the ${contest.name} on BizarreBeasts!`;
 
+    // Debug logging
+    console.log('Submission metadata generation:', {
+      contestId,
+      submissionId,
+      gallery_enabled: contest.gallery_enabled,
+      meme_image_url: submission.meme_image_url,
+      banner_image_url: contest.banner_image_url
+    });
+
     // Use submission image if it's a gallery contest, otherwise contest banner
     const imageUrl = (contest.gallery_enabled && submission.meme_image_url)
       ? submission.meme_image_url

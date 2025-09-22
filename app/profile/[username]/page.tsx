@@ -30,10 +30,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     // Fallback to default if profile not found
   }
 
+  // Use dynamic OG image for profile
+  const dynamicImageUrl = `https://bbapp.bizarrebeasts.io/api/og/profile/${username}`;
+
   // Create the MiniAppEmbed structure
   const miniAppEmbed = {
     version: '1',
-    imageUrl: 'https://bbapp.bizarrebeasts.io/farcaster-assets/hero.png',
+    imageUrl: dynamicImageUrl,
     button: {
       title: '👤 View Profile',
       action: {
@@ -57,7 +60,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       siteName: 'BizarreBeasts',
       images: [
         {
-          url: 'https://bbapp.bizarrebeasts.io/farcaster-assets/hero.png',
+          url: dynamicImageUrl,
           width: 1200,
           height: 630,
           alt: `${displayName}'s Profile`,
@@ -68,7 +71,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       card: 'summary_large_image',
       title: `${displayName} | BizarreBeasts`,
       description,
-      images: ['https://bbapp.bizarrebeasts.io/farcaster-assets/hero.png'],
+      images: [dynamicImageUrl],
       creator: '@bizarrebeasts_',
     },
     other: {
@@ -77,7 +80,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       'fc:frame': JSON.stringify(miniAppEmbed), // Backward compatibility
 
       // Legacy frame metadata as fallback
-      'fc:frame:image': 'https://bbapp.bizarrebeasts.io/farcaster-assets/hero.png',
+      'fc:frame:image': dynamicImageUrl,
       'fc:frame:button:1': '👤 View Profile',
       'fc:frame:button:1:action': 'link',
       'fc:frame:button:1:target': `https://bbapp.bizarrebeasts.io/profile/${username}`,

@@ -50,7 +50,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       version: '1',
       imageUrl: imageUrl,
       button: {
-        title: contest.gallery_enabled ? '🗳️ Vote Now' : '🏆 Enter Contest',
+        title: contest.gallery_enabled ? '👀 View Entries' : '🏆 Enter Contest',
         action: {
           type: 'launch_miniapp',
           url: `https://bbapp.bizarrebeasts.io/contests/${contestId}`,
@@ -93,7 +93,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
         // Legacy frame metadata as fallback
         'fc:frame:image': imageUrl,
-        'fc:frame:button:1': contest.gallery_enabled ? '🗳️ Vote Now' : '🏆 Enter Contest',
+        'fc:frame:button:1': contest.gallery_enabled ? '👀 View Entries' : '🏆 Enter Contest',
         'fc:frame:button:1:action': 'link',
         'fc:frame:button:1:target': `https://bbapp.bizarrebeasts.io/contests/${contestId}`,
       },
