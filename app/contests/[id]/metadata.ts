@@ -45,6 +45,22 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const imageUrl = contest.banner_image_url ||
       'https://bbapp.bizarrebeasts.io/farcaster-assets/hero.png';
 
+    // Create the MiniAppEmbed structure for Farcaster sharing
+    const miniAppEmbed = {
+      version: '1',
+      imageUrl: imageUrl,
+      button: {
+        title: contest.gallery_enabled ? '🗳️ Vote Now' : '🏆 Enter Contest',
+        action: {
+          type: 'launch_miniapp',
+          url: `https://bbapp.bizarrebeasts.io/contests/${contestId}`,
+          name: 'BizarreBeasts',
+          splashImageUrl: 'https://bbapp.bizarrebeasts.io/farcaster-assets/hero.png',
+          splashBackgroundColor: '#0A0A0A'
+        }
+      }
+    };
+
     return {
       title: `${contest.name} | BizarreBeasts`,
       description: description.substring(0, 160), // Limit description length
@@ -71,9 +87,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         creator: '@bizarrebeasts_',
       },
       other: {
-        'fc:frame': 'vNext',
+        // MiniApp metadata for Farcaster sharing
+        'fc:miniapp': JSON.stringify(miniAppEmbed),
+        'fc:frame': JSON.stringify(miniAppEmbed), // Backward compatibility
+
+        // Legacy frame metadata as fallback
         'fc:frame:image': imageUrl,
-        'fc:frame:button:1': 'View Contest',
+        'fc:frame:button:1': contest.gallery_enabled ? '🗳️ Vote Now' : '🏆 Enter Contest',
         'fc:frame:button:1:action': 'link',
         'fc:frame:button:1:target': `https://bbapp.bizarrebeasts.io/contests/${contestId}`,
       },
