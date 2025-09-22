@@ -22,7 +22,6 @@ export default function SubmissionForm({ contest, userSubmissions = [], onSucces
   const [score, setScore] = useState('');
   const [screenshot, setScreenshot] = useState<File | null>(null);
   const [screenshotPreview, setScreenshotPreview] = useState<string>('');
-  const [caption, setCaption] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -260,11 +259,6 @@ export default function SubmissionForm({ contest, userSubmissions = [], onSucces
         formData.append('screenshot', screenshot);
       }
 
-      // Add caption for gallery-enabled contests
-      if (contest.gallery_enabled && caption) {
-        formData.append('image_caption', caption);
-      }
-
       formData.append('tokenBalance', tokenBalance);
 
       // Submit to API
@@ -283,7 +277,6 @@ export default function SubmissionForm({ contest, userSubmissions = [], onSucces
       setScore('');
       setScreenshot(null);
       setScreenshotPreview('');
-      setCaption('');
 
       // Don't auto-dismiss - let user navigate away after sharing
 
@@ -537,27 +530,6 @@ export default function SubmissionForm({ contest, userSubmissions = [], onSucces
             </div>
           )}
 
-          {/* Caption Field for Gallery-Enabled Contests */}
-          {contest.gallery_enabled && (
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Caption (Optional)
-              </label>
-              <input
-                type="text"
-                value={caption}
-                onChange={(e) => setCaption(e.target.value)}
-                maxLength={100}
-                className="w-full px-4 py-3 bg-dark-bg border border-gray-700 rounded-lg
-                         text-white placeholder-gray-500 focus:border-gem-crystal
-                         focus:outline-none transition"
-                placeholder="Add a funny caption to your meme..."
-              />
-              <p className="text-xs text-gray-500 mt-1">
-                {caption.length}/100 characters
-              </p>
-            </div>
-          )}
 
           {/* Token Balance Display */}
           {contest.min_bb_required > 0 && (

@@ -8,9 +8,10 @@ interface CreateContestFormProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
+  duplicateFrom?: any; // Contest to duplicate from
 }
 
-export default function CreateContestForm({ isOpen, onClose, onSuccess }: CreateContestFormProps) {
+export default function CreateContestForm({ isOpen, onClose, onSuccess, duplicateFrom }: CreateContestFormProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [templates, setTemplates] = useState<ContestTemplate[]>([]);
@@ -60,6 +61,50 @@ export default function CreateContestForm({ isOpen, onClose, onSuccess }: Create
   useEffect(() => {
     setTemplates(getAllTemplates());
   }, []);
+
+  // Populate form when duplicating a contest
+  useEffect(() => {
+    if (duplicateFrom && isOpen) {
+      setFormData({
+        name: `${duplicateFrom.name} (Copy)`,
+        type: duplicateFrom.type || 'game_score',
+        description: duplicateFrom.description || '',
+        game_name: duplicateFrom.game_name || '',
+        start_date: new Date().toISOString().slice(0, 16), // New dates
+        end_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 16),
+        min_bb_required: duplicateFrom.min_bb_required?.toString() || '',
+        max_bb_required: duplicateFrom.max_bb_required?.toString() || '',
+        prize_amount: duplicateFrom.prize_amount?.toString() || '',
+        prize_type: duplicateFrom.prize_type || 'tokens',
+        nft_contract_address: duplicateFrom.nft_contract_address || '',
+        max_entries_per_wallet: duplicateFrom.max_entries_per_wallet?.toString() || '1',
+        rules: duplicateFrom.rules || '',
+        status: 'draft', // Always start as draft when duplicating
+        is_recurring: duplicateFrom.is_recurring || false,
+        recurrence_interval: duplicateFrom.recurrence_interval || 'weekly',
+        is_test: false, // Don't duplicate test flag
+        banner_image_url: duplicateFrom.banner_image_url || '',
+        voting_enabled: duplicateFrom.voting_enabled || false,
+        voting_start_date: '',
+        voting_end_date: '',
+        voting_type: duplicateFrom.voting_type || 'single',
+        min_votes_required: duplicateFrom.min_votes_required?.toString() || '1',
+        cta_url: duplicateFrom.cta_url || '',
+        cta_button_text: duplicateFrom.cta_button_text || '',
+        cta_type: duplicateFrom.cta_type || 'internal',
+        cta_new_tab: duplicateFrom.cta_new_tab || false,
+        track_cta_clicks: duplicateFrom.track_cta_clicks ?? true,
+        gallery_enabled: duplicateFrom.gallery_enabled || false,
+        display_votes: duplicateFrom.display_votes ?? true,
+        gallery_view_type: duplicateFrom.gallery_view_type || 'grid'
+      });
+
+      // Set banner preview if exists
+      if (duplicateFrom.banner_image_url) {
+        setBannerPreview(duplicateFrom.banner_image_url);
+      }
+    }
+  }, [duplicateFrom, isOpen]);
 
   // Apply selected template
   const handleTemplateSelect = (templateId: string) => {
@@ -307,7 +352,7 @@ export default function CreateContestForm({ isOpen, onClose, onSuccess }: Create
         <div className="sticky top-0 bg-dark-card border-b border-gray-800 p-6 flex justify-between items-center">
           <h2 className="text-2xl font-bold flex items-center gap-2">
             <Trophy className="w-6 h-6 text-gem-gold" />
-            Create New Contest
+            {duplicateFrom ? 'Duplicate Contest' : 'Create New Contest'}
           </h2>
           <button
             onClick={onClose}
@@ -319,6 +364,18 @@ export default function CreateContestForm({ isOpen, onClose, onSuccess }: Create
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
+          {/* Duplicate Notice */}
+          {duplicateFrom && (
+            <div className="bg-gem-purple/10 border border-gem-purple/30 rounded-lg p-4">
+              <p className="text-sm text-gem-purple">
+                📋 Duplicating from: <span className="font-semibold">{duplicateFrom.name}</span>
+              </p>
+              <p className="text-xs text-gray-400 mt-1">
+                All settings have been copied. Update the name and dates as needed.
+              </p>
+            </div>
+          )}
+
           {/* Template Selector */}
           <div className="bg-gradient-to-r from-gem-crystal/10 via-gem-gold/10 to-gem-pink/10 border border-gem-crystal/20 rounded-lg p-4">
             <div className="flex items-center justify-between mb-3">

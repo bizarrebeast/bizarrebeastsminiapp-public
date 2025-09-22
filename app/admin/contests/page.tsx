@@ -64,6 +64,7 @@ export default function AdminContestsPage() {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [showEditForm, setShowEditForm] = useState(false);
   const [editingContest, setEditingContest] = useState<Contest | null>(null);
+  const [duplicatingContest, setDuplicatingContest] = useState<Contest | null>(null);
   const [showWinnerModal, setShowWinnerModal] = useState(false);
   const [showTestManager, setShowTestManager] = useState(false);
 
@@ -549,6 +550,15 @@ export default function AdminContestsPage() {
                   ✏️ Edit
                 </button>
                 <button
+                  onClick={() => {
+                    setDuplicatingContest(selectedContest);
+                    setShowCreateForm(true);
+                  }}
+                  className="px-3 py-1 bg-gem-purple text-white rounded-lg hover:bg-gem-purple/80 transition flex items-center gap-1 text-sm font-semibold"
+                >
+                  📋 Duplicate
+                </button>
+                <button
                   onClick={() => exportToCSV(false)}
                   className="px-3 py-1 bg-dark-bg border border-gray-600 rounded-lg hover:bg-gray-800 transition flex items-center gap-1 text-sm"
                 >
@@ -708,11 +718,16 @@ export default function AdminContestsPage() {
         {/* Create Contest Form Modal */}
         <CreateContestForm
           isOpen={showCreateForm}
-          onClose={() => setShowCreateForm(false)}
+          onClose={() => {
+            setShowCreateForm(false);
+            setDuplicatingContest(null);
+          }}
           onSuccess={() => {
             setShowCreateForm(false);
+            setDuplicatingContest(null);
             fetchContests();
           }}
+          duplicateFrom={duplicatingContest}
         />
 
         {/* Edit Contest Form Modal */}

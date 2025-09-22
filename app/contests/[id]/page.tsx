@@ -442,19 +442,21 @@ export default function ContestDetailPage() {
               <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gem-crystal" />
             )}
           </button>
-          <button
-            onClick={() => setActiveTab('leaderboard')}
-            className={`px-4 py-2 font-semibold transition-colors relative whitespace-nowrap ${
-              activeTab === 'leaderboard'
-                ? 'text-gem-crystal'
-                : 'text-gray-400 hover:text-white'
-            }`}
-          >
-            Leaderboard ({leaderboard.length})
-            {activeTab === 'leaderboard' && (
-              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gem-crystal" />
-            )}
-          </button>
+          {!contest.gallery_enabled && (
+            <button
+              onClick={() => setActiveTab('leaderboard')}
+              className={`px-4 py-2 font-semibold transition-colors relative whitespace-nowrap ${
+                activeTab === 'leaderboard'
+                  ? 'text-gem-crystal'
+                  : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              Leaderboard ({leaderboard.length})
+              {activeTab === 'leaderboard' && (
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gem-crystal" />
+              )}
+            </button>
+          )}
           {contest.voting_enabled && !contest.gallery_enabled && (
             <button
               onClick={() => setActiveTab('voting')}
@@ -470,7 +472,7 @@ export default function ContestDetailPage() {
               )}
             </button>
           )}
-          {contest.gallery_enabled && approvedSubmissions.length > 0 && (
+          {contest.gallery_enabled && (
             <button
               onClick={() => setActiveTab('gallery')}
               className={`px-4 py-2 font-semibold transition-colors relative whitespace-nowrap ${
