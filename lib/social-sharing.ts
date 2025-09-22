@@ -167,12 +167,20 @@ export async function shareToTwitter(options: ShareOptions): Promise<void> {
   // Use custom text or default template
   let text = options.text || SHARE_TEMPLATES.twitter.default;
 
+  // Twitter's web intent has limited support for line breaks
+  // Replace double line breaks with bullet points or periods for better formatting
+  // Keep single line breaks as spaces
+  text = text
+    .split('\n\n')
+    .map(paragraph => paragraph.replace(/\n/g, ' '))
+    .join(' • ');
+
   // IMPORTANT: Always include URL for link preview
   // Twitter will auto-generate preview card from the URL's meta tags
   const appUrl = options.url || 'https://bbapp.bizarrebeasts.io';
-  text += `\n\n${appUrl}`;
+  text += ` ${appUrl}`;
 
-  // Use encodeURIComponent which properly converts \n to %0A for line breaks
+  // Use encodeURIComponent for encoding
   const encodedText = encodeURIComponent(text);
 
   // Build URL manually to ensure proper encoding
