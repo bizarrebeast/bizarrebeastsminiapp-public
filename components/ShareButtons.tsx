@@ -302,9 +302,9 @@ export default function ShareButtons({
             .replace(/#BBEmpire/g, '')
             .replace(/#BBFeaturedRitual/g, '')
             .replace(/#BB\b/g, '') // Remove #BB but keep $BB
-            .replace(/\s+\n/g, '\n') // Clean up extra spaces before newlines
-            .replace(/\n\n+/g, '\n\n') // Clean up multiple newlines
+            .replace(/\s+$/gm, '') // Remove trailing spaces from each line
             .trim();
+          // Note: Preserving all line breaks for proper formatting
         }
 
         // Format text for specific platform (handles, $BB spacing)

@@ -53,7 +53,7 @@ export const SHARE_TEMPLATES = {
     milestone30: `👑 30-DAY PERFECT STREAK COMPLETE!\n\n✅ 30 days checked in\n💰 {totalRewards} $BB earned\n🔄 Ready for next cycle!\n\nJoin the most dedicated community at /bizarrebeasts!\nCC @bizarrebeast`,
     streakbreak: `🔄 Back on the grind! Starting fresh on BizarreBeasts.\n\nPrevious best: {bestStreak} days\nLet's beat it this time! 💪\n\nJoin /bizarrebeasts and build your streak!\nCC @bizarrebeast`,
     contest: `🏆 Check out the {name} contest on BizarreBeasts!\n\n{description}\n\n⏰ {timeLeft}\n💰 Prize: {prize}\n\nEnter now at /bizarrebeasts!\nCC @bizarrebeast`,
-    contestEntry: `📸 Just entered the {name} contest!\n\nCheck out my BIZARRE creation and vote for me to help me gain access to the /bizarrebeasts community!\n\n💰 Prize pool: {prize}\n⏰ {timeLeft}\n\nJoin the competition at /bizarrebeasts!\nCC @bizarrebeast`,
+    contestEntry: `📸 Just entered the {name}!\n\nCheck out my BIZARRE creation and vote for me to help me gain access to the /bizarrebeasts community!\n\n💰 Prize pool: {prize}\n⏰ {timeLeft}\n\nJoin the competition at /bizarrebeasts!\nCC @bizarrebeast`,
     contestPosition: `🏆 {playerText} ranked #{rank} in the {name} contest on BizarreBeasts!\n\n💪 Score: {score}\n\nJoin and compete at /bizarrebeasts!\nCC @bizarrebeast`,
     contestWinner: `🎉 I WON the {name} contest on BizarreBeasts!\n\n🥇 Final position: #{position}\n💰 Prize won: {prize}\n🔥 Score: {score}\n\nJoin the next contest at /bizarrebeasts!\nCC @bizarrebeast`,
   },
@@ -69,7 +69,7 @@ export const SHARE_TEMPLATES = {
     milestone30: `👑 30-DAY PERFECT STREAK COMPLETE on @bizarrebeasts_!\n\n✅ 30 days checked in\n💰 {totalRewards} $BB earned\n🔄 Ready for next cycle!`,
     streakbreak: `🔄 Back on the grind! Starting fresh on @bizarrebeasts_.\n\nPrevious best: {bestStreak} days\nLet's beat it this time! 💪`,
     contest: `🏆 Check out the {name} contest on @bizarrebeasts_!\n\n{description}\n\n⏰ {timeLeft}\n💰 Prize: {prize}`,
-    contestEntry: `📸 Just entered the {name} contest!\n\nCheck out my BIZARRE creation and vote for me to help me gain access to the @bizarrebeasts_ community!\n\n💰 Prize pool: {prize}\n⏰ {timeLeft}\n\nJoin the competition!\nCC @bizarrebeasts_`,
+    contestEntry: `📸 Just entered the {name}!\n\nCheck out my BIZARRE creation and vote for me to help me gain access to the @bizarrebeasts_ community!\n\n💰 Prize pool: {prize}\n⏰ {timeLeft}\n\nJoin the competition!\nCC @bizarrebeasts_`,
     contestPosition: `🏆 {playerText} ranked #{rank} in the {name} contest on @bizarrebeasts_!\n\n💪 Score: {score}`,
     contestWinner: `🎉 I WON the {name} contest on @bizarrebeasts_!\n\n🥇 Final position: #{position}\n💰 Prize won: {prize}`,
   },
@@ -85,7 +85,7 @@ export const SHARE_TEMPLATES = {
     milestone30: `👑 30-DAY PERFECT STREAK COMPLETE!\n\n✅ 30 days checked in\n💰 {totalRewards} ($BB) earned\n🔄 Ready for next cycle!`,
     streakbreak: `🔄 Back on the grind! Starting fresh on @bizarrebeast.\n\nPrevious best: {bestStreak} days`,
     contest: `🏆 Check out the {name} contest on @bizarrebeast!\n\n{description}\n\n⏰ {timeLeft}\n💰 Prize: {prize}`,
-    contestEntry: `📸 Just entered the {name} contest!\n\nCheck out my BIZARRE creation and vote for me to help me gain access to the @bizarrebeast community!\n\n💰 Prize pool: {prize}\n⏰ {timeLeft}`,
+    contestEntry: `📸 Just entered the {name}!\n\nCheck out my BIZARRE creation and vote for me to help me gain access to the @bizarrebeast community!\n\n💰 Prize pool: {prize}\n⏰ {timeLeft}`,
     contestPosition: `🏆 {playerText} ranked #{rank} in the {name} contest on @bizarrebeast!\n\n💪 Score: {score}`,
     contestWinner: `🎉 I WON the {name} contest on @bizarrebeast ($BB)!\n\n🥇 Final position: #{position}\n💰 Prize won: {prize}`,
   }
@@ -131,28 +131,30 @@ export async function uploadToCloudinary(dataUrl: string): Promise<string> {
  */
 export async function shareToFarcaster(options: ShareOptions): Promise<void> {
   const baseUrl = 'https://warpcast.com/~/compose';
-  const params = new URLSearchParams();
 
   // Use custom text or default template
   const text = options.text || SHARE_TEMPLATES.farcaster.default;
-  params.append('text', text);
+
+  // Build URL with proper encoding for line breaks
+  const params: string[] = [];
+  params.push(`text=${encodeURIComponent(text)}`);
 
   // Add channel
   if (options.channelKey) {
-    params.append('channelKey', options.channelKey);
+    params.push(`channelKey=${encodeURIComponent(options.channelKey)}`);
   }
 
   // Add URL if provided
   if (options.url) {
-    params.append('embeds[]', options.url);
+    params.push(`embeds[]=${encodeURIComponent(options.url)}`);
   }
 
   // Add image URL if provided (after Cloudinary upload)
   if (options.imageUrl) {
-    params.append('embeds[]', options.imageUrl);
+    params.push(`embeds[]=${encodeURIComponent(options.imageUrl)}`);
   }
 
-  const shareUrl = `${baseUrl}?${params.toString()}`;
+  const shareUrl = `${baseUrl}?${params.join('&')}`;
   window.open(shareUrl, '_blank');
 }
 
@@ -161,7 +163,6 @@ export async function shareToFarcaster(options: ShareOptions): Promise<void> {
  */
 export async function shareToTwitter(options: ShareOptions): Promise<void> {
   const baseUrl = 'https://twitter.com/intent/tweet';
-  const params = new URLSearchParams();
 
   // Use custom text or default template
   let text = options.text || SHARE_TEMPLATES.twitter.default;
@@ -171,15 +172,17 @@ export async function shareToTwitter(options: ShareOptions): Promise<void> {
   const appUrl = options.url || 'https://bbapp.bizarrebeasts.io';
   text += `\n\n${appUrl}`;
 
-  // Use encodeURIComponent for better compatibility with line breaks
-  params.append('text', text);
+  // Use encodeURIComponent which properly converts \n to %0A for line breaks
+  const encodedText = encodeURIComponent(text);
 
-  // Add hashtags
+  // Build URL manually to ensure proper encoding
+  let shareUrl = `${baseUrl}?text=${encodedText}`;
+
+  // Add hashtags if provided
   if (options.hashtags && options.hashtags.length > 0) {
-    params.append('hashtags', options.hashtags.join(','));
+    shareUrl += `&hashtags=${encodeURIComponent(options.hashtags.join(','))}`;
   }
 
-  const shareUrl = `${baseUrl}?${params.toString()}`;
   window.open(shareUrl, '_blank');
 }
 
@@ -188,17 +191,19 @@ export async function shareToTwitter(options: ShareOptions): Promise<void> {
  */
 export async function shareToTelegram(options: ShareOptions): Promise<void> {
   const baseUrl = 'https://t.me/share/url';
-  const params = new URLSearchParams();
 
   // Telegram requires a URL
   const url = options.url || 'https://bbapp.bizarrebeasts.io';
-  params.append('url', url);
 
   // Use custom text or default template
   const text = options.text || SHARE_TEMPLATES.telegram.default;
-  params.append('text', text);
 
-  const shareUrl = `${baseUrl}?${params.toString()}`;
+  // Build URL with proper encoding for line breaks
+  const params: string[] = [];
+  params.push(`url=${encodeURIComponent(url)}`);
+  params.push(`text=${encodeURIComponent(text)}`);
+
+  const shareUrl = `${baseUrl}?${params.join('&')}`;
   window.open(shareUrl, '_blank');
 }
 
