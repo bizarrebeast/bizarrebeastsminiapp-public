@@ -16,10 +16,10 @@ const tierColors: Record<string, string> = {
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { username: string } }
+  { params }: { params: Promise<{ username: string }> }
 ) {
   try {
-    const username = params.username;
+    const { username } = await params;
 
     // Fetch user profile data
     const { data: profile } = await supabaseAdmin
