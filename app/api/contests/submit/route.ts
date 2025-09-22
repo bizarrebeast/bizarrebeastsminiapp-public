@@ -42,6 +42,7 @@ export async function POST(request: Request) {
     const farcasterFid = formData.get('farcasterFid') as string;
     const xUsername = formData.get('username') as string; // X username if platform is X
     const usernamePlatform = formData.get('usernamePlatform') as string;
+    const imageCaption = formData.get('image_caption') as string;
 
     console.log('📝 Form data parsed:', {
       contestId,
@@ -229,6 +230,7 @@ export async function POST(request: Request) {
       username: farcasterUsername || xUsername || null, // Store username from either platform
       score: score ? parseInt(score) : null,
       screenshot_url: screenshotUrl,
+      image_caption: imageCaption || null,
       token_balance: tokenBalance,
       status: 'pending',
       metadata: {

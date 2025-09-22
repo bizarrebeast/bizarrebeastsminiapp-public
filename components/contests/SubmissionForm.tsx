@@ -22,6 +22,7 @@ export default function SubmissionForm({ contest, userSubmissions = [], onSucces
   const [score, setScore] = useState('');
   const [screenshot, setScreenshot] = useState<File | null>(null);
   const [screenshotPreview, setScreenshotPreview] = useState<string>('');
+  const [caption, setCaption] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -193,8 +194,9 @@ export default function SubmissionForm({ contest, userSubmissions = [], onSucces
       return;
     }
 
-    if (contest.type === 'game_score' && !screenshot) {
-      setError('Please upload a screenshot');
+    // Require image for game_score or gallery-enabled contests
+    if ((contest.type === 'game_score' || contest.gallery_enabled) && !screenshot) {
+      setError(contest.gallery_enabled ? 'Please upload your meme image' : 'Please upload a screenshot');
       return;
     }
 
@@ -258,6 +260,11 @@ export default function SubmissionForm({ contest, userSubmissions = [], onSucces
         formData.append('screenshot', screenshot);
       }
 
+      // Add caption for gallery-enabled contests
+      if (contest.gallery_enabled && caption) {
+        formData.append('image_caption', caption);
+      }
+
       formData.append('tokenBalance', tokenBalance);
 
       // Submit to API
@@ -276,6 +283,7 @@ export default function SubmissionForm({ contest, userSubmissions = [], onSucces
       setScore('');
       setScreenshot(null);
       setScreenshotPreview('');
+      setCaption('');
 
       // Don't auto-dismiss - let user navigate away after sharing
 
@@ -479,10 +487,11 @@ export default function SubmissionForm({ contest, userSubmissions = [], onSucces
           )}
 
           {/* Screenshot/Image Upload */}
-          {(contest.type === 'game_score' || contest.type === 'creative') && (
+          {(contest.type === 'game_score' || contest.type === 'creative' || contest.gallery_enabled) && (
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
-                {contest.type === 'game_score' ? 'Screenshot Proof' : 'Image Submission'}
+                {contest.type === 'game_score' ? 'Screenshot Proof' :
+                 contest.gallery_enabled ? 'Meme Image *' : 'Image Submission'}
               </label>
 
               <div className="relative">
@@ -508,7 +517,7 @@ export default function SubmissionForm({ contest, userSubmissions = [], onSucces
                         className="max-h-48 mx-auto rounded-lg"
                       />
                       <p className="text-center text-sm text-gray-400 mt-2">
-                        Click to change screenshot
+                        Click to change image
                       </p>
                     </div>
                   ) : (
@@ -516,7 +525,8 @@ export default function SubmissionForm({ contest, userSubmissions = [], onSucces
                       <Camera className="w-8 h-8 text-gray-500" />
                       <div className="text-left">
                         <p className="text-white font-medium">
-                          {contest.type === 'game_score' ? 'Upload Screenshot' : 'Upload Image'}
+                          {contest.type === 'game_score' ? 'Upload Screenshot' :
+                           contest.gallery_enabled ? 'Upload Your Meme' : 'Upload Image'}
                         </p>
                         <p className="text-sm text-gray-500">PNG, JPG up to 5MB</p>
                       </div>
@@ -524,6 +534,28 @@ export default function SubmissionForm({ contest, userSubmissions = [], onSucces
                   )}
                 </label>
               </div>
+            </div>
+          )}
+
+          {/* Caption Field for Gallery-Enabled Contests */}
+          {contest.gallery_enabled && (
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Caption (Optional)
+              </label>
+              <input
+                type="text"
+                value={caption}
+                onChange={(e) => setCaption(e.target.value)}
+                maxLength={100}
+                className="w-full px-4 py-3 bg-dark-bg border border-gray-700 rounded-lg
+                         text-white placeholder-gray-500 focus:border-gem-crystal
+                         focus:outline-none transition"
+                placeholder="Add a funny caption to your meme..."
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                {caption.length}/100 characters
+              </p>
             </div>
           )}
 
