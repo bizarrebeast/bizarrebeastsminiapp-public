@@ -178,8 +178,9 @@ export default function EnhancedSubmissionsTable({
           bVal = b.wallet_address;
           break;
         case 'score':
-          aVal = a.score || 0;
-          bVal = b.score || 0;
+          // Use vote_count for gallery contests, score for others
+          aVal = contest?.gallery_enabled ? (a.vote_count || 0) : (a.score || 0);
+          bVal = contest?.gallery_enabled ? (b.vote_count || 0) : (b.score || 0);
           break;
         case 'balance':
           aVal = parseInt(String(a.token_balance || '0'));
@@ -209,7 +210,7 @@ export default function EnhancedSubmissionsTable({
     });
 
     return sorted;
-  }, [filteredSubmissions, sortField, sortOrder]);
+  }, [filteredSubmissions, sortField, sortOrder, contest]);
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
