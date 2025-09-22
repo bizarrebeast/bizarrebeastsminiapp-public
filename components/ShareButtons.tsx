@@ -206,7 +206,11 @@ export default function ShareButtons({
         // They've already been removed from X/Twitter and Telegram custom texts
 
         // Determine the URL to share based on context
-        const shareUrl = contextUrl || 'https://bbapp.bizarrebeasts.io';
+        // For rituals, add the ritual ID as a query parameter
+        let shareUrl = contextUrl || 'https://bbapp.bizarrebeasts.io';
+        if (!contextUrl && shareType === 'ritual' && ritualData?.id) {
+          shareUrl = `https://bbapp.bizarrebeasts.io/rituals?r=${ritualData.id}`;
+        }
         const finalShareText = shareText || SHARE_TEMPLATES.farcaster.default;
 
         if (isInMiniApp) {
@@ -309,7 +313,11 @@ export default function ShareButtons({
         }
 
         // For Twitter and Telegram - use contextUrl if provided
-        const shareUrl = contextUrl || 'https://bbapp.bizarrebeasts.io';
+        // For rituals, add the ritual ID as a query parameter
+        let shareUrl = contextUrl || 'https://bbapp.bizarrebeasts.io';
+        if (!contextUrl && shareType === 'ritual' && ritualData?.id) {
+          shareUrl = `https://bbapp.bizarrebeasts.io/rituals?r=${ritualData.id}`;
+        }
 
         await shareToSocial({
           platform,

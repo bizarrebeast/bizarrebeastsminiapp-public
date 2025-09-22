@@ -1,7 +1,7 @@
-import { metadata } from './metadata';
+import { generateMetadata } from './metadata';
 import RitualsClient from './RitualsClient';
 
-export { metadata };
+export { generateMetadata };
 
 export default function RitualsPage() {
   return <RitualsClient />;

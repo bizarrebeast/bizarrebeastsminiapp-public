@@ -26,25 +26,25 @@ const rituals = [
     id: 4,
     title: "Send a #create GIVE! 🎨",
     description: "Send @bizarrebeast a #create GIVE in the Based Creator's Directory!",
-    image: "/assets/page-assets/banners/rituals-boxes/create-banner.png"
+    image: "/assets/page-assets/banners/rituals-boxes/create-give-ritual-banner.png"
   },
   {
     id: 5,
-    title: "Watch $BB Chill Guy! 🎬",
-    description: "Watch the $BB Chill Guy YouTube Video! Like, comment & subscribe!",
-    image: "/assets/page-assets/banners/rituals-boxes/chill-guy-ritual-banner.png"
+    title: "Play BizarreBeasts Games! 🎮",
+    description: "Play games and earn rewards in the BizarreBeasts ecosystem!",
+    image: "/assets/page-assets/banners/rituals-boxes/games-ritual-banner.png"
   },
   {
     id: 6,
-    title: "Check /plausible! ✅",
-    description: "Drop a post in the /plausible channel!",
-    image: "/assets/page-assets/banners/rituals-boxes/plausible-ritual-banner.png"
+    title: "Vote on ProductClank! 📊",
+    description: "Support BizarreBeasts on ProductClank with your vote!",
+    image: "/assets/page-assets/banners/rituals-boxes/productclank-ritual-banner.png"
   },
   {
     id: 7,
-    title: "Mint on MintFun! 🌊",
-    description: "Mint @bizarrebeast OG Art on MintFun!",
-    image: "/assets/page-assets/banners/rituals-boxes/mintfun-ritual-banner.png"
+    title: "Swap for $BB! 💱",
+    description: "Get $BB tokens and join the BizarreBeasts community!",
+    image: "/assets/page-assets/banners/rituals-boxes/swap-bb-ritual-banner.png"
   }
 ];
 
