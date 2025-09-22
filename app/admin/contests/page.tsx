@@ -150,9 +150,18 @@ export default function AdminContestsPage() {
     try {
       // Use getSubmissionsWithVotes for gallery contests to include vote counts
       const contest = contests.find(c => c.id === contestId);
+      console.log(`🔍 Admin fetchSubmissions - Contest:`, contest?.name);
+      console.log(`🔍 Admin fetchSubmissions - Gallery enabled:`, contest?.gallery_enabled);
+
       const subs = contest?.gallery_enabled
         ? await contestQueries.getSubmissionsWithVotes(contestId)
         : await contestQueries.getContestSubmissions(contestId);
+
+      console.log(`🔍 Admin fetchSubmissions - Fetched submissions:`, subs?.length);
+      if (subs && subs.length > 0) {
+        console.log(`🔍 Admin fetchSubmissions - First submission vote_count:`, subs[0].vote_count);
+      }
+
       setSubmissions(subs || []);
 
       // Calculate stats
