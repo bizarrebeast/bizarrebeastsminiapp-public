@@ -89,9 +89,9 @@ export default function ContestDetailPage() {
         setWinners(winnersData || []);
       }
 
-      // If voting is enabled, fetch approved submissions
+      // If voting is enabled, fetch approved submissions with vote counts
       if (contestData.voting_enabled) {
-        const submissions = await contestQueries.getContestSubmissions(id as string, 'approved');
+        const submissions = await contestQueries.getSubmissionsWithVotes(id as string);
         setApprovedSubmissions(submissions || []);
       }
 

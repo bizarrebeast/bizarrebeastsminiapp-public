@@ -247,6 +247,47 @@ export const contestQueries = {
     return data as ContestSubmission[];
   },
 
+  // Get submissions with vote counts for gallery
+  async getSubmissionsWithVotes(contestId: string) {
+    // First get approved submissions
+    const { data: submissions, error: subError } = await supabase
+      .from('contest_submissions')
+      .select('*')
+      .eq('contest_id', contestId)
+      .eq('status', 'approved')
+      .order('submitted_at', { ascending: false });
+
+    if (subError) throw subError;
+
+    // Then get vote counts for each submission
+    const { data: votes, error: voteError } = await supabase
+      .from('contest_votes')
+      .select('submission_id')
+      .eq('contest_id', contestId);
+
+    if (voteError) throw voteError;
+
+    // Count votes per submission
+    const voteCounts: { [key: string]: number } = {};
+    votes?.forEach(vote => {
+      voteCounts[vote.submission_id] = (voteCounts[vote.submission_id] || 0) + 1;
+    });
+
+    // Add vote counts to submissions
+    const submissionsWithVotes = submissions?.map(sub => ({
+      ...sub,
+      vote_count: voteCounts[sub.id] || 0
+    })) || [];
+
+    // Sort by vote count if needed
+    submissionsWithVotes.sort((a, b) => (b.vote_count || 0) - (a.vote_count || 0));
+
+    console.log(`📊 Fetched ${submissionsWithVotes.length} submissions with vote counts:`,
+      submissionsWithVotes.map(s => ({ id: s.id, votes: s.vote_count })));
+
+    return submissionsWithVotes;
+  },
+
   // Get user's submission for a contest (returns first submission for backwards compatibility)
   async getUserSubmission(contestId: string, walletAddress: string) {
     const { data, error } = await supabase
