@@ -80,6 +80,13 @@ export async function openExternalUrl(url: string): Promise<void> {
       // Determine if this is a Farcaster frame URL
       const isFrame = isFarcasterFrame(url);
 
+      // Check if we're on mobile (native app) vs desktop (web)
+      const context = await sdk.context;
+      const isMobileApp = context?.client?.platformType === 'ios' ||
+                          context?.client?.platformType === 'android';
+
+      console.log('Platform:', context?.client?.platformType, 'isMobile:', isMobileApp);
+
       if (isFrame && sdk.actions?.openMiniApp) {
         // For Farcaster frames, use openMiniApp to open within Farcaster
         console.log('Opening as Farcaster miniapp:', url);
@@ -101,17 +108,24 @@ export async function openExternalUrl(url: string): Promise<void> {
         window.open(url, '_system');
       }
 
-      // Close the current miniapp after a small delay
-      // This ensures the new frame/browser has time to open
-      setTimeout(async () => {
-        if (sdk.actions?.close) {
-          try {
-            await sdk.actions.close();
-          } catch (closeError) {
-            console.log('Could not close miniapp:', closeError);
+      // Only close on mobile apps where it works correctly
+      // On desktop, let Farcaster handle the transition naturally
+      if (isMobileApp) {
+        // Close the current miniapp after a small delay on mobile
+        setTimeout(async () => {
+          if (sdk.actions?.close) {
+            try {
+              console.log('Closing miniapp on mobile');
+              await sdk.actions.close();
+            } catch (closeError) {
+              console.log('Could not close miniapp:', closeError);
+            }
           }
-        }
-      }, 100);
+        }, 100);
+      } else {
+        // On desktop, don't close - let the navigation happen naturally
+        console.log('Desktop detected - not closing miniapp to allow navigation');
+      }
     } else {
       // Regular browser context - open in new tab
       window.open(url, '_blank', 'noopener,noreferrer');
