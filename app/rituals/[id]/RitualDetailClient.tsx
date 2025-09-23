@@ -7,6 +7,7 @@ import Link from 'next/link';
 import ShareButtons from '@/components/ShareButtons';
 import { rituals } from './metadata';
 import { sdk } from '@/lib/sdk-init';
+import { openExternalUrl } from '@/lib/open-external-url';
 import { getRitualInstructions } from './RitualInstructions';
 import { Sparkles, Clock, CheckCircle, ExternalLink, Share2, ArrowLeft } from 'lucide-react';
 
@@ -38,10 +39,10 @@ export default function RitualDetailClient() {
     setIsCompleted(true);
   };
 
-  const handleActionClick = (e: React.MouseEvent) => {
-    if (isInMiniApp && ritual?.actionUrl) {
+  const handleActionClick = async (e: React.MouseEvent) => {
+    if (ritual?.actionUrl) {
       e.preventDefault();
-      sdk?.actions.openUrl(ritual.actionUrl);
+      await openExternalUrl(ritual.actionUrl);
     }
   };
 
@@ -162,7 +163,6 @@ export default function RitualDetailClient() {
             <a
               href={ritual.actionUrl}
               onClick={handleActionClick}
-              target={isInMiniApp ? undefined : "_blank"}
               rel="noopener noreferrer"
               className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink text-dark-bg font-bold rounded-lg transition-all duration-300 transform hover:scale-[1.02]"
             >

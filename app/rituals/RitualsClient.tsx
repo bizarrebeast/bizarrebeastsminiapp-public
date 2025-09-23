@@ -225,7 +225,7 @@ export default function RitualsPage() {
     }
   }, [completedRituals, featuredCompleted]);
 
-  const handleRitualAction = (ritual: Ritual) => {
+  const handleRitualAction = async (ritual: Ritual) => {
     console.log('Ritual action clicked:', ritual.title);
 
     // Don't mark as completed here - only after share verification
@@ -238,8 +238,8 @@ export default function RitualsPage() {
 
     console.log('Opening URL:', url);
 
-    // Always open in new tab
-    window.open(url, '_blank');
+    // Use proper method for Farcaster vs browser
+    await openExternalUrl(url);
   };
 
   const handleShare = async () => {
