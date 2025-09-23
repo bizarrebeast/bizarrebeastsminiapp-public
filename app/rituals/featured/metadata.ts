@@ -11,8 +11,10 @@ export async function generateMetadata(): Promise<Metadata> {
     };
   }
 
-  // Use dynamic OG image for featured ritual
-  const ogImageUrl = `https://bbapp.bizarrebeasts.io/api/og/ritual/featured`;
+  // Use the actual banner image directly for better reliability
+  const ogImageUrl = featuredRitual.image ?
+    `https://bbapp.bizarrebeasts.io${featuredRitual.image}` :
+    `https://bbapp.bizarrebeasts.io/api/og/ritual/featured`;
 
   // Create the MiniAppEmbed structure for Farcaster sharing
   const miniAppEmbed = {
