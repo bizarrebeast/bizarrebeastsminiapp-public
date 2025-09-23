@@ -367,7 +367,7 @@ export default function RitualsPage() {
   };
 
   return (
-    <div className="min-h-[calc(100vh-64px)] px-4 py-8">
+    <div className="min-h-[calc(100vh-64px)] px-3 sm:px-4 py-6 sm:py-8">
       <div className="max-w-4xl mx-auto">
         {/* Title and Description */}
         <div className="text-center mb-8">
@@ -383,7 +383,7 @@ export default function RitualsPage() {
         {featuredRitual && (
           <div className="mb-12">
             <div className="bg-gradient-to-br from-gem-gold/20 via-dark-card to-gem-crystal/10 border-2 border-gem-gold rounded-2xl overflow-hidden shadow-xl hover:shadow-gem-gold/30 transition-all duration-300">
-              <div className="bg-gradient-to-r from-gem-gold/30 to-gem-crystal/30 px-6 py-2">
+              <div className="bg-gradient-to-r from-gem-gold/30 to-gem-crystal/30 px-3 sm:px-6 py-2">
                 <div className="flex items-center justify-between">
                   <div className="flex-1" />
                   <h2 className="text-lg font-bold flex items-center justify-center gap-2 text-center">
@@ -411,7 +411,7 @@ export default function RitualsPage() {
 
               <div className="flex flex-col md:flex-row">
                 {/* Image */}
-                <div className="md:w-48 h-48 md:h-auto bg-gradient-to-br from-gray-800 to-gray-900 relative overflow-hidden flex-shrink-0">
+                <div className="md:w-48 h-40 sm:h-48 md:h-auto bg-gradient-to-br from-gray-800 to-gray-900 relative overflow-hidden flex-shrink-0">
                   <img 
                     src={featuredRitual.image} 
                     alt={featuredRitual.title}
@@ -437,7 +437,7 @@ export default function RitualsPage() {
                 </div>
                 
                 {/* Content */}
-                <div className="flex-1 p-4 md:p-5">
+                <div className="flex-1 p-3 sm:p-4 md:p-5">
                   {/* Sponsor info if present */}
                   {featuredRitual.sponsorName && (
                     <div className="flex items-center justify-center gap-2 mb-3">
@@ -454,7 +454,7 @@ export default function RitualsPage() {
                     </div>
                   )}
 
-                  <h3 className="text-lg font-bold mb-2 bg-gradient-to-r from-gem-gold to-gem-crystal bg-clip-text text-transparent flex items-center justify-center gap-2 text-center">
+                  <h3 className="text-base sm:text-lg font-bold mb-2 bg-gradient-to-r from-gem-gold to-gem-crystal bg-clip-text text-transparent flex items-center justify-center gap-2 text-center">
                     {featuredRitual.title}
                     {featuredCompleted && (
                       <Check className="w-5 h-5 text-gem-gold inline" />
@@ -470,14 +470,14 @@ export default function RitualsPage() {
 
                   <div className="space-y-3">
                     {/* Action Buttons */}
-                    <div className="flex gap-2 flex-wrap">
+                    <div className="flex flex-col sm:flex-row gap-2 sm:flex-wrap">
                       <button
                         onClick={() => {
                           // Don't mark as completed here - only after share verification
                           // setFeaturedCompleted(true);
                           window.open(featuredRitual.actionUrl, '_blank');
                         }}
-                        className={`inline-flex items-center gap-1 px-4 py-1.5 rounded-lg font-semibold text-sm transition-all duration-300 transform ${
+                        className={`inline-flex items-center justify-center gap-1 px-3 sm:px-4 py-1.5 rounded-lg font-semibold text-xs sm:text-sm transition-all duration-300 transform ${
                           featuredCompleted
                             ? 'bg-gem-gold/20 text-gem-gold border border-gem-gold/40'
                             : 'bg-gradient-to-r from-gem-gold to-gem-crystal text-dark-bg hover:scale-105 hover:shadow-lg'
@@ -499,7 +499,7 @@ export default function RitualsPage() {
                       {featuredRitual.learnMoreUrl && (
                         <button
                           onClick={() => window.open(featuredRitual.learnMoreUrl, '_blank')}
-                          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg font-semibold text-sm transition-all duration-300 bg-dark-card border border-gem-crystal/50 text-gem-crystal hover:bg-gem-crystal/20"
+                          className="inline-flex items-center justify-center gap-1 px-3 py-1.5 rounded-lg font-semibold text-xs sm:text-sm transition-all duration-300 bg-dark-card border border-gem-crystal/50 text-gem-crystal hover:bg-gem-crystal/20"
                         >
                           {featuredRitual.learnMoreText || 'Learn More'}
                           <ExternalLink className="w-3 h-3" />
@@ -630,7 +630,7 @@ export default function RitualsPage() {
               >
                 <div className="flex flex-col md:flex-row">
                   {/* Image */}
-                  <div className="md:w-48 h-48 md:h-auto bg-gradient-to-br from-gray-800 to-gray-900 relative overflow-hidden">
+                  <div className="md:w-48 h-40 sm:h-48 md:h-auto bg-gradient-to-br from-gray-800 to-gray-900 relative overflow-hidden">
                     <img 
                       src={ritual.image} 
                       alt={ritual.title}
@@ -656,7 +656,7 @@ export default function RitualsPage() {
                   </div>
                   
                   {/* Content */}
-                  <div className="flex-1 p-6">
+                  <div className="flex-1 p-4 sm:p-6">
                     <div className="flex items-start gap-3 mb-2">
                       {/* Number Badge */}
                       <div className="flex-shrink-0">
@@ -670,7 +670,7 @@ export default function RitualsPage() {
                       </div>
                       {/* Title */}
                       <div className="flex-1">
-                        <h3 className="text-xl font-semibold flex items-center gap-2 flex-wrap">
+                        <h3 className="text-lg sm:text-xl font-semibold flex items-center gap-2 flex-wrap">
                           {ritual.title}
                           {isCompleted && (
                             <Check className="w-5 h-5 text-gem-gold" />
@@ -679,12 +679,12 @@ export default function RitualsPage() {
                       </div>
                     </div>
                     
-                    <p className="text-gray-400 mb-4">{ritual.description}</p>
+                    <p className="text-sm sm:text-base text-gray-400 mb-4">{ritual.description}</p>
                     
                     <div className="flex flex-col sm:flex-row gap-2 sm:gap-2">
                       <button
                         onClick={() => handleRitualAction(ritual)}
-                        className={`inline-flex items-center justify-center gap-2 px-6 py-2 rounded-lg font-semibold transition-all duration-300 ${
+                        className={`inline-flex items-center justify-center gap-2 px-4 sm:px-6 py-2 rounded-lg font-semibold text-sm sm:text-base transition-all duration-300 ${
                           isCompleted
                             ? 'bg-gem-gold/20 text-gem-gold border border-gem-gold/40'
                             : 'bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink text-dark-bg hover:shadow-lg transform hover:scale-105'

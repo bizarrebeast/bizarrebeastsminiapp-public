@@ -105,33 +105,35 @@ export default function CollapsibleCheckIn({ completedRituals }: CollapsibleChec
           isEligible ? 'to-gem-gold/10' : 'to-gem-crystal/5'
         } border ${
           isEligible ? 'border-gem-gold/30' : 'border-gem-crystal/20'
-        } rounded-xl p-6 transition-all duration-300 hover:border-opacity-50`}
+        } rounded-xl p-4 sm:p-6 transition-all duration-300 hover:border-opacity-50`}
       >
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="text-3xl">☀️</div>
-            <div className="text-left">
-              <h2 className="text-2xl font-bold bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          {/* Left Section - Title and Status */}
+          <div className="flex items-start sm:items-center gap-3">
+            <div className="text-2xl sm:text-3xl flex-shrink-0">☀️</div>
+            <div className="text-left flex-1">
+              <h2 className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent">
                 Daily Check-In Rewards
               </h2>
-              <p className={`text-sm ${status.color} mt-1`}>
+              <p className={`text-xs sm:text-sm ${status.color} mt-1`}>
                 <span className="mr-2">{status.icon}</span>
                 {status.text}
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-4">
+          {/* Right Section - Badges and Chevron */}
+          <div className="flex items-center justify-between sm:justify-end gap-3 sm:gap-4">
             {/* Status Badges */}
-            <div className="flex gap-2">
-              <div className={`px-3 py-1 rounded-full text-xs font-semibold ${
+            <div className="flex flex-wrap gap-2">
+              <div className={`px-2 sm:px-3 py-1 rounded-full text-xs font-semibold ${
                 hasCompletedRituals ? 'bg-gem-crystal/20 text-gem-crystal' : 'bg-dark-bg text-gray-500'
               }`}>
                 {completedRituals}/3 Rituals
               </div>
 
               {hasWallet && (
-                <div className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                <div className={`px-2 sm:px-3 py-1 rounded-full text-xs font-semibold ${
                   hasEmpireRank ? 'bg-gem-gold/20 text-gem-gold' : 'bg-dark-bg text-gray-500'
                 }`}>
                   {hasEmpireRank ? (empireTier || 'RANKED') : 'Not Ranked'}
@@ -140,8 +142,8 @@ export default function CollapsibleCheckIn({ completedRituals }: CollapsibleChec
             </div>
 
             {/* Chevron */}
-            <div className="text-gem-crystal">
-              {isOpen ? <ChevronUp className="w-6 h-6" /> : <ChevronDown className="w-6 h-6" />}
+            <div className="text-gem-crystal flex-shrink-0">
+              {isOpen ? <ChevronUp className="w-5 h-5 sm:w-6 sm:h-6" /> : <ChevronDown className="w-5 h-5 sm:w-6 sm:h-6" />}
             </div>
           </div>
         </div>
