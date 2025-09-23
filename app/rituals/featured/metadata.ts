@@ -11,10 +11,8 @@ export async function generateMetadata(): Promise<Metadata> {
     };
   }
 
-  // Use the actual banner image directly for better reliability
-  const ogImageUrl = featuredRitual.image ?
-    `https://bbapp.bizarrebeasts.io${featuredRitual.image}` :
-    `https://bbapp.bizarrebeasts.io/api/og/ritual/featured`;
+  // Use dynamic OG image API for consistency with other ritual pages
+  const ogImageUrl = `https://bbapp.bizarrebeasts.io/api/og/ritual/featured`;
 
   // Create the MiniAppEmbed structure for Farcaster sharing
   const miniAppEmbed = {
@@ -55,14 +53,12 @@ export async function generateMetadata(): Promise<Metadata> {
       title: featuredRitual.title,
       description: featuredRitual.description,
       images: [ogImageUrl],
+      creator: '@bizarrebeasts_',
     },
     other: {
-      'fc:frame': 'vNext',
-      'fc:frame:image': ogImageUrl,
-      'fc:frame:button:1': '⭐ Complete Featured Ritual',
-      'fc:frame:button:1:action': 'link',
-      'fc:frame:button:1:target': 'https://bbapp.bizarrebeasts.io/rituals/featured',
-      'fc:frame:miniapp': JSON.stringify(miniAppEmbed)
+      // MiniApp metadata for Farcaster sharing (same format as working ritual pages)
+      'fc:miniapp': JSON.stringify(miniAppEmbed),
+      'fc:frame': JSON.stringify(miniAppEmbed), // Backward compatibility
     }
   };
 }
