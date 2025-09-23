@@ -1,4 +1,5 @@
 'use client';
+// Updated: September 23, 2025 - Added CollapsibleCheckIn component and fixed ritual tracking
 
 import { useState, useEffect } from 'react';
 import { ExternalLink, Check, Share2, Share, ShieldCheck, AlertCircle } from 'lucide-react';
