@@ -1,6 +1,41 @@
 import { sdk } from './sdk-init';
 
 /**
+ * Checks if a URL is a Farcaster frame/miniapp based on known patterns
+ */
+function isFarcasterFrame(url: string): boolean {
+  const framePatterns = [
+    'warpcast.com',
+    'farverse.games',
+    'frame.weponder.io',
+    'polls.metadater.com',
+    'nounspace.com',
+    'zora.co',
+    'paragraph.xyz',
+    'degen.tips',
+    'mint.fun',
+    'ponder.sh',
+    'events.xyz',
+    'farcaster.vote',
+    'launchcaster.xyz',
+    'perl.xyz'
+  ];
+
+  try {
+    const urlObj = new URL(url);
+    const hostname = urlObj.hostname.toLowerCase();
+
+    // Check if the URL matches any known frame patterns
+    return framePatterns.some(pattern =>
+      hostname.includes(pattern) || hostname.endsWith(pattern)
+    );
+  } catch {
+    // If URL parsing fails, assume it's not a frame
+    return false;
+  }
+}
+
+/**
  * Opens an external URL properly, handling both Farcaster miniapp and regular browser contexts.
  * In Farcaster miniapp, this ensures the URL opens in a new frame/tab outside the miniapp.
  * In regular browser, it opens in a new tab.
@@ -11,20 +46,32 @@ export async function openExternalUrl(url: string): Promise<void> {
     const isInMiniApp = await sdk.isInMiniApp();
 
     if (isInMiniApp) {
-      // Standard Farcaster pattern: close current miniapp then open the external frame
-      // This ensures the BB miniapp closes and the new frame/miniapp opens properly
+      // Determine if this is a Farcaster frame URL
+      const isFrame = isFarcasterFrame(url);
 
-      // First, open the URL (this triggers the navigation)
-      // Using openUrl action if available, which handles frame URLs better
-      if (sdk.actions?.openUrl) {
+      if (isFrame && sdk.actions?.openMiniApp) {
+        // For Farcaster frames, use openMiniApp to open within Farcaster
+        console.log('Opening as Farcaster miniapp:', url);
+        try {
+          await sdk.actions.openMiniApp({ url });
+        } catch (miniAppError) {
+          console.error('Failed to open miniapp, falling back:', miniAppError);
+          // Fallback to openUrl if miniapp opening fails
+          if (sdk.actions?.openUrl) {
+            await sdk.actions.openUrl(url);
+          }
+        }
+      } else if (sdk.actions?.openUrl) {
+        // For regular URLs, use openUrl (opens in browser)
+        console.log('Opening as external URL:', url);
         await sdk.actions.openUrl(url);
       } else {
-        // Fallback to window.open if openUrl is not available
+        // Final fallback
         window.open(url, '_system');
       }
 
-      // Then close the current miniapp
-      // Small delay to ensure the URL open is initiated first
+      // Close the current miniapp after a small delay
+      // This ensures the new frame/browser has time to open
       setTimeout(async () => {
         if (sdk.actions?.close) {
           try {
