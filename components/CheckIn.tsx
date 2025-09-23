@@ -486,18 +486,61 @@ export default function CheckIn({ userTier = 'NORMIE', completedRituals }: Check
             <p className="text-gem-gold mb-4 text-lg font-semibold">
               🎉 Congratulations! You've completed 3 rituals!
             </p>
-            <button
-              onClick={handleUnlock}
-              disabled={loading}
-              className="w-full px-8 py-4 bg-gradient-to-r from-gem-gold to-gem-pink text-black font-bold rounded-lg hover:opacity-90 disabled:opacity-50 transition-all"
-            >
-              {loading ? 'Unlocking...' : '🔓 Unlock Daily Check-Ins'}
-            </button>
+            {!wallet.address ? (
+              <div className="space-y-4">
+                <div className="p-3 bg-gem-crystal/10 border border-gem-crystal/30 rounded-lg">
+                  <div className="flex items-start gap-2">
+                    <span className="text-gem-crystal mt-0.5">👛</span>
+                    <div>
+                      <p className="text-sm font-semibold text-gem-crystal">Wallet Required</p>
+                      <p className="text-xs text-gray-400 mt-1">Connect your wallet to unlock check-ins</p>
+                    </div>
+                  </div>
+                </div>
+                <button
+                  disabled={true}
+                  className="w-full px-8 py-4 bg-gray-700 text-gray-400 font-bold rounded-lg cursor-not-allowed"
+                >
+                  🔒 Connect Wallet First
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={handleUnlock}
+                disabled={loading}
+                className="w-full px-8 py-4 bg-gradient-to-r from-gem-gold to-gem-pink text-black font-bold rounded-lg hover:opacity-90 disabled:opacity-50 transition-all"
+              >
+                {loading ? 'Unlocking...' : '🔓 Unlock Daily Check-Ins'}
+              </button>
+            )}
           </div>
         )}
 
         {message && (
-          <p className="mt-4 text-center text-yellow-400">{message}</p>
+          <div className="mt-4">
+            <p className="text-center text-yellow-400">{message}</p>
+            {message.includes('Not authorized') && (
+              <div className="mt-3 p-3 bg-gem-crystal/10 border border-gem-crystal/30 rounded-lg">
+                <p className="text-xs text-gray-400">
+                  <span className="font-semibold text-gem-crystal">Note:</span> Make sure your wallet is ranked in the Empire to unlock check-ins.
+                </p>
+                <div className="flex gap-2 mt-2">
+                  <button
+                    onClick={() => window.open('/empire', '_blank')}
+                    className="text-xs px-3 py-1 bg-gem-crystal/20 text-gem-crystal rounded-lg hover:bg-gem-crystal/30 transition-all"
+                  >
+                    View Empire
+                  </button>
+                  <button
+                    onClick={() => window.open('/swap', '_blank')}
+                    className="text-xs px-3 py-1 bg-gem-gold/20 text-gem-gold rounded-lg hover:bg-gem-gold/30 transition-all"
+                  >
+                    Get $BB
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
         )}
       </div>
     );
@@ -740,15 +783,17 @@ export default function CheckIn({ userTier = 'NORMIE', completedRituals }: Check
 
       {/* Share button for streak break comeback */}
       {message.includes('🔄') && message.includes('Starting fresh') && (
-        <div className="mt-4 flex flex-col items-center">
-          <p className="text-sm text-gray-400 mb-2">Share your comeback:</p>
-          <ShareButtons
-            shareType="streakbreak"
-            milestoneData={{
-              bestStreak: parseInt(localStorage.getItem(`bb_best_streak_${wallet.address}`) || '0')
-            }}
-            contextUrl="https://bbapp.bizarrebeasts.io/rituals"
-          />
+        <div className="p-4 rounded-lg mt-4 bg-gem-pink/10 border border-gem-pink/20">
+          <div className="flex flex-col items-center">
+            <p className="text-sm text-gray-400 mb-2">Share your comeback:</p>
+            <ShareButtons
+              shareType="streakbreak"
+              milestoneData={{
+                bestStreak: parseInt(localStorage.getItem(`bb_best_streak_${wallet.address}`) || '0')
+              }}
+              contextUrl="https://bbapp.bizarrebeasts.io/rituals"
+            />
+          </div>
         </div>
       )}
 

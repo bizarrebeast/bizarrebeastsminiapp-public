@@ -5,13 +5,12 @@ import { ExternalLink, Check, Share2, Share, ShieldCheck, AlertCircle } from 'lu
 import { ultimateShare } from '@/lib/sdk-ultimate';
 import { sdk } from '@/lib/sdk-init';
 import ShareButtons from '@/components/ShareButtons';
-import RewardsTable from '@/components/RewardsTable';
 import dynamic from 'next/dynamic';
 import { getActiveCampaign } from '@/config/featured-ritual-config';
 import { useUnifiedAuthStore } from '@/store/useUnifiedAuthStore';
 
-// Dynamically import CheckIn to avoid SSR issues with Web3
-const CheckIn = dynamic(() => import('@/components/CheckIn'), { ssr: false });
+// Dynamically import CollapsibleCheckIn to avoid SSR issues with Web3
+const CollapsibleCheckIn = dynamic(() => import('@/components/CollapsibleCheckIn'), { ssr: false });
 
 interface Ritual {
   id: number;
@@ -169,13 +168,13 @@ export default function RitualsPage() {
     setCompletedRituals(prev => {
       const newCompleted = new Set([...prev, ritualId]);
 
-      // Save to localStorage
+      // Save to localStorage - use consistent key 'bizarreRitualsData'
       const savedData = {
         date: new Date().toDateString(),
-        completedRituals: Array.from(newCompleted),
+        rituals: Array.from(newCompleted),
         featuredCompleted: featuredCompleted
       };
-      localStorage.setItem('bizarreRituals', JSON.stringify(savedData));
+      localStorage.setItem('bizarreRitualsData', JSON.stringify(savedData));
       console.log('Marked ritual as complete after verification:', ritualId, 'Total completed:', newCompleted.size);
 
       return newCompleted;
@@ -199,13 +198,13 @@ export default function RitualsPage() {
     // Mark featured ritual as complete after verification
     setFeaturedCompleted(true);
 
-    // Save to localStorage
+    // Save to localStorage - use consistent key 'bizarreRitualsData'
     const savedData = {
       date: new Date().toDateString(),
-      completedRituals: Array.from(completedRituals),
+      rituals: Array.from(completedRituals),
       featuredCompleted: true
     };
-    localStorage.setItem('bizarreRituals', JSON.stringify(savedData));
+    localStorage.setItem('bizarreRitualsData', JSON.stringify(savedData));
     console.log('Marked featured ritual as complete after verification');
   };
 
@@ -521,7 +520,7 @@ export default function RitualsPage() {
                         }}
                         buttonSize="sm"
                         showLabels={false}
-                        contextUrl={featuredRitual.shareEmbed || "https://bbapp.bizarrebeasts.io/rituals"}
+                        contextUrl={featuredRitual.shareEmbed || "https://bbapp.bizarrebeasts.io/rituals/featured"}
                         onVerified={() => handleFeaturedRitualVerified()}
                       />
                     </div>
@@ -543,46 +542,8 @@ export default function RitualsPage() {
             </div>
           </div>
         )}
-        
-        {/* How It Works Section */}
-        <div className="bg-gradient-to-br from-dark-card via-dark-card to-gem-crystal/5 border border-gem-crystal/20 rounded-2xl p-6 mb-8">
-          <h2 className="text-2xl font-bold text-center mb-6 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent">
-            💎 How Daily Check-In Rewards Work
-          </h2>
 
-          <div className="grid md:grid-cols-3 gap-4 mb-6">
-            <div className="text-center p-4 bg-dark-bg/50 rounded-lg">
-              <div className="text-3xl mb-2">1️⃣</div>
-              <h3 className="font-semibold text-gem-crystal mb-2">Complete 3 Rituals</h3>
-              <p className="text-sm text-gray-400">Finish any 3 daily rituals below to unlock check-in eligibility</p>
-            </div>
-
-            <div className="text-center p-4 bg-dark-bg/50 rounded-lg">
-              <div className="text-3xl mb-2">2️⃣</div>
-              <h3 className="font-semibold text-gem-gold mb-2">Check In Daily</h3>
-              <p className="text-sm text-gray-400">Once unlocked, check in every day to build your streak</p>
-            </div>
-
-            <div className="text-center p-4 bg-dark-bg/50 rounded-lg">
-              <div className="text-3xl mb-2">3️⃣</div>
-              <h3 className="font-semibold text-gem-pink mb-2">Earn $BB Rewards</h3>
-              <p className="text-sm text-gray-400">Get rewards every 5 days based on your Empire tier!</p>
-            </div>
-          </div>
-
-          <div className="text-center">
-            <p className="text-sm text-gray-400 mb-3">
-              <span className="text-gem-gold font-semibold">🧪 Beta Testing Phase:</span> Be among the first to earn $BB rewards on Base! Limited beta access now live.
-            </p>
-          </div>
-        </div>
-
-        {/* Rewards Table - Always visible as a resource */}
-        <div className="mb-8">
-          <RewardsTable />
-        </div>
-
-        {/* Share Verification Notice */}
+        {/* Share Verification Notice - Only show if not connected */}
         {!farcasterConnected && (
           <div className="mb-8 bg-gradient-to-br from-gem-crystal/10 to-gem-gold/10 border border-gem-crystal/30 rounded-xl p-4">
             <div className="mb-3">
@@ -597,17 +558,10 @@ export default function RitualsPage() {
           </div>
         )}
 
-        {/* Show connected status */}
-        {farcasterConnected && (
-          <div className="mb-8 bg-dark-card border border-gem-crystal/30 rounded-xl p-4">
-            <div className="flex items-center gap-2">
-              <span className="text-gem-crystal">✅</span>
-              <p className="text-sm text-gray-300">
-                Signed in as <span className="font-bold text-white">@{farcasterUsername}</span> (FID: {farcasterFid}) - Your shares will be verified automatically
-              </p>
-            </div>
-          </div>
-        )}
+        {/* Collapsible Check-In Section with all rewards content */}
+        <CollapsibleCheckIn
+          completedRituals={completedRituals.size + (featuredCompleted ? 1 : 0)}
+        />
 
         {/* Progress Tracker */}
         <div className="text-center mb-8">
@@ -636,14 +590,6 @@ export default function RitualsPage() {
               Complete <span className="text-gem-gold font-semibold">{3 - completedRituals.size - (featuredCompleted ? 1 : 0)} more ritual{(3 - completedRituals.size - (featuredCompleted ? 1 : 0)) > 1 ? 's' : ''}</span> to unlock daily check-in rewards!
             </p>
           )}
-        </div>
-
-        {/* Check-In Component - Prominently displayed */}
-        <div className="mb-12">
-          <CheckIn
-            userTier="BIZARRE" // Testing with BIZARRE tier for full rewards
-            completedRituals={completedRituals.size + (featuredCompleted ? 1 : 0)}
-          />
         </div>
 
         {/* Rituals Section Header */}

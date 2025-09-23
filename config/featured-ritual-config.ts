@@ -46,31 +46,31 @@ interface FeaturedCampaign {
 
 export const ACTIVE_CAMPAIGN: FeaturedCampaign | null = {
   // Basic Campaign Info
-  title: "The BB Miniapp & Treasure Quest in the dGEN1 app store!",
-  description: `I'm GOING BIZARRE to announce that the BizarreBeasts ($BB) Miniapp and game Treasure Quest are now officially live in the dGEN1 app store! This marks a new era as we become one of the first native web3 experiences on the world's only Ethereum-integrated mobile device.`,
+  title: "Notorious BIZ is Back! Battle for 25M $BB on Farverse!",
+  description: `The legend returns! Notorious BIZ is back and ready to dominate the Farverse arena! Join the ultimate Slay-to-Earn battle where skill meets rewards.\n\nFarverse is the premier Farcaster-native gaming platform where you can battle, earn, and prove your dominance. With 25 MILLION $BB tokens up for grabs, it's time to show what you're made of!`,
 
-  actionText: "Visit app store",
-  actionUrl: "https://www.freedomfactory.io/apps",
-  image: "/assets/page-assets/banners/rituals-boxes/featured-ritual-banner-2-dgen1.png",
+  actionText: "Join the Battle",
+  actionUrl: "https://farcaster.xyz/bizarrebeast/0x26091b46",
+  image: "/assets/page-assets/banners/rituals-boxes/featured-ritual-banner-farverse-slay-to-earn.png",
 
   // Optional: Add a Learn More button
-  learnMoreUrl: "https://paragraph.com/@bizarrebeasts/bizarrebeasts-miniapp-and-treasure-quest-now-live-in-the-dgen1-app-store",
+  learnMoreUrl: "https://paragraph.com/@bizarrebeasts/notorious-biz-is-back-battle-for-25m-dollarbb-on-farverse?referrer=0x3FDD6aFEd7a19990632468c7102219d051E685dB",
   learnMoreText: "More info",
 
   // Optional: Auto-expire (remove or update if needed)
   // expiresAt: "2025-01-31",
-  // urgencyText: "New on dGEN1!",
+  urgencyText: "25M $BB Prize Pool!",
 
   // Optional: Sponsorship (uncomment if needed)
-  // sponsorType: 'partner',
-  // sponsorName: 'dGEN1',
-  // sponsorLogo: '/assets/partners/dgen1-logo.png',
-  // sponsorTagline: 'Available on dGEN1',
+  // sponsorType: 'collab',
+  // sponsorName: 'Farverse',
+  // sponsorLogo: '/assets/partners/farverse-logo.png',
+  // sponsorTagline: 'Slay-to-Earn on Farverse',
 
   // Optional: Custom sharing
-  shareTitle: "BizarreBeasts is now on dGEN1! 📱",
-  shareText: "The @bizarrebeasts Miniapp and Treasure Quest game are now LIVE in the dGEN1 app store! 🎮\n\nWe're one of the first native web3 experiences on the world's only Ethereum-integrated mobile device! 🚀\n\nJoin the BIZARRE revolution on dGEN1!",
-  shareEmbed: "https://paragraph.com/@bizarrebeasts/bizarrebeasts-miniapp-and-treasure-quest-now-live-in-the-dgen1-app-store"
+  shareTitle: "Notorious B.I.Z. is BACK! 🎮⚔️",
+  shareText: "NOTORIOUS B.I.Z. IS BACK! 🦾\n\nBattle for 25 MILLION $BB on @farverse - the ultimate Slay-to-Earn arena! ⚔️\n\nhttps://slay.farverse.games/enemies/24\n\nhttps://paragraph.com/@bizarrebeasts/notorious-biz-is-back-battle-for-25m-dollarbb-on-farverse\n\nJoin me in the fight and prove your dominance! 🏆\n\nCC @bizarrebeast @mfbevan.eth\n\n#BizarreBeasts #Farverse #SlayToEarn",
+  shareEmbed: "https://paragraph.com/@bizarrebeasts/notorious-biz-is-back-battle-for-25m-dollarbb-on-farverse"
 };
 
 // ============================================================================

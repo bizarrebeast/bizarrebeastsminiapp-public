@@ -36,10 +36,24 @@ interface UnifiedProfile {
 }
 
 /**
+ * Calculate tier based on Empire rank
+ */
+function getTierFromRank(rank: number | null): string | null {
+  if (!rank) return null;
+  if (rank <= 10) return 'BIZARRE';
+  if (rank <= 50) return 'WEIRDO';
+  if (rank <= 150) return 'ODDBALL';
+  if (rank <= 500) return 'MISFIT';
+  return 'NORMIE';
+}
+
+/**
  * Fetch Empire protocol data for a wallet address with timeout and retry
  */
 async function fetchEmpireData(walletAddress: string, retries: number = 2) {
   const timeout = 5000; // 5 second timeout
+  const BB_TOKEN_ADDRESS = '0x0520bf1d3cEE163407aDA79109333aB1599b4004';
+  const EMPIRE_API_BASE = 'https://www.empirebuilder.world/api';
 
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {
@@ -47,7 +61,8 @@ async function fetchEmpireData(walletAddress: string, retries: number = 2) {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), timeout);
 
-      const response = await fetch(`https://api.empireprotocol.io/users/${walletAddress}`, {
+      // Fetch the leaderboard to find this wallet's rank
+      const response = await fetch(`${EMPIRE_API_BASE}/leaderboard/${BB_TOKEN_ADDRESS}`, {
         signal: controller.signal,
         headers: {
           'Content-Type': 'application/json',
@@ -58,22 +73,35 @@ async function fetchEmpireData(walletAddress: string, retries: number = 2) {
 
       if (response.ok) {
         const data = await response.json();
-        return {
-          tier: data.tier || null,
-          rank: data.rank || null,
-          score: data.score || null
-        };
+
+        // Find the wallet in the leaderboard (case-insensitive)
+        const holder = data.holders?.find((h: any) =>
+          h.address?.toLowerCase() === walletAddress.toLowerCase()
+        );
+
+        if (holder) {
+          const rank = holder.rank || null;
+          const tier = getTierFromRank(rank);
+          const score = holder.balance || holder.baseBalance || null;
+
+          console.log(`Empire data for ${walletAddress}: rank=${rank}, tier=${tier}`);
+          return { tier, rank, score };
+        }
+
+        // Wallet not found in leaderboard
+        console.log(`Wallet ${walletAddress} not found in Empire leaderboard`);
+        return { tier: null, rank: null, score: null };
       }
 
       // If not ok but not a network error, don't retry
       if (response.status >= 400 && response.status < 500) {
-        console.warn(`Empire API returned ${response.status} for ${walletAddress}`);
+        console.warn(`Empire API returned ${response.status} for leaderboard`);
         break;
       }
     } catch (error: any) {
       // Log the error but continue
       if (error.name === 'AbortError') {
-        console.warn(`Empire API timeout (attempt ${attempt + 1}/${retries + 1}) for ${walletAddress}`);
+        console.warn(`Empire API timeout (attempt ${attempt + 1}/${retries + 1})`);
       } else if (error.code === 'ENOTFOUND' || error.message?.includes('ENOTFOUND')) {
         console.warn(`Empire API DNS resolution failed (attempt ${attempt + 1}/${retries + 1})`);
       } else {

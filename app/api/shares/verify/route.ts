@@ -71,22 +71,33 @@ export async function POST(request: NextRequest) {
     switch (body.platform) {
       case 'farcaster':
         // Verify Farcaster share using Neynar
-        if (share.user?.farcaster_fid) {
-          // For rituals, use existing verification logic
-          if (share.share_type === 'ritual' && share.content_id) {
+        // For rituals, use verification logic
+        if (share.share_type === 'ritual' && share.content_id) {
+          // If user has FID, use Neynar verification
+          if (share.user?.farcaster_fid) {
             verificationResult = await searchUserCastsForRitual(
               share.user.farcaster_fid,
               parseInt(share.content_id)
             );
             verified = verificationResult.verified || false;
           } else {
-            // For other types, check if cast was made recently (within 5 minutes)
-            // This is a simplified check - in production, you'd want more sophisticated verification
+            // For users without FID (wallet-only users), auto-verify recent shares
+            // This allows wallet users to complete rituals while we work on FID integration
             const shareAge = Date.now() - new Date(share.created_at).getTime();
             const fiveMinutes = 5 * 60 * 1000;
-            verified = shareAge < fiveMinutes; // Auto-verify if shared within 5 minutes
-            verificationResult = { autoVerified: true, reason: 'Recent share' };
+            verified = shareAge < fiveMinutes;
+            verificationResult = {
+              autoVerified: true,
+              reason: 'Recent share (wallet user)',
+              note: 'User does not have Farcaster FID for full verification'
+            };
           }
+        } else {
+          // For other types, check if cast was made recently (within 5 minutes)
+          const shareAge = Date.now() - new Date(share.created_at).getTime();
+          const fiveMinutes = 5 * 60 * 1000;
+          verified = shareAge < fiveMinutes; // Auto-verify if shared within 5 minutes
+          verificationResult = { autoVerified: true, reason: 'Recent share' };
         }
         break;
 

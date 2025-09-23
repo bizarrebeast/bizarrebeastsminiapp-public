@@ -4,43 +4,43 @@ import { Metadata } from 'next';
 const rituals = [
   {
     id: 1,
-    title: "Create a BizarreBeasts meme! 👹🎨",
+    title: "Create a BizarreBeasts meme",
     description: "Create BB art and memes with the Sticker & Meme Creator!",
     image: "/assets/page-assets/banners/rituals-boxes/memes-ritual-banner.png"
   },
   {
     id: 2,
-    title: "Fire Up Dexscreener! 🔥",
-    description: "Support $BB on Dexscreener by hitting \"🚀\" and \"🔥\"!",
+    title: "Fire Up Dexscreener",
+    description: "Support $BB on Dexscreener by hitting the rocket and fire buttons!",
     image: "/assets/page-assets/banners/rituals-boxes/dexscreener-ritual-banner.png"
   },
   {
     id: 3,
-    title: "Create your $BRND podium! 🏆",
-    description: "Create your @brnd podium with $BB in 🥇 and share!",
+    title: "Create your $BRND podium",
+    description: "Create your @brnd podium with $BB in first place and share!",
     image: "/assets/page-assets/banners/rituals-boxes/brnd-ritual-banner.png"
   },
   {
     id: 4,
-    title: "Send a #create GIVE! 🎨",
+    title: "Send a #create GIVE",
     description: "Send @bizarrebeast a #create GIVE in the Based Creator's Directory!",
     image: "/assets/page-assets/banners/rituals-boxes/create-give-ritual-banner.png"
   },
   {
     id: 5,
-    title: "Play BizarreBeasts Games! 🎮",
+    title: "Play BizarreBeasts Games",
     description: "Play games and earn rewards in the BizarreBeasts ecosystem!",
     image: "/assets/page-assets/banners/rituals-boxes/games-ritual-banner.png"
   },
   {
     id: 6,
-    title: "Vote on ProductClank! 📊",
+    title: "Vote on ProductClank",
     description: "Support BizarreBeasts on ProductClank with your vote!",
     image: "/assets/page-assets/banners/rituals-boxes/productclank-ritual-banner.png"
   },
   {
     id: 7,
-    title: "Swap for $BB! 💱",
+    title: "Swap for $BB",
     description: "Get $BB tokens and join the BizarreBeasts community!",
     image: "/assets/page-assets/banners/rituals-boxes/swap-bb-ritual-banner.png"
   }

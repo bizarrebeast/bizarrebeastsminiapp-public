@@ -485,7 +485,7 @@ export const useUnifiedAuthStore = create<UnifiedAuthState>()(
               identitiesLinked: profile.identitiesLinked,
               linkedAt: profile.linkedAt,
               primaryIdentity: profile.primaryIdentity,
-              empireTier: profile.empireTier || AccessTier.NORMIE,
+              empireTier: profile.empireTier ? (profile.empireTier.toUpperCase() as AccessTier) : AccessTier.NORMIE,
               empireRank: profile.empireRank,
               empireScore: profile.empireScore,
               preferences: profile.preferences || {}

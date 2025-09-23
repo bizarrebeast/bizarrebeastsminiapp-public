@@ -1,0 +1,128 @@
+import { Metadata } from 'next';
+
+// Ritual data (same as in the OG route)
+export const rituals = [
+  {
+    id: 1,
+    title: "Create a BizarreBeasts meme",
+    description: "Create BB art and memes with the Sticker & Meme Creator!",
+    image: "/assets/page-assets/banners/rituals-boxes/memes-ritual-banner.png",
+    actionUrl: "https://bbapp.bizarrebeasts.io/meme-generator"
+  },
+  {
+    id: 2,
+    title: "Fire Up Dexscreener",
+    description: "Support $BB on Dexscreener by hitting the rocket and fire buttons!",
+    image: "/assets/page-assets/banners/rituals-boxes/dexscreener-ritual-banner.png",
+    actionUrl: "https://dexscreener.com/base/0x7f12d13b34f5f4f0a9449c16bcd42f0da47af4cf"
+  },
+  {
+    id: 3,
+    title: "Create your $BRND podium",
+    description: "Create your @brnd podium with $BB in first place and share!",
+    image: "/assets/page-assets/banners/rituals-boxes/brnd-ritual-banner.png",
+    actionUrl: "https://brnd.wtf"
+  },
+  {
+    id: 4,
+    title: "Send a #create GIVE",
+    description: "Send @bizarrebeast a #create GIVE in the Based Creator's Directory!",
+    image: "/assets/page-assets/banners/rituals-boxes/create-give-ritual-banner.png",
+    actionUrl: "https://directory.basedcreators.com"
+  },
+  {
+    id: 5,
+    title: "Play BizarreBeasts Games",
+    description: "Play games and earn rewards in the BizarreBeasts ecosystem!",
+    image: "/assets/page-assets/banners/rituals-boxes/games-ritual-banner.png",
+    actionUrl: "https://bbapp.bizarrebeasts.io/games"
+  },
+  {
+    id: 6,
+    title: "Vote on ProductClank",
+    description: "Support BizarreBeasts on ProductClank with your vote!",
+    image: "/assets/page-assets/banners/rituals-boxes/productclank-ritual-banner.png",
+    actionUrl: "https://productclank.com"
+  },
+  {
+    id: 7,
+    title: "Swap for $BB",
+    description: "Get $BB tokens and join the BizarreBeasts community!",
+    image: "/assets/page-assets/banners/rituals-boxes/swap-bb-ritual-banner.png",
+    actionUrl: "https://app.uniswap.org"
+  }
+];
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>
+}): Promise<Metadata> {
+  const { id } = await params;
+  const ritualId = parseInt(id);
+  const ritual = rituals.find(r => r.id === ritualId);
+
+  if (!ritual) {
+    return {
+      title: 'Ritual Not Found | BizarreBeasts',
+      description: 'This ritual does not exist.',
+    };
+  }
+
+  // Use dynamic OG image for this specific ritual
+  const ogImageUrl = `https://bbapp.bizarrebeasts.io/api/og/ritual/${ritualId}`;
+
+  // Create the MiniAppEmbed structure for Farcaster sharing
+  const miniAppEmbed = {
+    version: '1',
+    imageUrl: ogImageUrl,
+    button: {
+      title: '✨ Complete Ritual',
+      action: {
+        type: 'launch_miniapp',
+        url: `https://bbapp.bizarrebeasts.io/rituals/${ritualId}`,
+        name: 'BizarreBeasts',
+        splashImageUrl: 'https://bbapp.bizarrebeasts.io/farcaster-assets/splash.png',
+        splashBackgroundColor: '#0A0A0A'
+      }
+    }
+  };
+
+  return {
+    title: `${ritual.title} | BizarreBeasts`,
+    description: ritual.description,
+    openGraph: {
+      title: ritual.title,
+      description: ritual.description,
+      type: 'website',
+      url: `https://bbapp.bizarrebeasts.io/rituals/${ritualId}`,
+      siteName: 'BizarreBeasts',
+      images: [
+        {
+          url: ogImageUrl,
+          width: 1200,
+          height: 630,
+          alt: ritual.title,
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: ritual.title,
+      description: ritual.description,
+      images: [ogImageUrl],
+      creator: '@bizarrebeasts_',
+    },
+    other: {
+      // MiniApp metadata for Farcaster sharing
+      'fc:miniapp': JSON.stringify(miniAppEmbed),
+      'fc:frame': JSON.stringify(miniAppEmbed), // Backward compatibility
+
+      // Legacy frame metadata as fallback
+      'fc:frame:image': ogImageUrl,
+      'fc:frame:button:1': '✨ Complete Ritual',
+      'fc:frame:button:1:action': 'link',
+      'fc:frame:button:1:target': `https://bbapp.bizarrebeasts.io/rituals/${ritualId}`,
+    },
+  };
+}
