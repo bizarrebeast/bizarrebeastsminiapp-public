@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { ChevronLeft, Check, ExternalLink } from 'lucide-react';
+import { openExternalUrl } from '@/lib/open-external-url';
 import ShareButtons from '@/components/ShareButtons';
 import Link from 'next/link';
 import { getActiveCampaign } from '@/config/featured-ritual-config';
@@ -132,7 +133,7 @@ export default function FeaturedRitualClient() {
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-3 justify-center mb-6">
             <button
-              onClick={() => window.open(featuredRitual.actionUrl, '_blank')}
+              onClick={async () => await openExternalUrl(featuredRitual.actionUrl)}
               className={`inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all duration-300 transform ${
                 isCompleted
                   ? 'bg-gem-gold/20 text-gem-gold border border-gem-gold/40'
@@ -154,7 +155,7 @@ export default function FeaturedRitualClient() {
 
             {featuredRitual.learnMoreUrl && (
               <button
-                onClick={() => window.open(featuredRitual.learnMoreUrl, '_blank')}
+                onClick={async () => await openExternalUrl(featuredRitual.learnMoreUrl!)}
                 className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all duration-300 bg-dark-card border border-gem-crystal/50 text-gem-crystal hover:bg-gem-crystal/20"
               >
                 {featuredRitual.learnMoreText || 'Learn More'}
@@ -197,7 +198,7 @@ export default function FeaturedRitualClient() {
       {/* Partnership CTA */}
       <div className="text-center">
         <button
-          onClick={() => window.open('/partnerships', '_blank')}
+          onClick={async () => await openExternalUrl('https://bbapp.bizarrebeasts.io/partnerships')}
           className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-dark-card to-gem-gold/10 border border-gem-gold/30 text-gem-gold font-semibold rounded-lg hover:from-gem-gold/20 hover:to-gem-gold/30 hover:border-gem-gold/50 transition-all group"
         >
           <span className="text-lg">🤝</span>

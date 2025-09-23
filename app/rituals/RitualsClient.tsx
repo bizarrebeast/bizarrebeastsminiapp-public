@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import { ExternalLink, Check, Share2, Share, ShieldCheck, AlertCircle } from 'lucide-react';
 import { ultimateShare } from '@/lib/sdk-ultimate';
 import { sdk } from '@/lib/sdk-init';
+import { openExternalUrl } from '@/lib/open-external-url';
 import ShareButtons from '@/components/ShareButtons';
 import dynamic from 'next/dynamic';
 import { getActiveCampaign } from '@/config/featured-ritual-config';
@@ -472,10 +473,10 @@ export default function RitualsPage() {
                     {/* Action Buttons */}
                     <div className="flex flex-col sm:flex-row gap-2 sm:flex-wrap">
                       <button
-                        onClick={() => {
+                        onClick={async () => {
                           // Don't mark as completed here - only after share verification
                           // setFeaturedCompleted(true);
-                          window.open(featuredRitual.actionUrl, '_blank');
+                          await openExternalUrl(featuredRitual.actionUrl);
                         }}
                         className={`inline-flex items-center justify-center gap-1 px-3 sm:px-4 py-1.5 rounded-lg font-semibold text-xs sm:text-sm transition-all duration-300 transform ${
                           featuredCompleted
@@ -498,7 +499,7 @@ export default function RitualsPage() {
 
                       {featuredRitual.learnMoreUrl && (
                         <button
-                          onClick={() => window.open(featuredRitual.learnMoreUrl, '_blank')}
+                          onClick={async () => await openExternalUrl(featuredRitual.learnMoreUrl!)}
                           className="inline-flex items-center justify-center gap-1 px-3 py-1.5 rounded-lg font-semibold text-xs sm:text-sm transition-all duration-300 bg-dark-card border border-gem-crystal/50 text-gem-crystal hover:bg-gem-crystal/20"
                         >
                           {featuredRitual.learnMoreText || 'Learn More'}
