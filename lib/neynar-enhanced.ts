@@ -169,7 +169,7 @@ export async function getUserProfile(fid: number): Promise<UserProfile | null> {
       return null;
     }
 
-    const user = response.users[0];
+    const user = response.users[0] as any;
 
     return {
       fid: user.fid,
@@ -224,7 +224,9 @@ export async function searchUsers(query: string, limit: number = 10): Promise<Se
 
     return {
       users,
-      next: response.result.next,
+      next: response.result.next ? {
+        cursor: response.result.next.cursor || undefined
+      } : undefined,
     };
   } catch (error) {
     console.error('Error searching users:', error);
@@ -383,7 +385,7 @@ export async function getGrowthMetrics(fid: number): Promise<GrowthMetrics> {
 export async function getFollowers(fid: number, limit: number = 100, cursor?: string) {
   try {
     const client = getNeynarClient();
-    const response = await client.fetchUserFollowers(fid, { limit, cursor });
+    const response = await client.fetchUserFollowers({ fid, limit, cursor });
     return response;
   } catch (error) {
     console.error('Error fetching followers:', error);
@@ -394,7 +396,7 @@ export async function getFollowers(fid: number, limit: number = 100, cursor?: st
 export async function getFollowing(fid: number, limit: number = 100, cursor?: string) {
   try {
     const client = getNeynarClient();
-    const response = await client.fetchUserFollowing(fid, { limit, cursor });
+    const response = await client.fetchUserFollowing({ fid, limit, cursor });
     return response;
   } catch (error) {
     console.error('Error fetching following:', error);
