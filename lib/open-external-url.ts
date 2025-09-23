@@ -82,8 +82,7 @@ export async function openExternalUrl(url: string): Promise<void> {
 
       // Check if we're on mobile (native app) vs desktop (web)
       const context = await sdk.context;
-      const isMobileApp = context?.client?.platformType === 'ios' ||
-                          context?.client?.platformType === 'android';
+      const isMobileApp = context?.client?.platformType === 'mobile';
 
       console.log('Platform:', context?.client?.platformType, 'isMobile:', isMobileApp);
 
