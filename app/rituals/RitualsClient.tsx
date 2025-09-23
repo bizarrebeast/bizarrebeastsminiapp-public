@@ -412,7 +412,7 @@ export default function RitualsPage() {
 
               <div className="flex flex-col md:flex-row">
                 {/* Image */}
-                <div className="md:w-48 h-40 sm:h-48 md:h-auto bg-gradient-to-br from-gray-800 to-gray-900 relative overflow-hidden flex-shrink-0">
+                <div className="md:w-48 h-48 sm:h-56 md:h-auto bg-gradient-to-br from-gray-800 to-gray-900 relative overflow-hidden flex-shrink-0">
                   <img 
                     src={featuredRitual.image} 
                     alt={featuredRitual.title}
@@ -631,7 +631,7 @@ export default function RitualsPage() {
               >
                 <div className="flex flex-col md:flex-row">
                   {/* Image */}
-                  <div className="md:w-48 h-40 sm:h-48 md:h-auto bg-gradient-to-br from-gray-800 to-gray-900 relative overflow-hidden">
+                  <div className="md:w-48 h-48 sm:h-56 md:h-auto bg-gradient-to-br from-gray-800 to-gray-900 relative overflow-hidden">
                     <img 
                       src={ritual.image} 
                       alt={ritual.title}

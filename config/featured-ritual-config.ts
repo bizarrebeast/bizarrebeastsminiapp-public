@@ -50,7 +50,7 @@ export const ACTIVE_CAMPAIGN: FeaturedCampaign | null = {
   description: `The legend returns! Notorious B.I.Z. is back and ready to dominate the Farverse arena! Join the ultimate Slay-to-Earn battle where skill meets rewards.\n\nFarverse is a premier Farcaster-native gaming platform where you can battle, earn, and prove your dominance. With 25 MILLION $BB tokens up for grabs, plus other prizes for more villains, it's time to GO BIZARRE show what you're made of!`,
 
   actionText: "Join the Battle",
-  actionUrl: "https://farcaster.xyz/bizarrebeast/0x26091b46",
+  actionUrl: "https://slay.farverse.games/enemies/24",
   image: "/assets/page-assets/banners/rituals-boxes/featured-ritual-banner-farverse-slay-to-earn.png",
 
   // Optional: Add a Learn More button
