@@ -6,6 +6,8 @@ A production-ready Farcaster miniapp for the BizarreBeasts ecosystem featuring a
 
 ## 📚 Important Documentation
 
+- **[PROGRESS_LOG_2025-01-23.md](./PROGRESS_LOG_2025-01-23.md)** - Critical security fixes and ritual sharing restoration (Jan 23, 2025)
+- **[SECURITY_GUIDE.md](./SECURITY_GUIDE.md)** - Comprehensive security documentation with latest hardening updates
 - **[AUTHENTICATION_FIXES.md](./AUTHENTICATION_FIXES.md)** - Complete authentication system fixes and implementation details (Jan 2025)
 - **[SESSION_SUMMARY.md](./SESSION_SUMMARY.md)** - Latest contest system implementation details
 - **[MIGRATION_GUIDE.md](./MIGRATION_GUIDE.md)** - Database migration and setup guide for contest system
