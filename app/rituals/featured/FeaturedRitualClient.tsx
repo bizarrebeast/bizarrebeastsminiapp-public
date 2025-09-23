@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { ChevronLeft, Check, ExternalLink } from 'lucide-react';
 import { openExternalUrl } from '@/lib/open-external-url';
+import { sdk } from '@/lib/sdk-init';
 import ShareButtons from '@/components/ShareButtons';
 import Link from 'next/link';
 import { getActiveCampaign } from '@/config/featured-ritual-config';
@@ -133,7 +134,25 @@ export default function FeaturedRitualClient() {
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-3 justify-center mb-6">
             <button
-              onClick={async () => await openExternalUrl(featuredRitual.actionUrl)}
+              onClick={async () => {
+                // Check if we're in Farcaster - if yes, open directly as frame
+                // If in browser, open via Warpcast compose to ensure it opens as frame
+                try {
+                  const isInMiniApp = await sdk.isInMiniApp();
+                  if (isInMiniApp) {
+                    // In Farcaster, open directly
+                    await openExternalUrl(featuredRitual.actionUrl);
+                  } else {
+                    // In browser, open via Warpcast to ensure frame loads
+                    const frameUrl = `https://warpcast.com/~/compose?embeds[]=${encodeURIComponent(featuredRitual.actionUrl)}`;
+                    window.open(frameUrl, '_blank');
+                  }
+                } catch (error) {
+                  // Fallback to Warpcast compose
+                  const frameUrl = `https://warpcast.com/~/compose?embeds[]=${encodeURIComponent(featuredRitual.actionUrl)}`;
+                  window.open(frameUrl, '_blank');
+                }
+              }}
               className={`inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all duration-300 transform ${
                 isCompleted
                   ? 'bg-gem-gold/20 text-gem-gold border border-gem-gold/40'

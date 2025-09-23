@@ -716,7 +716,7 @@ export default function RitualsPage() {
                           }}
                           buttonSize="sm"
                           showLabels={false}
-                          contextUrl="https://bbapp.bizarrebeasts.io/rituals"
+                          contextUrl={`https://bbapp.bizarrebeasts.io/rituals/${ritual.id}`}
                           onVerified={() => handleRitualVerified(ritual.id)}
                         />
                       </div>
