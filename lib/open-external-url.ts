@@ -1,6 +1,37 @@
 import { sdk } from './sdk-init';
 
 /**
+ * CRITICAL: Farcaster Frame Navigation Guidelines
+ * ================================================
+ *
+ * ALWAYS use this utility for ALL external links in the app.
+ *
+ * This utility handles three scenarios:
+ * 1. Farcaster frame URLs → Opens with openMiniApp() to keep in Farcaster
+ * 2. External websites → Opens with openUrl() to open in browser
+ * 3. Regular browser → Opens with window.open() in new tab
+ *
+ * Usage:
+ * ```typescript
+ * import { openExternalUrl } from '@/lib/open-external-url';
+ *
+ * // ✅ CORRECT
+ * <button onClick={async () => await openExternalUrl(url)}>
+ *
+ * // ❌ WRONG - Don't use these:
+ * <button onClick={() => window.open(url, '_blank')}>
+ * <a href={url} target="_blank">
+ * ```
+ *
+ * Why this matters:
+ * - Keeps frame navigation within Farcaster (expected UX)
+ * - Properly closes the BB miniapp after navigation
+ * - Maintains consistent behavior across all external links
+ *
+ * To add new frame domains, update the framePatterns array below.
+ */
+
+/**
  * Checks if a URL is a Farcaster frame/miniapp based on known patterns
  */
 function isFarcasterFrame(url: string): boolean {
