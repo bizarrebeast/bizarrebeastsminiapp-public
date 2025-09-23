@@ -11,6 +11,10 @@ import { sdk } from './sdk-init';
  * 2. External websites → Opens with openUrl() to open in browser
  * 3. Regular browser → Opens with window.open() in new tab
  *
+ * Platform-specific behavior:
+ * - Mobile (platformType = 'mobile'): Opens frame/URL then closes BB miniapp
+ * - Desktop (platformType = 'web'): Opens frame/URL, lets Farcaster handle transition
+ *
  * Usage:
  * ```typescript
  * import { openExternalUrl } from '@/lib/open-external-url';
@@ -25,7 +29,8 @@ import { sdk } from './sdk-init';
  *
  * Why this matters:
  * - Keeps frame navigation within Farcaster (expected UX)
- * - Properly closes the BB miniapp after navigation
+ * - Handles mobile vs desktop differences correctly
+ * - Prevents navigation interruption on desktop
  * - Maintains consistent behavior across all external links
  *
  * To add new frame domains, update the framePatterns array below.
