@@ -11,17 +11,29 @@ export async function openExternalUrl(url: string): Promise<void> {
     const isInMiniApp = await sdk.isInMiniApp();
 
     if (isInMiniApp) {
-      // In Farcaster miniapp, we need to use the proper method to open external URLs
-      // This will open the URL in the user's default browser or a new Warpcast frame
-      // Using window.open with specific parameters to ensure it opens outside the miniapp
-      window.open(url, '_system');
+      // Standard Farcaster pattern: close current miniapp then open the external frame
+      // This ensures the BB miniapp closes and the new frame/miniapp opens properly
 
-      // Alternative: If the above doesn't work, we can try composing a cast with the link
-      // This would create a cast with the URL that users can click
-      // await sdk.actions.composeCast({
-      //   text: `Check out: ${url}`,
-      //   embeds: [url]
-      // });
+      // First, open the URL (this triggers the navigation)
+      // Using openUrl action if available, which handles frame URLs better
+      if (sdk.actions?.openUrl) {
+        await sdk.actions.openUrl(url);
+      } else {
+        // Fallback to window.open if openUrl is not available
+        window.open(url, '_system');
+      }
+
+      // Then close the current miniapp
+      // Small delay to ensure the URL open is initiated first
+      setTimeout(async () => {
+        if (sdk.actions?.close) {
+          try {
+            await sdk.actions.close();
+          } catch (closeError) {
+            console.log('Could not close miniapp:', closeError);
+          }
+        }
+      }, 100);
     } else {
       // Regular browser context - open in new tab
       window.open(url, '_blank', 'noopener,noreferrer');
