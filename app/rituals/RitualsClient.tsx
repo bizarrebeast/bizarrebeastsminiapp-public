@@ -296,33 +296,33 @@ export default function RitualsPage() {
     let actionUrl = ritual.actionUrl.startsWith('/')
       ? `https://bbapp.bizarrebeasts.io${ritual.actionUrl}`
       : ritual.actionUrl;
-    
+
     // Clean text without URLs (Farcaster will add them as embeds)
     const shareText = `Daily BIZARRE Ritual #${ritual.id}: ${ritual.title}\n\n${ritual.description}\n\nJoin me in completing daily $BIZARRE rituals in the BizarreBeasts ($BB) Community! 👹\n\n#BizarreBeasts #BBRituals`;
-    
+
     // Build embeds array based on the ritual
     const embeds: string[] = [];
 
-    // Handle special cases for embed URLs
+    // ALWAYS use the specific ritual detail page URL first
+    // This has the custom OG metadata with unique hero image for each ritual
+    const ritualDetailUrl = `https://bbapp.bizarrebeasts.io/rituals/${ritual.id}`;
+    embeds.push(ritualDetailUrl);
+
+    // Then add additional context URLs based on the ritual
     if (ritual.id === 3) {
-      // BRND Podium - use the direct brnd.land URL for the embed
+      // BRND Podium - add the direct brnd.land URL
       embeds.push('https://brnd.land');
-      embeds.push('https://bbapp.bizarrebeasts.io/rituals');
     } else if (ritual.id === 4) {
-      // Create GIVE - add the coordinape link as embed
+      // Create GIVE - add the coordinape link
       embeds.push('https://dir.coordinape.com/creators/bizarrebeasts.base.eth');
-      embeds.push('https://bbapp.bizarrebeasts.io/rituals');
-    } else if (ritual.id === 1 || ritual.id === 6 || ritual.id === 8) {
-      // Meme Generator, Games, Swap - these are on our site, only add the specific page URL
+    } else if (ritual.id === 1 || ritual.id === 5 || ritual.id === 7) {
+      // Meme Generator, Games, Swap - these are on our site
+      if (actionUrl !== ritualDetailUrl && !actionUrl.includes('/rituals')) {
+        embeds.push(actionUrl);
+      }
+    } else if (!actionUrl.includes('~/compose') && !actionUrl.includes('bbapp.bizarrebeasts.io')) {
+      // For external rituals (Dexscreener, ProductClank), add the action URL
       embeds.push(actionUrl);
-      // Don't add the main rituals page for these (avoid duplicate)
-    } else if (!actionUrl.includes('~/compose')) {
-      // For other rituals (Dexscreener, Believe), add both URLs
-      embeds.push(actionUrl);
-      embeds.push('https://bbapp.bizarrebeasts.io/rituals');
-    } else {
-      // For compose URLs (like rip pack), just add the rituals page
-      embeds.push('https://bbapp.bizarrebeasts.io/rituals');
     }
 
     // Check if we're in Farcaster miniapp and use SDK if available
