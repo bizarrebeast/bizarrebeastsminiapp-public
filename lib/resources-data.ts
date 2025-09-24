@@ -32,6 +32,20 @@ export const resources: Resource[] = [
     tags: ['how-to', 'tutorial', 'memes', 'stickers', 'creator', 'miniapp']
   },
   {
+    id: 'how-to-rituals-checkins',
+    title: 'BizarreBeasts Miniapp How-To Series: Daily Rituals and Check-ins',
+    description: 'Complete guide to the Daily Rituals and Check-in system. Learn how to maximize rewards, complete rituals, and engage with the BizarreBeasts ecosystem daily.',
+    category: 'how-to',
+    language: 'en',
+    readTime: 7,
+    topic: 'Tutorial',
+    difficulty: 'beginner',
+    featured: false,
+    updatedDate: 'Jan 2025',
+    externalUrl: 'https://paragraph.com/@bizarrebeasts/bizarrebeasts-miniapp-how-to-series-daily-rituals-and-check-ins',
+    tags: ['how-to', 'tutorial', 'rituals', 'check-in', 'rewards', 'miniapp', 'daily']
+  },
+  {
     id: 'bb-empire-guide',
     title: '$BB Empire Guide',
     description: 'Everything you need to know to get started with the BizarreBeasts Empire. Complete walkthrough of tokens, boosters, and rewards.',
@@ -176,6 +190,20 @@ export const resources: Resource[] = [
     updatedDate: 'Dec 2024',
     externalUrl: 'https://paragraph.com/@bizarrebeasts/munchies-climb-is-live-on-farcade-the-most-delicious-bizarre-game-yet',
     tags: ['games', 'farcade', 'munchies-climb']
+  },
+  {
+    id: 'notorious-biz-farverse',
+    title: 'Notorious BIZ is Back - Battle for 25M $BB on Farverse',
+    description: 'The legendary BizarreBeasts arena fighter returns! Compete in epic battles for a share of 25 million $BB tokens in this high-stakes gaming competition.',
+    category: 'games',
+    language: 'en',
+    readTime: 6,
+    topic: 'Tournament',
+    difficulty: 'intermediate',
+    featured: false,
+    updatedDate: 'Jan 2025',
+    externalUrl: 'https://paragraph.com/@bizarrebeasts/notorious-biz-is-back-battle-for-25m-dollarbb-on-farverse',
+    tags: ['games', 'notorious-biz', 'farverse', 'tournament', 'competition', '$BB', 'rewards']
   },
   {
     id: 'bizarre-bounce-unleashed',
