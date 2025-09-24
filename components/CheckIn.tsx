@@ -733,14 +733,6 @@ export default function CheckIn({ userTier = 'NORMIE', completedRituals }: Check
 
       {/* Action Buttons */}
       <div className="flex gap-4 mb-6">
-        {console.log('🔘 BUTTON STATE:', {
-          canCheckIn,
-          isUnlocked,
-          loading,
-          completedRituals,
-          disabled: !canCheckIn || !isUnlocked || loading,
-          buttonText: !isUnlocked ? '🔒 Complete 3 rituals first' : canCheckIn ? '✅ Check In Now!' : '⏰ Wait'
-        })}
         <button
           onClick={handleCheckIn}
           disabled={!canCheckIn || !isUnlocked || loading}
