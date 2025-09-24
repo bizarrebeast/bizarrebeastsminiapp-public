@@ -153,6 +153,10 @@ export default function RitualsPage() {
     }
     console.log('================================');
     console.log('📝 Note: If sharing shows old data, Farcaster is caching. Deploy to production and wait 24-48h for cache refresh.');
+    console.log('🔧 To force refresh:');
+    console.log('  1. Share with ?v=24 added to URL (changes daily)');
+    console.log('  2. Use Warpcast debugger: https://warpcast.com/~/developers/frames');
+    console.log('  3. Test each ritual URL in debugger to force cache update');
     console.log('================================');
   }, []);
 

@@ -210,7 +210,9 @@ export default function ShareButtons({
         let shareUrl = contextUrl || 'https://bbapp.bizarrebeasts.io';
         if (shareType === 'ritual' && ritualData?.id) {
           // Always use the ritual detail page for rituals to get the correct hero image
-          shareUrl = `https://bbapp.bizarrebeasts.io/rituals/${ritualData.id}`;
+          // Add cache-busting parameter to force refresh
+          const cacheVersion = new Date().getDate(); // Changes daily
+          shareUrl = `https://bbapp.bizarrebeasts.io/rituals/${ritualData.id}?v=${cacheVersion}`;
         }
         const finalShareText = shareText || SHARE_TEMPLATES.farcaster.default;
 
