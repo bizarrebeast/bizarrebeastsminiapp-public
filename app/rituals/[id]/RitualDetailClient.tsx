@@ -33,12 +33,6 @@ export default function RitualDetailClient() {
     setIsCompleted(completed);
   }, [ritualId]);
 
-  const handleComplete = () => {
-    // Mark ritual as completed
-    localStorage.setItem(`ritual_${ritualId}_completed`, 'true');
-    setIsCompleted(true);
-  };
-
   const handleActionClick = async (e: React.MouseEvent) => {
     if (ritual?.actionUrl) {
       e.preventDefault();
@@ -159,25 +153,16 @@ export default function RitualDetailClient() {
           </div>
 
           {/* Action Button */}
-          <div className="mt-6 flex flex-col sm:flex-row gap-4">
+          <div className="mt-6">
             <a
               href={ritual.actionUrl}
               onClick={handleActionClick}
               rel="noopener noreferrer"
-              className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink text-dark-bg font-bold rounded-lg transition-all duration-300 transform hover:scale-[1.02]"
+              className="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink text-dark-bg font-bold rounded-lg transition-all duration-300 transform hover:scale-[1.02]"
             >
               <span>Start Ritual</span>
               <ExternalLink className="w-4 h-4" />
             </a>
-
-            {!isCompleted && (
-              <button
-                onClick={handleComplete}
-                className="px-6 py-3 bg-gradient-to-br from-dark-card to-dark-panel border border-gem-crystal/30 hover:border-gem-crystal/50 text-gem-crystal font-semibold rounded-lg transition-all duration-300"
-              >
-                Mark as Complete
-              </button>
-            )}
           </div>
         </div>
 
