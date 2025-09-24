@@ -44,7 +44,7 @@ export function EmpireBadges() {
         >
           {/* Gradient border effect */}
           <div className="absolute inset-0 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink rounded-lg" />
-          <div className="absolute inset-[1px] bg-dark-card rounded-lg" />
+          <div className="absolute inset-[2px] bg-dark-card rounded-lg" />
 
           {/* Content */}
           <div className="relative flex items-center gap-1">
@@ -62,7 +62,7 @@ export function EmpireBadges() {
         >
           {/* Gradient border effect */}
           <div className="absolute inset-0 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink rounded-lg" />
-          <div className="absolute inset-[1px] bg-dark-card rounded-lg" />
+          <div className="absolute inset-[2px] bg-dark-card rounded-lg" />
 
           {/* Content */}
           <div className="relative flex items-center gap-1">

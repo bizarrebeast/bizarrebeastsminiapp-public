@@ -84,7 +84,7 @@ export default function RitualDetailClient() {
 
         {/* Ritual Number Badge */}
         <div className="absolute top-4 right-4 z-10">
-          <div className="px-4 py-2 bg-gradient-to-r from-gem-crystal/20 to-gem-gold/20 backdrop-blur-sm rounded-lg border border-gem-gold/30">
+          <div className="px-4 py-2 bg-dark-bg/90 backdrop-blur-sm rounded-lg border border-gem-gold/30">
             <span className="bg-gradient-to-r from-gem-crystal to-gem-gold bg-clip-text text-transparent font-bold">
               Ritual #{ritualId}
             </span>
