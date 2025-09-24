@@ -51,6 +51,12 @@ export default function ContestsPage() {
 
       console.log('Contests fetched:', { active, upcoming, ended });
 
+      // Debug banner URLs
+      [...(active || []), ...(upcoming || []), ...(ended || [])].forEach(contest => {
+        console.log(`Contest "${contest.name}": banner_image_url = "${contest.banner_image_url}"`);
+        console.log('Full contest object:', contest);
+      });
+
       setActiveContests(active || []);
       setUpcomingContests(upcoming || []);
       setEndedContests(ended || []);
@@ -129,6 +135,7 @@ export default function ContestsPage() {
                 alt={contest.name}
                 className="w-full h-full object-cover"
                 onError={(e) => {
+                  console.error('Failed to load banner image:', contest.banner_image_url);
                   // Fallback to gradient if image fails to load
                   (e.target as HTMLImageElement).style.display = 'none';
                 }}

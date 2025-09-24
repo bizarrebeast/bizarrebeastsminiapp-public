@@ -323,6 +323,7 @@ export default function Home() {
                 </div>
               </div>
             </Link>
+
           </div>
         </div>
       </section>
@@ -341,19 +342,20 @@ export default function Home() {
                   <div className="bg-dark-card border border-gem-crystal/20 rounded-lg overflow-hidden hover:border-gem-crystal/40 transition cursor-pointer">
                     {/* Banner Image */}
                     {contest.banner_image_url ? (
-                      <div className="relative w-full h-32 bg-gradient-to-br from-gem-crystal/20 to-gem-purple/20">
+                      <div className="relative w-full h-48 bg-gradient-to-br from-gem-crystal/20 to-gem-purple/20">
                         <img
                           src={contest.banner_image_url}
                           alt={contest.name}
                           className="w-full h-full object-cover"
                           onError={(e) => {
+                            console.error('Failed to load banner image:', contest.banner_image_url);
                             (e.target as HTMLImageElement).style.display = 'none';
                           }}
                         />
                       </div>
                     ) : (
-                      <div className="relative w-full h-32 bg-gradient-to-br from-gem-crystal/20 to-gem-purple/20 flex items-center justify-center">
-                        <span className="text-4xl opacity-50">
+                      <div className="relative w-full h-48 bg-gradient-to-br from-gem-crystal/20 to-gem-purple/20 flex items-center justify-center">
+                        <span className="text-6xl opacity-50">
                           {contest.type === 'game_score' ? '🎮' :
                            contest.type === 'creative' ? '🎨' :
                            contest.type === 'onboarding' ? '🚀' : '🏆'}
