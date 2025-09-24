@@ -63,7 +63,7 @@ export async function generateMetadata({
   // Customize title and description for specific ritual
   const title = ritual
     ? `${ritual.title} | BizarreBeasts`
-    : 'Daily Rituals | BizarreBeasts';
+    : 'BIZARRE Rituals & Daily Checkin | BizarreBeasts';
 
   const description = ritual
     ? ritual.description

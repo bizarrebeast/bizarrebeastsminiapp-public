@@ -373,7 +373,7 @@ export default function RitualsPage() {
         {/* Title and Description */}
         <div className="text-center mb-8">
           <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent leading-tight pb-2">
-            Daily BIZARRE Rituals
+            BIZARRE Rituals & Daily Checkin
           </h1>
           <p className="text-lg text-gray-300 max-w-2xl mx-auto">
             Complete daily rituals and check-ins to engage with the BizarreBeasts ecosystem, earn $BB rewards, and strengthen our community. Your consistency drives the $BIZARRE movement forward!

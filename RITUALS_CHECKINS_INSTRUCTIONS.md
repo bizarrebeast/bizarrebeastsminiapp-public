@@ -136,6 +136,44 @@ Before you can check in each day:
 The check-in system is currently in **beta testing**. Features may evolve based on community feedback. Early participants receive special recognition!
 
 ---
+---
 
-*Last Updated: January 2025*
-*Version: 2.0*
+## Community Guidelines
+
+### Fair Play:
+- One check-in per wallet per day
+- No automated check-in bots
+- Report suspicious activity
+
+### Sharing:
+- Post streak milestones with #BBStreak
+- Encourage others to maintain streaks
+- Celebrate community achievements
+
+---
+
+## FAQ
+
+**Q: What time zone does the check-in use?**
+A: All check-ins reset at midnight UTC (Coordinated Universal Time).
+
+**Q: Can I check in multiple times per day?**
+A: No, you can only check in once per 24-hour period.
+
+**Q: What happens if I lose my streak?**
+A: Your streak resets to 0, but you keep all previously earned rewards.
+
+**Q: Do I need to pay gas fees?**
+A: Yes, each check-in requires a small gas fee on the Base network.
+
+**Q: Can I check in for previous days?**
+A: No, check-ins cannot be backdated. You must check in within each day's window.
+
+**Q: How are ties handled on the leaderboard?**
+A: Ties are broken by: 1) Longest streak achieved, 2) Total check-ins, 3) First to achieve the streak.
+
+---
+
+Ready to start your streak journey? Head to the Empire page and click that check-in button! Every day counts toward building your BIZARRE legacy.
+
+**Remember:** Consistency is key. Small daily actions lead to massive long-term rewards!

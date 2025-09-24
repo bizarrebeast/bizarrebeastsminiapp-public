@@ -11,7 +11,7 @@ import { EmpireBadges } from '@/components/wallet/EmpireBadges';
 const navItems = [
   { href: '/meme-generator', label: 'Stickers & Meme Creator', icon: Palette },
   { href: '/games', label: 'BizarreBeasts Games', icon: Gamepad2 },
-  { href: '/rituals', label: 'BIZARRE Rituals', icon: Sparkles },
+  { href: '/rituals', label: 'BIZARRE Rituals & Checkin', icon: Sparkles },
   { href: '/contests', label: 'Contests & Competitions', icon: Trophy },
   { href: '/swap', label: 'Token Swap', icon: ArrowDownUp },
   { href: '/empire', label: 'Empire Leaderboard', icon: Crown },
