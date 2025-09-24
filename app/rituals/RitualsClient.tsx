@@ -672,7 +672,7 @@ export default function RitualsPage() {
 
         {/* Progress Tracker */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink p-[1px] rounded-lg">
+          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink p-[2px] rounded-lg shadow-lg">
             <div className="bg-dark-bg rounded-lg px-6 py-3 flex items-center gap-3">
               <div className="text-center">
                 <div className="text-2xl font-bold bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent">
