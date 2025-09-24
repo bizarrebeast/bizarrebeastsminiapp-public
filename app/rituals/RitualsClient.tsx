@@ -10,6 +10,7 @@ import ShareButtons from '@/components/ShareButtons';
 import dynamic from 'next/dynamic';
 import { getActiveCampaign } from '@/config/featured-ritual-config';
 import { useUnifiedAuthStore } from '@/store/useUnifiedAuthStore';
+import { useWallet } from '@/hooks/useWallet';
 
 // Dynamically import CollapsibleCheckIn to avoid SSR issues with Web3
 const CollapsibleCheckIn = dynamic(() => import('@/components/CollapsibleCheckIn'), { ssr: false });
@@ -116,45 +117,12 @@ interface FeaturedRitual {
 const featuredRitual = getActiveCampaign();
 
 export default function RitualsPage() {
-  // Initialize both states from localStorage
-  const [ritualsData, setRitualsData] = useState<{
-    completedRituals: Set<number>;
-    featuredCompleted: boolean;
-  }>(() => {
-    try {
-      const stored = localStorage.getItem('bizarreRitualsData');
-      if (stored) {
-        const data = JSON.parse(stored);
-        const today = new Date().toDateString();
+  const wallet = useWallet();
+  const [isLoadingData, setIsLoadingData] = useState(true);
 
-        // Check if it's a new day - if so, reset
-        if (data.date === today) {
-          console.log('Loading rituals from today');
-          return {
-            completedRituals: new Set(data.rituals || []),
-            featuredCompleted: data.featuredCompleted || false
-          };
-        } else {
-          console.log('New day detected - resetting rituals');
-          // It's a new day, start fresh
-          return {
-            completedRituals: new Set(),
-            featuredCompleted: false
-          };
-        }
-      }
-    } catch (e) {
-      console.log('Could not load rituals from localStorage:', e);
-    }
-    return {
-      completedRituals: new Set(),
-      featuredCompleted: false
-    };
-  });
-
-  // Extract individual states for easier use
-  const [completedRituals, setCompletedRituals] = useState<Set<number>>(ritualsData.completedRituals);
-  const [featuredCompleted, setFeaturedCompleted] = useState<boolean>(ritualsData.featuredCompleted);
+  // Initialize with empty states
+  const [completedRituals, setCompletedRituals] = useState<Set<number>>(new Set());
+  const [featuredCompleted, setFeaturedCompleted] = useState<boolean>(false);
   const [verifiedRituals, setVerifiedRituals] = useState<Set<number>>(new Set());
   const [pendingVerification, setPendingVerification] = useState<Set<number>>(new Set());
   const [verifyingRituals, setVerifyingRituals] = useState<Set<number>>(new Set());
@@ -162,25 +130,104 @@ export default function RitualsPage() {
   const { farcasterConnected, farcasterUsername, farcasterFid } = useUnifiedAuthStore();
   const isAuthenticated = farcasterConnected;
 
+  // Load ritual completions from database when wallet connects
+  useEffect(() => {
+    const loadRitualCompletions = async () => {
+      if (!wallet.address) {
+        // If no wallet, try to load from localStorage as fallback
+        try {
+          const stored = localStorage.getItem('bizarreRitualsData');
+          if (stored) {
+            const data = JSON.parse(stored);
+            const today = new Date().toDateString();
+            if (data.date === today) {
+              setCompletedRituals(new Set(data.rituals || []));
+              setFeaturedCompleted(data.featuredCompleted || false);
+            }
+          }
+        } catch (e) {
+          console.log('Could not load from localStorage:', e);
+        }
+        setIsLoadingData(false);
+        return;
+      }
+
+      try {
+        // Fetch from database
+        const response = await fetch(`/api/rituals/complete?wallet=${wallet.address}`);
+        if (response.ok) {
+          const data = await response.json();
+          setCompletedRituals(new Set(data.completedRituals));
+          setFeaturedCompleted(data.featuredCompleted);
+
+          // Also update localStorage for offline access
+          const savedData = {
+            date: new Date().toDateString(),
+            rituals: data.completedRituals,
+            featuredCompleted: data.featuredCompleted
+          };
+          localStorage.setItem('bizarreRitualsData', JSON.stringify(savedData));
+        }
+      } catch (error) {
+        console.error('Error loading ritual completions:', error);
+        // Fall back to localStorage
+        try {
+          const stored = localStorage.getItem('bizarreRitualsData');
+          if (stored) {
+            const data = JSON.parse(stored);
+            const today = new Date().toDateString();
+            if (data.date === today) {
+              setCompletedRituals(new Set(data.rituals || []));
+              setFeaturedCompleted(data.featuredCompleted || false);
+            }
+          }
+        } catch (e) {
+          console.log('Could not load from localStorage:', e);
+        }
+      } finally {
+        setIsLoadingData(false);
+      }
+    };
+
+    loadRitualCompletions();
+  }, [wallet.address]);
+
   // Callback for when a ritual share is verified
-  const handleRitualVerified = (ritualId: number) => {
+  const handleRitualVerified = async (ritualId: number) => {
     console.log('Ritual share verified:', ritualId);
 
     // Mark ritual as complete after verification
     setCompletedRituals(prev => {
       const newCompleted = new Set([...prev, ritualId]);
-
-      // Save to localStorage - use consistent key 'bizarreRitualsData'
-      const savedData = {
-        date: new Date().toDateString(),
-        rituals: Array.from(newCompleted),
-        featuredCompleted: featuredCompleted
-      };
-      localStorage.setItem('bizarreRitualsData', JSON.stringify(savedData));
       console.log('Marked ritual as complete after verification:', ritualId, 'Total completed:', newCompleted.size);
-
       return newCompleted;
     });
+
+    // Save to database if wallet connected
+    if (wallet.address) {
+      try {
+        await fetch('/api/rituals/complete', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            walletAddress: wallet.address,
+            ritualId: ritualId,
+            shared: true
+          })
+        });
+      } catch (error) {
+        console.error('Error saving ritual completion to database:', error);
+      }
+    }
+
+    // Also save to localStorage for offline access
+    const newCompleted = new Set([...completedRituals, ritualId]);
+    const savedData = {
+      date: new Date().toDateString(),
+      rituals: Array.from(newCompleted),
+      featuredCompleted: featuredCompleted
+    };
+    localStorage.setItem('bizarreRitualsData', JSON.stringify(savedData));
 
     // Mark as verified
     setVerifiedRituals(prev => new Set([...prev, ritualId]));
@@ -194,13 +241,29 @@ export default function RitualsPage() {
   };
 
   // Callback for when featured ritual share is verified
-  const handleFeaturedRitualVerified = () => {
+  const handleFeaturedRitualVerified = async () => {
     console.log('Featured ritual share verified');
 
     // Mark featured ritual as complete after verification
     setFeaturedCompleted(true);
 
-    // Save to localStorage - use consistent key 'bizarreRitualsData'
+    // Save to database if wallet connected
+    if (wallet.address && featuredRitual) {
+      try {
+        await fetch('/api/rituals/featured-complete', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            walletAddress: wallet.address,
+            featuredRitualId: featuredRitual.title // Use title as ID
+          })
+        });
+      } catch (error) {
+        console.error('Error saving featured ritual completion to database:', error);
+      }
+    }
+
+    // Also save to localStorage for offline access
     const savedData = {
       date: new Date().toDateString(),
       rituals: Array.from(completedRituals),
