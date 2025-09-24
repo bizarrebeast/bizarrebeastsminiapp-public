@@ -710,8 +710,8 @@ export default function RitualsPage() {
           </p>
         </div>
 
-        {/* Rituals List */}
-        <div className="space-y-6">
+        {/* Rituals List - Grid on desktop, stack on mobile */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
           {rituals.map((ritual, index) => {
             const isCompleted = completedRituals.has(ritual.id);
             
@@ -734,9 +734,9 @@ export default function RitualsPage() {
                     : borderStyle
                 }`}
               >
-                <div className="flex flex-col md:flex-row">
+                <div className="flex flex-col h-full">
                   {/* Image */}
-                  <div className="md:w-48 h-48 sm:h-56 md:h-auto bg-gradient-to-br from-gray-800 to-gray-900 relative overflow-hidden">
+                  <div className="h-40 sm:h-48 bg-gradient-to-br from-gray-800 to-gray-900 relative overflow-hidden">
                     <img 
                       src={ritual.image} 
                       alt={ritual.title}
