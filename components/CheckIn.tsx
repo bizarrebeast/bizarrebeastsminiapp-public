@@ -114,22 +114,44 @@ export default function CheckIn({ userTier = 'NORMIE', completedRituals }: Check
 
         // Check if user can check in (ritual requirement)
         const unlocked = await gatekeeperContract.canUserCheckIn(wallet.address);
-        console.log('Check-in unlock status for', wallet.address, ':', unlocked);
+        console.log('🔍 CHECK-IN DEBUG:', {
+          wallet: wallet.address,
+          gatekeeperUnlocked: unlocked,
+          completedRituals: completedRituals,
+          expectedBehavior: 'Should be LOCKED if completedRituals < 3',
+          problem: unlocked && completedRituals < 3 ? '❌ GATEKEEPER SAYS UNLOCKED BUT NO RITUALS!' : '✅ OK'
+        });
 
         // TEMPORARY: Check if user has checked in today (within last 20 hours)
         // If they have, they should be locked regardless of gatekeeper status
         const lastCheckIn = Number(userData[0]);
         const now = Math.floor(Date.now() / 1000);
         const timeSinceLastCheckIn = now - lastCheckIn;
-        const hasCheckedInRecently = lastCheckIn > 0 && timeSinceLastCheckIn < 86400; // 24 hours
+        const hoursSinceCheckIn = timeSinceLastCheckIn / 3600;
+        const hasCheckedInRecently = lastCheckIn > 0 && timeSinceLastCheckIn < 72000; // 20 hours
 
-        if (hasCheckedInRecently && unlocked) {
-          console.warn('⚠️ User is unlocked but has checked in recently - should be locked!');
-          // Override the unlock status if they've checked in within 24 hours
-          setIsUnlocked(false);
-        } else {
-          setIsUnlocked(unlocked);
-        }
+        console.log('⏰ COOLDOWN DEBUG:', {
+          lastCheckIn: new Date(lastCheckIn * 1000).toLocaleString(),
+          now: new Date(now * 1000).toLocaleString(),
+          hoursSinceCheckIn: hoursSinceCheckIn.toFixed(1),
+          hasCheckedInRecently,
+          shouldBeLocked: hasCheckedInRecently || completedRituals < 3
+        });
+
+        // CRITICAL: Show proper state based on cooldown and ritual status
+        // If user is in cooldown period, always show unlocked state so they see cooldown timer
+        // Otherwise, check ritual requirement
+        const shouldBeUnlocked = hasCheckedInRecently ? true : (unlocked && completedRituals >= 3);
+
+        console.log('🚨 FINAL UNLOCK DECISION:', {
+          gatekeeperSays: unlocked,
+          ritualsCompleted: completedRituals,
+          inCooldown: hasCheckedInRecently,
+          FINAL_UNLOCKED: shouldBeUnlocked,
+          buttonShouldBe: hasCheckedInRecently ? 'COOLDOWN TIMER ⏰' : (shouldBeUnlocked ? 'ENABLED ✅' : 'DISABLED 🔒')
+        });
+
+        setIsUnlocked(shouldBeUnlocked);
 
         console.log('Current streak:', Number(userData.currentStreak));
         setCurrentStreak(Number(userData.currentStreak));
@@ -449,8 +471,9 @@ export default function CheckIn({ userTier = 'NORMIE', completedRituals }: Check
     );
   }
 
-  // Show loading state while checking
-  if (isCheckingStatus && !isUnlocked) {
+  // Show loading state only on initial load, not during polling
+  // Don't show loading if user has a streak (they've used the system before)
+  if (isCheckingStatus && !isUnlocked && currentStreak === 0 && completedRituals === 0) {
     return (
       <div className="bg-gradient-to-br from-gem-dark/90 via-black/90 to-gem-purple/20 border border-gem-gold/30 rounded-xl p-8 mt-8 backdrop-blur-sm">
         <h2 className="text-3xl font-bold bg-gradient-to-r from-gem-gold to-gem-pink bg-clip-text text-transparent mb-4">
@@ -461,8 +484,8 @@ export default function CheckIn({ userTier = 'NORMIE', completedRituals }: Check
     );
   }
 
-  // If not unlocked (less than 3 rituals)
-  if (!isUnlocked) {
+  // If not unlocked (less than 3 rituals) AND not in cooldown period
+  if (!isUnlocked && timeUntilNext === 0) {
     return (
       <div className="bg-gradient-to-br from-dark-card via-dark-card to-gem-purple/10 border border-gem-crystal/30 rounded-xl p-8 backdrop-blur-sm">
         <div className="text-center mb-6">
@@ -710,18 +733,28 @@ export default function CheckIn({ userTier = 'NORMIE', completedRituals }: Check
 
       {/* Action Buttons */}
       <div className="flex gap-4 mb-6">
+        {console.log('🔘 BUTTON STATE:', {
+          canCheckIn,
+          isUnlocked,
+          loading,
+          completedRituals,
+          disabled: !canCheckIn || !isUnlocked || loading,
+          buttonText: !isUnlocked ? '🔒 Complete 3 rituals first' : canCheckIn ? '✅ Check In Now!' : '⏰ Wait'
+        })}
         <button
           onClick={handleCheckIn}
-          disabled={!canCheckIn || loading}
+          disabled={!canCheckIn || !isUnlocked || loading}
           className={`flex-1 px-6 py-4 font-bold rounded-lg transition-all ${
-            canCheckIn
+            canCheckIn && isUnlocked
               ? 'bg-gradient-to-r from-gem-gold to-gem-pink text-black hover:opacity-90'
               : 'bg-gray-800 text-gray-400 cursor-not-allowed'
           } disabled:opacity-50`}
         >
           {loading ? 'Processing...' :
+           !canCheckIn && timeUntilNext > 0 ? `⏰ Wait ${formatTimeRemaining(timeUntilNext)}` :
+           !isUnlocked && timeUntilNext === 0 ? '🔒 Complete 3 rituals first' :
            canCheckIn ? '✅ Check In Now!' :
-           `⏰ Wait ${formatTimeRemaining(timeUntilNext)}`}
+           '⏰ Check-in available soon'}
         </button>
 
         {parseFloat(pendingRewards) > 0 && (
