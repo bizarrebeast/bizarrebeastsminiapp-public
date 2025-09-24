@@ -672,7 +672,7 @@ export default function RitualsPage() {
 
         {/* Progress Tracker */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink p-[1px] rounded-lg">
+          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink p-[2px] rounded-lg shadow-lg">
             <div className="bg-dark-bg rounded-lg px-6 py-3 flex items-center gap-3">
               <div className="text-center">
                 <div className="text-2xl font-bold bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent">
@@ -774,23 +774,21 @@ export default function RitualsPage() {
                           {ritual.id}
                         </div>
                       </div>
-                      {/* Title */}
-                      <div className="flex-1">
-                        <h3 className="text-lg sm:text-xl font-semibold flex items-center gap-2 flex-wrap">
+                      {/* Title - with more room to wrap */}
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-lg sm:text-xl font-semibold">
                           {ritual.title}
-                          {isCompleted && (
-                            <Check className="w-5 h-5 text-gem-gold" />
-                          )}
                         </h3>
                       </div>
                     </div>
                     
                     <p className="text-sm sm:text-base text-gray-400 mb-4">{ritual.description}</p>
                     
-                    <div className="flex flex-col sm:flex-row gap-2 sm:gap-2">
+                    {/* CTA Button */}
+                    <div className="mb-3">
                       <button
                         onClick={() => handleRitualAction(ritual)}
-                        className={`inline-flex items-center justify-center gap-2 px-4 sm:px-6 py-2 rounded-lg font-semibold text-sm sm:text-base transition-all duration-300 ${
+                        className={`w-full inline-flex items-center justify-center gap-2 px-4 sm:px-6 py-2 rounded-lg font-semibold text-sm sm:text-base transition-all duration-300 ${
                           isCompleted
                             ? 'bg-gem-gold/20 text-gem-gold border border-gem-gold/40'
                             : 'bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink text-dark-bg hover:shadow-lg transform hover:scale-105'
@@ -808,23 +806,24 @@ export default function RitualsPage() {
                           </>
                         )}
                       </button>
+                    </div>
 
-                      <div className="flex items-center gap-2 w-full sm:w-auto">
-                        <span className="text-sm text-gray-400 font-semibold">Share:</span>
-                        <ShareButtons
-                          shareType="ritual"
-                          ritualData={{
-                            id: ritual.id,
-                            title: ritual.title,
-                            description: ritual.description,
-                            actionUrl: ritual.actionUrl
-                          }}
-                          buttonSize="sm"
-                          showLabels={false}
-                          contextUrl={`https://bbapp.bizarrebeasts.io/rituals/${ritual.id}`}
-                          onVerified={() => handleRitualVerified(ritual.id)}
-                        />
-                      </div>
+                    {/* Share Buttons - Now visible below CTA */}
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-gray-400 font-semibold">Share:</span>
+                      <ShareButtons
+                        shareType="ritual"
+                        ritualData={{
+                          id: ritual.id,
+                          title: ritual.title,
+                          description: ritual.description,
+                          actionUrl: ritual.actionUrl
+                        }}
+                        buttonSize="sm"
+                        showLabels={false}
+                        contextUrl={`https://bbapp.bizarrebeasts.io/rituals/${ritual.id}`}
+                        onVerified={() => handleRitualVerified(ritual.id)}
+                      />
                     </div>
                   </div>
                 </div>
