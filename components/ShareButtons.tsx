@@ -214,6 +214,16 @@ export default function ShareButtons({
         }
         const finalShareText = shareText || SHARE_TEMPLATES.farcaster.default;
 
+        // Debug logging for shares
+        if (shareType === 'ritual' && ritualData) {
+          console.log('🚀 RITUAL SHARE DEBUG:');
+          console.log(`  Ritual: ${ritualData.title}`);
+          console.log(`  Share URL: ${shareUrl}`);
+          console.log(`  OG Image URL: https://bbapp.bizarrebeasts.io/api/og/ritual/${ritualData.id}`);
+          console.log(`  This will fetch metadata from: /rituals/${ritualData.id}`);
+          console.log('  Note: If wrong image shows, Farcaster is caching old metadata.');
+        }
+
         if (isInMiniApp) {
           // Use ultimateShare for native Farcaster sharing (works on mobile!)
           await ultimateShare({

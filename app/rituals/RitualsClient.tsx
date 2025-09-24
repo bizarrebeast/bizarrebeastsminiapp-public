@@ -130,6 +130,32 @@ export default function RitualsPage() {
   const { farcasterConnected, farcasterUsername, farcasterFid } = useUnifiedAuthStore();
   const isAuthenticated = farcasterConnected;
 
+  // Debug logging for ritual configuration
+  useEffect(() => {
+    console.log('🎯 RITUAL CONFIGURATION DEBUG:');
+    console.log('================================');
+    rituals.forEach(ritual => {
+      console.log(`Ritual ${ritual.id}: ${ritual.title}`);
+      console.log(`  📍 CTA URL: ${ritual.actionUrl}`);
+      console.log(`  🖼️ Hero Image: ${ritual.image}`);
+      console.log(`  📤 Share URL: https://bbapp.bizarrebeasts.io/rituals/${ritual.id}`);
+      console.log(`  🔗 OG Image: https://bbapp.bizarrebeasts.io/api/og/ritual/${ritual.id}`);
+      console.log('---');
+    });
+
+    if (featuredRitual) {
+      console.log('⭐ FEATURED RITUAL:');
+      console.log(`  Title: ${featuredRitual.title}`);
+      console.log(`  📍 CTA URL: ${featuredRitual.actionUrl}`);
+      console.log(`  🖼️ Hero Image: ${featuredRitual.image}`);
+      console.log(`  📤 Share URL: ${featuredRitual.shareEmbed || 'https://bbapp.bizarrebeasts.io/rituals/featured'}`);
+      console.log(`  🔗 OG Image: https://bbapp.bizarrebeasts.io/api/og/ritual/featured`);
+    }
+    console.log('================================');
+    console.log('📝 Note: If sharing shows old data, Farcaster is caching. Deploy to production and wait 24-48h for cache refresh.');
+    console.log('================================');
+  }, []);
+
   // Load ritual completions from database when wallet connects
   useEffect(() => {
     const loadRitualCompletions = async () => {
