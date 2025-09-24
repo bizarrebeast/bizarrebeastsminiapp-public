@@ -206,9 +206,10 @@ export default function ShareButtons({
         // They've already been removed from X/Twitter and Telegram custom texts
 
         // Determine the URL to share based on context
-        // For rituals, use individual ritual pages
+        // For rituals, ALWAYS use individual ritual pages for proper hero images
         let shareUrl = contextUrl || 'https://bbapp.bizarrebeasts.io';
-        if (!contextUrl && shareType === 'ritual' && ritualData?.id) {
+        if (shareType === 'ritual' && ritualData?.id) {
+          // Always use the ritual detail page for rituals to get the correct hero image
           shareUrl = `https://bbapp.bizarrebeasts.io/rituals/${ritualData.id}`;
         }
         const finalShareText = shareText || SHARE_TEMPLATES.farcaster.default;

@@ -70,7 +70,7 @@ const rituals: Ritual[] = [
     title: "Play BizarreBeasts games! 🕹️",
     description: "Play BizarreBeasts games powered by /remix",
     actionText: "Play Games",
-    actionUrl: "/games",
+    actionUrl: "https://farcaster.xyz/miniapps/WnoFPCHF5Z6e/treasure-quest",
     image: "/assets/page-assets/banners/rituals-boxes/games-ritual-banner.png"
   },
   {
@@ -78,7 +78,7 @@ const rituals: Ritual[] = [
     title: "Rip a pack of cards! 🃏",
     description: "Rip a pack of BizarreBeasts ($BBCP) cards on @vibemarket",
     actionText: "Rip Pack",
-    actionUrl: "https://farcaster.xyz/~/compose?text=Grab%20your%20BizarreBeasts%20(%24BBCP)%20packs%20on%20%40vibemarket%20%E2%99%A6%EF%B8%8F&embeds[]=https%3A%2F%2Fvibechain.com%2Fmarket%2Fbizarrebeasts%3Fref%3DBJT4EJBY0SJP",
+    actionUrl: "https://vibechain.com/market/bizarrebeasts?ref=BJT4EJBY0SJP",
     image: "/assets/page-assets/banners/rituals-boxes/rip-cards-ritual-banner.png"
   },
   {
@@ -371,23 +371,34 @@ export default function RitualsPage() {
     const ritualDetailUrl = `https://bbapp.bizarrebeasts.io/rituals/${ritual.id}`;
     embeds.push(ritualDetailUrl);
 
+    console.log(`🔍 Sharing Ritual #${ritual.id}: ${ritual.title}`);
+    console.log('Primary embed (ritual page):', ritualDetailUrl);
+
     // Then add additional context URLs based on the ritual
     if (ritual.id === 3) {
       // BRND Podium - add the direct brnd.land URL
       embeds.push('https://brnd.land');
+      console.log('Secondary embed:', 'https://brnd.land');
     } else if (ritual.id === 4) {
       // Create GIVE - add the coordinape link
       embeds.push('https://dir.coordinape.com/creators/bizarrebeasts.base.eth');
+      console.log('Secondary embed:', 'https://dir.coordinape.com/creators/bizarrebeasts.base.eth');
     } else if (ritual.id === 1 || ritual.id === 6 || ritual.id === 8 || ritual.id === 9) {
       // Rituals that link to our own pages: Meme Generator (1), Games (6), Swap (8), Empire (9)
       if (actionUrl !== ritualDetailUrl && !actionUrl.includes('/rituals')) {
         embeds.push(actionUrl);
+        console.log('Secondary embed (internal page):', actionUrl);
       }
     } else if (!actionUrl.includes('~/compose') && !actionUrl.includes('bbapp.bizarrebeasts.io')) {
       // For external rituals: Dexscreener (2), ProductClank (5), and any others
       embeds.push(actionUrl);
+      console.log('Secondary embed (external):', actionUrl);
+    } else {
+      console.log('No secondary embed for this ritual (compose URL or duplicate)');
     }
     // Note: Ritual 7 (Rip packs) has a compose URL, so we don't add it as an embed
+
+    console.log('Final embeds array:', embeds);
 
     // Check if we're in Farcaster miniapp and use SDK if available
     try {

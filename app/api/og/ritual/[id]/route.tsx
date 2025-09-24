@@ -31,21 +31,33 @@ const rituals = [
   },
   {
     id: 5,
-    title: "Play BizarreBeasts Games",
-    description: "Play games and earn rewards in the BizarreBeasts ecosystem!",
-    image: "/assets/page-assets/banners/rituals-boxes/games-ritual-banner.png"
-  },
-  {
-    id: 6,
-    title: "Vote on ProductClank",
-    description: "Support BizarreBeasts on ProductClank with your vote!",
+    title: "Believe in BizarreBeasts",
+    description: "\"Believe\" in BizarreBeasts ($BB) on @productclank",
     image: "/assets/page-assets/banners/rituals-boxes/productclank-ritual-banner.png"
   },
   {
+    id: 6,
+    title: "Play BizarreBeasts games",
+    description: "Play BizarreBeasts games powered by /remix",
+    image: "/assets/page-assets/banners/rituals-boxes/games-ritual-banner.png"
+  },
+  {
     id: 7,
-    title: "Swap for $BB",
-    description: "Get $BB tokens and join the BizarreBeasts community!",
+    title: "Rip a pack of cards",
+    description: "Rip a pack of BizarreBeasts ($BBCP) cards on @vibemarket",
+    image: "/assets/page-assets/banners/rituals-boxes/rip-cards-ritual-banner.png"
+  },
+  {
+    id: 8,
+    title: "Buy 1M $BB Tokens",
+    description: "Grow your BizarreBeasts ($BB) bag and increase your rank on the empire leaderboard",
     image: "/assets/page-assets/banners/rituals-boxes/swap-bb-ritual-banner.png"
+  },
+  {
+    id: 9,
+    title: "Share your Leaderboard rank",
+    description: "Show off your BizarreBeasts leaderboard rank and tier to the community, powered by $GLANKER!",
+    image: "/assets/page-assets/banners/rituals-boxes/leaderboard-rank-rituals-bannker.png"
   }
 ];
 

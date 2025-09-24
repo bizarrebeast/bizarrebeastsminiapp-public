@@ -32,24 +32,38 @@ export const rituals = [
   },
   {
     id: 5,
-    title: "Play BizarreBeasts Games",
-    description: "Play games and earn rewards in the BizarreBeasts ecosystem!",
-    image: "/assets/page-assets/banners/rituals-boxes/games-ritual-banner.png",
-    actionUrl: "https://bbapp.bizarrebeasts.io/games"
+    title: "Believe in BizarreBeasts",
+    description: "\"Believe\" in BizarreBeasts ($BB) on @productclank",
+    image: "/assets/page-assets/banners/rituals-boxes/productclank-ritual-banner.png",
+    actionUrl: "https://farcaster.xyz/miniapps/X_DQ70cYHoX0/productclank"
   },
   {
     id: 6,
-    title: "Vote on ProductClank",
-    description: "Support BizarreBeasts on ProductClank with your vote!",
-    image: "/assets/page-assets/banners/rituals-boxes/productclank-ritual-banner.png",
-    actionUrl: "https://productclank.com"
+    title: "Play BizarreBeasts games",
+    description: "Play BizarreBeasts games powered by /remix",
+    image: "/assets/page-assets/banners/rituals-boxes/games-ritual-banner.png",
+    actionUrl: "https://farcaster.xyz/miniapps/WnoFPCHF5Z6e/treasure-quest"
   },
   {
     id: 7,
-    title: "Swap for $BB",
-    description: "Get $BB tokens and join the BizarreBeasts community!",
+    title: "Rip a pack of cards",
+    description: "Rip a pack of BizarreBeasts ($BBCP) cards on @vibemarket",
+    image: "/assets/page-assets/banners/rituals-boxes/rip-cards-ritual-banner.png",
+    actionUrl: "https://vibechain.com/market/bizarrebeasts?ref=BJT4EJBY0SJP"
+  },
+  {
+    id: 8,
+    title: "Buy 1M $BB Tokens",
+    description: "Grow your BizarreBeasts ($BB) bag and increase your rank on the empire leaderboard",
     image: "/assets/page-assets/banners/rituals-boxes/swap-bb-ritual-banner.png",
-    actionUrl: "https://app.uniswap.org"
+    actionUrl: "https://bbapp.bizarrebeasts.io/swap"
+  },
+  {
+    id: 9,
+    title: "Share your Leaderboard rank",
+    description: "Show off your BizarreBeasts leaderboard rank and tier to the community, powered by $GLANKER!",
+    image: "/assets/page-assets/banners/rituals-boxes/leaderboard-rank-rituals-bannker.png",
+    actionUrl: "https://bbapp.bizarrebeasts.io/empire"
   }
 ];
 
