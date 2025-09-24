@@ -378,15 +378,16 @@ export default function RitualsPage() {
     } else if (ritual.id === 4) {
       // Create GIVE - add the coordinape link
       embeds.push('https://dir.coordinape.com/creators/bizarrebeasts.base.eth');
-    } else if (ritual.id === 1 || ritual.id === 5 || ritual.id === 7) {
-      // Meme Generator, Games, Swap - these are on our site
+    } else if (ritual.id === 1 || ritual.id === 6 || ritual.id === 8 || ritual.id === 9) {
+      // Rituals that link to our own pages: Meme Generator (1), Games (6), Swap (8), Empire (9)
       if (actionUrl !== ritualDetailUrl && !actionUrl.includes('/rituals')) {
         embeds.push(actionUrl);
       }
     } else if (!actionUrl.includes('~/compose') && !actionUrl.includes('bbapp.bizarrebeasts.io')) {
-      // For external rituals (Dexscreener, ProductClank), add the action URL
+      // For external rituals: Dexscreener (2), ProductClank (5), and any others
       embeds.push(actionUrl);
     }
+    // Note: Ritual 7 (Rip packs) has a compose URL, so we don't add it as an embed
 
     // Check if we're in Farcaster miniapp and use SDK if available
     try {
