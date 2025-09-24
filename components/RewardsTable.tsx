@@ -46,10 +46,10 @@ export default function RewardsTable() {
                         <span className="text-gem-gold font-bold">BIZARRE</span>
                       </div>
                     </td>
-                    <td className="text-right py-2 text-gem-crystal">100K</td>
-                    <td className="text-right py-2 text-gem-crystal">50K</td>
-                    <td className="text-right py-2 text-gem-crystal">100K</td>
-                    <td className="text-right py-2 font-bold text-gem-gold">750K</td>
+                    <td className="text-right py-2 text-gem-crystal">250K</td>
+                    <td className="text-right py-2 text-gem-crystal">500K</td>
+                    <td className="text-right py-2 text-gem-crystal">1M</td>
+                    <td className="text-right py-2 font-bold text-gem-gold">3.25M</td>
                   </tr>
                   <tr className="border-b border-gem-gold/10">
                     <td className="py-2">
@@ -58,10 +58,10 @@ export default function RewardsTable() {
                         <span className="text-gem-purple font-bold">WEIRDO</span>
                       </div>
                     </td>
-                    <td className="text-right py-2 text-gem-crystal">50K</td>
-                    <td className="text-right py-2 text-gem-crystal">25K</td>
-                    <td className="text-right py-2 text-gem-crystal">50K</td>
-                    <td className="text-right py-2 font-bold text-gem-purple">375K</td>
+                    <td className="text-right py-2 text-gem-crystal">100K</td>
+                    <td className="text-right py-2 text-gem-crystal">250K</td>
+                    <td className="text-right py-2 text-gem-crystal">500K</td>
+                    <td className="text-right py-2 font-bold text-gem-purple">1.55M</td>
                   </tr>
                   <tr className="border-b border-gem-gold/10">
                     <td className="py-2">
@@ -70,10 +70,10 @@ export default function RewardsTable() {
                         <span className="text-gem-blue font-bold">ODDBALL</span>
                       </div>
                     </td>
-                    <td className="text-right py-2 text-gem-crystal">25K</td>
-                    <td className="text-right py-2 text-gem-crystal">10K</td>
-                    <td className="text-right py-2 text-gem-crystal">25K</td>
-                    <td className="text-right py-2 font-bold text-gem-blue">185K</td>
+                    <td className="text-right py-2 text-gem-crystal">50K</td>
+                    <td className="text-right py-2 text-gem-crystal">100K</td>
+                    <td className="text-right py-2 text-gem-crystal">200K</td>
+                    <td className="text-right py-2 font-bold text-gem-blue">650K</td>
                   </tr>
                   <tr className="border-b border-gem-gold/10">
                     <td className="py-2">
@@ -82,10 +82,10 @@ export default function RewardsTable() {
                         <span className="text-gem-crystal font-bold">MISFIT</span>
                       </div>
                     </td>
-                    <td className="text-right py-2 text-gem-crystal">5K</td>
-                    <td className="text-right py-2 text-gem-crystal">-</td>
-                    <td className="text-right py-2 text-gem-crystal">-</td>
-                    <td className="text-right py-2 font-bold text-gem-crystal">30K</td>
+                    <td className="text-right py-2 text-gem-crystal">25K</td>
+                    <td className="text-right py-2 text-gem-crystal">50K</td>
+                    <td className="text-right py-2 text-gem-crystal">100K</td>
+                    <td className="text-right py-2 font-bold text-gem-crystal">325K</td>
                   </tr>
                   <tr>
                     <td className="py-2">
@@ -94,10 +94,10 @@ export default function RewardsTable() {
                         <span className="text-gray-400 font-bold">NORMIE</span>
                       </div>
                     </td>
+                    <td className="text-right py-2 text-gem-crystal">25K</td>
                     <td className="text-right py-2 text-gray-400">-</td>
                     <td className="text-right py-2 text-gray-400">-</td>
-                    <td className="text-right py-2 text-gray-400">-</td>
-                    <td className="text-right py-2 font-bold text-gray-400">-</td>
+                    <td className="text-right py-2 font-bold text-gem-crystal">150K</td>
                   </tr>
                 </tbody>
               </table>

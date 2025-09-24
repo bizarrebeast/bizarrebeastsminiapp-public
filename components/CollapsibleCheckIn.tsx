@@ -69,7 +69,7 @@ export default function CollapsibleCheckIn({ completedRituals }: CollapsibleChec
     if (!hasCompletedRituals) {
       return {
         icon: '🔒',
-        text: `Complete ${3 - completedRituals} more ritual${3 - completedRituals > 1 ? 's' : ''} to unlock`,
+        text: `Complete & share ${3 - completedRituals} more ritual${3 - completedRituals > 1 ? 's' : ''}`,
         color: 'text-gray-400'
       };
     }
@@ -129,7 +129,7 @@ export default function CollapsibleCheckIn({ completedRituals }: CollapsibleChec
               <div className={`px-2 sm:px-3 py-1 rounded-full text-xs font-semibold ${
                 hasCompletedRituals ? 'bg-gem-crystal/20 text-gem-crystal' : 'bg-dark-bg text-gray-500'
               }`}>
-                {completedRituals}/3 Rituals
+                {completedRituals}/3 Rituals Shared
               </div>
 
               {hasWallet && (
@@ -161,8 +161,8 @@ export default function CollapsibleCheckIn({ completedRituals }: CollapsibleChec
             <div className="grid md:grid-cols-3 gap-4">
               <div className="text-center p-4 bg-dark-bg/50 rounded-lg">
                 <div className="text-2xl mb-2">1️⃣</div>
-                <h4 className="font-semibold text-gem-crystal mb-2">Complete 3 Rituals</h4>
-                <p className="text-xs text-gray-400">Finish any 3 daily rituals to unlock eligibility</p>
+                <h4 className="font-semibold text-gem-crystal mb-2">Complete & Share 3 Rituals</h4>
+                <p className="text-xs text-gray-400">Complete and share any 3 daily rituals to unlock eligibility</p>
               </div>
 
               <div className="text-center p-4 bg-dark-bg/50 rounded-lg">

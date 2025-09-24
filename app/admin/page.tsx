@@ -219,11 +219,13 @@ export default function AdminDashboard() {
               </button>
             </Link>
 
-            <button className="w-full p-4 bg-dark-bg rounded-lg opacity-50 cursor-not-allowed text-left">
-              <DollarSign className="w-6 h-6 text-gem-pink mb-2" />
-              <p className="font-medium">Token Distribution</p>
-              <p className="text-xs text-gray-400">Coming soon</p>
-            </button>
+            <Link href="/admin/checkin-analytics">
+              <button className="w-full p-4 bg-dark-bg rounded-lg hover:bg-gem-pink/10 transition text-left">
+                <Calendar className="w-6 h-6 text-gem-pink mb-2" />
+                <p className="font-medium">Check-In Analytics</p>
+                <p className="text-xs text-gray-400">Monitor rewards & stats</p>
+              </button>
+            </Link>
           </div>
         </div>
       </div>

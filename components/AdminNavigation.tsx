@@ -37,6 +37,12 @@ const navigationItems = [
         href: '/admin/analytics/financial',
         icon: '💰',
         description: 'Token economics & ROI'
+      },
+      {
+        title: 'Check-Ins',
+        href: '/admin/checkin-analytics',
+        icon: '☀️',
+        description: 'Check-in rewards & metrics'
       }
     ]
   },

@@ -108,14 +108,29 @@ export default function CheckIn({ userTier = 'NORMIE', completedRituals }: Check
       setIsCheckingStatus(true);
 
       try {
+        // Get user data first
+        const userData = await checkInContract.getUserData(wallet.address);
+        console.log('User data:', userData);
+
         // Check if user can check in (ritual requirement)
         const unlocked = await gatekeeperContract.canUserCheckIn(wallet.address);
         console.log('Check-in unlock status for', wallet.address, ':', unlocked);
-        setIsUnlocked(unlocked);
 
-        // Get user data
-        const userData = await checkInContract.getUserData(wallet.address);
-        console.log('User data:', userData);
+        // TEMPORARY: Check if user has checked in today (within last 20 hours)
+        // If they have, they should be locked regardless of gatekeeper status
+        const lastCheckIn = Number(userData[0]);
+        const now = Math.floor(Date.now() / 1000);
+        const timeSinceLastCheckIn = now - lastCheckIn;
+        const hasCheckedInRecently = lastCheckIn > 0 && timeSinceLastCheckIn < 86400; // 24 hours
+
+        if (hasCheckedInRecently && unlocked) {
+          console.warn('⚠️ User is unlocked but has checked in recently - should be locked!');
+          // Override the unlock status if they've checked in within 24 hours
+          setIsUnlocked(false);
+        } else {
+          setIsUnlocked(unlocked);
+        }
+
         console.log('Current streak:', Number(userData.currentStreak));
         setCurrentStreak(Number(userData.currentStreak));
         setPendingRewards(ethers.formatEther(userData.pendingRewards));
@@ -188,6 +203,29 @@ export default function CheckIn({ userTier = 'NORMIE', completedRituals }: Check
 
       // Show share buttons for check-in
       setShowShareAfterCheckIn(true);
+
+      // CRITICAL: Reset ritual requirement so user needs 3 new rituals tomorrow
+      try {
+        console.log('Resetting ritual requirement after successful check-in...');
+        const resetResponse = await fetch('/api/checkin/reset-ritual', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ walletAddress: wallet.address })
+        });
+
+        const resetData = await resetResponse.json();
+        if (resetData.success) {
+          console.log('✅ Ritual requirement reset - will need 3 new rituals for next check-in');
+          // Update local state to reflect the lock
+          setIsUnlocked(false);
+        } else {
+          console.error('⚠️ Failed to reset ritual requirement:', resetData.error);
+          // Still allow check-in to complete, but log the issue
+        }
+      } catch (resetError) {
+        console.error('⚠️ Error resetting ritual requirement:', resetError);
+        // Don't fail the check-in, but this needs to be fixed
+      }
 
       // Don't clear the message or hide share buttons - let user share anytime
 
@@ -442,10 +480,10 @@ export default function CheckIn({ userTier = 'NORMIE', completedRituals }: Check
               <div className="text-4xl">{completedRituals >= 3 ? '🔓' : '🔒'}</div>
               <div>
                 <p className="text-lg font-semibold text-white">
-                  {completedRituals >= 3 ? 'Ready to Unlock!' : `${3 - completedRituals} More Ritual${3 - completedRituals > 1 ? 's' : ''} Needed`}
+                  {completedRituals >= 3 ? 'Ready to Unlock!' : `Complete & Share ${3 - completedRituals} More Ritual${3 - completedRituals > 1 ? 's' : ''}`}
                 </p>
                 <p className="text-sm text-gray-400">
-                  {completedRituals}/3 rituals completed
+                  {completedRituals}/3 rituals completed and shared
                 </p>
               </div>
             </div>
@@ -462,19 +500,19 @@ export default function CheckIn({ userTier = 'NORMIE', completedRituals }: Check
               <div className="flex items-center gap-2">
                 <span className={completedRituals >= 1 ? 'text-gem-gold' : 'text-gray-500'}>✓</span>
                 <span className={`text-sm ${completedRituals >= 1 ? 'text-gray-300' : 'text-gray-500'}`}>
-                  Complete 1st ritual
+                  Complete & share 1st ritual
                 </span>
               </div>
               <div className="flex items-center gap-2">
                 <span className={completedRituals >= 2 ? 'text-gem-gold' : 'text-gray-500'}>✓</span>
                 <span className={`text-sm ${completedRituals >= 2 ? 'text-gray-300' : 'text-gray-500'}`}>
-                  Complete 2nd ritual
+                  Complete & share 2nd ritual
                 </span>
               </div>
               <div className="flex items-center gap-2">
                 <span className={completedRituals >= 3 ? 'text-gem-gold' : 'text-gray-500'}>✓</span>
                 <span className={`text-sm ${completedRituals >= 3 ? 'text-gray-300' : 'text-gray-500'}`}>
-                  Complete 3rd ritual
+                  Complete & share 3rd ritual
                 </span>
               </div>
             </div>
@@ -484,7 +522,7 @@ export default function CheckIn({ userTier = 'NORMIE', completedRituals }: Check
         {completedRituals >= 3 && (
           <div className="bg-gradient-to-r from-gem-gold/20 to-gem-pink/20 rounded-lg p-6">
             <p className="text-gem-gold mb-4 text-lg font-semibold">
-              🎉 Congratulations! You've completed 3 rituals!
+              🎉 Congratulations! You've completed and shared 3 rituals!
             </p>
             {!wallet.address ? (
               <div className="space-y-4">

@@ -37,35 +37,35 @@ export const EMPIRE_TIERS = {
   BIZARRE: {
     name: 'BIZARRE',
     rank: '1-25',
-    fiveDayReward: '100,000 BB',
-    fifteenDayBonus: '50,000 BB',
-    thirtyDayBonus: '100,000 BB',
+    fiveDayReward: '250,000 BB',
+    fifteenDayBonus: '500,000 BB',  // Hardcoded in contract
+    thirtyDayBonus: '1,000,000 BB',  // Hardcoded in contract
   },
   WEIRDO: {
     name: 'WEIRDO',
     rank: '26-50',
-    fiveDayReward: '50,000 BB',
-    fifteenDayBonus: '25,000 BB',
-    thirtyDayBonus: '50,000 BB',
+    fiveDayReward: '100,000 BB',
+    fifteenDayBonus: '250,000 BB',  // Hardcoded in contract
+    thirtyDayBonus: '500,000 BB',   // Hardcoded in contract
   },
   ODDBALL: {
     name: 'ODDBALL',
     rank: '51-100',
-    fiveDayReward: '25,000 BB',
-    fifteenDayBonus: '10,000 BB',
-    thirtyDayBonus: '25,000 BB',
+    fiveDayReward: '50,000 BB',
+    fifteenDayBonus: '100,000 BB',  // Hardcoded in contract
+    thirtyDayBonus: '200,000 BB',   // Hardcoded in contract
   },
   MISFIT: {
     name: 'MISFIT',
     rank: '101-500',
-    fiveDayReward: '5,000 BB',
-    fifteenDayBonus: null,
-    thirtyDayBonus: null,
+    fiveDayReward: '25,000 BB',
+    fifteenDayBonus: '50,000 BB',   // Hardcoded in contract
+    thirtyDayBonus: '100,000 BB',   // Hardcoded in contract
   },
   NORMIE: {
     name: 'NORMIE',
     rank: '501+',
-    fiveDayReward: null,
+    fiveDayReward: '25,000 BB',
     fifteenDayBonus: null,
     thirtyDayBonus: null,
   },

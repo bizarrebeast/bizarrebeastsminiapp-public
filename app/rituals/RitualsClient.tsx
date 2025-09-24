@@ -589,7 +589,7 @@ export default function RitualsPage() {
 
           {completedRituals.size + (featuredCompleted ? 1 : 0) < 3 && (
             <p className="mt-3 text-sm text-gray-400">
-              Complete <span className="text-gem-gold font-semibold">{3 - completedRituals.size - (featuredCompleted ? 1 : 0)} more ritual{(3 - completedRituals.size - (featuredCompleted ? 1 : 0)) > 1 ? 's' : ''}</span> to unlock daily check-in rewards!
+              Complete & share <span className="text-gem-gold font-semibold">{3 - completedRituals.size - (featuredCompleted ? 1 : 0)} more ritual{(3 - completedRituals.size - (featuredCompleted ? 1 : 0)) > 1 ? 's' : ''}</span> to unlock daily check-in rewards!
             </p>
           )}
         </div>
@@ -597,11 +597,11 @@ export default function RitualsPage() {
         {/* Rituals Section Header */}
         <div className="text-center mb-8">
           <h2 className="text-2xl font-bold mb-3 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent">
-            ✔️ Complete Your Daily BIZARRE Rituals
+            ✔️ Complete & Share Your Daily BIZARRE Rituals
           </h2>
           <p className="text-gray-400">
             Each ritual helps you engage with different parts of the BizarreBeasts ecosystem.
-            Complete any 3 to unlock check-in rewards!
+            Complete and share any 3 to unlock check-in rewards!
           </p>
         </div>
 
