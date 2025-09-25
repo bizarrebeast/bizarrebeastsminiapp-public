@@ -10,8 +10,9 @@ interface NeynarAuthButtonEnhancedProps {
 }
 
 /**
- * Enhanced Neynar Auth Button that handles the document.referrer issue
- * Stores origin URL before auth and provides fallback for missing referrer
+ * Enhanced Neynar Auth Button that handles the document.referrer issue in Farcaster mobile app
+ * Fixes authentication errors when users sign in from the Farcaster mobile app webview
+ * where document.referrer is empty due to webview navigation behavior
  */
 export function NeynarAuthButtonEnhanced({
   className,
@@ -30,6 +31,16 @@ export function NeynarAuthButtonEnhanced({
       localStorage.setItem('neynar_auth_origin_backup', currentUrl);
 
       console.log('📍 Stored auth origin URL:', currentUrl);
+
+      // Also check if we're in Farcaster mobile app context
+      const userAgent = window.navigator.userAgent.toLowerCase();
+      const isInFarcasterApp = userAgent.includes('farcaster') ||
+                               userAgent.includes('warpcast') ||
+                               window.location.href.includes('farcaster.xyz');
+
+      if (isInFarcasterApp) {
+        console.log('📱 Detected Farcaster mobile app context');
+      }
     }
   }, []);
 
@@ -45,10 +56,11 @@ export function NeynarAuthButtonEnhanced({
       sessionStorage.setItem('neynar_original_referrer', document.referrer);
     }
 
-    console.log('🔐 Auth initiated with fallback data:', {
+    console.log('🔐 Auth initiated from Farcaster app with fallback data:', {
       origin: currentUrl,
-      referrer: document.referrer || 'none',
-      timestamp: Date.now()
+      referrer: document.referrer || 'none (webview)',
+      timestamp: Date.now(),
+      userAgent: window.navigator.userAgent
     });
   }, []);
 
