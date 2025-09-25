@@ -152,6 +152,7 @@ export function useBBAuth(): BBAuthState & BBAuthActions {
         });
 
         // Verify with backend and fetch empire tier
+        console.log('🔍 Starting backend verification and empire tier fetch...');
         try {
           const verification = await verifyAuth();
           if (verification.success && isMountedRef.current) {
@@ -161,11 +162,14 @@ export function useBBAuth(): BBAuthState & BBAuthActions {
             }));
           }
 
+          console.log('📊 Fetching empire tier for FID:', context.user.fid, 'Wallet:', wallet);
           // Fetch empire tier for the user
           // Include wallet address to help find the user or fetch Empire data directly
           const walletParam = wallet ? `&walletAddress=${wallet}` : '';
           const profileResponse = await fetch(`/api/auth/profile?farcasterFid=${context.user.fid}${walletParam}&refresh=true`);
           const profileData = await profileResponse.json();
+
+          console.log('📊 Profile API response:', profileData);
 
           if (profileData.success && profileData.profile && isMountedRef.current) {
             setState(prev => ({
@@ -176,15 +180,19 @@ export function useBBAuth(): BBAuthState & BBAuthActions {
             console.log('✅ Empire tier loaded:', profileData.profile.empireTier, 'Rank:', profileData.profile.empireRank);
           } else if (!profileData.success && wallet) {
             // If profile doesn't exist, try fetching Empire data directly
-            console.log('Profile not found, fetching Empire data directly for wallet:', wallet);
+            console.log('❌ Profile not found, fetching Empire data directly for wallet:', wallet);
             try {
               const empireResponse = await fetch('/api/empire/leaderboard');
               const empireData = await empireResponse.json();
+
+              console.log('📊 Empire leaderboard fetched, searching for wallet:', wallet);
 
               if (empireData.holders) {
                 const holder = empireData.holders.find((h: any) =>
                   h.address?.toLowerCase() === wallet.toLowerCase()
                 );
+
+                console.log('📊 Found holder:', holder);
 
                 if (holder && isMountedRef.current) {
                   const rank = holder.rank || null;
@@ -200,6 +208,8 @@ export function useBBAuth(): BBAuthState & BBAuthActions {
                     empireRank: rank
                   }));
                   console.log('✅ Empire tier loaded from direct fetch:', tier, 'Rank:', rank);
+                } else {
+                  console.log('❌ Wallet not found in leaderboard');
                 }
               }
             } catch (error) {

@@ -40,6 +40,12 @@ export function useWallet() {
             'NORMIE': AccessTier.NORMIE
           };
 
+          console.log('📱 Setting wallet state from BB Auth:', {
+            wallet: bbAuth.wallet,
+            empireTier: bbAuth.empireTier,
+            empireRank: bbAuth.empireRank
+          });
+
           setWalletState({
             isConnected: true,
             address: bbAuth.wallet,
@@ -118,6 +124,14 @@ export function useWallet() {
   // Update wallet state when BB Auth empire tier changes
   useEffect(() => {
     const inMiniapp = isInFarcasterMiniapp();
+    console.log('🎮 useWallet - BB Auth state:', {
+      inMiniapp,
+      isAuthenticated: bbAuth.isAuthenticated,
+      wallet: bbAuth.wallet,
+      empireTier: bbAuth.empireTier,
+      empireRank: bbAuth.empireRank
+    });
+
     if (inMiniapp && bbAuth.isAuthenticated && bbAuth.wallet && bbAuth.empireTier) {
       const tierMapping: { [key: string]: AccessTier } = {
         'BIZARRE': AccessTier.BIZARRE,
@@ -127,15 +141,16 @@ export function useWallet() {
         'NORMIE': AccessTier.NORMIE
       };
 
+      const mappedTier = tierMapping[bbAuth.empireTier] || AccessTier.NORMIE;
       setWalletState({
         isConnected: true,
         address: bbAuth.wallet,
-        empireTier: tierMapping[bbAuth.empireTier] || AccessTier.NORMIE
+        empireTier: mappedTier
       });
 
-      console.log('📱 Updated wallet state with BB Auth empire tier:', bbAuth.empireTier);
+      console.log('📱 Updated wallet state with BB Auth empire tier:', bbAuth.empireTier, '→', mappedTier);
     }
-  }, [bbAuth.empireTier, bbAuth.wallet, bbAuth.isAuthenticated]);
+  }, [bbAuth.empireTier, bbAuth.wallet, bbAuth.isAuthenticated, bbAuth.empireRank]);
 
   const connect = async () => {
     // In miniapp, wallet comes from Farcaster
