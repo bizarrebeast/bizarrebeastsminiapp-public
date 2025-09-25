@@ -742,28 +742,28 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
             `;
             document.head.appendChild(style);
 
-            // Create content container
+            // Create content container - matching home page card design
             const contentContainer = document.createElement('div');
             contentContainer.style.cssText = `
-              background: linear-gradient(to bottom right, #111827, #111827, rgba(251, 191, 36, 0.05));
-              border: 1px solid rgba(251, 191, 36, 0.3);
+              background: linear-gradient(to bottom right, #1a1a1f, #1a1a1f, rgba(96, 165, 250, 0.05));
+              border: 1px solid rgba(96, 165, 250, 0.2);
               border-radius: 16px;
-              padding: 24px;
+              padding: 32px;
               max-width: 90%;
               width: 600px;
-              max-height: 90vh;
-              overflow-y: auto;
-              box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 0 0 60px rgba(251, 191, 36, 0.1);
+              display: flex;
+              flex-direction: column;
+              box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
             `;
 
-            // Create title
+            // Create title - matching home page gradient
             const title = document.createElement('h2');
             title.style.cssText = `
-              font-size: 24px;
+              font-size: 28px;
               font-weight: bold;
               text-align: center;
-              margin: 0 0 20px 0;
-              background: linear-gradient(135deg, #60a5fa, #fbbf24, #f472b6);
+              margin: 0 0 24px 0;
+              background: linear-gradient(to right, #60a5fa, #fbbf24, #f472b6);
               -webkit-background-clip: text;
               -webkit-text-fill-color: transparent;
               background-clip: text;
@@ -791,71 +791,77 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
               cursor: pointer;
             `;
 
-            // Create instructions box
+            // Create instructions box - matching home page styling
             const instructionsBox = document.createElement('div');
             instructionsBox.style.cssText = `
-              background: linear-gradient(135deg, rgba(251, 191, 36, 0.1), rgba(147, 51, 234, 0.05));
-              border: 2px solid rgba(251, 191, 36, 0.4);
+              background: linear-gradient(to right, rgba(96, 165, 250, 0.1), rgba(251, 191, 36, 0.1), rgba(244, 114, 182, 0.1));
+              border: 2px solid transparent;
+              background-clip: padding-box;
+              position: relative;
               border-radius: 12px;
-              padding: 14px;
-              margin-bottom: 16px;
+              padding: 16px;
               text-align: center;
             `;
 
-            // Instructions based on platform
-            const isMobile = isMobileDevice();
+            // Add gradient border
+            instructionsBox.style.backgroundImage = `
+              linear-gradient(#1a1a1f, #1a1a1f),
+              linear-gradient(to right, #60a5fa, #fbbf24, #f472b6)
+            `;
+            instructionsBox.style.backgroundOrigin = 'border-box';
+            instructionsBox.style.backgroundClip = 'padding-box, border-box';
+            instructionsBox.style.border = '2px solid transparent';
+
+            // Instructions - unified for both desktop and mobile
             instructionsBox.innerHTML = `
               <div style="
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                gap: 8px;
+                gap: 12px;
                 color: #fbbf24;
                 font-size: 16px;
-                font-weight: bold;
+                font-weight: 600;
                 font-family: system-ui, -apple-system, sans-serif;
               ">
-                <span style="font-size: 20px;">💾</span>
-                ${isMobile ? 'Long-press the image above and select "Save Image"' : 'Right-click the image above and select "Save Image As..."'}
+                <span style="font-size: 24px;">💾</span>
+                Long-press or right-click the image above to save
               </div>
             `;
 
-            // Alternative text
-            const altText = document.createElement('p');
-            altText.style.cssText = `
-              color: #9ca3af;
-              font-size: 13px;
-              margin: 12px 0 0 0;
-              font-family: system-ui, -apple-system, sans-serif;
-              text-align: center;
-            `;
-            altText.textContent = 'Or tap outside this box to close and try again';
-
-            // Create close button
+            // Create close button - matching home page CTA button style
             const closeButton = document.createElement('button');
             closeButton.style.cssText = `
-              background: rgba(251, 191, 36, 0.1);
-              border: 1px solid rgba(251, 191, 36, 0.3);
-              color: #fbbf24;
-              padding: 10px 20px;
+              background: linear-gradient(to right, #60a5fa, #fbbf24, #f472b6);
+              color: #000000;
+              padding: 12px 32px;
               border-radius: 8px;
-              font-size: 14px;
-              font-weight: bold;
+              font-size: 16px;
+              font-weight: 600;
               cursor: pointer;
-              margin-top: 16px;
+              margin-top: 20px;
               width: 100%;
               font-family: system-ui, -apple-system, sans-serif;
               transition: all 0.3s ease;
+              border: none;
+              transform: scale(1);
             `;
+
+            // Add hover effect
+            closeButton.onmouseover = () => {
+              closeButton.style.transform = 'scale(1.05)';
+            };
+            closeButton.onmouseout = () => {
+              closeButton.style.transform = 'scale(1)';
+            };
             closeButton.textContent = 'Close';
             closeButton.onclick = () => document.body.removeChild(modal);
 
-            // Assemble modal
+            // Assemble modal (removed altText)
             imgContainer.appendChild(img);
             contentContainer.appendChild(title);
             contentContainer.appendChild(imgContainer);
             contentContainer.appendChild(instructionsBox);
-            contentContainer.appendChild(altText);
             contentContainer.appendChild(closeButton);
             modal.appendChild(contentContainer);
 
