@@ -18,7 +18,7 @@ const navItems = [
   { href: '/music', label: 'Music & Soundtracks', icon: Music },
   { href: '/resources', label: 'Community Resources', icon: FileText },
   // Temporary test link for production testing
-  { href: '/test-slay-production', label: '🧪 Slay Auth Test', icon: TestTube },
+  { href: '/test-slay-production', label: '🧪 BB Auth Test', icon: TestTube },
 ];
 
 export function Navbar() {

@@ -1,5 +1,6 @@
 /**
- * Authenticated Fetch Implementation
+ * BB Auth - Authenticated Fetch Implementation
+ * BizarreBeasts authentication system
  * Uses Farcaster SDK quickAuth in miniapp context
  * Falls back to standard auth headers for web
  */
@@ -91,8 +92,9 @@ export async function requestWalletConnection(): Promise<string | null> {
 }
 
 /**
- * Authenticated fetch wrapper
+ * Authenticated fetch wrapper using BB Auth
  * Automatically adds auth headers based on context
+ * Uses quickAuth.fetch in miniapp for proper token handling
  */
 export async function authenticatedFetch(
   url: string,
@@ -100,14 +102,15 @@ export async function authenticatedFetch(
 ): Promise<Response> {
   try {
     const isInMiniapp = await sdk.isInMiniApp();
-    console.log(`🔐 Authenticated fetch to ${url}, in miniapp: ${isInMiniapp}`);
-
-    // Get current wallet if connected
-    const walletAddress = await getConnectedWallet();
+    console.log(`🔐 BB Auth fetch to ${url}, in miniapp: ${isInMiniapp}`);
 
     if (isInMiniapp) {
-      // Use SDK's quickAuth for automatic token attachment
-      console.log('📱 Using Farcaster SDK quickAuth.fetch()');
+      // CRITICAL: Use SDK's quickAuth.fetch - it handles the token automatically
+      // This is what the Slay developer uses and it works
+      console.log('📱 Using quickAuth.fetch (BB Auth)');
+
+      // Get wallet to add as header
+      const walletAddress = await getConnectedWallet();
 
       // Add wallet header if connected
       const headers: HeadersInit = {
@@ -115,7 +118,7 @@ export async function authenticatedFetch(
         ...(walletAddress && { 'X-Wallet-Address': walletAddress })
       };
 
-      // quickAuth.fetch automatically adds Authorization header
+      // quickAuth.fetch automatically adds the Authorization header with FC token
       return await sdk.quickAuth.fetch(url, {
         ...options,
         headers
@@ -127,6 +130,8 @@ export async function authenticatedFetch(
       // Get auth token from storage (Neynar or session)
       const authToken = localStorage.getItem('neynar_auth_token') ||
                        localStorage.getItem('bb_session_token');
+
+      const walletAddress = localStorage.getItem('connected_wallet');
 
       // Build headers
       const headers: HeadersInit = {
@@ -141,7 +146,7 @@ export async function authenticatedFetch(
       });
     }
   } catch (error) {
-    console.error('Authenticated fetch error:', error);
+    console.error('BB Auth fetch error:', error);
     throw error;
   }
 }

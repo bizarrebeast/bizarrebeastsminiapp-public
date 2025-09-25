@@ -1,14 +1,15 @@
 /**
- * Production Test Page for Slay Auth
+ * Production Test Page for BB Auth
+ * BizarreBeasts Authentication System
  * Temporary page with extensive logging for testing in Farcaster production
- * Similar to test-neynar but for the new auth flow
  */
 
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSlayAuth } from '@/hooks/useSlayAuth';
+import { useBBAuth } from '@/hooks/useBBAuth';
 import { authenticatedFetch } from '@/lib/auth/authenticated-fetch';
+import { initializeBBAuth } from '@/lib/auth/bb-auth-sdk';
 import sdk from '@farcaster/miniapp-sdk';
 
 // Debug log with timestamp
@@ -17,8 +18,8 @@ const debugLog = (message: string, data?: any) => {
   console.log(`🔍 [${timestamp}] ${message}`, data || '');
 };
 
-export default function TestSlayProductionPage() {
-  const auth = useSlayAuth();
+export default function TestBBAuthProductionPage() {
+  const auth = useBBAuth();
   const [logs, setLogs] = useState<string[]>([]);
   const [sdkContext, setSdkContext] = useState<any>(null);
   const [testResults, setTestResults] = useState<any>(null);
@@ -183,8 +184,23 @@ export default function TestSlayProductionPage() {
     <div className="min-h-screen bg-dark-bg p-4">
       <div className="max-w-6xl mx-auto">
         <h1 className="text-2xl font-bold text-white mb-4">
-          Slay Auth Production Test 🧪
+          BB Auth Production Test 🧪
         </h1>
+
+        {/* Timeout Retry Button */}
+        {auth.hasTimedOut && (
+          <div className="mb-4 p-4 bg-yellow-500/20 border border-yellow-500 rounded-lg">
+            <p className="text-yellow-400 mb-2">
+              Authentication timed out. This happens sometimes due to race conditions.
+            </p>
+            <button
+              onClick={() => auth.retry()}
+              className="px-4 py-2 bg-yellow-500 text-black font-semibold rounded hover:bg-yellow-400"
+            >
+              Retry (Refreshes Page)
+            </button>
+          </div>
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {/* Left Column - Status and Actions */}
