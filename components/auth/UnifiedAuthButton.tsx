@@ -16,12 +16,20 @@ import {
   initializeFarcasterSDK
 } from '@/lib/farcaster-miniapp';
 import { FEATURE_FLAGS } from '@/config/features';
+import dynamic from 'next/dynamic';
+
+// Dynamically import AuthKit button to avoid SSR issues
+const FarcasterAuthKitButton = dynamic(
+  () => import('./FarcasterAuthKitButton').then(mod => ({ default: mod.FarcasterAuthKitButton })),
+  { ssr: false }
+);
 
 export function UnifiedAuthButton() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [isFarcasterCheckComplete, setIsFarcasterCheckComplete] = useState(false);
   const [isInMiniapp, setIsInMiniapp] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(false);
   const dropdownRef = React.useRef<HTMLDivElement>(null);
 
   // Get Neynar context
@@ -79,12 +87,22 @@ export function UnifiedAuthButton() {
       // Properly check if in miniapp using async function
       const inMiniapp = await checkIsInFarcasterMiniapp();
       setIsInMiniapp(inMiniapp);
+
+      // Check if desktop browser (not in miniapp, wider screen)
+      const isDesktopBrowser = typeof window !== 'undefined' &&
+        window.innerWidth > 768 &&
+        !inMiniapp &&
+        !('ontouchstart' in window);
+      setIsDesktop(isDesktopBrowser);
+
       const shouldAutoLogin = await shouldAutoLoginWithFarcaster();
-      console.log('🎯 Miniapp Detection:', {
+      console.log('🎯 Environment Detection:', {
         inMiniapp,
+        isDesktop: isDesktopBrowser,
         shouldAutoLogin,
         farcasterConnected,
-        hasSyncedFromSDK
+        hasSyncedFromSDK,
+        screenWidth: window.innerWidth
       });
 
       // Initialize SDK if in miniapp
@@ -288,9 +306,22 @@ export function UnifiedAuthButton() {
               )}
 
               <div className="space-y-3">
-                <NeynarAuthButton
-                  className="w-full"
-                />
+                {/* Show AuthKit for desktop, Neynar for mobile/miniapp */}
+                {isDesktop && !isInMiniapp ? (
+                  <>
+                    <FarcasterAuthKitButton
+                      onSuccess={() => setShowAuthModal(false)}
+                      className="w-full"
+                    />
+                    <p className="text-xs text-center text-gray-400">
+                      Sign in with Farcaster - You'll get a notification on your phone
+                    </p>
+                  </>
+                ) : (
+                  <NeynarAuthButton
+                    className="w-full"
+                  />
+                )}
 
                 {!isInMiniapp && (
                   <>
