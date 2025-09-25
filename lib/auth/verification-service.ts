@@ -35,21 +35,50 @@ export interface VerificationResult {
  */
 export async function verifyFarcasterToken(token: string): Promise<AuthToken | null> {
   try {
-    // For Farcaster SDK tokens, we need to decode and verify
-    // The token format depends on the SDK version
+    // Handle different token formats
+    let actualToken = token;
 
-    // TODO: Implement proper JWT verification
-    // For now, we'll decode the token to get the FID
-    // In production, verify signature and expiry
-
-    if (!token || !token.startsWith('Bearer ')) {
-      console.error('Invalid token format');
-      return null;
+    // Remove Bearer prefix if present
+    if (token && token.startsWith('Bearer ')) {
+      actualToken = token.replace('Bearer ', '');
     }
 
-    const actualToken = token.replace('Bearer ', '');
+    // Handle Farcaster SDK token format (fc_ prefix)
+    if (actualToken.startsWith('fc_')) {
+      try {
+        // Farcaster SDK uses base64 encoded JSON with fc_ prefix
+        const base64Data = actualToken.replace('fc_', '');
+        const payload = JSON.parse(
+          Buffer.from(base64Data, 'base64').toString('utf-8')
+        );
 
-    // Try to decode as JWT
+        // Validate required fields
+        if (!payload.fid) {
+          console.error('FC token missing FID');
+          return null;
+        }
+
+        // Check timestamp (if present)
+        if (payload.timestamp) {
+          // Allow tokens that are less than 24 hours old
+          const age = Date.now() - payload.timestamp;
+          if (age > 24 * 60 * 60 * 1000) {
+            console.error('FC token too old');
+            return null;
+          }
+        }
+
+        return {
+          fid: payload.fid,
+          username: payload.username || `user${payload.fid}`,
+          expiresAt: payload.timestamp ? payload.timestamp + (24 * 60 * 60 * 1000) : Date.now() + 3600000
+        };
+      } catch (error) {
+        console.error('Failed to decode FC token:', error);
+      }
+    }
+
+    // Try standard JWT format
     try {
       const parts = actualToken.split('.');
       if (parts.length !== 3) {
@@ -79,7 +108,7 @@ export async function verifyFarcasterToken(token: string): Promise<AuthToken | n
         expiresAt: payload.exp ? payload.exp * 1000 : Date.now() + 3600000
       };
     } catch (error) {
-      console.error('Failed to decode token:', error);
+      console.error('Failed to decode as JWT:', error);
       return null;
     }
   } catch (error) {

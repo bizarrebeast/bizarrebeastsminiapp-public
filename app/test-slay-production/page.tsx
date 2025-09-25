@@ -168,13 +168,29 @@ export default function TestBBAuthProductionPage() {
     }
   };
 
-  // Test quickAuth fetch
+  // Test quickAuth fetch with debug endpoint
   const testQuickAuth = async () => {
-    addLog('🔐 Testing quickAuth.fetch...');
+    addLog('🔐 Testing quickAuth.fetch with debug endpoint...');
     try {
-      const response = await sdk.quickAuth.fetch('/api/auth/v2/test');
-      const data = await response.json();
-      addLog('QuickAuth result', data);
+      // First call debug endpoint to see what SDK sends
+      const debugResponse = await sdk.quickAuth.fetch('/api/auth/v2/debug', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          test: true,
+          fid: auth.user?.fid,
+          wallet: auth.wallet
+        })
+      });
+      const debugData = await debugResponse.json();
+      addLog('QuickAuth Debug result', debugData);
+
+      // Also call test endpoint for comparison
+      const testResponse = await sdk.quickAuth.fetch('/api/auth/v2/test');
+      const testData = await testResponse.json();
+      addLog('QuickAuth Test result', testData);
     } catch (error) {
       addLog('QuickAuth failed', error);
     }
