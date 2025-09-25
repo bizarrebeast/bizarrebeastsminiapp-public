@@ -85,3 +85,26 @@ RESOURCES*.md
 cors.json
 remove-white-backgrounds.js
 update-bizarrebeasts-metadata-correct.js
+
+# Debug and test scripts
+check-*.js
+check_*.js
+debug-*.js
+fix-*.js
+fix_*.sql
+merge_*.js
+run_*.js
+test-*.js
+test-*.html
+update_*.js
+verify-*.js
+verify_*.js
+confirm-*.js
+fetch_*.js
+setup_*.sql
+grant-*.txt
+
+# Sensitive documentation
+FRAUD_DETECTION_ANALYSIS.md
+NEYNAR_SETUP.md
+RITUALS_CHECKINS_INSTRUCTIONS.md
