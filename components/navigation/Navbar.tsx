@@ -2,10 +2,14 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
-import { Menu, X, Palette, Gamepad2, FileText, Crown, ArrowDownUp, Music, Sparkles, Trophy, TestTube } from 'lucide-react';
+import { Menu, X, Palette, Gamepad2, FileText, Crown, ArrowDownUp, Music, Sparkles, Trophy } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import { UnifiedAuthButton } from '@/components/auth/UnifiedAuthButton';
+import { BBAuthButton } from '@/components/auth/BBAuthButton';
 import { EmpireBadges } from '@/components/wallet/EmpireBadges';
+
+// Feature flag to switch between auth systems
+const USE_BB_AUTH = true; // Set to true to use BB Auth
 
 // Navigation items in order
 const navItems = [
@@ -17,8 +21,6 @@ const navItems = [
   { href: '/empire', label: 'Empire Leaderboard', icon: Crown },
   { href: '/music', label: 'Music & Soundtracks', icon: Music },
   { href: '/resources', label: 'Community Resources', icon: FileText },
-  // Temporary test link for production testing
-  { href: '/test-slay-production', label: '🧪 BB Auth Test', icon: TestTube },
 ];
 
 export function Navbar() {
@@ -61,7 +63,7 @@ export function Navbar() {
           {/* Right side - Badges, Wallet and Hamburger */}
           <div className="flex items-center gap-3">
             <EmpireBadges />
-            <UnifiedAuthButton />
+            {USE_BB_AUTH ? <BBAuthButton /> : <UnifiedAuthButton />}
             <button
               onClick={() => setIsOpen(!isOpen)}
               className="relative p-2 hover:opacity-80 focus:outline-none transition-all duration-300 rounded-lg overflow-hidden group"
