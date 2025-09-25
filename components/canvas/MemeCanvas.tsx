@@ -704,400 +704,191 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
           });
           
           if (isInMiniApp) {
-            console.log('Farcaster miniapp download - uploading to server for HTTP URL');
-            
-            // Upload to server to get HTTP URL (required for WebView downloads)
-            try {
-              const uploadResponse = await fetch('/api/upload-temp', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ imageData: finalDataURL })
-              });
-              
-              if (uploadResponse.ok) {
-                const { id, imageUrl } = await uploadResponse.json();
-                const httpUrl = imageUrl || `${window.location.origin}/api/image/${id}`;
-                console.log('Image uploaded, HTTP URL:', httpUrl);
-                
-                if (isMobileFarcaster) {
-                  // Mobile Farcaster: Try native share first, then fallback
-                  console.log('Mobile Farcaster - attempting native share');
-                  
-                  // Try Web Share API for native share sheet
-                  if (navigator.share && window.isSecureContext) {
-                    try {
-                      // Convert data URL to blob for sharing
-                      const response = await fetch(finalDataURL);
-                      const blob = await response.blob();
-                      const file = new File([blob], filename, { type: blob.type });
-                      
-                      await navigator.share({
-                        files: [file],
-                        title: 'Save your meme',
-                        text: 'BizarreBeasts Meme'
-                      });
-                      
-                      console.log('Native share successful!');
-                      // Return the uploaded URL for potential Step 2 sharing
-                      return httpUrl;
-                    } catch (shareError) {
-                      console.log('Native share failed, using fallback:', shareError);
-                      // Fallback: Open in new tab for long-press save
-                      const newWindow = window.open(httpUrl, '_blank');
-                      if (newWindow) {
-                        console.log('Image opened! User can long-press to save to photos.');
-                      }
-                    }
-                  } else {
-                    // No Web Share API: Open in new tab for long-press save
-                    console.log('Web Share API not available, opening image in new tab');
-                    const newWindow = window.open(httpUrl, '_blank');
-                    if (newWindow) {
-                      console.log('Image opened! User can long-press to save to photos.');
-                    }
-                  }
-                  
-                  // Store and return the uploaded URL for Step 2
-                  uploadedImageUrl = httpUrl;
-                  return httpUrl;
-                } else {
-                  // Desktop Farcaster: Sandboxed environment blocks downloads
-                  console.log('Desktop Farcaster - showing download modal');
-                  
-                  // Create modal overlay with dark theme matching featured game box
-                  const modal = document.createElement('div');
-                  modal.style.cssText = `
-                    position: fixed;
-                    top: 0;
-                    left: 0;
-                    right: 0;
-                    bottom: 0;
-                    background: rgba(10, 10, 14, 0.95);
-                    backdrop-filter: blur(12px);
-                    z-index: 10000;
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    justify-content: center;
-                    padding: 20px;
-                    animation: fadeIn 0.3s ease;
-                  `;
-                  
-                  // Add fade-in animation
-                  const style = document.createElement('style');
-                  style.textContent = `
-                    @keyframes fadeIn {
-                      from { opacity: 0; }
-                      to { opacity: 1; }
-                    }
-                    @keyframes pulse {
-                      0%, 100% { transform: scale(1); }
-                      50% { transform: scale(1.05); }
-                    }
-                    @keyframes slideDown {
-                      from { transform: translateY(-10px); opacity: 0; }
-                      to { transform: translateY(0); opacity: 1; }
-                    }
-                  `;
-                  document.head.appendChild(style);
-                  
-                  // Create content container matching featured game box style
-                  const contentContainer = document.createElement('div');
-                  contentContainer.style.cssText = `
-                    background: linear-gradient(to bottom right, #111827, #111827, rgba(251, 191, 36, 0.05));
-                    border: 1px solid rgba(251, 191, 36, 0.3);
-                    border-radius: 16px;
-                    padding: 24px;
-                    max-width: 90%;
-                    width: 600px;
-                    max-height: 90vh;
-                    overflow-y: auto;
-                    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 0 0 60px rgba(251, 191, 36, 0.1);
-                    transition: border-color 0.3s ease;
-                    animation: slideDown 0.4s ease;
-                  `;
-                  
-                  // Add hover effect to container
-                  contentContainer.onmouseover = () => {
-                    contentContainer.style.borderColor = 'rgba(251, 191, 36, 0.5)';
-                  };
-                  contentContainer.onmouseout = () => {
-                    contentContainer.style.borderColor = 'rgba(251, 191, 36, 0.3)';
-                  };
-                  
-                  // Create title
-                  const title = document.createElement('h2');
-                  title.style.cssText = `
-                    font-size: 24px;
-                    font-weight: bold;
-                    text-align: center;
-                    margin: 0 0 20px 0;
-                    background: linear-gradient(135deg, #60a5fa, #fbbf24, #f472b6);
-                    -webkit-background-clip: text;
-                    -webkit-text-fill-color: transparent;
-                    background-clip: text;
-                    font-family: system-ui, -apple-system, sans-serif;
-                  `;
-                  title.textContent = 'Your BizarreBeasts Meme is Ready!';
-                  
-                  // Create image container with cursor hint
-                  const imgContainer = document.createElement('div');
-                  imgContainer.style.cssText = `
-                    position: relative;
-                    display: flex;
-                    justify-content: center;
-                    margin-bottom: 20px;
-                  `;
-                  
-                  // Create image element
-                  const img = document.createElement('img');
-                  img.src = httpUrl;
-                  img.style.cssText = `
-                    max-width: 100%;
-                    max-height: 350px;
-                    border-radius: 12px;
-                    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-                    cursor: pointer;
-                    transition: transform 0.3s ease;
-                  `;
-                  
-                  // Add hover effect to image
-                  img.onmouseover = () => {
-                    img.style.transform = 'scale(1.02)';
-                  };
-                  img.onmouseout = () => {
-                    img.style.transform = 'scale(1)';
-                  };
-                  
-                  // Create primary instructions box (emphasized)
-                  const instructionsBox = document.createElement('div');
-                  instructionsBox.style.cssText = `
-                    background: linear-gradient(135deg, rgba(251, 191, 36, 0.1), rgba(147, 51, 234, 0.05));
-                    border: 2px solid rgba(251, 191, 36, 0.4);
-                    border-radius: 12px;
-                    padding: 14px;
-                    margin-bottom: 16px;
-                    text-align: center;
-                  `;
-                  
-                  // Simple instructions
-                  instructionsBox.innerHTML = `
-                    <div style="
-                      display: flex;
-                      align-items: center;
-                      justify-content: center;
-                      gap: 8px;
-                      color: #fbbf24;
-                      font-size: 16px;
-                      font-weight: bold;
-                      font-family: system-ui, -apple-system, sans-serif;
-                    ">
-                      <span style="font-size: 20px;">💾</span>
-                      Right-click the image above and select "Save Image As..."
-                    </div>
-                  `;
-                  
-                  // Alternative text
-                  const altText = document.createElement('p');
-                  altText.style.cssText = `
-                    color: #9ca3af;
-                    font-size: 13px;
-                    margin: 12px 0 0 0;
-                    font-family: system-ui, -apple-system, sans-serif;
-                  `;
-                  altText.textContent = 'Having trouble? Try the button below:';
-                  
-                  // Create button container with secondary styling
-                  const buttonContainer = document.createElement('div');
-                  buttonContainer.style.cssText = `
-                    display: flex;
-                    gap: 12px;
-                    justify-content: center;
-                  `;
-                  
-                  // Create "Open in Browser" button as secondary option
-                  const openButton = document.createElement('button');
-                  openButton.textContent = '🌐 Open in New Tab';
-                  openButton.style.cssText = `
-                    padding: 12px 24px;
-                    background: rgba(31, 41, 55, 0.8);
-                    color: #9ca3af;
-                    border: 1px solid rgba(156, 163, 175, 0.2);
-                    border-radius: 10px;
-                    font-weight: 600;
-                    cursor: pointer;
-                    font-size: 14px;
-                    font-family: system-ui, -apple-system, sans-serif;
-                    transition: all 0.3s ease;
-                  `;
-                  openButton.onmouseover = () => {
-                    openButton.style.background = 'rgba(31, 41, 55, 1)';
-                    openButton.style.color = '#e5e7eb';
-                    openButton.style.borderColor = 'rgba(156, 163, 175, 0.4)';
-                    openButton.style.transform = 'translateY(-2px)';
-                  };
-                  openButton.onmouseout = () => {
-                    openButton.style.background = 'rgba(31, 41, 55, 0.8)';
-                    openButton.style.color = '#9ca3af';
-                    openButton.style.borderColor = 'rgba(156, 163, 175, 0.2)';
-                    openButton.style.transform = 'translateY(0)';
-                  };
-                  openButton.onclick = () => {
-                    window.open(httpUrl, '_blank');
-                  };
-                  
-                  // Create close button
-                  const closeButton = document.createElement('button');
-                  closeButton.textContent = '✓ Done';
-                  closeButton.style.cssText = `
-                    padding: 12px 24px;
-                    background: linear-gradient(135deg, #60a5fa, #fbbf24, #f472b6);
-                    color: #0a0a0e;
-                    border: none;
-                    border-radius: 10px;
-                    font-weight: bold;
-                    cursor: pointer;
-                    font-size: 14px;
-                    font-family: system-ui, -apple-system, sans-serif;
-                    transition: all 0.3s ease;
-                    box-shadow: 0 4px 15px rgba(251, 191, 36, 0.2);
-                  `;
-                  closeButton.onmouseover = () => {
-                    closeButton.style.transform = 'translateY(-2px)';
-                    closeButton.style.boxShadow = '0 6px 20px rgba(251, 191, 36, 0.3)';
-                  };
-                  closeButton.onmouseout = () => {
-                    closeButton.style.transform = 'translateY(0)';
-                    closeButton.style.boxShadow = '0 4px 15px rgba(251, 191, 36, 0.2)';
-                  };
-                  closeButton.onclick = () => {
-                    document.body.removeChild(modal);
-                    // Clean up style element
-                    document.head.removeChild(style);
-                  };
-                  
-                  // Also close on backdrop click
-                  modal.onclick = (e) => {
-                    if (e.target === modal) {
-                      document.body.removeChild(modal);
-                      document.head.removeChild(style);
-                    }
-                  };
-                  
-                  // Assemble modal with new structure
-                  imgContainer.appendChild(img);
-                  
-                  buttonContainer.appendChild(openButton);
-                  buttonContainer.appendChild(closeButton);
-                  
-                  contentContainer.appendChild(title);
-                  contentContainer.appendChild(imgContainer);
-                  contentContainer.appendChild(instructionsBox);
-                  contentContainer.appendChild(altText);
-                  contentContainer.appendChild(buttonContainer);
-                  
-                  modal.appendChild(contentContainer);
-                  
-                  // Add to page
-                  document.body.appendChild(modal);
-                  
-                  console.log('Download modal displayed');
-                }
-                
-                console.log('Download handled successfully');
-                // Store and return the uploaded URL for Step 2
-                uploadedImageUrl = httpUrl;
-                return httpUrl;
-              } else {
-                throw new Error('Failed to upload image');
+            console.log('Farcaster miniapp download - showing download modal');
+
+            // Create modal overlay with download instructions
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+              position: fixed;
+              top: 0;
+              left: 0;
+              right: 0;
+              bottom: 0;
+              background: rgba(10, 10, 14, 0.95);
+              backdrop-filter: blur(12px);
+              z-index: 10000;
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+              padding: 20px;
+              animation: fadeIn 0.3s ease;
+            `;
+
+            // Close handler
+            modal.onclick = (e) => {
+              if (e.target === modal) {
+                document.body.removeChild(modal);
               }
-            } catch (error) {
-              console.error('Download failed:', error);
-              alert('Download failed. Please try again.');
-            }
-            
+            };
+
+            // Add fade-in animation
+            const style = document.createElement('style');
+            style.textContent = `
+              @keyframes fadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+              }
+            `;
+            document.head.appendChild(style);
+
+            // Create content container
+            const contentContainer = document.createElement('div');
+            contentContainer.style.cssText = `
+              background: linear-gradient(to bottom right, #111827, #111827, rgba(251, 191, 36, 0.05));
+              border: 1px solid rgba(251, 191, 36, 0.3);
+              border-radius: 16px;
+              padding: 24px;
+              max-width: 90%;
+              width: 600px;
+              max-height: 90vh;
+              overflow-y: auto;
+              box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 0 0 60px rgba(251, 191, 36, 0.1);
+            `;
+
+            // Create title
+            const title = document.createElement('h2');
+            title.style.cssText = `
+              font-size: 24px;
+              font-weight: bold;
+              text-align: center;
+              margin: 0 0 20px 0;
+              background: linear-gradient(135deg, #60a5fa, #fbbf24, #f472b6);
+              -webkit-background-clip: text;
+              -webkit-text-fill-color: transparent;
+              background-clip: text;
+              font-family: system-ui, -apple-system, sans-serif;
+            `;
+            title.textContent = 'Your BizarreBeasts Meme is Ready!';
+
+            // Create image container
+            const imgContainer = document.createElement('div');
+            imgContainer.style.cssText = `
+              position: relative;
+              display: flex;
+              justify-content: center;
+              margin-bottom: 20px;
+            `;
+
+            // Create image element
+            const img = document.createElement('img');
+            img.src = finalDataURL; // Use the data URL directly
+            img.style.cssText = `
+              max-width: 100%;
+              max-height: 350px;
+              border-radius: 12px;
+              box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+              cursor: pointer;
+            `;
+
+            // Create instructions box
+            const instructionsBox = document.createElement('div');
+            instructionsBox.style.cssText = `
+              background: linear-gradient(135deg, rgba(251, 191, 36, 0.1), rgba(147, 51, 234, 0.05));
+              border: 2px solid rgba(251, 191, 36, 0.4);
+              border-radius: 12px;
+              padding: 14px;
+              margin-bottom: 16px;
+              text-align: center;
+            `;
+
+            // Instructions based on platform
+            const isMobile = isMobileDevice();
+            instructionsBox.innerHTML = `
+              <div style="
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+                color: #fbbf24;
+                font-size: 16px;
+                font-weight: bold;
+                font-family: system-ui, -apple-system, sans-serif;
+              ">
+                <span style="font-size: 20px;">💾</span>
+                ${isMobile ? 'Long-press the image above and select "Save Image"' : 'Right-click the image above and select "Save Image As..."'}
+              </div>
+            `;
+
+            // Alternative text
+            const altText = document.createElement('p');
+            altText.style.cssText = `
+              color: #9ca3af;
+              font-size: 13px;
+              margin: 12px 0 0 0;
+              font-family: system-ui, -apple-system, sans-serif;
+              text-align: center;
+            `;
+            altText.textContent = 'Or tap outside this box to close and try again';
+
+            // Create close button
+            const closeButton = document.createElement('button');
+            closeButton.style.cssText = `
+              background: rgba(251, 191, 36, 0.1);
+              border: 1px solid rgba(251, 191, 36, 0.3);
+              color: #fbbf24;
+              padding: 10px 20px;
+              border-radius: 8px;
+              font-size: 14px;
+              font-weight: bold;
+              cursor: pointer;
+              margin-top: 16px;
+              width: 100%;
+              font-family: system-ui, -apple-system, sans-serif;
+              transition: all 0.3s ease;
+            `;
+            closeButton.textContent = 'Close';
+            closeButton.onclick = () => document.body.removeChild(modal);
+
+            // Assemble modal
+            imgContainer.appendChild(img);
+            contentContainer.appendChild(title);
+            contentContainer.appendChild(imgContainer);
+            contentContainer.appendChild(instructionsBox);
+            contentContainer.appendChild(altText);
+            contentContainer.appendChild(closeButton);
+            modal.appendChild(contentContainer);
+
+            // Add to page
+            document.body.appendChild(modal);
+
+            console.log('Download modal displayed');
+            return finalDataURL;
+
           } else if (isMobileDevice()) {
-            console.log('Mobile browser download - uploading for potential share');
-            
-            // Upload to get URL for Step 2 (even though we download locally)
-            let uploadedUrl: string | null = null;
-            try {
-              const uploadResponse = await fetch('/api/upload-temp', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ imageData: finalDataURL })
-              });
-              
-              if (uploadResponse.ok) {
-                const { id, imageUrl } = await uploadResponse.json();
-                uploadedUrl = imageUrl || `${window.location.origin}/api/image/${id}`;
-                console.log('Image uploaded for sharing:', uploadedUrl);
-              }
-            } catch (error) {
-              console.log('Upload failed, but continuing with download:', error);
-            }
-            
-            // Mobile browser: Use standard mobile download
-            const success = await downloadImageMobile(finalDataURL, filename);
-            if (!success) {
-              // Fallback: Create download link
-              const link = document.createElement('a');
-              link.download = filename;
-              link.href = finalDataURL;
-              document.body.appendChild(link);
-              link.click();
-              document.body.removeChild(link);
-            }
-            
-            // Store and return the uploaded URL for Step 2, or data URL as fallback
-            if (uploadedUrl) {
-              uploadedImageUrl = uploadedUrl;
-              return uploadedUrl;
-            } else {
-              return finalDataURL;
-            }
-          } else {
-            // Desktop download - also need to upload for Step 2 sharing
-            console.log('Desktop download - uploading for potential share');
-            
-            // Upload to get URL for Step 2 (even though we download locally)
-            try {
-              const uploadResponse = await fetch('/api/upload-temp', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ imageData: finalDataURL })
-              });
-              
-              if (uploadResponse.ok) {
-                const { id, imageUrl } = await uploadResponse.json();
-                uploadedImageUrl = imageUrl || `${window.location.origin}/api/image/${id}`;
-                console.log('Image uploaded for sharing:', uploadedImageUrl);
-              }
-            } catch (error) {
-              console.log('Upload failed, but continuing with download:', error);
-            }
-            
-            // Download to device
+            // Mobile browser: Simple download
+            console.log('Mobile browser download');
             const link = document.createElement('a');
             link.download = filename;
             link.href = finalDataURL;
-            document.body.appendChild(link); // Add to DOM
+            document.body.appendChild(link);
             link.click();
-            document.body.removeChild(link); // Remove from DOM
-            
-            // Return the uploaded URL if we have it, otherwise return data URL
-            if (uploadedImageUrl) {
-              console.log('Returning uploaded URL from desktop path:', uploadedImageUrl);
-              return uploadedImageUrl;
-            } else {
-              console.log('Returning data URL from desktop path');
-              return finalDataURL;
-            }
+            document.body.removeChild(link);
+            return finalDataURL;
+
+          } else {
+            // Desktop: Simple download
+            console.log('Desktop download');
+            const link = document.createElement('a');
+            link.download = filename;
+            link.href = finalDataURL;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            return finalDataURL;
           }
-          
-          // Early return after handling download
-          return uploadedImageUrl || finalDataURL;
         }
+
 
         // Handle Farcaster share - simplified manual attachment
         if (options.shareToFarcaster) {
