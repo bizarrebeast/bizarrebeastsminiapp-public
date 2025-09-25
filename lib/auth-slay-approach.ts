@@ -58,6 +58,10 @@ export const getConnectedWallet = async (): Promise<string | null> => {
     try {
       // Get wallet from Farcaster SDK
       const provider = await sdk.wallet.getEthereumProvider();
+      if (!provider) {
+        console.log('📱 No wallet provider available');
+        return null;
+      }
       const accounts = await provider.request({ method: 'eth_accounts' });
       return accounts[0] || null;
     } catch (error) {
@@ -80,6 +84,9 @@ export const connectWallet = async (): Promise<string | null> => {
     try {
       // Use Farcaster SDK wallet provider
       const provider = await sdk.wallet.getEthereumProvider();
+      if (!provider) {
+        throw new Error('No wallet provider available');
+      }
       const accounts = await provider.request({ method: 'eth_requestAccounts' });
       const wallet = accounts[0];
 
@@ -241,158 +248,9 @@ function extractFidFromToken(token: string): number {
 }
 
 // ============================================
-// REACT HOOKS FOR EASY INTEGRATION
+// USAGE NOTE
 // ============================================
+// For React integration, use the hooks in:
+// - /hooks/useSlayAuth.ts - Complete auth hook with state management
+// - /app/test-slay-auth/page.tsx - Example implementation
 
-/**
- * Custom hook for authenticated requests
- */
-export function useAuthenticatedFetch() {
-  const makeRequest = async (url: string, options?: RequestInit) => {
-    try {
-      const response = await authenticatedFetch(url, options);
-
-      if (!response.ok) {
-        throw new Error(`Request failed: ${response.statusText}`);
-      }
-
-      return await response.json();
-    } catch (error) {
-      console.error('Authenticated request failed:', error);
-      throw error;
-    }
-  };
-
-  return { makeRequest };
-}
-
-/**
- * Custom hook for authentication state
- */
-export function useSlayAuth() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState<any>(null);
-  const [wallet, setWallet] = useState<string | null>(null);
-
-  useEffect(() => {
-    checkAuthStatus();
-  }, []);
-
-  const checkAuthStatus = async () => {
-    const isInMiniapp = await sdk.isInMiniApp();
-
-    if (isInMiniapp) {
-      // Get context from SDK
-      const context = await sdk.context;
-      if (context?.user) {
-        setUser(context.user);
-        setIsAuthenticated(true);
-
-        // Try to get wallet
-        const connectedWallet = await getConnectedWallet();
-        if (connectedWallet) {
-          setWallet(connectedWallet);
-        }
-      }
-    } else {
-      // Check for Neynar auth token
-      const token = localStorage.getItem('neynar_auth_token');
-      if (token) {
-        // Verify token with backend
-        try {
-          const response = await authenticatedFetch('/api/auth/me');
-          const userData = await response.json();
-          setUser(userData);
-          setIsAuthenticated(true);
-          setWallet(userData.wallet);
-        } catch (error) {
-          console.error('Failed to verify auth:', error);
-        }
-      }
-    }
-  };
-
-  const login = async () => {
-    const isInMiniapp = await sdk.isInMiniApp();
-
-    if (isInMiniapp) {
-      // Already authenticated via SDK
-      await checkAuthStatus();
-    } else {
-      // Trigger Neynar auth flow
-      window.location.href = '/api/auth/neynar';
-    }
-  };
-
-  const connectUserWallet = async () => {
-    const address = await connectWallet();
-    if (address) {
-      setWallet(address);
-    }
-    return address;
-  };
-
-  return {
-    isAuthenticated,
-    user,
-    wallet,
-    login,
-    connectWallet: connectUserWallet,
-    checkAuthStatus
-  };
-}
-
-// ============================================
-// USAGE EXAMPLES
-// ============================================
-
-/**
- * Example: Protected API call in a component
- */
-export function ExampleComponent() {
-  const { makeRequest } = useAuthenticatedFetch();
-
-  const fetchUserData = async () => {
-    try {
-      const data = await makeRequest('/api/user/profile');
-      console.log('User profile:', data);
-    } catch (error) {
-      console.error('Failed to fetch profile:', error);
-    }
-  };
-
-  return (
-    <button onClick={fetchUserData}>
-      Fetch Profile (Authenticated)
-    </button>
-  );
-}
-
-/**
- * Example: Auth button component
- */
-export function SlayAuthButton() {
-  const { isAuthenticated, user, wallet, login, connectWallet } = useSlayAuth();
-
-  if (isAuthenticated) {
-    return (
-      <div>
-        <p>Welcome, {user?.username}!</p>
-        {wallet ? (
-          <p>Wallet: {wallet}</p>
-        ) : (
-          <button onClick={connectWallet}>Connect Wallet</button>
-        )}
-      </div>
-    );
-  }
-
-  return (
-    <button onClick={login}>
-      Sign In with Farcaster
-    </button>
-  );
-}
-
-// Import for useState/useEffect
-import { useState, useEffect } from 'react';
