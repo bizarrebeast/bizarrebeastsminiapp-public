@@ -72,7 +72,7 @@ export function useBBAuth(): BBAuthState & BBAuthActions {
     hasTimedOut: false
   });
 
-  const timeoutRef = useRef<NodeJS.Timeout>();
+  const timeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
   const isMountedRef = useRef(true);
 
   // Initialize on mount
@@ -164,7 +164,7 @@ export function useBBAuth(): BBAuthState & BBAuthActions {
           isInitialized: true,
           isLoading: false,
           isInMiniapp: false,
-          error: result.error
+          error: result.error || null
         }));
 
         // Check for existing session (web context)

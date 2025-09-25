@@ -133,7 +133,7 @@ export async function initializeBBAuth(): Promise<{
         success: true,
         context,
         provider: null,
-        wallet: null
+        wallet: undefined
       };
     }
 
@@ -151,7 +151,7 @@ export async function initializeBBAuth(): Promise<{
       success: true,
       context,
       provider,
-      wallet
+      wallet: wallet || undefined
     };
   } catch (error) {
     console.error('❌ BB Auth initialization error:', error);
