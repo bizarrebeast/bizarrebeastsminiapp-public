@@ -78,7 +78,7 @@ export async function verifyFarcasterToken(token: string): Promise<AuthToken | n
       }
     }
 
-    // Try standard JWT format
+    // Try standard JWT format (Farcaster uses this)
     try {
       const parts = actualToken.split('.');
       if (parts.length !== 3) {
@@ -90,21 +90,30 @@ export async function verifyFarcasterToken(token: string): Promise<AuthToken | n
         Buffer.from(parts[1], 'base64').toString('utf-8')
       );
 
-      // Validate required fields
-      if (!payload.fid) {
-        console.error('Token missing FID');
+      // Farcaster SDK uses 'sub' for FID, not 'fid'
+      const fid = payload.sub || payload.fid;
+
+      if (!fid) {
+        console.error('Token missing FID (checked sub and fid fields)');
         return null;
       }
 
-      // Check expiry
+      // Check expiry (exp is in seconds, convert to milliseconds)
       if (payload.exp && payload.exp * 1000 < Date.now()) {
         console.error('Token expired');
         return null;
       }
 
+      // Check issuer if present (should be https://auth.farcaster.xyz)
+      if (payload.iss && !payload.iss.includes('farcaster')) {
+        console.warn('Token not from Farcaster:', payload.iss);
+      }
+
+      console.log('✅ Valid Farcaster JWT token for FID:', fid);
+
       return {
-        fid: payload.fid,
-        username: payload.username || `user${payload.fid}`,
+        fid: fid,
+        username: payload.username || `user${fid}`,
         expiresAt: payload.exp ? payload.exp * 1000 : Date.now() + 3600000
       };
     } catch (error) {

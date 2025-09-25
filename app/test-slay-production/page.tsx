@@ -120,18 +120,24 @@ export default function TestBBAuthProductionPage() {
     addLog('🧪 Starting API test...');
 
     try {
-      // Test 1: Check auth status
-      addLog('Test 1: Checking auth status...');
-      const statusResponse = await authenticatedFetch('/api/auth/v2/verify', {
-        method: 'GET'
+      // Test 1: Check auth status (using quickAuth for proper token)
+      addLog('Test 1: Checking auth status with quickAuth...');
+      const statusResponse = await sdk.quickAuth.fetch('/api/auth/v2/verify', {
+        method: 'GET',
+        headers: {
+          'X-Wallet-Address': auth.wallet || ''
+        }
       });
       const statusData = await statusResponse.json();
       addLog('Auth status result', statusData);
 
-      // Test 2: Verify auth
-      addLog('Test 2: Verifying authentication...');
-      const verifyResponse = await authenticatedFetch('/api/auth/v2/verify', {
-        method: 'POST'
+      // Test 2: Verify auth with wallet
+      addLog('Test 2: Verifying authentication with wallet...');
+      const verifyResponse = await sdk.quickAuth.fetch('/api/auth/v2/verify', {
+        method: 'POST',
+        headers: {
+          'X-Wallet-Address': auth.wallet || ''
+        }
       });
       const verifyData = await verifyResponse.json();
       addLog('Auth verification result', verifyData);
