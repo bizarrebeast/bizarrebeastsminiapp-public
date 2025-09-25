@@ -703,8 +703,9 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
             userAgent: navigator.userAgent 
           });
           
-          if (isInMiniApp) {
-            console.log('Farcaster miniapp download - showing download modal');
+          // Show modal for both Farcaster miniapp AND mobile PWA for consistent experience
+          if (isInMiniApp || isMobileDevice()) {
+            console.log('Showing download modal for save instructions');
 
             // Create modal overlay with download instructions
             const modal = document.createElement('div');
@@ -871,19 +872,8 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
             console.log('Download modal displayed');
             return finalDataURL;
 
-          } else if (isMobileDevice()) {
-            // Mobile browser: Simple download
-            console.log('Mobile browser download');
-            const link = document.createElement('a');
-            link.download = filename;
-            link.href = finalDataURL;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            return finalDataURL;
-
           } else {
-            // Desktop: Simple download
+            // Desktop: Simple download (mobile is now handled by modal above)
             console.log('Desktop download');
             const link = document.createElement('a');
             link.download = filename;
