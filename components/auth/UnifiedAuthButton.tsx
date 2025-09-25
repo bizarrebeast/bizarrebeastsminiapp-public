@@ -308,15 +308,15 @@ export function UnifiedAuthButton() {
               <div className="space-y-3">
                 {/* Show AuthKit for desktop, Neynar for mobile/miniapp */}
                 {isDesktop && !isInMiniapp ? (
-                  <div className="w-full space-y-3">
+                  <>
                     <FarcasterAuthKitButton
                       onSuccess={() => setShowAuthModal(false)}
                       className="w-full"
                     />
-                    <p className="text-xs text-center text-gray-400 mt-3">
+                    <p className="text-xs text-center text-gray-400">
                       Sign in with Farcaster - You'll get a notification on your phone
                     </p>
-                  </div>
+                  </>
                 ) : (
                   <NeynarAuthButton
                     className="w-full"
