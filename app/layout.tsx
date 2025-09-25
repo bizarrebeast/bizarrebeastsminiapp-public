@@ -10,7 +10,6 @@ import { FarcasterSDK } from "@/components/FarcasterSDK";
 import { FarcasterProvider } from "@/contexts/FarcasterContext";
 import { SDKProvider } from "@/contexts/SDKContext";
 import { NeynarProviderWrapper } from "@/components/providers/NeynarProvider";
-import { AuthKitProviderWrapper } from "@/components/providers/AuthKitProvider";
 import { NeynarAuthIntegration } from "@/components/auth/NeynarAuthIntegration";
 import { FarcasterSDKSync } from "@/components/auth/FarcasterSDKSync";
 import { FarcasterDebug } from "@/components/debug/FarcasterDebug";
@@ -100,20 +99,18 @@ export default function RootLayout({
         <SDKProvider>
           <FarcasterSDK />
           <FarcasterProvider>
-            <AuthKitProviderWrapper>
-              <NeynarProviderWrapper>
-                <NeynarAuthIntegration />
-                <FarcasterSDKSync />
-                {/* <FarcasterDebug /> */}
-                <LayoutWrapper>
-                  <Navbar />
-                  <main className="flex-1">
-                    {children}
-                  </main>
-                  <Footer />
-                </LayoutWrapper>
-              </NeynarProviderWrapper>
-            </AuthKitProviderWrapper>
+            <NeynarProviderWrapper>
+              <NeynarAuthIntegration />
+              <FarcasterSDKSync />
+              {/* <FarcasterDebug /> */}
+              <LayoutWrapper>
+                <Navbar />
+                <main className="flex-1">
+                  {children}
+                </main>
+                <Footer />
+              </LayoutWrapper>
+            </NeynarProviderWrapper>
           </FarcasterProvider>
         </SDKProvider>
         <Analytics />
