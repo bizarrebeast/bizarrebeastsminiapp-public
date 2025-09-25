@@ -35,6 +35,10 @@ export interface BBAuthState {
   wallet: string | null;
   isWalletVerified: boolean;
 
+  // Empire data
+  empireTier: string | null;
+  empireRank: number | null;
+
   // Context
   isInMiniapp: boolean;
   hasTimedOut: boolean;
@@ -69,7 +73,9 @@ export function useBBAuth(): BBAuthState & BBAuthActions {
     wallet: null,
     isWalletVerified: false,
     isInMiniapp: false,
-    hasTimedOut: false
+    hasTimedOut: false,
+    empireTier: null,
+    empireRank: null
   });
 
   const timeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
@@ -145,7 +151,7 @@ export function useBBAuth(): BBAuthState & BBAuthActions {
           wallet: wallet
         });
 
-        // Verify with backend (optional - for session creation)
+        // Verify with backend and fetch empire tier
         try {
           const verification = await verifyAuth();
           if (verification.success && isMountedRef.current) {
@@ -154,8 +160,21 @@ export function useBBAuth(): BBAuthState & BBAuthActions {
               isWalletVerified: verification.user?.isWalletVerified || false
             }));
           }
+
+          // Fetch empire tier for the user
+          const profileResponse = await fetch(`/api/auth/profile?farcasterFid=${context.user.fid}&refresh=true`);
+          const profileData = await profileResponse.json();
+
+          if (profileData.success && profileData.profile && isMountedRef.current) {
+            setState(prev => ({
+              ...prev,
+              empireTier: profileData.profile.empireTier || 'NORMIE',
+              empireRank: profileData.profile.empireRank || null
+            }));
+            console.log('✅ Empire tier loaded:', profileData.profile.empireTier);
+          }
         } catch (error) {
-          console.log('Backend verification failed, but miniapp auth is valid');
+          console.log('Backend verification or profile fetch failed, but miniapp auth is valid');
         }
       } else {
         // Not in miniapp or initialization failed
@@ -266,7 +285,9 @@ export function useBBAuth(): BBAuthState & BBAuthActions {
         wallet: null,
         isWalletVerified: false,
         isInMiniapp: state.isInMiniapp,
-        hasTimedOut: false
+        hasTimedOut: false,
+        empireTier: null,
+        empireRank: null
       });
 
       if (!state.isInMiniapp) {

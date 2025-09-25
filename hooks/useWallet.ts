@@ -5,10 +5,13 @@ import { web3Service, WalletState } from '@/lib/web3';
 import { AccessTier } from '@/lib/empire';
 import { useUnifiedAuthStore } from '@/store/useUnifiedAuthStore';
 import { isInFarcasterMiniapp } from '@/lib/farcaster-miniapp';
+import { useBBAuth } from '@/hooks/useBBAuth';
 
 export function useWallet() {
   // Get unified auth state
   const unifiedAuth = useUnifiedAuthStore();
+  // Get BB Auth state for Farcaster context
+  const bbAuth = useBBAuth();
 
   const [walletState, setWalletState] = useState<WalletState>({
     isConnected: false,
@@ -25,8 +28,25 @@ export function useWallet() {
       if (inMiniapp) {
         console.log('📱 In Farcaster miniapp - skipping web3 initialization');
         setIsInitializing(false);
-        // Use Farcaster wallet if available
-        if (unifiedAuth.walletAddress) {
+
+        // Check if using BB Auth (for Farcaster context)
+        if (bbAuth.isAuthenticated && bbAuth.wallet) {
+          // Use BB Auth's wallet and empire tier
+          const tierMapping: { [key: string]: AccessTier } = {
+            'BIZARRE': AccessTier.BIZARRE,
+            'WEIRDO': AccessTier.WEIRDO,
+            'ODDBALL': AccessTier.ODDBALL,
+            'MISFIT': AccessTier.MISFIT,
+            'NORMIE': AccessTier.NORMIE
+          };
+
+          setWalletState({
+            isConnected: true,
+            address: bbAuth.wallet,
+            empireTier: tierMapping[bbAuth.empireTier || 'NORMIE'] || AccessTier.NORMIE
+          });
+        } else if (unifiedAuth.walletAddress) {
+          // Fall back to unified auth
           setWalletState({
             isConnected: true,
             address: unifiedAuth.walletAddress,
@@ -93,7 +113,7 @@ export function useWallet() {
     return () => {
       unsubscribe();
     };
-  }, []);
+  }, [bbAuth.isAuthenticated, bbAuth.wallet, bbAuth.empireTier, unifiedAuth.walletAddress, unifiedAuth.empireTier]);
 
   const connect = async () => {
     // In miniapp, wallet comes from Farcaster
