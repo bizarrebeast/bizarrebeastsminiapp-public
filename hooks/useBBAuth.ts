@@ -171,16 +171,19 @@ export function useBBAuth(): BBAuthState & BBAuthActions {
 
           console.log('📊 Profile API response:', profileData);
 
-          if (profileData.success && profileData.profile && isMountedRef.current) {
+          // Check if we got valid empire data from profile
+          const hasEmpireData = profileData.success && profileData.profile && profileData.profile.empireTier;
+
+          if (hasEmpireData && isMountedRef.current) {
             setState(prev => ({
               ...prev,
-              empireTier: profileData.profile.empireTier || 'NORMIE',
+              empireTier: profileData.profile.empireTier,
               empireRank: profileData.profile.empireRank || null
             }));
-            console.log('✅ Empire tier loaded:', profileData.profile.empireTier, 'Rank:', profileData.profile.empireRank);
-          } else if (!profileData.success && wallet) {
-            // If profile doesn't exist, try fetching Empire data directly
-            console.log('❌ Profile not found, fetching Empire data directly for wallet:', wallet);
+            console.log('✅ Empire tier loaded from profile:', profileData.profile.empireTier, 'Rank:', profileData.profile.empireRank);
+          } else if (wallet) {
+            // If profile doesn't exist or has no empire data, fetch Empire data directly
+            console.log('⚠️ Profile has no empire data (or not found), fetching Empire data directly for wallet:', wallet);
             try {
               const empireResponse = await fetch('/api/empire/leaderboard');
               const empireData = await empireResponse.json();
