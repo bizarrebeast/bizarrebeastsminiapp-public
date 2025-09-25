@@ -143,7 +143,9 @@ export function useBBAuth(): BBAuthState & BBAuthActions {
             pfpUrl: context.user.pfpUrl
           },
           wallet: wallet || null,
-          hasTimedOut: false
+          hasTimedOut: false,
+          empireTier: 'NORMIE', // Default until we fetch real tier
+          empireRank: null
         }));
 
         console.log('✅ BB Auth initialized:', {
@@ -163,27 +165,10 @@ export function useBBAuth(): BBAuthState & BBAuthActions {
           }
 
           console.log('📊 Fetching empire tier for FID:', context.user.fid, 'Wallet:', wallet);
-          // Fetch empire tier for the user
-          // Include wallet address to help find the user or fetch Empire data directly
-          const walletParam = wallet ? `&walletAddress=${wallet}` : '';
-          const profileResponse = await fetch(`/api/auth/profile?farcasterFid=${context.user.fid}${walletParam}&refresh=true`);
-          const profileData = await profileResponse.json();
 
-          console.log('📊 Profile API response:', profileData);
-
-          // Check if we got valid empire data from profile
-          const hasEmpireData = profileData.success && profileData.profile && profileData.profile.empireTier;
-
-          if (hasEmpireData && isMountedRef.current) {
-            setState(prev => ({
-              ...prev,
-              empireTier: profileData.profile.empireTier,
-              empireRank: profileData.profile.empireRank || null
-            }));
-            console.log('✅ Empire tier loaded from profile:', profileData.profile.empireTier, 'Rank:', profileData.profile.empireRank);
-          } else if (wallet) {
-            // If profile doesn't exist or has no empire data, fetch Empire data directly
-            console.log('⚠️ Profile has no empire data (or not found), fetching Empire data directly for wallet:', wallet);
+          // Always try to fetch Empire data directly if we have a wallet
+          if (wallet) {
+            console.log('📊 Fetching Empire data directly for wallet:', wallet);
             try {
               const empireResponse = await fetch('/api/empire/leaderboard');
               const empireData = await empireResponse.json();
@@ -200,10 +185,10 @@ export function useBBAuth(): BBAuthState & BBAuthActions {
                 if (holder && isMountedRef.current) {
                   const rank = holder.rank || null;
                   let tier = 'NORMIE';
-                  if (rank <= 25) tier = 'BIZARRE';
-                  else if (rank <= 50) tier = 'WEIRDO';
-                  else if (rank <= 100) tier = 'ODDBALL';
-                  else if (rank <= 500) tier = 'MISFIT';
+                  if (rank && rank <= 25) tier = 'BIZARRE';
+                  else if (rank && rank <= 50) tier = 'WEIRDO';
+                  else if (rank && rank <= 100) tier = 'ODDBALL';
+                  else if (rank && rank <= 500) tier = 'MISFIT';
 
                   setState(prev => ({
                     ...prev,
@@ -212,11 +197,38 @@ export function useBBAuth(): BBAuthState & BBAuthActions {
                   }));
                   console.log('✅ Empire tier loaded from direct fetch:', tier, 'Rank:', rank);
                 } else {
-                  console.log('❌ Wallet not found in leaderboard');
+                  console.log('❌ Wallet not found in leaderboard, keeping default NORMIE tier');
+                  setState(prev => ({
+                    ...prev,
+                    empireTier: 'NORMIE',
+                    empireRank: null
+                  }));
                 }
               }
             } catch (error) {
               console.log('Failed to fetch Empire data directly:', error);
+              // Still try the profile API as fallback
+              try {
+                const walletParam = `&walletAddress=${wallet}`;
+                const profileResponse = await fetch(`/api/auth/profile?farcasterFid=${context.user.fid}${walletParam}&refresh=true`);
+                const profileData = await profileResponse.json();
+
+                console.log('📊 Profile API response:', profileData);
+
+                // Check if we got valid empire data from profile
+                const hasEmpireData = profileData.success && profileData.profile && profileData.profile.empireTier;
+
+                if (hasEmpireData && isMountedRef.current) {
+                  setState(prev => ({
+                    ...prev,
+                    empireTier: profileData.profile.empireTier,
+                    empireRank: profileData.profile.empireRank || null
+                  }));
+                  console.log('✅ Empire tier loaded from profile:', profileData.profile.empireTier, 'Rank:', profileData.profile.empireRank);
+                }
+              } catch (profileError) {
+                console.log('Profile API also failed:', profileError);
+              }
             }
           }
         } catch (error) {

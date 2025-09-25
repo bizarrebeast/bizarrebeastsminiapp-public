@@ -213,11 +213,19 @@ export function useWallet() {
   // If Farcaster is connected with a verified address, use that instead
   const isConnectedViaFarcaster = unifiedAuth.farcasterConnected && unifiedAuth.walletAddress;
 
+  // In Farcaster miniapp, prioritize BB Auth's empire data
+  const inMiniapp = isInFarcasterMiniapp();
+  const shouldUseBBAuthData = inMiniapp && bbAuth.isAuthenticated && bbAuth.wallet;
+
   return {
     ...walletState,
     // Override with Farcaster verified address if available
     isConnected: walletState.isConnected || isConnectedViaFarcaster,
     address: isConnectedViaFarcaster ? unifiedAuth.walletAddress : walletState.address,
+    // Add empire rank and score from BB Auth when in miniapp
+    empireRank: shouldUseBBAuthData ? bbAuth.empireRank : walletState.empireRank,
+    empireScore: shouldUseBBAuthData ? null : walletState.empireScore, // BB Auth doesn't provide score
+    // The walletState.empireTier is already correctly set from BB Auth in the effect above
     isInitializing,
     connect,
     disconnect,
