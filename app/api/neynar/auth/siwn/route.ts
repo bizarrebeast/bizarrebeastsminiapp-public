@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
   try {
     // Get the redirect URL from query params or use default
     const searchParams = request.nextUrl.searchParams;
-    const redirectPath = searchParams.get('redirect') || '/rituals';
+    const redirectPath = searchParams.get('redirect') || '/';
 
     // Construct the full callback URL
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL ||
@@ -19,17 +19,11 @@ export async function GET(request: NextRequest) {
     // This works with Starter plan and doesn't require SIWN setup
     const authUrl = `${baseUrl}/api/neynar/auth/mock?redirect=${encodeURIComponent(redirectPath)}`;
 
-    return NextResponse.json({
-      authUrl,
-      callbackUrl: `${baseUrl}/api/neynar/auth/callback`,
-      mockMode: true,
-      note: 'Using FID-based authentication (works with Starter plan)'
-    });
+    // Redirect directly to the auth page instead of returning JSON
+    return NextResponse.redirect(authUrl);
   } catch (error) {
     console.error('Error generating auth URL:', error);
-    return NextResponse.json(
-      { error: 'Failed to generate auth URL' },
-      { status: 500 }
-    );
+    // Fallback to homepage on error
+    return NextResponse.redirect('/');
   }
 }
