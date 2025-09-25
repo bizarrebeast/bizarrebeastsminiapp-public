@@ -153,8 +153,53 @@ export function useBBAuth(): BBAuthState & BBAuthActions {
           wallet: wallet
         });
 
-        // Verify with backend and fetch empire tier
-        console.log('🔍 Starting backend verification and empire tier fetch...');
+        // Fetch empire tier immediately and independently
+        if (wallet) {
+          console.log('📊 Fetching Empire data directly for wallet:', wallet);
+
+          // Don't wait for this - fire and forget
+          (async () => {
+            try {
+              const empireResponse = await fetch('/api/empire/leaderboard');
+              const empireData = await empireResponse.json();
+
+              console.log('📊 Empire leaderboard fetched, searching for wallet:', wallet);
+
+              if (empireData.holders && isMountedRef.current) {
+                const holder = empireData.holders.find((h: any) =>
+                  h.address?.toLowerCase() === wallet.toLowerCase()
+                );
+
+                console.log('📊 Found holder:', holder);
+
+                if (holder) {
+                  const rank = holder.rank || null;
+                  let tier = 'NORMIE';
+                  if (rank && rank <= 25) tier = 'BIZARRE';
+                  else if (rank && rank <= 50) tier = 'WEIRDO';
+                  else if (rank && rank <= 100) tier = 'ODDBALL';
+                  else if (rank && rank <= 500) tier = 'MISFIT';
+
+                  if (isMountedRef.current) {
+                    setState(prev => ({
+                      ...prev,
+                      empireTier: tier,
+                      empireRank: rank
+                    }));
+                    console.log('✅ Empire tier loaded:', tier, 'Rank:', rank);
+                  }
+                } else {
+                  console.log('❌ Wallet not found in leaderboard');
+                }
+              }
+            } catch (error) {
+              console.log('Failed to fetch Empire data:', error);
+            }
+          })();
+        }
+
+        // Verify with backend separately
+        console.log('🔍 Starting backend verification...');
         try {
           const verification = await verifyAuth();
           if (verification.success && isMountedRef.current) {
@@ -163,76 +208,8 @@ export function useBBAuth(): BBAuthState & BBAuthActions {
               isWalletVerified: verification.user?.isWalletVerified || false
             }));
           }
-
-          console.log('📊 Fetching empire tier for FID:', context.user.fid, 'Wallet:', wallet);
-
-          // Always try to fetch Empire data directly if we have a wallet
-          if (wallet) {
-            console.log('📊 Fetching Empire data directly for wallet:', wallet);
-            try {
-              const empireResponse = await fetch('/api/empire/leaderboard');
-              const empireData = await empireResponse.json();
-
-              console.log('📊 Empire leaderboard fetched, searching for wallet:', wallet);
-
-              if (empireData.holders) {
-                const holder = empireData.holders.find((h: any) =>
-                  h.address?.toLowerCase() === wallet.toLowerCase()
-                );
-
-                console.log('📊 Found holder:', holder);
-
-                if (holder && isMountedRef.current) {
-                  const rank = holder.rank || null;
-                  let tier = 'NORMIE';
-                  if (rank && rank <= 25) tier = 'BIZARRE';
-                  else if (rank && rank <= 50) tier = 'WEIRDO';
-                  else if (rank && rank <= 100) tier = 'ODDBALL';
-                  else if (rank && rank <= 500) tier = 'MISFIT';
-
-                  setState(prev => ({
-                    ...prev,
-                    empireTier: tier,
-                    empireRank: rank
-                  }));
-                  console.log('✅ Empire tier loaded from direct fetch:', tier, 'Rank:', rank);
-                } else {
-                  console.log('❌ Wallet not found in leaderboard, keeping default NORMIE tier');
-                  setState(prev => ({
-                    ...prev,
-                    empireTier: 'NORMIE',
-                    empireRank: null
-                  }));
-                }
-              }
-            } catch (error) {
-              console.log('Failed to fetch Empire data directly:', error);
-              // Still try the profile API as fallback
-              try {
-                const walletParam = `&walletAddress=${wallet}`;
-                const profileResponse = await fetch(`/api/auth/profile?farcasterFid=${context.user.fid}${walletParam}&refresh=true`);
-                const profileData = await profileResponse.json();
-
-                console.log('📊 Profile API response:', profileData);
-
-                // Check if we got valid empire data from profile
-                const hasEmpireData = profileData.success && profileData.profile && profileData.profile.empireTier;
-
-                if (hasEmpireData && isMountedRef.current) {
-                  setState(prev => ({
-                    ...prev,
-                    empireTier: profileData.profile.empireTier,
-                    empireRank: profileData.profile.empireRank || null
-                  }));
-                  console.log('✅ Empire tier loaded from profile:', profileData.profile.empireTier, 'Rank:', profileData.profile.empireRank);
-                }
-              } catch (profileError) {
-                console.log('Profile API also failed:', profileError);
-              }
-            }
-          }
         } catch (error) {
-          console.log('Backend verification or profile fetch failed, but miniapp auth is valid');
+          console.log('Backend verification failed, but miniapp auth is valid');
         }
       } else {
         // Not in miniapp or initialization failed
