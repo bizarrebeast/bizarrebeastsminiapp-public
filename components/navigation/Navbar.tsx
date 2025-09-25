@@ -9,7 +9,7 @@ import { BBAuthButton } from '@/components/auth/BBAuthButton';
 import { EmpireBadges } from '@/components/wallet/EmpireBadges';
 
 // Feature flag to switch between auth systems
-const USE_BB_AUTH = true; // Set to true to use BB Auth
+const USE_BB_AUTH = false; // Using UnifiedAuthButton which works for desktop/PWA
 
 // Navigation items in order
 const navItems = [
