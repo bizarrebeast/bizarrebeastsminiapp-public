@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { useUnifiedAuthStore } from '@/store/useUnifiedAuthStore';
-import { useNeynarContext, NeynarAuthButton } from '@neynar/react';
+import { useNeynarContext } from '@neynar/react';
+import { NeynarAuthButtonEnhanced } from './NeynarAuthButtonEnhanced';
 import { useWallet } from '@/hooks/useWallet';
 import { Wallet, Users, Link2, LogOut, RefreshCw, ChevronDown, Crown, User } from 'lucide-react';
 import { AccessTier } from '@/lib/empire';
@@ -288,8 +289,9 @@ export function UnifiedAuthButton() {
               )}
 
               <div className="space-y-3">
-                <NeynarAuthButton
+                <NeynarAuthButtonEnhanced
                   className="w-full"
+                  onSuccess={() => setShowAuthModal(false)}
                 />
 
                 {!isInMiniapp && (
@@ -420,7 +422,7 @@ export function UnifiedAuthButton() {
                   </div>
                 ) : (
                   <div className="w-full">
-                    <NeynarAuthButton
+                    <NeynarAuthButtonEnhanced
                       className="w-full"
                     />
                   </div>
@@ -503,8 +505,9 @@ export function UnifiedAuthButton() {
             </p>
 
             <div className="space-y-3">
-              <NeynarAuthButton
+              <NeynarAuthButtonEnhanced
                 className="w-full"
+                onSuccess={() => setShowAuthModal(false)}
               />
 
               <div className="relative">
