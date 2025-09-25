@@ -3,9 +3,9 @@
 import React, { useCallback, useState } from 'react';
 import {
   SignInButton,
+  StatusAPIResponse,
   UseSignInData,
-  useProfile,
-  AuthClientError
+  useProfile
 } from '@farcaster/auth-kit';
 import { useUnifiedAuthStore } from '@/store/useUnifiedAuthStore';
 import { Wallet, Loader2 } from 'lucide-react';
@@ -56,7 +56,7 @@ export function FarcasterAuthKitButton({ onSuccess, className }: FarcasterAuthKi
     }
   }, [connectFarcaster, connectWallet, onSuccess]);
 
-  const handleError = useCallback((error?: AuthClientError) => {
+  const handleError = useCallback((error?: StatusAPIResponse | null) => {
     console.error('❌ AuthKit Sign In Error:', error);
     setIsLoading(false);
   }, []);
@@ -70,15 +70,15 @@ export function FarcasterAuthKitButton({ onSuccess, className }: FarcasterAuthKi
   if (profile?.isAuthenticated) {
     return (
       <div className="flex items-center gap-2 px-4 py-2 bg-dark-card border border-gem-crystal/30 rounded-lg">
-        {profile.profile?.pfpUrl && (
+        {profile.pfpUrl && (
           <img
-            src={profile.profile.pfpUrl}
+            src={profile.pfpUrl}
             alt="Profile"
             className="w-6 h-6 rounded-full"
           />
         )}
         <span className="text-sm font-semibold text-gem-crystal">
-          @{profile.profile?.username || 'Connected'}
+          @{profile.username}
         </span>
       </div>
     );

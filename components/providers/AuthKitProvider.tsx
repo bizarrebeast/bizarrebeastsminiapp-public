@@ -1,16 +1,16 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { AuthKitProvider as FarcasterAuthKitProvider } from '@farcaster/auth-kit';
+import { AuthKitProvider as FarcasterAuthKitProvider, createConfig } from '@farcaster/auth-kit';
 
-const config = {
+const config = createConfig({
   // Production configuration for AuthKit
   relay: 'https://relay.farcaster.xyz',
   domain: 'bbapp.bizarrebeasts.io',
   siweUri: 'https://bbapp.bizarrebeasts.io',
   rpcUrl: 'https://mainnet.optimism.io', // Using Optimism for auth (Farcaster native)
   version: 'v1',
-};
+});
 
 interface AuthKitProviderWrapperProps {
   children: React.ReactNode;
