@@ -162,7 +162,9 @@ export function useBBAuth(): BBAuthState & BBAuthActions {
           }
 
           // Fetch empire tier for the user
-          const profileResponse = await fetch(`/api/auth/profile?farcasterFid=${context.user.fid}&refresh=true`);
+          // Include wallet address to help find the user or fetch Empire data directly
+          const walletParam = wallet ? `&walletAddress=${wallet}` : '';
+          const profileResponse = await fetch(`/api/auth/profile?farcasterFid=${context.user.fid}${walletParam}&refresh=true`);
           const profileData = await profileResponse.json();
 
           if (profileData.success && profileData.profile && isMountedRef.current) {
@@ -171,7 +173,38 @@ export function useBBAuth(): BBAuthState & BBAuthActions {
               empireTier: profileData.profile.empireTier || 'NORMIE',
               empireRank: profileData.profile.empireRank || null
             }));
-            console.log('✅ Empire tier loaded:', profileData.profile.empireTier);
+            console.log('✅ Empire tier loaded:', profileData.profile.empireTier, 'Rank:', profileData.profile.empireRank);
+          } else if (!profileData.success && wallet) {
+            // If profile doesn't exist, try fetching Empire data directly
+            console.log('Profile not found, fetching Empire data directly for wallet:', wallet);
+            try {
+              const empireResponse = await fetch('/api/empire/leaderboard');
+              const empireData = await empireResponse.json();
+
+              if (empireData.holders) {
+                const holder = empireData.holders.find((h: any) =>
+                  h.address?.toLowerCase() === wallet.toLowerCase()
+                );
+
+                if (holder && isMountedRef.current) {
+                  const rank = holder.rank || null;
+                  let tier = 'NORMIE';
+                  if (rank <= 25) tier = 'BIZARRE';
+                  else if (rank <= 50) tier = 'WEIRDO';
+                  else if (rank <= 100) tier = 'ODDBALL';
+                  else if (rank <= 500) tier = 'MISFIT';
+
+                  setState(prev => ({
+                    ...prev,
+                    empireTier: tier,
+                    empireRank: rank
+                  }));
+                  console.log('✅ Empire tier loaded from direct fetch:', tier, 'Rank:', rank);
+                }
+              }
+            } catch (error) {
+              console.log('Failed to fetch Empire data directly:', error);
+            }
           }
         } catch (error) {
           console.log('Backend verification or profile fetch failed, but miniapp auth is valid');

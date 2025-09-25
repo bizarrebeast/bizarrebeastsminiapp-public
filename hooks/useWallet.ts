@@ -115,6 +115,28 @@ export function useWallet() {
     };
   }, [bbAuth.isAuthenticated, bbAuth.wallet, bbAuth.empireTier, unifiedAuth.walletAddress, unifiedAuth.empireTier]);
 
+  // Update wallet state when BB Auth empire tier changes
+  useEffect(() => {
+    const inMiniapp = isInFarcasterMiniapp();
+    if (inMiniapp && bbAuth.isAuthenticated && bbAuth.wallet && bbAuth.empireTier) {
+      const tierMapping: { [key: string]: AccessTier } = {
+        'BIZARRE': AccessTier.BIZARRE,
+        'WEIRDO': AccessTier.WEIRDO,
+        'ODDBALL': AccessTier.ODDBALL,
+        'MISFIT': AccessTier.MISFIT,
+        'NORMIE': AccessTier.NORMIE
+      };
+
+      setWalletState({
+        isConnected: true,
+        address: bbAuth.wallet,
+        empireTier: tierMapping[bbAuth.empireTier] || AccessTier.NORMIE
+      });
+
+      console.log('📱 Updated wallet state with BB Auth empire tier:', bbAuth.empireTier);
+    }
+  }, [bbAuth.empireTier, bbAuth.wallet, bbAuth.isAuthenticated]);
+
   const connect = async () => {
     // In miniapp, wallet comes from Farcaster
     const inMiniapp = isInFarcasterMiniapp();
