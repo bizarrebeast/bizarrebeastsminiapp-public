@@ -117,7 +117,9 @@ export function BBAuthButton() {
 
           {/* Verified wallet indicator */}
           {auth.isWalletVerified && (
-            <Link2 className="w-3 h-3 text-gem-gold" title="Verified wallet" />
+            <span title="Verified wallet">
+              <Link2 className="w-3 h-3 text-gem-gold" />
+            </span>
           )}
 
           <ChevronDown className="w-3 h-3 text-gem-crystal" />
