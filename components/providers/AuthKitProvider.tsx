@@ -23,25 +23,31 @@ export function AuthKitProviderWrapper({ children }: AuthKitProviderWrapperProps
   useEffect(() => {
     // Detect if we're in a miniapp context
     const checkEnvironment = async () => {
-      // Check if we're in Farcaster miniapp SDK context
-      const hasFarcasterSDK = typeof window !== 'undefined' &&
-        window.location.href.includes('farcaster.xyz') ||
-        window.location.href.includes('warpcast.com');
+      // Check if we're in Farcaster SDK miniapp context (mobile)
+      const inMobileMiniapp = typeof window !== 'undefined' &&
+        (window as any).farcaster !== undefined;
 
-      // Check if desktop (wider screen, not in miniapp)
+      // Check if we're in Farcaster desktop (warpcast.com iframe)
+      const inFarcasterDesktop = typeof window !== 'undefined' &&
+        (window.location.href.includes('warpcast.com') ||
+         window.parent !== window); // In iframe
+
+      // Check if desktop browser (not mobile miniapp but could be Farcaster desktop)
       const isDesktopBrowser = typeof window !== 'undefined' &&
         window.innerWidth > 768 &&
-        !hasFarcasterSDK &&
+        !inMobileMiniapp &&
         !('ontouchstart' in window);
 
-      setIsMiniapp(hasFarcasterSDK);
-      setIsDesktop(isDesktopBrowser);
+      setIsMiniapp(inMobileMiniapp);
+      setIsDesktop(isDesktopBrowser || inFarcasterDesktop);
 
       console.log('🔐 AuthKit Environment Detection:', {
-        isDesktop: isDesktopBrowser,
-        isMiniapp: hasFarcasterSDK,
+        isDesktop: isDesktopBrowser || inFarcasterDesktop,
+        isMiniapp: inMobileMiniapp,
+        inFarcasterDesktop,
         screenWidth: window.innerWidth,
-        userAgent: navigator.userAgent
+        url: window.location.href,
+        inIframe: window.parent !== window
       });
     };
 

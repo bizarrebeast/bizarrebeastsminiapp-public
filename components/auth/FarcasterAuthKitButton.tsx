@@ -85,7 +85,7 @@ export function FarcasterAuthKitButton({ onSuccess, className }: FarcasterAuthKi
   }
 
   return (
-    <div className={className}>
+    <div className={`flex flex-col items-center justify-center ${className}`}>
       <SignInButton
         onSuccess={handleSuccess}
         onError={handleError}
@@ -95,17 +95,21 @@ export function FarcasterAuthKitButton({ onSuccess, className }: FarcasterAuthKi
       <style jsx global>{`
         /* Style the AuthKit button to match BizarreBeasts theme */
         .fc-authkit-signin-button {
-          background: linear-gradient(135deg, #40E0D0, #FFD700, #FF69B4) !important;
-          color: #000 !important;
-          font-weight: 600 !important;
-          padding: 0.5rem 1.5rem !important;
+          background: linear-gradient(to right, #40E0D0, #FFD700, #FF69B4) !important;
+          color: #0a0a0a !important;
+          font-weight: 700 !important;
+          padding: 0.75rem 2rem !important;
           border-radius: 0.5rem !important;
           border: none !important;
           transition: all 0.3s ease !important;
           font-size: 0.875rem !important;
-          display: inline-flex !important;
+          display: flex !important;
           align-items: center !important;
+          justify-content: center !important;
           gap: 0.5rem !important;
+          width: 100% !important;
+          cursor: pointer !important;
+          text-align: center !important;
         }
 
         .fc-authkit-signin-button:hover {
@@ -113,23 +117,35 @@ export function FarcasterAuthKitButton({ onSuccess, className }: FarcasterAuthKi
           box-shadow: 0 10px 20px rgba(64, 224, 208, 0.3) !important;
         }
 
+        .fc-authkit-signin-button:active {
+          transform: scale(0.98) !important;
+        }
+
         /* QR code modal styling */
         .fc-authkit-modal {
           background: #0a0a0a !important;
           border: 1px solid rgba(64, 224, 208, 0.3) !important;
+          border-radius: 0.75rem !important;
         }
 
         .fc-authkit-modal-heading {
           color: #fff !important;
+          font-weight: 700 !important;
         }
 
         .fc-authkit-modal-body {
           color: #999 !important;
         }
+
+        .fc-authkit-qr-code {
+          background: white !important;
+          padding: 1rem !important;
+          border-radius: 0.5rem !important;
+        }
       `}</style>
 
       {isLoading && (
-        <div className="flex items-center gap-2 text-sm text-gem-crystal mt-2">
+        <div className="flex items-center justify-center gap-2 text-sm text-gem-crystal mt-2">
           <Loader2 className="w-4 h-4 animate-spin" />
           <span>Connecting...</span>
         </div>
