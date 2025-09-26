@@ -1,0 +1,418 @@
+{
+  "id": "vibecards",
+  "name": "Vibe Cards",
+  "icon": "🃏",
+  "description": "This limited-edition pack of cards features hand-illustrated BizarreBeasts artwork, brought to life against a backdrop of retro-futuristic, 1990s-inspired designs. Create nostalgic memes with these vibrant character stickers and backgrounds. All content available to every tier!",
+  "backgroundType": "image",
+  "requiredTier": "basic",
+  "stickers": [
+    {
+      "id": "vibecard-38",
+      "name": "Vibe Card 38",
+      "filename": "bizarrebeasts-bbcp-vibemarket-38.svg",
+      "category": "characters",
+      "tags": ["vibe", "card", "character", "colorful"],
+      "tier": "basic"
+    },
+    {
+      "id": "vibecard-39",
+      "name": "Vibe Card 39",
+      "filename": "bizarrebeasts-bbcp-vibemarket-39.svg",
+      "category": "characters",
+      "tags": ["vibe", "card", "character", "colorful"],
+      "tier": "basic"
+    },
+    {
+      "id": "vibecard-40",
+      "name": "Vibe Card 40",
+      "filename": "bizarrebeasts-bbcp-vibemarket-40.svg",
+      "category": "characters",
+      "tags": ["vibe", "card", "character", "colorful"],
+      "tier": "basic"
+    },
+    {
+      "id": "vibecard-41",
+      "name": "Vibe Card 41",
+      "filename": "bizarrebeasts-bbcp-vibemarket-41.svg",
+      "category": "characters",
+      "tags": ["vibe", "card", "character", "colorful"],
+      "tier": "basic"
+    },
+    {
+      "id": "vibecard-42",
+      "name": "Vibe Card 42",
+      "filename": "bizarrebeasts-bbcp-vibemarket-42.svg",
+      "category": "characters",
+      "tags": ["vibe", "card", "character", "colorful"],
+      "tier": "basic"
+    },
+    {
+      "id": "vibecard-43",
+      "name": "Vibe Card 43",
+      "filename": "bizarrebeasts-bbcp-vibemarket-43.svg",
+      "category": "characters",
+      "tags": ["vibe", "card", "character", "colorful"],
+      "tier": "basic"
+    },
+    {
+      "id": "vibecard-44",
+      "name": "Vibe Card 44",
+      "filename": "bizarrebeasts-bbcp-vibemarket-44.svg",
+      "category": "characters",
+      "tags": ["vibe", "card", "character", "colorful"],
+      "tier": "basic"
+    },
+    {
+      "id": "vibecard-45",
+      "name": "Vibe Card 45",
+      "filename": "bizarrebeasts-bbcp-vibemarket-45.svg",
+      "category": "characters",
+      "tags": ["vibe", "card", "character", "colorful"],
+      "tier": "basic"
+    },
+    {
+      "id": "vibecard-46",
+      "name": "Vibe Card 46",
+      "filename": "bizarrebeasts-bbcp-vibemarket-46.svg",
+      "category": "characters",
+      "tags": ["vibe", "card", "character", "colorful"],
+      "tier": "basic"
+    },
+    {
+      "id": "vibecard-47",
+      "name": "Vibe Card 47",
+      "filename": "bizarrebeasts-bbcp-vibemarket-47.svg",
+      "category": "characters",
+      "tags": ["vibe", "card", "character", "colorful"],
+      "tier": "basic"
+    },
+    {
+      "id": "vibecard-48",
+      "name": "Vibe Card 48",
+      "filename": "bizarrebeasts-bbcp-vibemarket-48.svg",
+      "category": "characters",
+      "tags": ["vibe", "card", "character", "colorful"],
+      "tier": "basic"
+    },
+    {
+      "id": "vibecard-49",
+      "name": "Vibe Card 49",
+      "filename": "bizarrebeasts-bbcp-vibemarket-49.svg",
+      "category": "characters",
+      "tags": ["vibe", "card", "character", "colorful"],
+      "tier": "basic"
+    },
+    {
+      "id": "vibecard-50",
+      "name": "Vibe Card 50",
+      "filename": "bizarrebeasts-bbcp-vibemarket-50.svg",
+      "category": "characters",
+      "tags": ["vibe", "card", "character", "colorful"],
+      "tier": "basic"
+    },
+    {
+      "id": "vibecard-51",
+      "name": "Vibe Card 51",
+      "filename": "bizarrebeasts-bbcp-vibemarket-51.svg",
+      "category": "characters",
+      "tags": ["vibe", "card", "character", "colorful"],
+      "tier": "basic"
+    },
+    {
+      "id": "vibecard-52",
+      "name": "Vibe Card 52",
+      "filename": "bizarrebeasts-bbcp-vibemarket-52.svg",
+      "category": "characters",
+      "tags": ["vibe", "card", "character", "colorful"],
+      "tier": "basic"
+    },
+    {
+      "id": "vibecard-53",
+      "name": "Vibe Card 53",
+      "filename": "bizarrebeasts-bbcp-vibemarket-53.svg",
+      "category": "characters",
+      "tags": ["vibe", "card", "character", "colorful"],
+      "tier": "basic"
+    },
+    {
+      "id": "vibecard-54",
+      "name": "Vibe Card 54",
+      "filename": "bizarrebeasts-bbcp-vibemarket-54.svg",
+      "category": "characters",
+      "tags": ["vibe", "card", "character", "colorful"],
+      "tier": "basic"
+    },
+    {
+      "id": "vibecard-55",
+      "name": "Vibe Card 55",
+      "filename": "bizarrebeasts-bbcp-vibemarket-55.svg",
+      "category": "characters",
+      "tags": ["vibe", "card", "character", "colorful"],
+      "tier": "basic"
+    },
+    {
+      "id": "vibecard-56",
+      "name": "Vibe Card 56",
+      "filename": "bizarrebeasts-bbcp-vibemarket-56.svg",
+      "category": "characters",
+      "tags": ["vibe", "card", "character", "colorful"],
+      "tier": "basic"
+    },
+    {
+      "id": "vibecard-57",
+      "name": "Vibe Card 57",
+      "filename": "bizarrebeasts-bbcp-vibemarket-57.svg",
+      "category": "characters",
+      "tags": ["vibe", "card", "character", "colorful"],
+      "tier": "basic"
+    },
+    {
+      "id": "vibecard-58",
+      "name": "Vibe Card 58",
+      "filename": "bizarrebeasts-bbcp-vibemarket-58.svg",
+      "category": "characters",
+      "tags": ["vibe", "card", "character", "colorful"],
+      "tier": "basic"
+    },
+    {
+      "id": "vibecard-59",
+      "name": "Vibe Card 59",
+      "filename": "bizarrebeasts-bbcp-vibemarket-59.svg",
+      "category": "characters",
+      "tags": ["vibe", "card", "character", "colorful"],
+      "tier": "basic"
+    },
+    {
+      "id": "vibecard-60",
+      "name": "Vibe Card 60",
+      "filename": "bizarrebeasts-bbcp-vibemarket-60.svg",
+      "category": "characters",
+      "tags": ["vibe", "card", "character", "colorful"],
+      "tier": "basic"
+    }
+  ],
+  "backgrounds": [
+    {
+      "id": "vibecard-bg-1",
+      "name": "Vibe Background 1",
+      "filename": "backgrounds/bizarrebeasts-bbcp-vibemarket-background-1.svg",
+      "tier": "basic"
+    },
+    {
+      "id": "vibecard-bg-2",
+      "name": "Vibe Background 2",
+      "filename": "backgrounds/bizarrebeasts-bbcp-vibemarket-background-2.svg",
+      "tier": "basic"
+    },
+    {
+      "id": "vibecard-bg-3",
+      "name": "Vibe Background 3",
+      "filename": "backgrounds/bizarrebeasts-bbcp-vibemarket-background-3.svg",
+      "tier": "basic"
+    },
+    {
+      "id": "vibecard-bg-4",
+      "name": "Vibe Background 4",
+      "filename": "backgrounds/bizarrebeasts-bbcp-vibemarket-background-4.svg",
+      "tier": "basic"
+    },
+    {
+      "id": "vibecard-bg-5",
+      "name": "Vibe Background 5",
+      "filename": "backgrounds/bizarrebeasts-bbcp-vibemarket-background-5.svg",
+      "tier": "basic"
+    },
+    {
+      "id": "vibecard-bg-6",
+      "name": "Vibe Background 6",
+      "filename": "backgrounds/bizarrebeasts-bbcp-vibemarket-background-6.svg",
+      "tier": "basic"
+    },
+    {
+      "id": "vibecard-bg-7",
+      "name": "Vibe Background 7",
+      "filename": "backgrounds/bizarrebeasts-bbcp-vibemarket-background-7.svg",
+      "tier": "basic"
+    },
+    {
+      "id": "vibecard-bg-8",
+      "name": "Vibe Background 8",
+      "filename": "backgrounds/bizarrebeasts-bbcp-vibemarket-background-8.svg",
+      "tier": "basic"
+    },
+    {
+      "id": "vibecard-bg-9",
+      "name": "Vibe Background 9",
+      "filename": "backgrounds/bizarrebeasts-bbcp-vibemarket-background-9.svg",
+      "tier": "basic"
+    },
+    {
+      "id": "vibecard-bg-10",
+      "name": "Vibe Background 10",
+      "filename": "backgrounds/bizarrebeasts-bbcp-vibemarket-background-10.svg",
+      "tier": "basic"
+    },
+    {
+      "id": "vibecard-bg-11",
+      "name": "Vibe Background 11",
+      "filename": "backgrounds/bizarrebeasts-bbcp-vibemarket-background-11.svg",
+      "tier": "basic"
+    },
+    {
+      "id": "vibecard-bg-12",
+      "name": "Vibe Background 12",
+      "filename": "backgrounds/bizarrebeasts-bbcp-vibemarket-background-12.svg",
+      "tier": "basic"
+    },
+    {
+      "id": "vibecard-bg-13",
+      "name": "Vibe Background 13",
+      "filename": "backgrounds/bizarrebeasts-bbcp-vibemarket-background-13.svg",
+      "tier": "basic"
+    },
+    {
+      "id": "vibecard-bg-14",
+      "name": "Vibe Background 14",
+      "filename": "backgrounds/bizarrebeasts-bbcp-vibemarket-background-14.svg",
+      "tier": "basic"
+    },
+    {
+      "id": "vibecard-bg-15",
+      "name": "Vibe Background 15",
+      "filename": "backgrounds/bizarrebeasts-bbcp-vibemarket-background-15.svg",
+      "tier": "basic"
+    },
+    {
+      "id": "vibecard-bg-16",
+      "name": "Vibe Background 16",
+      "filename": "backgrounds/bizarrebeasts-bbcp-vibemarket-background-16.svg",
+      "tier": "basic"
+    },
+    {
+      "id": "vibecard-bg-17",
+      "name": "Vibe Background 17",
+      "filename": "backgrounds/bizarrebeasts-bbcp-vibemarket-background-17.svg",
+      "tier": "basic"
+    },
+    {
+      "id": "vibecard-bg-18",
+      "name": "Vibe Background 18",
+      "filename": "backgrounds/bizarrebeasts-bbcp-vibemarket-background-18.svg",
+      "tier": "basic"
+    },
+    {
+      "id": "vibecard-bg-19",
+      "name": "Vibe Background 19",
+      "filename": "backgrounds/bizarrebeasts-bbcp-vibemarket-background-19.svg",
+      "tier": "basic"
+    },
+    {
+      "id": "vibecard-bg-20",
+      "name": "Vibe Background 20",
+      "filename": "backgrounds/bizarrebeasts-bbcp-vibemarket-background-20.svg",
+      "tier": "basic"
+    },
+    {
+      "id": "vibecard-bg-21",
+      "name": "Vibe Background 21",
+      "filename": "backgrounds/bizarrebeasts-bbcp-vibemarket-background-21.svg",
+      "tier": "basic"
+    },
+    {
+      "id": "vibecard-bg-22",
+      "name": "Vibe Background 22",
+      "filename": "backgrounds/bizarrebeasts-bbcp-vibemarket-background-22.svg",
+      "tier": "basic"
+    },
+    {
+      "id": "vibecard-bg-23",
+      "name": "Vibe Background 23",
+      "filename": "backgrounds/bizarrebeasts-bbcp-vibemarket-background-23.svg",
+      "tier": "basic"
+    },
+    {
+      "id": "vibecard-bg-24",
+      "name": "Vibe Background 24",
+      "filename": "backgrounds/bizarrebeasts-bbcp-vibemarket-background-24.svg",
+      "tier": "basic"
+    },
+    {
+      "id": "vibecard-bg-25",
+      "name": "Vibe Background 25",
+      "filename": "backgrounds/bizarrebeasts-bbcp-vibemarket-background-25.svg",
+      "tier": "basic"
+    },
+    {
+      "id": "vibecard-bg-26",
+      "name": "Vibe Background 26",
+      "filename": "backgrounds/bizarrebeasts-bbcp-vibemarket-background-26.svg",
+      "tier": "basic"
+    },
+    {
+      "id": "vibecard-bg-27",
+      "name": "Vibe Background 27",
+      "filename": "backgrounds/bizarrebeasts-bbcp-vibemarket-background-27.svg",
+      "tier": "basic"
+    },
+    {
+      "id": "vibecard-bg-28",
+      "name": "Vibe Background 28",
+      "filename": "backgrounds/bizarrebeasts-bbcp-vibemarket-background-28.svg",
+      "tier": "basic"
+    },
+    {
+      "id": "vibecard-bg-29",
+      "name": "Vibe Background 29",
+      "filename": "backgrounds/bizarrebeasts-bbcp-vibemarket-background-29.svg",
+      "tier": "basic"
+    },
+    {
+      "id": "vibecard-bg-30",
+      "name": "Vibe Background 30",
+      "filename": "backgrounds/bizarrebeasts-bbcp-vibemarket-background-30.svg",
+      "tier": "basic"
+    },
+    {
+      "id": "vibecard-bg-31",
+      "name": "Vibe Background 31",
+      "filename": "backgrounds/bizarrebeasts-bbcp-vibemarket-background-31.svg",
+      "tier": "basic"
+    },
+    {
+      "id": "vibecard-bg-32",
+      "name": "Vibe Background 32",
+      "filename": "backgrounds/bizarrebeasts-bbcp-vibemarket-background-32.svg",
+      "tier": "basic"
+    },
+    {
+      "id": "vibecard-bg-33",
+      "name": "Vibe Background 33",
+      "filename": "backgrounds/bizarrebeasts-bbcp-vibemarket-background-33.svg",
+      "tier": "basic"
+    },
+    {
+      "id": "vibecard-bg-34",
+      "name": "Vibe Background 34",
+      "filename": "backgrounds/bizarrebeasts-bbcp-vibemarket-background-34.svg",
+      "tier": "basic"
+    },
+    {
+      "id": "vibecard-bg-35",
+      "name": "Vibe Background 35",
+      "filename": "backgrounds/bizarrebeasts-bbcp-vibemarket-background-35.svg",
+      "tier": "basic"
+    },
+    {
+      "id": "vibecard-bg-36",
+      "name": "Vibe Background 36",
+      "filename": "backgrounds/bizarrebeasts-bbcp-vibemarket-background-36.svg",
+      "tier": "basic"
+    },
+    {
+      "id": "vibecard-bg-37",
+      "name": "Vibe Background 37",
+      "filename": "backgrounds/bizarrebeasts-bbcp-vibemarket-background-37.svg",
+      "tier": "basic"
+    }
+  ]
+}

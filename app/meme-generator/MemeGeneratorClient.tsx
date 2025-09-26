@@ -40,8 +40,8 @@ const mockCollections: StickerCollection[] = [
   },
   {
     id: 'vibecards',
-    name: 'Vibecards (Coming Soon)',
-    description: 'Special vibe check characters and mood expressions. Perfect for creating reaction memes! This collection is coming soon.',
+    name: 'Vibe Cards',
+    description: 'This limited-edition pack of cards features hand-illustrated BizarreBeasts artwork, brought to life against a backdrop of retro-futuristic, 1990s-inspired designs. Create nostalgic memes with these vibrant character stickers and backgrounds. All content available to every tier!',
     icon: '🃏',
     stickers: [],
     backgrounds: [], // Will add background images
