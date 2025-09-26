@@ -285,9 +285,20 @@ export default function Home() {
                   <Link href={`/contests/${activeContests[currentContestIndex].id}`}>
                     <div className="relative">
                       {/* Contest Banner */}
-                      <div className="w-full h-48 sm:h-64 bg-gradient-to-br from-gem-crystal/20 to-gem-purple/20 flex items-center justify-center">
-                        <Trophy className="w-24 h-24 text-gem-gold opacity-50" />
-                      </div>
+                      {activeContests[currentContestIndex].banner_image_url ? (
+                        <div className="w-full h-48 sm:h-64 relative overflow-hidden">
+                          <img
+                            src={activeContests[currentContestIndex].banner_image_url}
+                            alt={activeContests[currentContestIndex].name}
+                            className="w-full h-full object-cover"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-dark-card via-dark-card/50 to-transparent"></div>
+                        </div>
+                      ) : (
+                        <div className="w-full h-48 sm:h-64 bg-gradient-to-br from-gem-crystal/20 to-gem-purple/20 flex items-center justify-center">
+                          <Trophy className="w-24 h-24 text-gem-gold opacity-50" />
+                        </div>
+                      )}
 
                       {/* Content */}
                       <div className="relative p-6">
