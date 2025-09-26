@@ -313,6 +313,18 @@ export const contestQueries = {
     return data as ContestSubmission[];
   },
 
+  // Get all user's submissions across all contests (for debugging)
+  async getAllUserSubmissions(walletAddress: string) {
+    const { data, error } = await supabase
+      .from('contest_submissions')
+      .select('*')
+      .eq('wallet_address', walletAddress.toLowerCase())
+      .order('submitted_at', { ascending: false });
+
+    if (error) throw error;
+    return data as ContestSubmission[];
+  },
+
   // Get leaderboard for a contest
   async getLeaderboard(contestId: string) {
     const { data, error } = await supabase

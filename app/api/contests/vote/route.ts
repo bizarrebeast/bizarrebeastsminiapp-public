@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { contestQueries } from '@/lib/supabase';
+import { syncVoteCount } from '@/lib/vote-sync';
 
 export async function POST(request: NextRequest) {
   try {
@@ -48,8 +49,16 @@ export async function POST(request: NextRequest) {
     }
 
     if (action === 'remove') {
+      // Get the vote before removing to sync the count
+      const existingVote = await contestQueries.getUserVote(contestId, walletAddress);
+
       // Remove existing vote
       await contestQueries.removeVote(contestId, walletAddress);
+
+      // Sync the vote count for the affected submission
+      if (existingVote) {
+        await syncVoteCount(existingVote.submission_id);
+      }
 
       return NextResponse.json({
         success: true,
@@ -85,6 +94,14 @@ export async function POST(request: NextRequest) {
 
       // Cast new vote
       const vote = await contestQueries.castVote(contestId, submissionId, walletAddress);
+
+      // Sync the vote count to the submission
+      await syncVoteCount(submissionId);
+
+      // If changing vote, also sync the old submission
+      if (existingVote && existingVote.submission_id !== submissionId) {
+        await syncVoteCount(existingVote.submission_id);
+      }
 
       return NextResponse.json({
         success: true,

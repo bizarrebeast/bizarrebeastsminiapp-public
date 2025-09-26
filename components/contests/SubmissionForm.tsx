@@ -344,7 +344,7 @@ export default function SubmissionForm({ contest, userSubmissions = [], onSucces
               className="px-6 py-2 bg-dark-bg border border-gray-700 rounded-lg
                        hover:border-gem-crystal/50 transition text-sm"
             >
-              Submit Entry #{userSubmissions.length + 2}
+              Submit Entry #{userSubmissions.length + 1}
             </button>
           )}
 

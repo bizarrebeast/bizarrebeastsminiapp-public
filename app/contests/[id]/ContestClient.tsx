@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
@@ -32,6 +32,7 @@ import VotingGallery from '@/components/contests/VotingGallery';
 import MemeGalleryGrid from '@/components/contests/MemeGalleryGrid';
 import ContestActionButtons from '@/components/contests/ContestActionButtons';
 import { isBetweenDates } from '@/lib/utils';
+import DebugOverlay from '@/components/DebugOverlay';
 
 export default function ContestDetailPage() {
   const { id } = useParams();
@@ -52,6 +53,19 @@ export default function ContestDetailPage() {
   const [approvedSubmissions, setApprovedSubmissions] = useState<ContestSubmission[]>([]);
   const [userVoteIds, setUserVoteIds] = useState<string[]>([]);
 
+  // Debug mode state
+  const [debugMode, setDebugMode] = useState(false);
+  const [debugData, setDebugData] = useState({
+    wallet: null as string | null,
+    contestId: id as string,
+    userSubmissions: [] as any[],
+    allSubmissionsCount: 0,
+    renderTime: new Date().toISOString(),
+    dataSource: 'initial',
+    cacheStatus: 'unknown',
+    errorState: undefined as string | undefined
+  });
+
   // Check if contests are enabled
   if (!FEATURES.CONTESTS) {
     router.push('/');
@@ -63,6 +77,24 @@ export default function ContestDetailPage() {
       fetchContestData();
     }
   }, [id, address]);
+
+  // Initialize debug mode from session storage
+  useEffect(() => {
+    const savedDebugMode = sessionStorage.getItem('debug_overlay_active');
+    if (savedDebugMode === 'true') {
+      setDebugMode(true);
+    }
+
+    // Add keyboard shortcut for debug mode (Shift+D)
+    const handleKeyPress = (e: KeyboardEvent) => {
+      if (e.shiftKey && e.key === 'D') {
+        setDebugMode(prev => !prev);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, []);
 
   useEffect(() => {
     if (address && contest) {
@@ -100,7 +132,32 @@ export default function ContestDetailPage() {
         const submission = await contestQueries.getUserSubmission(id as string, address);
         setUserSubmission(submission);
 
+        // Track all user submissions across all contests for debugging
+        const allUserSubmissions = await contestQueries.getAllUserSubmissions(address);
         const submissions = await contestQueries.getUserSubmissions(id as string, address);
+
+        console.log(`📊 Contest ${id} - User submissions for ${address}:`, {
+          count: submissions.length,
+          contestId: id,
+          wallet: address.toLowerCase(),
+          submissions: submissions.map(s => ({
+            id: s.id,
+            contest_id: s.contest_id,
+            submitted_at: s.submitted_at
+          }))
+        });
+
+        // Update debug data
+        setDebugData(prev => ({
+          ...prev,
+          wallet: address,
+          userSubmissions: allUserSubmissions || [],
+          allSubmissionsCount: allUserSubmissions?.length || 0,
+          renderTime: new Date().toISOString(),
+          dataSource: 'contestQueries.getUserSubmissions',
+          cacheStatus: 'fresh'
+        }));
+
         setUserSubmissions(submissions);
 
         // Fetch user's existing votes if voting is enabled
@@ -1009,6 +1066,13 @@ export default function ContestDetailPage() {
           </div>
         )}
       </div>
+
+      {/* Debug Overlay */}
+      <DebugOverlay
+        data={debugData}
+        isVisible={debugMode}
+        onClose={() => setDebugMode(false)}
+      />
     </div>
   );
 }
