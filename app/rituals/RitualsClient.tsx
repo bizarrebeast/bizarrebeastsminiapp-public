@@ -306,7 +306,7 @@ export default function RitualsPage() {
         {/* Streamlined Header with integrated progress */}
         <div className="text-center mb-6">
           <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent leading-tight pb-2">
-            BIZARRE Rituals & Daily Checkin
+            BIZARRE Rituals & Daily Check-In
           </h1>
           <p className="text-lg text-gray-300 max-w-2xl mx-auto mb-4">
             Complete daily rituals and check-ins to engage with the BizarreBeasts ecosystem, earn $BB rewards, and strengthen our community. Your consistency drives the $BIZARRE movement forward!
@@ -508,8 +508,8 @@ export default function RitualsPage() {
         </div>
 
         {/* Category Filter & View Toggle */}
-        <div className="flex flex-col sm:flex-row items-center justify-between mb-6 gap-4">
-          <div className="flex items-center gap-2 overflow-x-auto w-full sm:w-auto pb-2 sm:pb-0">
+        <div className="flex flex-col sm:flex-row items-center justify-between mb-6 gap-4 w-full">
+          <div className="flex items-center gap-2 overflow-x-auto min-w-0 flex-1 sm:flex-initial pb-2 sm:pb-0">
             <button
               onClick={() => setSelectedCategory('all')}
               className={`px-4 py-2 rounded-lg font-semibold text-sm transition-all whitespace-nowrap flex-shrink-0 ${
