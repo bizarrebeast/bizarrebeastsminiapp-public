@@ -284,30 +284,10 @@ export default function Home() {
                 {activeContests[currentContestIndex] && (
                   <Link href={`/contests/${activeContests[currentContestIndex].id}`}>
                     <div className="relative">
-                      {/* Contest Banner Image */}
-                      {activeContests[currentContestIndex].hero_image ? (
-                        <div className="w-full h-48 sm:h-64 relative overflow-hidden">
-                          <img
-                            src={activeContests[currentContestIndex].hero_image}
-                            alt={activeContests[currentContestIndex].name}
-                            className="w-full h-full object-cover"
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-dark-card via-dark-card/50 to-transparent"></div>
-                        </div>
-                      ) : activeContests[currentContestIndex].banner_image_url ? (
-                        <div className="w-full h-48 sm:h-64 relative overflow-hidden">
-                          <img
-                            src={activeContests[currentContestIndex].banner_image_url}
-                            alt={activeContests[currentContestIndex].name}
-                            className="w-full h-full object-cover"
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-dark-card via-dark-card/50 to-transparent"></div>
-                        </div>
-                      ) : (
-                        <div className="w-full h-48 sm:h-64 bg-gradient-to-br from-gem-crystal/20 to-gem-purple/20 flex items-center justify-center">
-                          <Trophy className="w-24 h-24 text-gem-gold opacity-50" />
-                        </div>
-                      )}
+                      {/* Contest Banner */}
+                      <div className="w-full h-48 sm:h-64 bg-gradient-to-br from-gem-crystal/20 to-gem-purple/20 flex items-center justify-center">
+                        <Trophy className="w-24 h-24 text-gem-gold opacity-50" />
+                      </div>
 
                       {/* Content */}
                       <div className="relative p-6">
@@ -319,7 +299,7 @@ export default function Home() {
                               <div className="flex items-center gap-1 px-2 py-1 bg-red-500/20 rounded-full">
                                 <Timer className="w-3 h-3 text-red-400" />
                                 <span className="text-xs text-red-400 font-semibold">
-                                  {getTimeRemaining(activeContests[currentContestIndex].end_date)}
+                                  {getTimeRemaining(activeContests[currentContestIndex].end_date || '')}
                                 </span>
                               </div>
                             </div>
