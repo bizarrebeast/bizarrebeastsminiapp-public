@@ -13,7 +13,7 @@ interface ShareButtonsProps {
   shareType?: 'default' | 'meme' | 'rank' | 'ritual' | 'checkin' | 'claim' | 'milestone5' | 'milestone15' | 'milestone30' | 'streakbreak' | 'contest' | 'contestEntry' | 'contestPosition' | 'contestWinner';
   rank?: number;
   ritualData?: {
-    id: number;
+    id: number | string;
     title: string;
     description: string;
     actionUrl?: string;
