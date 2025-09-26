@@ -1,16 +1,39 @@
 'use client';
 
 import Link from 'next/link';
-import { Palette, Gamepad2, Trophy, TrendingUp, Users, Sparkles, ArrowDownUp, Music, ExternalLink, FileText, Coins, ChevronDown, Clock, Award } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import {
+  Trophy, TrendingUp, Users, Sparkles, Clock, Award,
+  Gamepad2, Palette, ArrowUp, Flame, Zap, Star,
+  ChevronRight, ChevronLeft, Timer, Gift, Target, Crown, Coins,
+  Activity, CheckCircle, ArrowDownUp, Music, ExternalLink,
+  FileText, ChevronDown
+} from 'lucide-react';
 import { contestQueries, ActiveContestView } from '@/lib/supabase';
+import { useBBAuth } from '@/hooks/useBBAuth';
 import { formatTokenBalance } from '@/lib/tokenBalance';
 
 export default function Home() {
   const [marketCap, setMarketCap] = useState<string>('--');
-  const [showEcosystemTokens, setShowEcosystemTokens] = useState(false);
   const [activeContests, setActiveContests] = useState<ActiveContestView[]>([]);
   const [loadingContests, setLoadingContests] = useState(true);
+  const [livePrice, setLivePrice] = useState<string>('--');
+  const [priceChange, setPriceChange] = useState<number>(0);
+  const [totalHolders, setTotalHolders] = useState<number>(0);
+  const [showAbout, setShowAbout] = useState(true);
+  const [showEcosystemTokens, setShowEcosystemTokens] = useState(false);
+  const [currentContestIndex, setCurrentContestIndex] = useState(0);
+  const { user, empireTier, empireRank, isAuthenticated } = useBBAuth();
+
+  // Auto-scroll contests carousel
+  useEffect(() => {
+    if (activeContests.length > 1) {
+      const interval = setInterval(() => {
+        setCurrentContestIndex((prev) => (prev + 1) % activeContests.length);
+      }, 5000); // Auto-scroll every 5 seconds
+      return () => clearInterval(interval);
+    }
+  }, [activeContests.length]);
 
   useEffect(() => {
     // Fetch active contests
@@ -18,7 +41,8 @@ export default function Home() {
       try {
         setLoadingContests(true);
         const active = await contestQueries.getActiveContestsWithStats();
-        setActiveContests(active?.slice(0, 3) || []); // Show top 3 contests
+        console.log('Active contests fetched:', active);
+        setActiveContests(active || []);
       } catch (error) {
         console.error('Error fetching contests:', error);
       } finally {
@@ -27,44 +51,95 @@ export default function Home() {
     };
     fetchContests();
 
-    const fetchMarketCap = async () => {
+    // Fetch market data
+    const fetchMarketData = async () => {
       try {
-        // Using DexScreener API to get BB token price data
         const response = await fetch('https://api.dexscreener.com/latest/dex/tokens/0x0520bf1d3cEE163407aDA79109333aB1599b4004');
         const data = await response.json();
-        
+
         if (data.pairs && data.pairs.length > 0) {
-          // Get the first pair's market cap
-          const mcap = data.pairs[0].fdv || data.pairs[0].marketCap;
+          const pair = data.pairs[0];
+          const mcap = pair.fdv || pair.marketCap;
+          const price = pair.priceUsd;
+          const change = pair.priceChange?.h24 || 0;
+
           if (mcap) {
-            // Format market cap without decimals
             if (mcap >= 1000000) {
-              setMarketCap(`$${Math.round(mcap / 1000000)}M`);
+              setMarketCap(`$${(mcap / 1000000).toFixed(1)}M`);
             } else if (mcap >= 1000) {
               setMarketCap(`$${Math.round(mcap / 1000)}K`);
             } else {
               setMarketCap(`$${Math.round(mcap)}`);
             }
           }
+
+          if (price) {
+            setLivePrice(`$${parseFloat(price).toFixed(8)}`);
+          }
+
+          setPriceChange(change);
         }
       } catch (error) {
-        console.error('Error fetching market cap:', error);
-        setMarketCap('--');
+        console.error('Error fetching market data:', error);
       }
     };
 
-    fetchMarketCap();
-    // Refresh every 30 seconds
-    const interval = setInterval(fetchMarketCap, 30000);
-    
+    fetchMarketData();
+    const interval = setInterval(fetchMarketData, 30000);
+
+    // Fetch Empire leaderboard data for holder count
+    const fetchEmpireData = async () => {
+      try {
+        const response = await fetch('/api/empire/leaderboard');
+        const data = await response.json();
+        console.log('Empire data fetched:', data);
+
+        if (data.holders && data.holders.length > 0) {
+          setTotalHolders(data.holders.length);
+        }
+      } catch (error) {
+        console.error('Error fetching Empire data:', error);
+      }
+    };
+
+    fetchEmpireData();
+
     return () => clearInterval(interval);
   }, []);
+
+  // Calculate time remaining
+  const getTimeRemaining = (endDate: string) => {
+    const end = new Date(endDate).getTime();
+    const now = new Date().getTime();
+    const distance = end - now;
+
+    if (distance < 0) return 'Ended';
+
+    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+
+    if (days > 0) return `${days}d ${hours}h`;
+    return `${hours}h`;
+  };
+
+  const handlePrevContest = () => {
+    setCurrentContestIndex((prev) =>
+      prev === 0 ? activeContests.length - 1 : prev - 1
+    );
+  };
+
+  const handleNextContest = () => {
+    setCurrentContestIndex((prev) =>
+      (prev + 1) % activeContests.length
+    );
+  };
+
   return (
-    <div className="min-h-[calc(100vh-64px)]">
+    <div className="min-h-screen bg-dark-bg">
       {/* Hero Section */}
-      <section className="relative px-4 pt-8 pb-20 text-center">
+      <section className="relative px-4 pt-8 pb-8 text-center">
         <div className="max-w-4xl mx-auto">
-          {/* Banner above title */}
+          {/* Banner */}
           <div className="flex justify-center mb-6">
             <img
               src="/assets/page-assets/banners/new-home-page-banner-bizarrebeasts.svg"
@@ -77,12 +152,12 @@ export default function Home() {
           <h1 className="text-4xl sm:text-5xl font-bold mb-6 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent">
             BizarreBeasts ($BB) Miniapp
           </h1>
-          
+
           <p className="text-xl text-gray-300 mb-8">
             Create memes, play games, swap $BB tokens, collect art, win contests, and join the most BIZARRE community in web3!
           </p>
-          
-          {/* Quick Stats */}
+
+          {/* Quick Stats with Live Data */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-3xl mx-auto mb-12">
             <Link href="/swap" className="bg-gradient-to-br from-dark-card via-dark-card to-gem-crystal/5 border border-gem-crystal/20 rounded-lg p-4 transition-all duration-300 hover:border-gem-crystal/40 hover:scale-105 cursor-pointer">
               <div className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent">$BB</div>
@@ -93,7 +168,9 @@ export default function Home() {
               <div className="text-xs sm:text-sm text-gray-400">Market Cap</div>
             </div>
             <div className="bg-gradient-to-br from-dark-card via-dark-card to-gem-pink/5 border border-gem-pink/20 rounded-lg p-4 transition-all duration-300">
-              <div className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent">4400+</div>
+              <div className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent">
+                {totalHolders || '4,400+'}
+              </div>
               <div className="text-xs sm:text-sm text-gray-400">Holders</div>
             </div>
             <div className="bg-gradient-to-br from-dark-card via-dark-card to-gem-crystal/5 border border-gem-crystal/20 rounded-lg p-4 transition-all duration-300">
@@ -103,7 +180,7 @@ export default function Home() {
           </div>
 
           {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center flex-wrap">
             <Link
               href="/meme-generator"
               className="bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink text-black px-8 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2"
@@ -127,289 +204,179 @@ export default function Home() {
                 Enter Contests
               </Link>
             )}
+            <Link
+              href="/rituals"
+              className="bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink text-black px-8 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2"
+            >
+              <Flame className="w-5 h-5" />
+              BIZARRE Rituals & Daily Checkin
+            </Link>
           </div>
         </div>
       </section>
 
-      {/* About BizarreBeasts Section */}
+      {/* About BizarreBeasts Section - Collapsible */}
       <section className="px-4 pb-8">
         <div className="max-w-4xl mx-auto">
-          <div className="bg-gradient-to-br from-dark-card via-dark-card to-gem-crystal/5 border border-gem-crystal/20 rounded-2xl p-8">
-            <div className="flex justify-center mb-4">
-              <img 
-                src="/assets/page-assets/logos/bb-token.png" 
-                alt="BizarreBeasts" 
-                className="w-[100px] h-[100px] object-contain"
-              />
-            </div>
-            <h2 className="text-3xl font-bold text-center mb-6 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent">
-              About BizarreBeasts
-            </h2>
-            <div className="space-y-4 text-gray-300 text-lg">
-              <p>
-                BizarreBeasts is an original, art-powered ecosystem featuring hand-illustrated characters, animations, NFTs, and web3 games! With 8 games played over 130,000 times and achieving #1 trending on Remix and TheBaseApp, BizarreBeasts has built a notorious community of 4,400+ token holders GOING BIZARRE.
-              </p>
-              <p>
-                The $BB token (powered by $GLANKER) fuels our creative universe: rewarding the community, unlocking exclusive perks, and providing access to the /bizarrebeasts Farcaster community. As a holder, climb the Empire leaderboard, earn treasury rewards, and unlock premium features!
-              </p>
-              <p>
-                From original music and comics to interactive games and physical paintings, dive into the BIZARREBEASTS universe, where art and web3 collide!
-              </p>
-            </div>
+          <div className="bg-gradient-to-br from-dark-card via-dark-card to-gem-crystal/5 border border-gem-crystal/20 rounded-2xl overflow-hidden">
+            <button
+              onClick={() => setShowAbout(!showAbout)}
+              className="w-full p-6 flex items-center justify-between hover:bg-gem-crystal/5 transition-colors"
+            >
+              <h2 className="text-3xl font-bold bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent flex items-center gap-3">
+                <img
+                  src="/assets/page-assets/logos/bb-token.png"
+                  alt="BizarreBeasts"
+                  className="w-[50px] h-[50px] object-contain"
+                />
+                About BizarreBeasts
+              </h2>
+              <ChevronDown className={`w-6 h-6 text-gem-crystal transition-transform ${showAbout ? 'rotate-180' : ''}`} />
+            </button>
+
+            {showAbout && (
+              <div className="px-6 pb-6 space-y-4 text-gray-300 text-lg">
+                <p>
+                  BizarreBeasts is an original, art-powered ecosystem featuring hand-illustrated characters, animations, NFTs, and web3 games! With 8 games played over 140,000 times and achieving #1 trending on Remix and TheBaseApp, BizarreBeasts has built a notorious community of {totalHolders || '4,400+'} token holders GOING BIZARRE.
+                </p>
+                <p>
+                  The $BB token (powered by $GLANKER) fuels our creative universe: rewarding the community, unlocking exclusive perks, and providing access to the /bizarrebeasts Farcaster community. As a holder, climb the Empire leaderboard, earn treasury rewards, and unlock premium features!
+                </p>
+                <p>
+                  From original music and comics to interactive games and physical paintings, dive into the BIZARREBEASTS universe, where art and web3 collide!
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </section>
 
-      {/* Features Grid */}
-      <section className="px-4 py-8">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-5xl font-bold text-center mb-12 relative">
-            <span className="bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent">
-              Features
-            </span>
-            <div className="absolute inset-0 bg-gradient-to-r from-gem-crystal/20 via-gem-gold/20 to-gem-pink/20 blur-3xl -z-10"></div>
-          </h2>
-          
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* Stickers & Meme Creator */}
-            <Link href="/meme-generator" className="group">
-              <div 
-                className="relative rounded-lg overflow-hidden h-full flex items-end transition-all duration-300 cursor-pointer hover:scale-105"
-                style={{
-                  backgroundImage: 'url(/assets/page-assets/banners/feature-boxes/sticker-meme-feature-box.png)',
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                  minHeight: '200px'
-                }}
-              >
-                {/* Dark overlay for text readability */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/80 to-black/30"></div>
-                
-                {/* Content */}
-                <div className="relative z-10 p-6">
-                  <h3 className="text-2xl font-bold mb-2 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent drop-shadow-lg">Stickers & Meme Creator</h3>
-                  <p className="text-white font-medium drop-shadow-md">
-                    Create and export memes with stickers, text overlays, and custom backgrounds
-                  </p>
-                </div>
-              </div>
-            </Link>
-
-            {/* BizarreBeasts Games */}
-            <Link href="/games" className="group">
-              <div 
-                className="relative rounded-lg overflow-hidden h-full flex items-end transition-all duration-300 cursor-pointer hover:scale-105"
-                style={{
-                  backgroundImage: 'url(/assets/page-assets/banners/feature-boxes/games-feature-box.png)',
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                  minHeight: '200px'
-                }}
-              >
-                {/* Dark overlay for text readability */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/80 to-black/30"></div>
-                
-                {/* Content */}
-                <div className="relative z-10 p-6">
-                  <h3 className="text-2xl font-bold mb-2 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent drop-shadow-lg">BizarreBeasts Games</h3>
-                  <p className="text-white font-medium drop-shadow-md">
-                    Play our collection of games with over 128K+ total plays and counting
-                  </p>
-                </div>
-              </div>
-            </Link>
-
-            {/* Token Swap */}
-            <Link href="/swap" className="group">
-              <div 
-                className="relative rounded-lg overflow-hidden h-full flex items-end transition-all duration-300 cursor-pointer hover:scale-105"
-                style={{
-                  backgroundImage: 'url(/assets/page-assets/banners/feature-boxes/swap-feature-box.png)',
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                  minHeight: '200px'
-                }}
-              >
-                {/* Dark overlay for text readability */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/80 to-black/30"></div>
-                
-                {/* Content */}
-                <div className="relative z-10 p-6">
-                  <h3 className="text-2xl font-bold mb-2 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent drop-shadow-lg">Token Swap</h3>
-                  <p className="text-white font-medium drop-shadow-md">
-                    Swap $BB tokens with integrated Uniswap interface on Base
-                  </p>
-                </div>
-              </div>
-            </Link>
-
-            {/* Empire Leaderboard */}
-            <Link href="/empire" className="group">
-              <div 
-                className="relative rounded-lg overflow-hidden h-full flex items-end transition-all duration-300 cursor-pointer hover:scale-105"
-                style={{
-                  backgroundImage: 'url(/assets/page-assets/banners/feature-boxes/empire-feature-box.png)',
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                  minHeight: '200px'
-                }}
-              >
-                {/* Dark overlay for text readability */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/80 to-black/30"></div>
-                
-                {/* Content */}
-                <div className="relative z-10 p-6">
-                  <h3 className="text-2xl font-bold mb-2 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent drop-shadow-lg">Empire Leaderboard</h3>
-                  <p className="text-white font-medium drop-shadow-md">
-                    Live leaderboard tracking with tiers, boosters, and multipliers
-                  </p>
-                </div>
-              </div>
-            </Link>
-
-            {/* Game Soundtracks */}
-            <Link href="/music" className="group">
-              <div 
-                className="relative rounded-lg overflow-hidden h-full flex items-end transition-all duration-300 cursor-pointer hover:scale-105"
-                style={{
-                  backgroundImage: 'url(/assets/page-assets/banners/feature-boxes/music-feature-box.png)',
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                  minHeight: '200px'
-                }}
-              >
-                {/* Dark overlay for text readability */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/80 to-black/30"></div>
-                
-                {/* Content */}
-                <div className="relative z-10 p-6">
-                  <h3 className="text-2xl font-bold mb-2 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent drop-shadow-lg">Game Soundtracks</h3>
-                  <p className="text-white font-medium drop-shadow-md">
-                    Original music by @kateyarter for BizarreBeasts games
-                  </p>
-                </div>
-              </div>
-            </Link>
-
-            {/* Contests */}
-            <Link href="/contests" className="group">
-              <div
-                className="relative rounded-lg overflow-hidden h-full flex items-end transition-all duration-300 cursor-pointer hover:scale-105"
-                style={{
-                  backgroundImage: 'url(/assets/page-assets/banners/feature-boxes/contests-feature-box.png)',
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                  minHeight: '200px',
-                  backgroundColor: '#1a0d26' // Fallback color
-                }}
-              >
-                {/* Dark overlay for text readability */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/80 to-black/30"></div>
-
-                {/* Active contest indicator */}
-                {activeContests.length > 0 && (
-                  <div className="absolute top-4 right-4 px-3 py-1 bg-gem-crystal/90 text-dark-bg rounded-full text-xs font-bold flex items-center gap-1">
-                    <span className="w-2 h-2 bg-dark-bg rounded-full animate-pulse"></span>
-                    {activeContests.length} ACTIVE
-                  </div>
-                )}
-
-                {/* Content */}
-                <div className="relative z-10 p-6">
-                  <h3 className="text-2xl font-bold mb-2 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent drop-shadow-lg">Contests & Prizes</h3>
-                  <p className="text-white font-medium drop-shadow-md">
-                    Compete in challenges and win $BB tokens and NFT prizes
-                  </p>
-                </div>
-              </div>
-            </Link>
-
-          </div>
-        </div>
-      </section>
-
-      {/* Active Contests Section */}
-      {activeContests.length > 0 && (
+      {/* Active Contests Carousel */}
+      {activeContests.length > 0 && !loadingContests && (
         <section className="px-4 py-8">
           <div className="max-w-6xl mx-auto">
             <h2 className="text-3xl font-bold text-center mb-8 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent">
               🏆 Active Contests
             </h2>
 
-            <div className="grid md:grid-cols-3 gap-6 mb-6">
-              {activeContests.map((contest) => (
-                <Link key={contest.id} href={`/contests/${contest.id}`}>
-                  <div className="bg-dark-card border border-gem-crystal/20 rounded-lg overflow-hidden hover:border-gem-crystal/40 transition cursor-pointer">
-                    {/* Banner Image */}
-                    {contest.banner_image_url ? (
-                      <div className="relative w-full h-48 bg-gradient-to-br from-gem-crystal/20 to-gem-purple/20">
-                        <img
-                          src={contest.banner_image_url}
-                          alt={contest.name}
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            console.error('Failed to load banner image:', contest.banner_image_url);
-                            (e.target as HTMLImageElement).style.display = 'none';
-                          }}
-                        />
-                      </div>
-                    ) : (
-                      <div className="relative w-full h-48 bg-gradient-to-br from-gem-crystal/20 to-gem-purple/20 flex items-center justify-center">
-                        <span className="text-6xl opacity-50">
-                          {contest.type === 'game_score' ? '🎮' :
-                           contest.type === 'creative' ? '🎨' :
-                           contest.type === 'onboarding' ? '🚀' : '🏆'}
-                        </span>
-                      </div>
-                    )}
+            <div className="relative">
+              {/* Carousel Container */}
+              <div className="relative overflow-hidden bg-gradient-to-br from-dark-card via-dark-card/95 to-gem-gold/10 rounded-2xl border border-gem-gold/30">
+                {/* Navigation Buttons - positioned on banner area */}
+                {activeContests.length > 1 && (
+                  <>
+                    <button
+                      onClick={handlePrevContest}
+                      className="absolute left-4 top-32 sm:top-32 z-20 p-2 bg-dark-card/90 border border-gem-crystal/30 rounded-full hover:bg-dark-card hover:border-gem-crystal/50 transition-all"
+                    >
+                      <ChevronLeft className="w-5 h-5 text-gem-crystal" />
+                    </button>
+                    <button
+                      onClick={handleNextContest}
+                      className="absolute right-4 top-32 sm:top-32 z-20 p-2 bg-dark-card/90 border border-gem-crystal/30 rounded-full hover:bg-dark-card hover:border-gem-crystal/50 transition-all"
+                    >
+                      <ChevronRight className="w-5 h-5 text-gem-crystal" />
+                    </button>
+                  </>
+                )}
 
-                    {/* Content */}
-                    <div className="p-6">
-                      <div className="flex items-start justify-between mb-3">
-                      {contest.end_date && (
-                        <div className="flex items-center gap-1 text-xs text-gray-400">
-                          <Clock className="w-3 h-3" />
-                          <span>
-                            {(() => {
-                              const end = new Date(contest.end_date);
-                              const now = new Date();
-                              const diff = end.getTime() - now.getTime();
-                              const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-                              const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                              if (days > 0) return `${days}d left`;
-                              if (hours > 0) return `${hours}h left`;
-                              return 'Ending soon';
-                            })()}
-                          </span>
+                {/* Contest Display */}
+                {activeContests[currentContestIndex] && (
+                  <Link href={`/contests/${activeContests[currentContestIndex].id}`}>
+                    <div className="relative">
+                      {/* Contest Banner Image */}
+                      {activeContests[currentContestIndex].hero_image ? (
+                        <div className="w-full h-48 sm:h-64 relative overflow-hidden">
+                          <img
+                            src={activeContests[currentContestIndex].hero_image}
+                            alt={activeContests[currentContestIndex].name}
+                            className="w-full h-full object-cover"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-dark-card via-dark-card/50 to-transparent"></div>
+                        </div>
+                      ) : activeContests[currentContestIndex].banner_image_url ? (
+                        <div className="w-full h-48 sm:h-64 relative overflow-hidden">
+                          <img
+                            src={activeContests[currentContestIndex].banner_image_url}
+                            alt={activeContests[currentContestIndex].name}
+                            className="w-full h-full object-cover"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-dark-card via-dark-card/50 to-transparent"></div>
+                        </div>
+                      ) : (
+                        <div className="w-full h-48 sm:h-64 bg-gradient-to-br from-gem-crystal/20 to-gem-purple/20 flex items-center justify-center">
+                          <Trophy className="w-24 h-24 text-gem-gold opacity-50" />
                         </div>
                       )}
-                    </div>
 
-                      <h3 className="text-lg font-bold mb-2 text-white">{contest.name}</h3>
-                      {contest.description && (
-                        <p className="text-gray-400 text-sm mb-3 line-clamp-2">{contest.description}</p>
-                      )}
-
-                      {/* Stats */}
-                      <div className="flex items-center justify-between text-xs">
-                        <div className="flex items-center gap-1 text-gray-400">
-                          <Users className="w-3 h-3" />
-                          <span>{contest.participant_count || 0} entries</span>
-                        </div>
-                        {contest.prize_amount && (
-                          <div className="flex items-center gap-1 text-gem-gold">
-                            <Coins className="w-3 h-3" />
-                            <span>{formatTokenBalance(contest.prize_amount.toString())} $BB</span>
+                      {/* Content */}
+                      <div className="relative p-6">
+                        <div className="flex flex-col sm:flex-row items-start justify-between gap-4 mb-4">
+                          <div className="flex-1">
+                            <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-2">
+                              <Trophy className="w-5 h-5 text-gem-gold" />
+                              <span className="text-xs font-bold text-gem-gold uppercase tracking-wider">Contest #{currentContestIndex + 1} of {activeContests.length}</span>
+                              <div className="flex items-center gap-1 px-2 py-1 bg-red-500/20 rounded-full">
+                                <Timer className="w-3 h-3 text-red-400" />
+                                <span className="text-xs text-red-400 font-semibold">
+                                  {getTimeRemaining(activeContests[currentContestIndex].end_date)}
+                                </span>
+                              </div>
+                            </div>
+                            <h3 className="text-2xl font-bold mb-2">{activeContests[currentContestIndex].name}</h3>
+                            <p className="text-gray-400 text-sm">{activeContests[currentContestIndex].description}</p>
                           </div>
-                        )}
+                          <div className="text-left sm:text-right">
+                            <p className="text-xs text-gray-400 mb-1">Prize Pool</p>
+                            <p className="text-2xl font-bold bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent">
+                              {activeContests[currentContestIndex].prize_amount ?
+                                `${formatTokenBalance(activeContests[currentContestIndex].prize_amount.toString())} $BB` :
+                                'NFT'}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <div className="flex gap-6">
+                            <div>
+                              <p className="text-xs text-gray-400">Entries</p>
+                              <p className="text-lg font-bold">{activeContests[currentContestIndex].participant_count || 0}</p>
+                            </div>
+                            {activeContests[currentContestIndex].min_bb_required > 0 && (
+                              <div>
+                                <p className="text-xs text-gray-400">Min. Holding</p>
+                                <p className="text-lg font-bold">{activeContests[currentContestIndex].min_bb_required} $BB</p>
+                              </div>
+                            )}
+                          </div>
+                          <div className="text-gem-crystal font-bold hover:text-gem-gold transition-colors">
+                            Enter Contest →
+                          </div>
+                        </div>
                       </div>
                     </div>
+                  </Link>
+                )}
+
+                {/* Carousel Indicators */}
+                {activeContests.length > 1 && (
+                  <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+                    {activeContests.map((_, index) => (
+                      <button
+                        key={index}
+                        onClick={() => setCurrentContestIndex(index)}
+                        className={`w-2 h-2 rounded-full transition-all ${
+                          index === currentContestIndex ?
+                          'w-8 bg-gem-crystal' :
+                          'bg-gray-600 hover:bg-gray-500'
+                        }`}
+                      />
+                    ))}
                   </div>
-                </Link>
-              ))}
+                )}
+              </div>
             </div>
 
-            <div className="text-center">
+            <div className="text-center mt-6">
               <Link
                 href="/contests"
                 className="inline-flex items-center gap-2 px-6 py-2 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink text-dark-bg font-bold rounded-lg hover:opacity-90 transition"
@@ -422,13 +389,13 @@ export default function Home() {
         </section>
       )}
 
-      {/* Featured Game Banner - Treasure Quest */}
+      {/* Featured Game Banner - Original Full Version */}
       <section className="px-4 py-8">
         <div className="max-w-6xl mx-auto">
           <div className="bg-gradient-to-br from-dark-card via-dark-card to-gem-gold/10 border border-gem-gold/30 rounded-2xl overflow-hidden hover:border-gem-gold/50 transition-all duration-300">
             <div className="relative">
-              <img 
-                src="/assets/page-assets/banners/treasure-quest-banner.png" 
+              <img
+                src="/assets/page-assets/banners/treasure-quest-banner.png"
                 alt="BizarreBeasts Treasure Quest"
                 className="w-full h-auto object-cover"
               />
@@ -436,7 +403,7 @@ export default function Home() {
                 FEATURED GAME
               </div>
             </div>
-            
+
             <div className="p-6">
               <div className="flex flex-col gap-6">
                 {/* Game Title and Description */}
@@ -444,11 +411,11 @@ export default function Home() {
                   <h2 className="text-2xl sm:text-3xl font-bold mb-3 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent">
                     BizarreBeasts: Treasure Quest
                   </h2>
-                  
+
                   <p className="text-gray-300 mb-3 text-base sm:text-lg">
                     Climb endless crystal caverns as BizBe in this retro arcade platformer! Jump on enemies, collect gems, and discover treasure chests through 5 chapters and 50+ levels. Journey through Crystal Caverns, Volcanic, Steampunk, Electrified, and Galactic Crystal Caverns, then face endless BEAST MODE with progressive difficulty!
                   </p>
-                  
+
                   <div className="bg-dark-bg/50 rounded-lg p-4 mb-4">
                     <p className="text-gray-400 italic text-sm sm:text-base">
                       "I poured over 300 hours into building the entire game, including all of the art, animations, and game logic, to make it as fun, BIZARRE, and creative as possible. The game includes an original character, BizBe, 9 enemies, 5 chapters with 10 levels each, bonus levels, over 70 original backgrounds, and Level 51+ becomes BEAST MODE!"
@@ -488,15 +455,66 @@ export default function Home() {
                     <p className="text-gray-400 text-sm mb-4">
                       Your ultimate companion to navigating the BIZARRE and treasure-filled crystal caverns. Learn everything you need to become a BIZARRE treasure quester!
                     </p>
-                    <a
-                      href="https://paragraph.com/@bizarrebeasts/the-official-players-guide-bizarrebeasts-treasure-quest"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-full bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink text-dark-bg px-4 py-2 rounded-lg font-semibold hover:shadow-lg transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2 text-sm"
+                  </div>
+                </div>
+
+                {/* Action Buttons - Same Size */}
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <a
+                    href="https://paragraph.com/@bizarrebeasts/the-official-players-guide-bizarrebeasts-treasure-quest"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink text-dark-bg px-6 py-3 rounded-lg font-bold hover:shadow-lg transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2"
+                  >
+                    <FileText className="w-5 h-5" />
+                    Read Player's Guide
+                  </a>
+                  <a
+                    href="https://treasure-quest.remix.gg/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink text-dark-bg px-6 py-3 rounded-lg font-bold hover:shadow-lg transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2"
+                  >
+                    <Gamepad2 className="w-5 h-5" />
+                    Play Now
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Daily Ritual Section - BizarreBeasts Themed */}
+      <section className="px-4 py-8">
+        <div className="max-w-6xl mx-auto">
+          <div className="bg-gradient-to-br from-dark-card via-dark-card to-orange-900/20 border border-orange-500/30 rounded-2xl overflow-hidden hover:border-orange-500/50 transition-all duration-300">
+            <div className="p-6">
+              <div className="flex flex-col gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <Flame className="w-8 h-8 text-white" />
+                  </div>
+                  <h3 className="text-2xl font-bold bg-gradient-to-r from-orange-400 via-red-400 to-gem-gold bg-clip-text text-transparent">
+                    BizarreBeasts Daily Rituals
+                  </h3>
+                </div>
+                <div className="flex-1">
+                  <p className="text-gray-300 mb-4">
+                    Join the BIZARRE ritual! Check in daily to build your streak, earn treasury rewards, and unlock exclusive features.
+                    Share your rituals on Farcaster to spread the BIZARRE energy and climb the community leaderboard!
+                  </p>
+                  <div className="flex flex-wrap gap-4 items-center">
+                    <Link
+                      href="/rituals"
+                      className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-lg font-bold hover:scale-105 transition-all"
                     >
-                      Read Player's Guide
-                      <ExternalLink className="w-4 h-4" />
-                    </a>
+                      <Flame className="w-5 h-5" />
+                      Start Your BIZARRE Streak
+                    </Link>
+                    <div className="text-sm text-gray-400">
+                      🏆 Top streakers earn bonus $BB rewards!
+                    </div>
                   </div>
                 </div>
               </div>
@@ -730,23 +748,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Contest Banner */}
-      <section className="px-4 py-8">
-        <div className="max-w-4xl mx-auto">
-          <div className="bg-gradient-to-r from-gem-crystal/20 via-gem-gold/20 to-gem-pink/20 rounded-lg p-8 text-center border border-gem-crystal/30">
-            <h2 className="text-2xl font-bold mb-4">🏆 Meme Contest Coming Soon</h2>
-            <p className="text-gray-300 mb-6">
-              Get ready to showcase your creativity and win amazing prizes!
-            </p>
-            <Link
-              href="/meme-generator"
-              className="inline-block bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink text-black px-6 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105"
-            >
-              Start Creating
-            </Link>
-          </div>
-        </div>
-      </section>
     </div>
   );
 }

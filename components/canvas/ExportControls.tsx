@@ -148,11 +148,11 @@ export default function ExportControls({ onExport }: ExportControlsProps) {
       {isExpanded && (
         <>
           {/* Two-Step Instructions */}
-          <div className="relative rounded-lg p-4 mb-4 overflow-hidden">
+          <div className="relative rounded-lg p-4 mb-4 mx-1 my-1">
             {/* Gradient background */}
-            <div className="absolute inset-0 bg-gradient-to-br from-gem-crystal/20 via-gem-gold/10 to-gem-pink/20" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-            
+            <div className="absolute inset-0 bg-gradient-to-br from-gem-crystal/20 via-gem-gold/10 to-gem-pink/20 rounded-lg" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent rounded-lg" />
+
             {/* Animated border gradient */}
             <div className="absolute inset-0 rounded-lg" style={{
               background: 'linear-gradient(90deg, #44D0A7, #F9AA00, #F967C6, #44D0A7)',
@@ -277,31 +277,31 @@ export default function ExportControls({ onExport }: ExportControlsProps) {
             )}
           </div>
 
-      {/* Advanced Options Toggle */}
-      <button
-        onClick={() => setShowAdvanced(!showAdvanced)}
-        className="w-full text-gray-400 text-sm py-2 hover:text-white transition flex items-center justify-center gap-2"
-      >
-        <Settings className="w-4 h-4" />
-        {showAdvanced ? 'Hide' : 'Show'} Advanced Options
-      </button>
+          {/* Advanced Options Toggle */}
+          <button
+            onClick={() => setShowAdvanced(!showAdvanced)}
+            className="w-full text-gray-400 text-sm py-2 hover:text-white transition flex items-center justify-center gap-2"
+          >
+            <Settings className="w-4 h-4" />
+            {showAdvanced ? 'Hide' : 'Show'} Advanced Options
+          </button>
 
-      {/* Advanced Options */}
-      {showAdvanced && (
-        <div className="mt-4 space-y-3 pt-3 border-t border-gray-700">
-          {/* Format Info */}
-          <div className="text-gray-400 text-sm">
-            <span className="font-semibold">Format:</span> PNG (Lossless quality, supports transparency)
-          </div>
+          {/* Advanced Options */}
+          {showAdvanced && (
+            <div className="mt-4 space-y-3 pt-3 border-t border-gray-700">
+              {/* Format Info */}
+              <div className="text-gray-400 text-sm">
+                <span className="font-semibold">Format:</span> PNG (Lossless quality, supports transparency)
+              </div>
 
-          {/* Watermark Settings */}
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                id="watermark"
-                checked={exportOptions.watermark.enabled}
-                onChange={(e) => {
+              {/* Watermark Settings */}
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id="watermark"
+                    checked={exportOptions.watermark.enabled}
+                    onChange={(e) => {
                   if (canToggleWatermark) {
                     setExportOptions({
                       ...exportOptions,
@@ -313,102 +313,102 @@ export default function ExportControls({ onExport }: ExportControlsProps) {
                   } else if (!e.target.checked) {
                     // User trying to disable watermark without permission
                     setShowUpgradePrompt(true);
-                  }
-                }}
-                disabled={!canToggleWatermark}
-                className={`rounded ${!canToggleWatermark ? 'opacity-50 cursor-not-allowed' : ''}`}
-              />
-              <label 
-                htmlFor="watermark" 
-                className="text-gray-400 text-sm flex items-center gap-2 cursor-pointer"
-                onClick={() => {
+                    }
+                  }}
+                    disabled={!canToggleWatermark}
+                    className={`rounded ${!canToggleWatermark ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  />
+                  <label 
+                    htmlFor="watermark"
+                    className="text-gray-400 text-sm flex items-center gap-2 cursor-pointer"
+                    onClick={() => {
                   if (!canToggleWatermark && exportOptions.watermark.enabled) {
                     setShowUpgradePrompt(true);
-                  }
-                }}
-              >
-                Add Watermark
-                {!canToggleWatermark && (
-                  <button
-                    className="inline-flex items-center gap-1 text-xs text-gem-crystal hover:text-gem-gold transition-colors"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setShowUpgradePrompt(true);
-                    }}
+                    }
+                  }}
                   >
-                    <Lock className="w-3 h-3" />
-                    BIZARRE/Weirdo only
-                  </button>
-                )}
-              </label>
-            </div>
+                    Add Watermark
+                    {!canToggleWatermark && (
+                      <button
+                        className="inline-flex items-center gap-1 text-xs text-gem-crystal hover:text-gem-gold transition-colors"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setShowUpgradePrompt(true);
+                        }}
+                      >
+                        <Lock className="w-3 h-3" />
+                        BIZARRE/Weirdo only
+                      </button>
+                    )}
+                  </label>
+                </div>
 
-            {exportOptions.watermark.enabled && (
-              <>
-                <input
+                {exportOptions.watermark.enabled && (
+                  <>
+                    <input
                   type="text"
-                  value={exportOptions.watermark.text}
-                  onChange={(e) => setExportOptions({
+                      value={exportOptions.watermark.text}
+                      onChange={(e) => setExportOptions({
                     ...exportOptions,
                     watermark: {
                       ...exportOptions.watermark,
                       text: e.target.value,
                     },
-                  })}
-                  placeholder="Watermark text..."
-                  className="w-full bg-gray-700 text-white rounded px-3 py-2 text-sm"
-                />
+                      })}
+                      placeholder="Watermark text..."
+                      className="w-full bg-gray-700 text-white rounded px-3 py-2 text-sm"
+                    />
 
-                <select
-                  value={exportOptions.watermark.position}
-                  onChange={(e) => setExportOptions({
+                    <select
+                      value={exportOptions.watermark.position}
+                      onChange={(e) => setExportOptions({
                     ...exportOptions,
                     watermark: {
                       ...exportOptions.watermark,
                       position: e.target.value as any,
                     },
-                  })}
-                  className="w-full bg-gray-700 text-white rounded px-3 py-2 text-sm"
-                >
-                  <option value="bottom-right">Bottom Right</option>
-                  <option value="bottom-left">Bottom Left</option>
-                  <option value="top-right">Top Right</option>
-                  <option value="top-left">Top Left</option>
-                </select>
+                      })}
+                      className="w-full bg-gray-700 text-white rounded px-3 py-2 text-sm"
+                    >
+                      <option value="bottom-right">Bottom Right</option>
+                      <option value="bottom-left">Bottom Left</option>
+                      <option value="top-right">Top Right</option>
+                      <option value="top-left">Top Left</option>
+                    </select>
 
-                <div>
-                  <label className="text-gray-400 text-sm block mb-1">
-                    Opacity: {Math.round(exportOptions.watermark.opacity * 100)}%
-                  </label>
-                  <input
+                    <div>
+                      <label className="text-gray-400 text-sm block mb-1">
+                        Opacity: {Math.round(exportOptions.watermark.opacity * 100)}%
+                      </label>
+                      <input
                     type="range"
                     min="10"
                     max="100"
-                    value={exportOptions.watermark.opacity * 100}
-                    onChange={(e) => setExportOptions({
+                        value={exportOptions.watermark.opacity * 100}
+                        onChange={(e) => setExportOptions({
                       ...exportOptions,
                       watermark: {
                         ...exportOptions.watermark,
                         opacity: Number(e.target.value) / 100,
                       },
-                    })}
-                    className="w-full"
-                  />
-                </div>
-              </>
-            )}
-          </div>
-        </div>
-      )}
+                        })}
+                        className="w-full"
+                      />
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          )}
 
-      {/* Export Info */}
-      <div className="mt-4 p-3 bg-gray-700 rounded text-gray-300 text-xs">
-        <p>• Export size: 800 × 800px</p>
-        <p>• Perfect for social media</p>
-        <p>• Farcaster frames compatible</p>
-      </div>
-    </>
-  )}
+          {/* Export Info */}
+          <div className="mt-4 p-3 bg-gray-700 rounded text-gray-300 text-xs">
+            <p>• Export size: 800 × 800px</p>
+            <p>• Perfect for social media</p>
+            <p>• Farcaster frames compatible</p>
+          </div>
+        </>
+      )}
 
   {/* Upgrade Prompt Modal */}
   <UpgradePrompt
