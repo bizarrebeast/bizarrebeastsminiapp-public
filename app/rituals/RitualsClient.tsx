@@ -8,7 +8,6 @@ import { getActiveCampaign } from '@/config/featured-ritual-config';
 import { useUnifiedAuthStore } from '@/store/useUnifiedAuthStore';
 import ShareButtons from '@/components/ShareButtons';
 import { openExternalUrl } from '@/lib/open-external-url';
-import { useRouter } from 'next/navigation';
 
 // Dynamically import CollapsibleCheckIn to avoid SSR issues
 const CollapsibleCheckIn = dynamic(() => import('@/components/CollapsibleCheckIn'), { ssr: false });
@@ -143,7 +142,6 @@ const rituals: Ritual[] = [
 const featuredRitual = getActiveCampaign();
 
 export default function RitualsPage() {
-  const router = useRouter();
   const wallet = useWallet();
   const [completedRituals, setCompletedRituals] = useState<Set<number>>(new Set());
   const [featuredCompleted, setFeaturedCompleted] = useState(false);
@@ -208,7 +206,8 @@ export default function RitualsPage() {
   const handleRitualAction = async (ritual: Ritual) => {
     // Special handling for attestation ritual
     if (ritual.actionUrl === 'ATTEST_BIZARRE') {
-      router.push('/rituals/10');
+      console.log('Attestation ritual clicked, navigating to /rituals/10');
+      window.location.href = '/rituals/10';
       return;
     }
     // Don't mark as completed here - only after share verification
@@ -319,14 +318,14 @@ export default function RitualsPage() {
   };
 
   return (
-    <div className="min-h-[calc(100vh-64px)] px-3 sm:px-4 py-6 sm:py-8 overflow-x-hidden">
+    <div className="min-h-[calc(100vh-64px)] px-3 sm:px-4 py-6 sm:py-8 overflow-x-hidden max-w-full">
       <div className="max-w-4xl mx-auto w-full overflow-x-hidden">
         {/* Streamlined Header with integrated progress */}
         <div className="text-center mb-6">
-          <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent leading-tight pb-2">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent leading-tight pb-2">
             BIZARRE Rituals & Daily Check-In
           </h1>
-          <p className="text-lg text-gray-300 max-w-2xl mx-auto mb-4">
+          <p className="text-sm sm:text-base md:text-lg text-gray-300 max-w-2xl mx-auto mb-4 px-2">
             Complete daily rituals and check-ins to engage with the BizarreBeasts ecosystem, earn $BB rewards, and strengthen our community. Your consistency drives the $BIZARRE movement forward!
           </p>
 
@@ -369,34 +368,33 @@ export default function RitualsPage() {
           <div className="mb-8">
             <div className="bg-gradient-to-br from-gem-gold/20 via-dark-card to-gem-crystal/10 border-2 border-gem-gold rounded-2xl overflow-hidden shadow-xl hover:shadow-gem-gold/30 transition-all duration-300">
               <div className="bg-gradient-to-r from-gem-gold/30 to-gem-crystal/30 px-3 sm:px-6 py-2">
-                <div className="flex items-center justify-between">
-                  <div className="flex-1" />
-                  <h2 className="text-lg font-bold flex items-center justify-center gap-2 text-center">
-                    <span className="text-xl">⭐</span>
-                    {featuredRitual.sponsorType ? (
-                      featuredRitual.sponsorType === 'sponsored' ? 'SPONSORED RITUAL' :
-                      featuredRitual.sponsorType === 'collab' ? 'COLLABORATION' :
-                      'PARTNER RITUAL'
-                    ) : (
-                      'FEATURED RITUAL'
-                    )}
-                    <span className="text-xl">⭐</span>
+                <div className="relative flex items-center justify-center">
+                  <h2 className="text-base sm:text-lg font-bold flex items-center gap-1 sm:gap-2">
+                    <span className="text-base sm:text-xl">⭐</span>
+                    <span>
+                      {featuredRitual.sponsorType ? (
+                        featuredRitual.sponsorType === 'sponsored' ? 'SPONSORED RITUAL' :
+                        featuredRitual.sponsorType === 'collab' ? 'COLLABORATION' :
+                        'PARTNER RITUAL'
+                      ) : (
+                        'FEATURED RITUAL'
+                      )}
+                    </span>
+                    <span className="text-base sm:text-xl">⭐</span>
                   </h2>
-                  <div className="flex-1 flex justify-end">
-                    {featuredRitual.sponsorType && (
-                      <span className="text-xs bg-black/30 px-2 py-1 rounded-full text-gem-gold">
-                        {featuredRitual.sponsorType === 'sponsored' ? 'AD' :
-                         featuredRitual.sponsorType === 'collab' ? 'COLLAB' :
-                         'PARTNER'}
-                      </span>
-                    )}
-                  </div>
+                  {featuredRitual.sponsorType && (
+                    <span className="absolute right-0 text-xs bg-black/30 px-2 py-1 rounded-full text-gem-gold hidden sm:block">
+                      {featuredRitual.sponsorType === 'sponsored' ? 'AD' :
+                       featuredRitual.sponsorType === 'collab' ? 'COLLAB' :
+                       'PARTNER'}
+                    </span>
+                  )}
                 </div>
               </div>
 
               <div className="flex flex-col md:flex-row">
                 {/* Image */}
-                <div className="md:w-48 h-48 sm:h-56 md:h-auto bg-gradient-to-br from-gray-800 to-gray-900 relative overflow-hidden flex-shrink-0">
+                <div className="w-full md:w-48 h-48 sm:h-56 md:h-auto bg-gradient-to-br from-gray-800 to-gray-900 relative overflow-hidden flex-shrink-0">
                   <img
                     src={featuredRitual.image}
                     alt={featuredRitual.title}
@@ -527,48 +525,48 @@ export default function RitualsPage() {
 
         {/* Category Filter & View Toggle */}
         <div className="flex flex-col sm:flex-row items-center justify-between mb-6 gap-4 w-full">
-          <div className="flex items-center gap-2 overflow-x-auto min-w-0 flex-1 sm:flex-initial pb-2 sm:pb-0">
+          <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
             <button
               onClick={() => setSelectedCategory('all')}
-              className={`px-4 py-2 rounded-lg font-semibold text-sm transition-all whitespace-nowrap flex-shrink-0 ${
+              className={`px-3 py-2 rounded-lg font-semibold text-xs sm:text-sm transition-all ${
                 selectedCategory === 'all'
                   ? 'bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink text-dark-bg'
                   : 'bg-dark-card border border-gray-600 text-gray-400 hover:border-gray-500'
               }`}
             >
-              All Rituals
+              All
             </button>
             <button
               onClick={() => setSelectedCategory('social')}
-              className={`px-4 py-2 rounded-lg font-semibold text-sm transition-all flex items-center gap-1 whitespace-nowrap flex-shrink-0 ${
+              className={`px-3 py-2 rounded-lg font-semibold text-xs sm:text-sm transition-all flex items-center gap-1 ${
                 selectedCategory === 'social'
                   ? 'bg-gem-crystal/20 text-gem-crystal border border-gem-crystal/40'
                   : 'bg-dark-card border border-gray-600 text-gray-400 hover:border-gem-crystal/30'
               }`}
             >
-              <Users className="w-4 h-4" />
+              <Users className="w-3 h-3 sm:w-4 sm:h-4" />
               Social
             </button>
             <button
               onClick={() => setSelectedCategory('gaming')}
-              className={`px-4 py-2 rounded-lg font-semibold text-sm transition-all flex items-center gap-1 whitespace-nowrap flex-shrink-0 ${
+              className={`px-3 py-2 rounded-lg font-semibold text-xs sm:text-sm transition-all flex items-center gap-1 ${
                 selectedCategory === 'gaming'
                   ? 'bg-gem-pink/20 text-gem-pink border border-gem-pink/40'
                   : 'bg-dark-card border border-gray-600 text-gray-400 hover:border-gem-pink/30'
               }`}
             >
-              <Gamepad2 className="w-4 h-4" />
+              <Gamepad2 className="w-3 h-3 sm:w-4 sm:h-4" />
               Gaming
             </button>
             <button
               onClick={() => setSelectedCategory('trading')}
-              className={`px-4 py-2 rounded-lg font-semibold text-sm transition-all flex items-center gap-1 whitespace-nowrap flex-shrink-0 ${
+              className={`px-3 py-2 rounded-lg font-semibold text-xs sm:text-sm transition-all flex items-center gap-1 ${
                 selectedCategory === 'trading'
                   ? 'bg-gem-gold/20 text-gem-gold border border-gem-gold/40'
                   : 'bg-dark-card border border-gray-600 text-gray-400 hover:border-gem-gold/30'
               }`}
             >
-              <TrendingUp className="w-4 h-4" />
+              <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4" />
               Trading
             </button>
           </div>
