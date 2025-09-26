@@ -58,6 +58,12 @@ const rituals = [
     title: "Share your Leaderboard rank",
     description: "Show off your BizarreBeasts leaderboard rank and tier to the community, powered by $GLANKER!",
     image: "/assets/page-assets/banners/rituals-boxes/leaderboard-rank-rituals-bannker.png"
+  },
+  {
+    id: 10,
+    title: "Attest: I AM BIZARRE",
+    description: "Make an onchain attestation that you are BIZARRE!",
+    image: "/assets/page-assets/banners/rituals-boxes/bizarre-attest-ritual-banner.png"
   }
 ];
 

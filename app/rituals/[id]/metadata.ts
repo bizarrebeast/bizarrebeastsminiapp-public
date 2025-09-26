@@ -64,6 +64,13 @@ export const rituals = [
     description: "Show off your BizarreBeasts leaderboard rank and tier to the community, powered by $GLANKER!",
     image: "/assets/page-assets/banners/rituals-boxes/leaderboard-rank-rituals-bannker.png",
     actionUrl: "https://bbapp.bizarrebeasts.io/empire"
+  },
+  {
+    id: 10,
+    title: "Attest: I AM BIZARRE",
+    description: "Make an onchain attestation that you are BIZARRE!",
+    image: "/assets/page-assets/banners/rituals-boxes/bizarre-attest-ritual-banner.png",
+    actionUrl: "https://bbapp.bizarrebeasts.io/rituals/10"
   }
 ];
 

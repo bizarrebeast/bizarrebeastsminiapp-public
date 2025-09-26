@@ -8,6 +8,7 @@ import { getActiveCampaign } from '@/config/featured-ritual-config';
 import { useUnifiedAuthStore } from '@/store/useUnifiedAuthStore';
 import ShareButtons from '@/components/ShareButtons';
 import { openExternalUrl } from '@/lib/open-external-url';
+import { useRouter } from 'next/navigation';
 
 // Dynamically import CollapsibleCheckIn to avoid SSR issues
 const CollapsibleCheckIn = dynamic(() => import('@/components/CollapsibleCheckIn'), { ssr: false });
@@ -124,6 +125,17 @@ const rituals: Ritual[] = [
     image: "/assets/page-assets/banners/rituals-boxes/leaderboard-rank-rituals-bannker.png",
     category: 'social',
     icon: "🏆"
+  },
+  {
+    id: 10,
+    title: "Attest: I AM BIZARRE! 👹",
+    shortTitle: "Attest BIZARRE",
+    description: "Make an onchain attestation that you are BIZARRE!",
+    actionText: "Attest On-Chain",
+    actionUrl: "ATTEST_BIZARRE", // Special internal action
+    image: "/assets/page-assets/banners/rituals-boxes/bizarre-attest-ritual-banner.png",
+    category: 'trading',
+    icon: "👹"
   }
 ];
 
@@ -131,6 +143,7 @@ const rituals: Ritual[] = [
 const featuredRitual = getActiveCampaign();
 
 export default function RitualsPage() {
+  const router = useRouter();
   const wallet = useWallet();
   const [completedRituals, setCompletedRituals] = useState<Set<number>>(new Set());
   const [featuredCompleted, setFeaturedCompleted] = useState(false);
@@ -193,6 +206,11 @@ export default function RitualsPage() {
 
   // Handle ritual action
   const handleRitualAction = async (ritual: Ritual) => {
+    // Special handling for attestation ritual
+    if (ritual.actionUrl === 'ATTEST_BIZARRE') {
+      router.push('/rituals/10');
+      return;
+    }
     // Don't mark as completed here - only after share verification
     await openExternalUrl(ritual.actionUrl);
   };
@@ -338,7 +356,7 @@ export default function RitualsPage() {
             href="https://paragraph.com/@bizarrebeasts/bizarrebeasts-miniapp-how-to-series-daily-rituals-and-check-ins"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink text-black font-semibold rounded-lg hover:shadow-lg transition-all duration-300 transform hover:scale-105"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink text-black font-semibold rounded-lg hover:shadow-lg hover:brightness-110 transition-all duration-300"
           >
             <BookOpen className="w-5 h-5" />
             How-To Guide
@@ -412,7 +430,7 @@ export default function RitualsPage() {
                         className={`inline-flex items-center justify-center gap-1 px-3 sm:px-4 py-1.5 rounded-lg font-semibold text-xs sm:text-sm transition-all duration-300 transform ${
                           featuredCompleted
                             ? 'bg-gem-gold/20 text-gem-gold border border-gem-gold/40'
-                            : 'bg-gradient-to-r from-gem-gold to-gem-crystal text-dark-bg hover:scale-105 hover:shadow-lg'
+                            : 'bg-gradient-to-r from-gem-gold to-gem-crystal text-dark-bg hover:brightness-110 hover:shadow-lg'
                         }`}
                       >
                         {featuredCompleted ? (
@@ -599,10 +617,10 @@ export default function RitualsPage() {
               return (
                 <div
                   key={ritual.id}
-                  className={`group relative bg-dark-card border rounded-xl overflow-hidden transition-all duration-300 hover:shadow-xl hover:scale-[1.02] ${
+                  className={`group relative bg-dark-card border rounded-xl overflow-hidden transition-all duration-300 hover:shadow-xl ${
                     isCompleted
                       ? 'border-gem-gold/40 shadow-gem-gold/20'
-                      : 'border-gray-700 hover:border-gray-600'
+                      : 'border-gray-700 hover:border-gem-gold/50 hover:bg-gem-gold/5'
                   }`}
                 >
                   {/* Completion Badge */}
@@ -625,7 +643,7 @@ export default function RitualsPage() {
                     <img
                       src={ritual.image}
                       alt={ritual.title}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                      className="w-full h-full object-cover group-hover:brightness-110 transition-all duration-500"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-dark-bg to-transparent opacity-60" />
                   </div>
@@ -647,7 +665,7 @@ export default function RitualsPage() {
                         className={`w-full py-2 px-3 rounded-lg font-semibold text-sm transition-all duration-300 flex items-center justify-center gap-2 ${
                           isCompleted
                             ? 'bg-gem-gold/20 text-gem-gold border border-gem-gold/40'
-                            : 'bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink text-dark-bg hover:shadow-lg transform hover:scale-105'
+                            : 'bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink text-dark-bg hover:shadow-lg hover:brightness-110'
                         }`}
                       >
                         {isCompleted ? (
