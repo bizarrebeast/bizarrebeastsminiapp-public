@@ -50,7 +50,6 @@ const mockCollections: StickerCollection[] = [
     requiredTier: AccessTier.NORMIE, // Open to all
     sortOrder: 3,
     tags: ['characters', 'vibes'],
-    disabled: true, // Mark as disabled
   },
   {
     id: 'ugc-memes',
