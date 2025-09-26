@@ -301,8 +301,8 @@ export default function RitualsPage() {
   };
 
   return (
-    <div className="min-h-[calc(100vh-64px)] px-3 sm:px-4 py-6 sm:py-8">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-[calc(100vh-64px)] px-3 sm:px-4 py-6 sm:py-8 overflow-x-hidden">
+      <div className="max-w-7xl mx-auto w-full">
         {/* Streamlined Header with integrated progress */}
         <div className="text-center mb-6">
           <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent leading-tight pb-2">
@@ -446,7 +446,7 @@ export default function RitualsPage() {
                         customText={featuredRitual.shareText || `🚨 FEATURED RITUAL ALERT! 🚨\n\n${featuredRitual.shareTitle || featuredRitual.title}\n\n${featuredRitual.description.split('\n\n')[0]}`}
                         shareType="ritual"
                         ritualData={{
-                          id: 999,
+                          id: "featured",
                           title: featuredRitual.title,
                           description: featuredRitual.description,
                           actionUrl: featuredRitual.actionUrl
@@ -491,12 +491,21 @@ export default function RitualsPage() {
           </div>
         )}
 
-        {/* Collapsible Check-In Section */}
-        {completedCount >= 3 && (
-          <div className="mb-6">
-            <CollapsibleCheckIn completedRituals={completedCount} />
-          </div>
-        )}
+        {/* Rituals Section Header */}
+        <div className="text-center mb-6">
+          <h2 className="text-2xl font-bold mb-3 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent">
+            ✔️ Complete & Share Your Daily BIZARRE Rituals
+          </h2>
+          <p className="text-lg text-gray-400">
+            Each ritual helps you engage with different parts of the BizarreBeasts ecosystem.
+            Complete and share any 3 to unlock check-in rewards!
+          </p>
+        </div>
+
+        {/* Collapsible Check-In Section - Always visible */}
+        <div className="mb-6">
+          <CollapsibleCheckIn completedRituals={completedCount} />
+        </div>
 
         {/* Category Filter & View Toggle */}
         <div className="flex flex-col sm:flex-row items-center justify-between mb-6 gap-4">
@@ -580,16 +589,6 @@ export default function RitualsPage() {
           </div>
         </div>
 
-        {/* Rituals Section Header */}
-        <div className="text-center mb-8">
-          <h2 className="text-2xl font-bold mb-3 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent">
-            ✔️ Complete & Share Your Daily BIZARRE Rituals
-          </h2>
-          <p className="text-lg text-gray-400">
-            Each ritual helps you engage with different parts of the BizarreBeasts ecosystem.
-            Complete and share any 3 to unlock check-in rewards!
-          </p>
-        </div>
 
         {/* Rituals Grid/List */}
         {viewMode === 'grid' ? (

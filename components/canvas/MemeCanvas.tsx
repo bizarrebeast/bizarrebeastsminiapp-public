@@ -358,8 +358,17 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
           FabricImage.fromURL(value).then((img) => {
             canvas.backgroundImage = img;
             if (img.width && img.height) {
-              img.scaleX = canvas.width / img.width;
-              img.scaleY = canvas.height / img.height;
+              // Calculate scale factor for "cover" behavior (fills entire canvas)
+              const scaleX = canvas.width / img.width;
+              const scaleY = canvas.height / img.height;
+              const scale = Math.max(scaleX, scaleY); // Use the larger scale to ensure full coverage
+
+              img.scaleX = scale;
+              img.scaleY = scale;
+
+              // Center the image
+              img.left = (canvas.width - img.width * scale) / 2;
+              img.top = (canvas.height - img.height * scale) / 2;
             }
             canvas.renderAll();
           });
