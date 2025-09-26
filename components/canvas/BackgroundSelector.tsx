@@ -70,6 +70,27 @@ export default function BackgroundSelector({
           console.error('Failed to load backgrounds metadata:', error);
           setAllBackgrounds([]);
         }
+      } else if (collection.id === 'vibecards') {
+        try {
+          const response = await fetch('/assets/stickers/vibecards/metadata.json');
+          if (response.ok) {
+            const data = await response.json();
+            const loadedBackgrounds: TieredBackground[] = data.backgrounds.map((bg: any) => ({
+              id: bg.id,
+              src: `/assets/stickers/vibecards/${bg.filename}`,
+              thumbnail: `/assets/stickers/vibecards/${bg.filename}`,
+              name: bg.name,
+              collection: 'vibecards',
+              tier: bg.tier || 'basic'
+            }));
+            setAllBackgrounds(loadedBackgrounds);
+            // Load initial set
+            loadRandomBackgrounds(loadedBackgrounds, new Set());
+          }
+        } catch (error) {
+          console.error('Failed to load vibecards backgrounds:', error);
+          setAllBackgrounds([]);
+        }
       } else {
         setAllBackgrounds([]);
       }
