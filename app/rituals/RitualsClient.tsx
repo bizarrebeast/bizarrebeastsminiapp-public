@@ -302,7 +302,7 @@ export default function RitualsPage() {
 
   return (
     <div className="min-h-[calc(100vh-64px)] px-3 sm:px-4 py-6 sm:py-8 overflow-x-hidden">
-      <div className="max-w-4xl mx-auto w-full">
+      <div className="max-w-4xl mx-auto w-full overflow-x-hidden">
         {/* Streamlined Header with integrated progress */}
         <div className="text-center mb-6">
           <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent leading-tight pb-2">
@@ -328,7 +328,7 @@ export default function RitualsPage() {
               <p className="text-xs text-gem-gold mt-1">✨ Check-in rewards unlocked!</p>
             ) : (
               <p className="text-xs text-gray-400 mt-1">
-                Complete {3 - completedCount} more to unlock check-in rewards
+                Complete and share {3 - completedCount} more to unlock check-in rewards
               </p>
             )}
           </div>

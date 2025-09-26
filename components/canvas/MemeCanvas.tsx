@@ -361,7 +361,10 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
               // Calculate scale factor for "cover" behavior (fills entire canvas)
               const scaleX = canvas.width / img.width;
               const scaleY = canvas.height / img.height;
-              const scale = Math.max(scaleX, scaleY); // Use the larger scale to ensure full coverage
+              const baseScale = Math.max(scaleX, scaleY); // Use the larger scale to ensure full coverage
+
+              // Add 2% overscan to eliminate transparent pixels at edges
+              const scale = baseScale * 1.02;
 
               img.scaleX = scale;
               img.scaleY = scale;
