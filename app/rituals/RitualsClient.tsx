@@ -2,7 +2,7 @@
 // Updated: September 23, 2025 - Added CollapsibleCheckIn component and fixed ritual tracking
 
 import { useState, useEffect } from 'react';
-import { ExternalLink, Check, Share2, Share, ShieldCheck, AlertCircle } from 'lucide-react';
+import { ExternalLink, Check, Share2, Share, ShieldCheck, AlertCircle, BookOpen } from 'lucide-react';
 import { ultimateShare } from '@/lib/sdk-ultimate';
 import { sdk } from '@/lib/sdk-init';
 import { openExternalUrl } from '@/lib/open-external-url';
@@ -480,9 +480,19 @@ export default function RitualsPage() {
           <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent leading-tight pb-2">
             BIZARRE Rituals & Daily Checkin
           </h1>
-          <p className="text-lg text-gray-300 max-w-2xl mx-auto">
+          <p className="text-lg text-gray-300 max-w-2xl mx-auto mb-4">
             Complete daily rituals and check-ins to engage with the BizarreBeasts ecosystem, earn $BB rewards, and strengthen our community. Your consistency drives the $BIZARRE movement forward!
           </p>
+          <a
+            href="https://paragraph.com/@bizarrebeasts/bizarrebeasts-miniapp-how-to-series-daily-rituals-and-check-ins"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink text-black font-semibold rounded-lg hover:shadow-lg transition-all duration-300 transform hover:scale-105"
+          >
+            <BookOpen className="w-5 h-5" />
+            How-To Guide
+            <ExternalLink className="w-4 h-4" />
+          </a>
         </div>
 
         {/* Featured Ritual */}
