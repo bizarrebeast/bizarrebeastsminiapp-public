@@ -50,7 +50,7 @@ export default function ContestDetailPage() {
   const [activeTab, setActiveTab] = useState<'details' | 'leaderboard' | 'submit' | 'voting' | 'gallery'>('details');
   const [searchTerm, setSearchTerm] = useState('');
   const [searchedUser, setSearchedUser] = useState<ContestLeaderboard | null>(null);
-  const [approvedSubmissions, setApprovedSubmissions] = useState<ContestSubmission[]>([]);
+  const [votableSubmissions, setVotableSubmissions] = useState<ContestSubmission[]>([]);
   const [userVoteIds, setUserVoteIds] = useState<string[]>([]);
 
   // Debug mode state
@@ -121,10 +121,10 @@ export default function ContestDetailPage() {
         setWinners(winnersData || []);
       }
 
-      // If voting is enabled, fetch approved submissions with vote counts
+      // If voting is enabled, fetch votable submissions (pending and approved) with vote counts
       if (contestData.voting_enabled) {
         const submissions = await contestQueries.getSubmissionsWithVotes(id as string);
-        setApprovedSubmissions(submissions || []);
+        setVotableSubmissions(submissions || []);
       }
 
       // If user is connected, check their submissions and votes
@@ -259,7 +259,7 @@ export default function ContestDetailPage() {
       if (isRemovingVote) {
         setUserVoteIds(prev => prev.filter(id => id !== submissionId));
         // Update vote count in submissions
-        setApprovedSubmissions(prev => prev.map(sub =>
+        setVotableSubmissions(prev => prev.map(sub =>
           sub.id === submissionId
             ? { ...sub, vote_count: Math.max(0, (sub.vote_count || 0) - 1) }
             : sub
@@ -268,7 +268,7 @@ export default function ContestDetailPage() {
         // Remove previous vote if single voting
         if (contest?.voting_type === 'single' && userVoteIds.length > 0) {
           const prevVoteId = userVoteIds[0];
-          setApprovedSubmissions(prev => prev.map(sub =>
+          setVotableSubmissions(prev => prev.map(sub =>
             sub.id === prevVoteId
               ? { ...sub, vote_count: Math.max(0, (sub.vote_count || 0) - 1) }
               : sub
@@ -277,7 +277,7 @@ export default function ContestDetailPage() {
 
         setUserVoteIds(contest?.voting_type === 'single' ? [submissionId] : [...userVoteIds, submissionId]);
         // Update vote count in submissions
-        setApprovedSubmissions(prev => prev.map(sub =>
+        setVotableSubmissions(prev => prev.map(sub =>
           sub.id === submissionId
             ? { ...sub, vote_count: (sub.vote_count || 0) + 1 }
             : sub
@@ -535,7 +535,7 @@ export default function ContestDetailPage() {
                   : 'text-gray-400 hover:text-white'
               }`}
             >
-              Vote ({approvedSubmissions?.length || 0})
+              Vote ({votableSubmissions?.length || 0})
               {activeTab === 'voting' && (
                 <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gem-crystal" />
               )}
@@ -550,10 +550,10 @@ export default function ContestDetailPage() {
                   : 'text-gray-400 hover:text-white'
               }`}
             >
-              Gallery ({approvedSubmissions.length})
+              Gallery ({votableSubmissions.length})
               {contest.display_votes && (
                 <span className="ml-1 text-xs">
-                  • {approvedSubmissions.reduce((sum, sub) => sum + (sub.vote_count || 0), 0)} votes
+                  • {votableSubmissions.reduce((sum, sub) => sum + (sub.vote_count || 0), 0)} votes
                 </span>
               )}
               {activeTab === 'gallery' && (
@@ -964,7 +964,7 @@ export default function ContestDetailPage() {
             {/* Voting Gallery */}
             <VotingGallery
               contestId={contest.id}
-              submissions={approvedSubmissions}
+              submissions={votableSubmissions}
               votingEnabled={isBetweenDates(contest.voting_start_date, contest.voting_end_date)}
               votingType={contest.voting_type}
             />
@@ -1012,7 +1012,7 @@ export default function ContestDetailPage() {
             {/* Meme Gallery Grid */}
             <MemeGalleryGrid
               contest={contest}
-              submissions={approvedSubmissions}
+              submissions={votableSubmissions}
               votingEnabled={!!contest.voting_enabled && isBetweenDates(contest.voting_start_date, contest.voting_end_date)}
               displayVotes={contest.display_votes ?? true}
               onVote={handleVote}
