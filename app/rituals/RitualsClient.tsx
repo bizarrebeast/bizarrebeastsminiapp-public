@@ -24,8 +24,15 @@ interface Ritual {
   icon: string;
 }
 
-// Categorized rituals with shorter titles for grid view
-const rituals: Ritual[] = [
+// Whitelist for ritual 10 (Prove It feature) - Only these wallets can see it
+const RITUAL_10_WHITELIST = [
+  '0x4F2EcDA8C10EC8Fbe711f6664970826998B81c3E',
+  '0x300a8611D53ca380dA1c556Ca5F8a64D8e1A9dfB',
+  '0x3FDD6aFEd7a19990632468c7102219d051E685dB'
+].map(addr => addr.toLowerCase());
+
+// Base rituals (1-9) that everyone can see
+const baseRituals: Ritual[] = [
   {
     id: 1,
     title: "Create a BizarreBeasts meme! 👹🎨",
@@ -124,22 +131,36 @@ const rituals: Ritual[] = [
     image: "/assets/page-assets/banners/rituals-boxes/leaderboard-rank-rituals-bannker.png",
     category: 'social',
     icon: "🏆"
-  },
-  {
-    id: 10,
-    title: "Attest: I AM BIZARRE! 👹",
-    shortTitle: "Attest BIZARRE",
-    description: "Make an onchain attestation that you are BIZARRE!",
-    actionText: "Attest On-Chain",
-    actionUrl: "ATTEST_BIZARRE", // Special internal action
-    image: "/assets/page-assets/banners/rituals-boxes/bizarre-attest-ritual-banner.png",
-    category: 'trading',
-    icon: "👹"
   }
 ];
 
+// Ritual 10 - Only shown to whitelisted wallets
+const ritual10: Ritual = {
+  id: 10,
+  title: "Prove It",
+  shortTitle: "Prove It",
+  description: "Prove that you are BIZARRE onchain, forever!",
+  actionText: "Prove It! Onchain",
+  actionUrl: "ATTEST_BIZARRE", // Special internal action
+  image: "/assets/page-assets/banners/rituals-boxes/bizarre-attest-ritual-banner.png",
+  category: 'trading',
+  icon: "👹"
+};
+
 // Get the featured ritual from config
 const featuredRitual = getActiveCampaign();
+
+// Helper function to get rituals based on wallet
+const getRitualsForWallet = (walletAddress?: string): Ritual[] => {
+  const rituals = [...baseRituals];
+
+  // Only add ritual 10 if wallet is whitelisted
+  if (walletAddress && RITUAL_10_WHITELIST.includes(walletAddress.toLowerCase())) {
+    rituals.push(ritual10);
+  }
+
+  return rituals;
+};
 
 export default function RitualsPage() {
   const wallet = useWallet();
@@ -150,6 +171,9 @@ export default function RitualsPage() {
   const [isLoadingData, setIsLoadingData] = useState(true);
   const [verifiedRituals, setVerifiedRituals] = useState<Set<number>>(new Set());
   const [pendingVerification, setPendingVerification] = useState<Set<number>>(new Set());
+
+  // Get rituals based on current wallet
+  const rituals = getRitualsForWallet(wallet.address || undefined);
 
   // Get unified auth state
   const { farcasterConnected, farcasterUsername, farcasterFid } = useUnifiedAuthStore();

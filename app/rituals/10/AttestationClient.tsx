@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useWallet } from '@/hooks/useWallet';
-import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { Trophy, Flame, TrendingUp, Share2, CheckCircle, Zap, Clock, AlertCircle, ArrowLeft, Info, DollarSign } from 'lucide-react';
 import ShareButtons from '@/components/ShareButtons';
 
@@ -30,7 +30,6 @@ interface LeaderboardEntry {
 }
 
 export default function AttestationClient() {
-  const router = useRouter();
   const wallet = useWallet();
   const [userStats, setUserStats] = useState<AttestationStats | null>(null);
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
@@ -131,7 +130,7 @@ export default function AttestationClient() {
     setTimeUntilReset(`${hours}h ${minutes}m until daily reset`);
   };
 
-  const handleAttest = async () => {
+  const handleProve = async () => {
     if (!wallet.address) {
       alert('Please connect your wallet first');
       return;
@@ -142,7 +141,7 @@ export default function AttestationClient() {
 
     try {
       if (MOCK_MODE) {
-        // Mock attestation for testing
+        // Mock proof for testing
         await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate transaction delay
 
         // Mock transaction hash
@@ -201,8 +200,8 @@ export default function AttestationClient() {
       // Reload stats
       await loadData();
     } catch (error: any) {
-      console.error('Attestation failed:', error);
-      setError(error.message || 'Attestation failed. Please try again.');
+      console.error('Proof failed:', error);
+      setError(error.message || 'Proof failed. Please try again.');
     } finally {
       setIsAttesting(false);
     }
@@ -218,54 +217,57 @@ export default function AttestationClient() {
     return '';
   };
 
-  const shareAttestation = () => {
-    if (userStats && userStats.totalAttestations > 0) {
-      return `I just made my ${userStats.totalAttestations}th BIZARRE attestation on-chain! 👹\n\n` +
-             `Current Streak: ${userStats.currentStreak} days ${getStreakEmojis(userStats.currentStreak)}\n` +
-             `Leaderboard Rank: #${userStats.rank || '∞'}\n` +
-             `Best Streak: ${userStats.bestStreak} days\n\n` +
-             `Who else dares to attest they are BIZARRE?\n\n` +
-             `#BizarreBeasts #IAmBizarre #BaseNetwork`;
-    }
-    return `I just attested I AM BIZARRE on-chain! 👹\n\nJoin the daily BIZARRE attestation ritual!\n\n#BizarreBeasts #IAmBizarre #BaseNetwork`;
-  };
-
   if (loading) {
     return (
       <div className="min-h-screen bg-dark-bg flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gem-gold mx-auto mb-4"></div>
-          <p className="text-gray-400">Loading attestation data...</p>
+          <p className="text-gray-400">Loading proof data...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-dark-bg px-4 py-8">
-      <div className="max-w-6xl mx-auto">
-        {/* Back Button */}
-        <button
-          onClick={() => router.push('/rituals')}
-          className="mb-6 flex items-center gap-2 px-4 py-2 bg-dark-card rounded-lg border border-gem-crystal/30 hover:border-gem-crystal/50 hover:bg-dark-panel transition-all group"
-        >
-          <ArrowLeft className="w-4 h-4 text-gem-crystal group-hover:transform group-hover:-translate-x-1 transition-transform" />
-          <span className="text-gem-crystal">Back to Rituals</span>
-        </button>
+    <div className="min-h-screen bg-dark-bg">
+      {/* Hero Section with Banner */}
+      <div className="relative h-[40vh] sm:h-[50vh] w-full overflow-hidden">
+        <Image
+          src="/assets/page-assets/banners/rituals-boxes/bizarre-attest-ritual-banner.png"
+          alt="Prove It"
+          fill
+          className="object-cover"
+          priority
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-dark-bg via-dark-bg/80 to-transparent" />
 
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent">
-            👹 BIZARRE On-Chain Attestation 👹
-          </h1>
-          <p className="text-lg text-gray-300 mb-2">
-            Declare "I AM BIZARRE" on the Base blockchain forever!
-          </p>
-          <p className="text-sm text-gray-500">
-            {timeUntilReset} | Gas: {gasEstimate}
-            {MOCK_MODE && <span className="text-gem-gold ml-2">(Mock Mode)</span>}
-          </p>
+        {/* Back Button Overlay */}
+        <div className="absolute top-4 left-4 z-10">
+          <button
+            onClick={() => window.location.href = '/rituals'}
+            className="flex items-center gap-2 px-4 py-2 bg-dark-bg/90 backdrop-blur-sm rounded-lg border border-gem-crystal/30 hover:border-gem-crystal/50 hover:bg-dark-panel/90 transition-all duration-300"
+          >
+            <ArrowLeft className="w-5 h-5 text-gem-crystal" />
+            <span className="text-gem-crystal">Back to Rituals</span>
+          </button>
         </div>
+      </div>
+
+      <div className="px-4 py-8">
+        <div className="max-w-6xl mx-auto">
+          {/* Header */}
+          <div className="text-center mb-8">
+            <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent">
+              Prove You're BIZARRE Onchain
+            </h1>
+            <p className="text-lg text-gray-300 mb-2">
+              Tell the world "I AM BIZARRE" and prove it onchain forever!
+            </p>
+            <p className="text-sm text-gray-500">
+              {timeUntilReset} | Gas: {gasEstimate}
+              {MOCK_MODE && <span className="text-gem-gold ml-2">(Mock Mode)</span>}
+            </p>
+          </div>
 
         {/* Error Alert */}
         {error && (
@@ -280,7 +282,7 @@ export default function AttestationClient() {
         {/* User Stats Card */}
         {wallet.address && userStats && (
           <div className="bg-gradient-to-br from-gem-gold/20 via-dark-card to-gem-crystal/10 border-2 border-gem-gold rounded-xl p-6 mb-8">
-            <h2 className="text-2xl font-bold mb-4 text-gem-gold">Your Attestation Stats</h2>
+            <h2 className="text-2xl font-bold mb-4 text-gem-gold">Your Proof Stats</h2>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
               <div className="bg-dark-card rounded-lg p-4 border border-gem-crystal/30">
@@ -319,10 +321,10 @@ export default function AttestationClient() {
               </div>
             </div>
 
-            {/* Attestation Button and Share */}
+            {/* Proof Button and Share */}
             <div className="flex flex-col sm:flex-row items-center gap-4">
               <button
-                onClick={handleAttest}
+                onClick={handleProve}
                 disabled={!userStats.canAttestToday || isAttesting || attestationComplete}
                 className={`px-8 py-3 rounded-lg font-bold text-lg transition-all transform flex items-center gap-2 ${
                   attestationComplete
@@ -335,16 +337,16 @@ export default function AttestationClient() {
                 {attestationComplete ? (
                   <>
                     <CheckCircle className="w-5 h-5" />
-                    Attested Today!
+                    Proven Today!
                   </>
                 ) : isAttesting ? (
                   <>
                     <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-dark-bg"></div>
-                    Attesting...
+                    Proving...
                   </>
                 ) : userStats.canAttestToday ? (
                   <>
-                    🫵 ATTEST: I AM BIZARRE 👹
+                    🫵 PROVE: I AM BIZARRE 👹
                   </>
                 ) : (
                   <>
@@ -358,11 +360,15 @@ export default function AttestationClient() {
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-gray-400">Share:</span>
                   <ShareButtons
-                    customText={shareAttestation()}
-                    shareType="default"
+                    shareType="ritual"
+                    ritualData={{
+                      id: 10,
+                      title: "Prove It",
+                      description: "Prove that you are BIZARRE onchain, forever!"
+                    }}
+                    contextUrl="https://bbapp.bizarrebeasts.io/rituals/10"
                     buttonSize="md"
                     showLabels={false}
-                    contextUrl="https://bbapp.bizarrebeasts.io/rituals/10"
                   />
                 </div>
               )}
@@ -396,7 +402,7 @@ export default function AttestationClient() {
           <div className="bg-gradient-to-br from-dark-card to-gem-crystal/10 border border-gem-crystal/30 rounded-xl p-8 mb-8 text-center">
             <h2 className="text-2xl font-bold mb-4">Connect Your Wallet</h2>
             <p className="text-gray-400 mb-6">
-              Connect your wallet to start making on-chain BIZARRE attestations
+              Connect your wallet to start proving you're BIZARRE onchain
             </p>
             <p className="text-sm text-gray-500">
               Use the wallet button in the navigation bar to connect
@@ -408,9 +414,9 @@ export default function AttestationClient() {
         <div className="bg-dark-card rounded-xl p-6 border border-gray-700">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-2xl font-bold bg-gradient-to-r from-gem-crystal to-gem-gold bg-clip-text text-transparent">
-              Attestation Leaderboard
+              Proof Leaderboard
             </h2>
-            <span className="text-sm text-gray-400">Top Attesters</span>
+            <span className="text-sm text-gray-400">Top Provers</span>
           </div>
 
           {leaderboard.length > 0 ? (
@@ -477,66 +483,30 @@ export default function AttestationClient() {
             </div>
           ) : (
             <div className="text-center py-12 text-gray-400">
-              <p className="mb-4">No attestations yet. Be the first!</p>
-              <p className="text-sm">Complete your first attestation to appear on the leaderboard</p>
+              <p className="mb-4">No proofs yet. Be the first!</p>
+              <p className="text-sm">Complete your first proof to appear on the leaderboard</p>
             </div>
           )}
         </div>
 
-        {/* Info Section */}
-        <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-gradient-to-br from-dark-card to-gem-crystal/5 rounded-lg p-4 border border-gem-crystal/20">
-            <h3 className="font-bold text-gem-crystal mb-2 flex items-center gap-2">
-              <Info className="w-4 h-4" />
-              How It Works
-            </h3>
-            <p className="text-sm text-gray-400">
-              Make a daily on-chain attestation declaring "I AM BIZARRE" on Base network.
-              Each attestation costs ~{gasEstimate} in gas and contributes to your streak.
-            </p>
-          </div>
+        {/* Info Section - Removed for cleaner UI */}
 
-          <div className="bg-gradient-to-br from-dark-card to-gem-gold/5 rounded-lg p-4 border border-gem-gold/20">
-            <h3 className="font-bold text-gem-gold mb-2 flex items-center gap-2">
-              <Flame className="w-4 h-4" />
-              Build Your Streak
-            </h3>
-            <p className="text-sm text-gray-400">
-              Attest daily to build your streak! 20-hour cooldown between attestations.
-              Missing a day resets your current streak but not your total count.
-            </p>
-          </div>
-
-          <div className="bg-gradient-to-br from-dark-card to-gem-pink/5 rounded-lg p-4 border border-gem-pink/20">
-            <h3 className="font-bold text-gem-pink mb-2 flex items-center gap-2">
-              <DollarSign className="w-4 h-4" />
-              Future Rewards
-            </h3>
-            <p className="text-sm text-gray-400">
-              Attestation data is permanently stored on-chain and in our database.
-              Future $BB rewards and NFTs will be distributed based on your attestation history!
-            </p>
-          </div>
-        </div>
-
-        {/* Milestones Preview */}
-        <div className="mt-8 bg-gradient-to-br from-dark-card to-gem-gold/5 rounded-xl p-6 border border-gem-gold/20">
-          <h3 className="text-xl font-bold text-gem-gold mb-4">Milestone Rewards (Coming Soon)</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="text-center">
-              <p className="text-3xl mb-2">🔥</p>
-              <p className="font-bold text-white">7-Day Streak</p>
-              <p className="text-sm text-gray-400">Week Warrior Badge</p>
-            </div>
-            <div className="text-center">
-              <p className="text-3xl mb-2">🔥🔥🔥</p>
-              <p className="font-bold text-white">30-Day Streak</p>
-              <p className="text-sm text-gray-400">Bizarre Legend NFT</p>
-            </div>
-            <div className="text-center">
-              <p className="text-3xl mb-2">👹🏆</p>
-              <p className="font-bold text-white">100 Attestations</p>
-              <p className="text-sm text-gray-400">$BB Token Rewards</p>
+          {/* Milestones Preview */}
+          <div className="mt-8 bg-gradient-to-br from-dark-card to-gem-gold/5 rounded-xl p-6 border border-gem-gold/20">
+            <h3 className="text-xl font-bold text-gem-gold mb-4">Milestone Rewards (Coming Soon)</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="text-center">
+                <p className="text-3xl mb-2">🔥</p>
+                <p className="font-bold text-white">7-Day Streak</p>
+              </div>
+              <div className="text-center">
+                <p className="text-3xl mb-2">🔥🔥🔥</p>
+                <p className="font-bold text-white">30-Day Streak</p>
+              </div>
+              <div className="text-center">
+                <p className="text-3xl mb-2">👹🏆</p>
+                <p className="font-bold text-white">100 Proofs</p>
+              </div>
             </div>
           </div>
         </div>

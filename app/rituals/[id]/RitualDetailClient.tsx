@@ -2,6 +2,7 @@
 
 import { useParams, useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
+import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import Link from 'next/link';
 import ShareButtons from '@/components/ShareButtons';
@@ -11,11 +12,29 @@ import { openExternalUrl } from '@/lib/open-external-url';
 import { getRitualInstructions } from './RitualInstructions';
 import { Sparkles, Clock, CheckCircle, ExternalLink, Share2, ArrowLeft } from 'lucide-react';
 
+// Dynamically import AttestationClient for ritual 10
+const AttestationClient = dynamic(() => import('../10/AttestationClient'), {
+  ssr: false,
+  loading: () => (
+    <div className="min-h-screen bg-dark-bg flex items-center justify-center">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gem-gold mx-auto mb-4"></div>
+        <p className="text-gray-400">Loading proof data...</p>
+      </div>
+    </div>
+  )
+});
+
 export default function RitualDetailClient() {
   const params = useParams();
   const router = useRouter();
   const ritualId = parseInt(params.id as string);
   const ritual = rituals.find(r => r.id === ritualId);
+
+  // Special handling for ritual 10 - attestation page
+  if (ritualId === 10) {
+    return <AttestationClient />;
+  }
   const [isCompleted, setIsCompleted] = useState(false);
   const [isInMiniApp, setIsInMiniApp] = useState(false);
 

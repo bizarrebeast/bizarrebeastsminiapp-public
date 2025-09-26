@@ -67,8 +67,8 @@ export const rituals = [
   },
   {
     id: 10,
-    title: "Attest: I AM BIZARRE",
-    description: "Make an onchain attestation that you are BIZARRE!",
+    title: "Prove It",
+    description: "Prove that you are BIZARRE onchain, forever!",
     image: "/assets/page-assets/banners/rituals-boxes/bizarre-attest-ritual-banner.png",
     actionUrl: "https://bbapp.bizarrebeasts.io/rituals/10"
   }
