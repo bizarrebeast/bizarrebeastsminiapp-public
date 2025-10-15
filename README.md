@@ -116,7 +116,7 @@ BizarreBeasts is a full-featured Web3 gaming platform integrating with Farcaster
 
 ## 🎨 Original Artwork
 
-All game assets, NFTs, and illustrations are **100% original hand-illustrated artwork** by Dylan Yarter. The project showcases:
+All game assets, NFTs, and illustrations are **100% original hand-illustrated artwork**. The project showcases:
 - 80+ paper illustrations
 - 20+ ink illustrations
 - 30+ acrylic paintings
@@ -155,16 +155,9 @@ This is the public version of the BizarreBeasts miniapp, maintained for transpar
 - **OpenSea**: Browse our NFT collections
 - **Farcaster**: [@bizarrebeasts](https://warpcast.com/bizarrebeasts)
 
-## 👨‍🎨 Creator
-
-Created by **Dylan Yarter** - Artist, Developer, and BizarreBeasts Universe Creator
-
-- Portfolio: [dylanyarter.com](https://dylanyarter.com)
-- Farcaster: [@dylanyarter](https://warpcast.com/dylanyarter)
-
 ## 📄 License
 
-All artwork and game assets © Dylan Yarter. Code is shared for transparency and educational purposes.
+All artwork and game assets © BizarreBeasts. Code is shared for transparency and educational purposes.
 
 ---
 
