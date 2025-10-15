@@ -7,12 +7,18 @@ import { ultimateShare } from '@/lib/sdk-ultimate';
 import { sdk } from '@/lib/sdk-init';
 import ShareButtons from '@/components/ShareButtons';
 
+interface EnhancedHolder extends EmpireHolder {
+  streakBased?: boolean;
+  streakDays?: number;
+}
+
 export default function EmpirePage() {
-  const [leaderboard, setLeaderboard] = useState<EmpireHolder[]>([]);
+  const [leaderboard, setLeaderboard] = useState<EnhancedHolder[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchResult, setSearchResult] = useState<EmpireHolder | null>(null);
+  const [searchResult, setSearchResult] = useState<EnhancedHolder | null>(null);
   const [loading, setLoading] = useState(true);
   const [searching, setSearching] = useState(false);
+  const [streakData, setStreakData] = useState<Map<string, { best_streak: number, has_bizarre_tier_override: boolean }>>(new Map());
 
   useEffect(() => {
     loadLeaderboard();
@@ -22,6 +28,32 @@ export default function EmpirePage() {
     setLoading(true);
     try {
       const data = await empireService.getLeaderboard();
+
+      // Check for streak-based BIZARRE tier for top holders
+      const streakChecks = new Map();
+      const topHolders = data.holders.slice(0, 250);
+
+      // Batch check streaks for efficiency
+      await Promise.all(
+        topHolders.map(async (holder) => {
+          try {
+            const response = await fetch(`/api/attestations/streak?wallet=${holder.address}`);
+            if (response.ok) {
+              const streak = await response.json();
+              if (streak.has_bizarre_tier_override) {
+                streakChecks.set(holder.address.toLowerCase(), {
+                  best_streak: streak.best_streak,
+                  has_bizarre_tier_override: true
+                });
+              }
+            }
+          } catch (error) {
+            console.error('Error checking streak for', holder.address, error);
+          }
+        })
+      );
+
+      setStreakData(streakChecks);
       setLeaderboard(data.holders);
     } catch (error) {
       console.error('Failed to load leaderboard:', error);
@@ -39,6 +71,23 @@ export default function EmpirePage() {
     setSearching(true);
     try {
       const result = await empireService.searchUser(searchQuery);
+
+      // Check if user has streak-based BIZARRE tier
+      if (result) {
+        try {
+          const response = await fetch(`/api/attestations/streak?wallet=${result.address}`);
+          if (response.ok) {
+            const streak = await response.json();
+            if (streak.has_bizarre_tier_override) {
+              (result as EnhancedHolder).streakBased = true;
+              (result as EnhancedHolder).streakDays = streak.best_streak;
+            }
+          }
+        } catch (error) {
+          console.error('Error checking streak:', error);
+        }
+      }
+
       setSearchResult(result);
     } catch (error) {
       console.error('Search failed:', error);
@@ -111,7 +160,15 @@ export default function EmpirePage() {
     }
   };
 
-  const getTierColor = (rank: number) => {
+  const getTierColor = (rank: number, address?: string) => {
+    // Check if user has streak-based BIZARRE tier
+    if (address && streakData.has(address.toLowerCase())) {
+      const data = streakData.get(address.toLowerCase());
+      if (data?.has_bizarre_tier_override) {
+        return 'text-gem-gold';
+      }
+    }
+
     const tier = empireService.getUserTier(rank);
     switch(tier) {
       case AccessTier.BIZARRE:
@@ -127,7 +184,15 @@ export default function EmpirePage() {
     }
   };
 
-  const getTierBadge = (rank: number) => {
+  const getTierBadge = (rank: number, address?: string) => {
+    // Check if user has streak-based BIZARRE tier
+    if (address && streakData.has(address.toLowerCase())) {
+      const data = streakData.get(address.toLowerCase());
+      if (data?.has_bizarre_tier_override) {
+        return '👹';
+      }
+    }
+
     const tier = empireService.getUserTier(rank);
     const badges = {
       [AccessTier.BIZARRE]: '👹',
@@ -137,6 +202,18 @@ export default function EmpirePage() {
       [AccessTier.NORMIE]: '😐'
     };
     return badges[tier];
+  };
+
+  const getTierName = (rank: number, address?: string): string => {
+    // Check if user has streak-based BIZARRE tier
+    if (address && streakData.has(address.toLowerCase())) {
+      const data = streakData.get(address.toLowerCase());
+      if (data?.has_bizarre_tier_override) {
+        return AccessTier.BIZARRE;
+      }
+    }
+
+    return empireService.getUserTier(rank);
   };
 
   return (
@@ -189,7 +266,7 @@ export default function EmpirePage() {
                 <div className="flex flex-col gap-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <span className={`text-2xl font-bold ${getTierColor(searchResult.rank)}`}>
+                      <span className={`text-2xl font-bold ${getTierColor(searchResult.rank, searchResult.address)}`}>
                         #{searchResult.rank}
                       </span>
                       <div>
@@ -207,7 +284,7 @@ export default function EmpirePage() {
                     <p className="text-xs text-gray-400">Share your rank:</p>
                     <ShareButtons
                       customText={(() => {
-                        const tier = empireService.getUserTier(searchResult.rank);
+                        const tier = (searchResult as EnhancedHolder).streakBased ? AccessTier.BIZARRE : empireService.getUserTier(searchResult.rank);
                         const tierEmoji =
                           tier === AccessTier.BIZARRE ? '🤪' :
                           tier === AccessTier.WEIRDO ? '🤡' :
@@ -329,14 +406,19 @@ export default function EmpirePage() {
                   leaderboard.slice(0, 250).map((holder) => (
                     <tr key={holder.address} className="border-b border-gray-800 hover:bg-dark-card/50 transition">
                       <td className="px-2 sm:px-4 py-3">
-                        <span className={`font-bold text-xs sm:text-base ${getTierColor(holder.rank)}`}>
-                          {getTierBadge(holder.rank)} {holder.rank}
+                        <span className={`font-bold text-xs sm:text-base ${getTierColor(holder.rank, holder.address)}`}>
+                          {getTierBadge(holder.rank, holder.address)} {holder.rank}
                         </span>
                       </td>
                       <td className="px-2 sm:px-4 py-3 text-center">
-                        <span className={`text-[10px] sm:text-xs font-semibold uppercase ${getTierColor(holder.rank)}`}>
-                          {empireService.getUserTier(holder.rank)}
-                        </span>
+                        <div className="flex flex-col items-center">
+                          <span className={`text-[10px] sm:text-xs font-semibold uppercase ${getTierColor(holder.rank, holder.address)}`}>
+                            {getTierName(holder.rank, holder.address)}
+                          </span>
+                          {streakData.has(holder.address.toLowerCase()) && streakData.get(holder.address.toLowerCase())?.has_bizarre_tier_override && (
+                            <span className="text-[8px] text-gem-gold/80">🔥 100-day streak</span>
+                          )}
+                        </div>
                       </td>
                       <td className="px-2 sm:px-4 py-3">
                         <div>
@@ -392,7 +474,7 @@ export default function EmpirePage() {
                  tier === AccessTier.MISFIT ? '👾' : '😐'}
               </div>
               <p className="text-gray-400 text-xs mb-2">
-                {tier === AccessTier.BIZARRE ? 'Rank 1-25' :
+                {tier === AccessTier.BIZARRE ? 'Rank 1-25 or 100-day streak' :
                  tier === AccessTier.WEIRDO ? 'Rank 26-50' :
                  tier === AccessTier.ODDBALL ? 'Rank 51-100' :
                  tier === AccessTier.MISFIT ? 'Rank 101-500' :

@@ -11,6 +11,7 @@ import { useBBAuth } from '@/hooks/useBBAuth';
 import { authenticatedFetch } from '@/lib/auth/authenticated-fetch';
 import { initializeBBAuth } from '@/lib/auth/bb-auth-sdk';
 import sdk from '@farcaster/miniapp-sdk';
+import { FEATURES } from '@/lib/feature-flags';
 
 // Debug log with timestamp
 const debugLog = (message: string, data?: any) => {
@@ -19,6 +20,18 @@ const debugLog = (message: string, data?: any) => {
 };
 
 export default function TestBBAuthProductionPage() {
+  // Block access if test pages are disabled
+  if (!FEATURES.TEST_PAGES) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-dark-bg">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-white mb-4">Page Not Available</h1>
+          <p className="text-gray-400">Test pages are disabled in production.</p>
+        </div>
+      </div>
+    );
+  }
+
   const auth = useBBAuth();
   const [logs, setLogs] = useState<string[]>([]);
   const [sdkContext, setSdkContext] = useState<any>(null);

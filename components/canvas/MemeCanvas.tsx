@@ -15,9 +15,10 @@ import { isMobileTouch, preventEventDefaults } from '@/utils/mobile';
 interface MemeCanvasProps {
   onCanvasReady: (canvasApi: any) => void;
   selectedCollection?: StickerCollection;
+  onTextSelected?: (textOptions: TextOptions | null) => void;
 }
 
-export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCanvasProps) {
+export default function MemeCanvas({ onCanvasReady, selectedCollection, onTextSelected }: MemeCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const fabricCanvasRef = useRef<Canvas | null>(null);
@@ -97,17 +98,77 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
     });
     canvas.on('object:modified', (e) => {
       console.log('🔄 CANVAS EVENT: Object modified:', e.target?.type);
+      // If text was modified, notify parent with updated properties
+      const obj = e.target;
+      if (obj && obj.type === 'text' && onTextSelected) {
+        const textObj = obj as FabricText;
+        console.log('📝 TEXT: Properties after modification:', {
+          strokeWidth: textObj.strokeWidth,
+          fill: textObj.fill,
+          stroke: textObj.stroke
+        });
+        onTextSelected({
+          font: (textObj.fontFamily || 'Impact') as 'Impact' | 'Arial' | 'Comic Sans',
+          size: textObj.fontSize || 48,
+          color: textObj.fill as string || '#FFFFFF',
+          stroke: textObj.stroke as string || '#000000',
+          strokeWidth: textObj.strokeWidth || 0,
+          align: (textObj.textAlign || 'center') as 'center' | 'left' | 'right',
+          position: 'custom'
+        });
+      }
     });
     
-    // Selection events for debugging
+    // Selection events for debugging and syncing text controls
     canvas.on('selection:created', (e) => {
       console.log('🔵 CANVAS EVENT: Selection created:', e.selected?.[0]?.type);
+      const selected = e.selected?.[0];
+      if (selected && selected.type === 'text' && onTextSelected) {
+        const textObj = selected as FabricText;
+        console.log('📝 TEXT: Reading properties from selected text:', {
+          strokeWidth: textObj.strokeWidth,
+          fill: textObj.fill,
+          stroke: textObj.stroke
+        });
+        onTextSelected({
+          font: (textObj.fontFamily || 'Impact') as 'Impact' | 'Arial' | 'Comic Sans',
+          size: textObj.fontSize || 48,
+          color: textObj.fill as string || '#FFFFFF',
+          stroke: textObj.stroke as string || '#000000',
+          strokeWidth: textObj.strokeWidth !== undefined ? textObj.strokeWidth : 2,
+          align: (textObj.textAlign || 'center') as 'center' | 'left' | 'right',
+          position: 'custom'
+        });
+      }
     });
     canvas.on('selection:cleared', () => {
       console.log('⭕ CANVAS EVENT: Selection cleared');
+      if (onTextSelected) {
+        onTextSelected(null);
+      }
     });
     canvas.on('selection:updated', (e) => {
       console.log('🔄 CANVAS EVENT: Selection updated:', e.selected?.[0]?.type);
+      const selected = e.selected?.[0];
+      if (selected && selected.type === 'text' && onTextSelected) {
+        const textObj = selected as FabricText;
+        console.log('📝 TEXT: Reading properties from updated selection:', {
+          strokeWidth: textObj.strokeWidth,
+          fill: textObj.fill,
+          stroke: textObj.stroke
+        });
+        onTextSelected({
+          font: (textObj.fontFamily || 'Impact') as 'Impact' | 'Arial' | 'Comic Sans',
+          size: textObj.fontSize || 48,
+          color: textObj.fill as string || '#FFFFFF',
+          stroke: textObj.stroke as string || '#000000',
+          strokeWidth: textObj.strokeWidth !== undefined ? textObj.strokeWidth : 2,
+          align: (textObj.textAlign || 'center') as 'center' | 'left' | 'right',
+          position: 'custom'
+        });
+      } else if (onTextSelected) {
+        onTextSelected(null);
+      }
     });
     
     // Enforce uniform scaling to maintain aspect ratio
@@ -346,6 +407,19 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
           if (updates.strokeWidth !== undefined) textObj.set('strokeWidth', updates.strokeWidth);
           if (updates.align) textObj.set('textAlign', updates.align);
           canvas.renderAll();
+
+          // Notify parent of updated text properties
+          if (onTextSelected) {
+            onTextSelected({
+              font: (textObj.fontFamily || 'Impact') as 'Impact' | 'Arial' | 'Comic Sans',
+              size: textObj.fontSize || 48,
+              color: textObj.fill as string || '#FFFFFF',
+              stroke: textObj.stroke as string || '#000000',
+              strokeWidth: textObj.strokeWidth || 0,
+              align: (textObj.textAlign || 'center') as 'center' | 'left' | 'right',
+              position: 'custom'
+            });
+          }
         }
       },
 
@@ -363,15 +437,25 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
               const scaleY = canvas.height / img.height;
               const baseScale = Math.max(scaleX, scaleY); // Use the larger scale to ensure full coverage
 
-              // Add 2% overscan to eliminate transparent pixels at edges
-              const scale = baseScale * 1.02;
+              // Add 5% overscan to completely eliminate any gaps at edges
+              // Increased from 2% to ensure full coverage even with rounding errors
+              const scale = baseScale * 1.05;
 
               img.scaleX = scale;
               img.scaleY = scale;
 
-              // Center the image
-              img.left = (canvas.width - img.width * scale) / 2;
-              img.top = (canvas.height - img.height * scale) / 2;
+              // Center the scaled image - ensure it covers the entire canvas
+              // Calculate the scaled dimensions
+              const scaledWidth = img.width * scale;
+              const scaledHeight = img.height * scale;
+
+              // Center the image so it extends beyond all edges
+              img.left = (canvas.width - scaledWidth) / 2;
+              img.top = (canvas.height - scaledHeight) / 2;
+
+              // Set origin to ensure proper positioning
+              img.originX = 'left';
+              img.originY = 'top';
             }
             canvas.renderAll();
           });
@@ -523,7 +607,7 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
 
       clearCanvas: () => {
         console.log('🧹 CLEAR: Clear canvas requested');
-        
+
         // On mobile, require confirmation
         if (isMobileTouch() || isMobileDevice()) {
           const objectCount = canvas.getObjects().length;
@@ -534,12 +618,36 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
             }
           }
         }
-        
+
         console.log('🧹 CLEAR: Clearing entire canvas');
         canvas.clear();
         canvas.backgroundColor = backgroundColor;
         canvas.renderAll();
         console.log('✅ CLEAR: Canvas cleared');
+      },
+
+      flipHorizontal: () => {
+        console.log('↔️ FLIP: Flip horizontal called');
+        const activeObject = canvas.getActiveObject();
+        if (activeObject) {
+          console.log('✅ FLIP: Flipping object horizontally');
+          activeObject.set('flipX', !activeObject.flipX);
+          canvas.renderAll();
+        } else {
+          console.log('❌ FLIP: No object selected');
+        }
+      },
+
+      flipVertical: () => {
+        console.log('↕️ FLIP: Flip vertical called');
+        const activeObject = canvas.getActiveObject();
+        if (activeObject) {
+          console.log('✅ FLIP: Flipping object vertically');
+          activeObject.set('flipY', !activeObject.flipY);
+          canvas.renderAll();
+        } else {
+          console.log('❌ FLIP: No object selected');
+        }
       },
       
       /* Removed undo/redo functionality
@@ -638,6 +746,43 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
           multiplier: exportSize / canvas.width!, // Scale to target size
         });
 
+        // Crop 4 pixels from all sides to remove any edge artifacts
+        const cropImage = async (dataUrl: string, cropPixels: number = 4): Promise<string> => {
+          return new Promise((resolve) => {
+            const img = new Image();
+            img.onload = () => {
+              const cropCanvas = document.createElement('canvas');
+              const ctx = cropCanvas.getContext('2d');
+
+              // Set canvas size to cropped dimensions
+              const croppedWidth = img.width - (cropPixels * 2);
+              const croppedHeight = img.height - (cropPixels * 2);
+              cropCanvas.width = croppedWidth;
+              cropCanvas.height = croppedHeight;
+
+              // Draw image with crop offset
+              ctx?.drawImage(
+                img,
+                cropPixels, cropPixels,  // Start position in source image
+                croppedWidth, croppedHeight,  // Width/height to copy from source
+                0, 0,  // Position in destination canvas
+                croppedWidth, croppedHeight  // Size in destination canvas
+              );
+
+              // Export cropped image
+              const croppedDataUrl = cropCanvas.toDataURL(
+                exportFormat === 'jpeg' ? 'image/jpeg' : 'image/png',
+                exportFormat === 'jpeg' ? quality : undefined
+              );
+              resolve(croppedDataUrl);
+            };
+            img.src = dataUrl;
+          });
+        };
+
+        // Apply cropping to remove edge artifacts
+        const croppedDataURL = await cropImage(dataURL, 4);
+
         // Remove watermark after export
         if (options.watermark.enabled) {
           const objects = canvas.getObjects();
@@ -674,10 +819,10 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
           return compressedDataUrl;
         };
 
-        // Compress for sharing if needed
-        let finalDataURL = dataURL;
+        // Compress for sharing if needed (use cropped image)
+        let finalDataURL = croppedDataURL;
         if (isSharing) {
-          finalDataURL = await compressImage(dataURL, 300); // Target 300KB for social sharing
+          finalDataURL = await compressImage(croppedDataURL, 300); // Target 300KB for social sharing
         }
 
         // Handle download
@@ -1036,7 +1181,7 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
     <div ref={containerRef} className="relative w-full">
       {/* Canvas Controls Bar */}
       <div className="mb-2 sm:mb-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
-        <div className="flex gap-1 sm:gap-2">
+        <div className="flex gap-1 sm:gap-2 flex-wrap">
           <button
             onClick={() => {
               console.log('🔘 BUTTON: Delete button clicked');
@@ -1056,6 +1201,26 @@ export default function MemeCanvas({ onCanvasReady, selectedCollection }: MemeCa
             title="Clear entire canvas"
           >
             Clear
+          </button>
+          <button
+            onClick={() => {
+              console.log('🔘 BUTTON: Flip horizontal button clicked');
+              canvasApiRef.current?.flipHorizontal();
+            }}
+            className="px-2 sm:px-3 py-1 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded hover:scale-105 transition-all text-xs sm:text-sm font-semibold"
+            title="Flip selected item horizontally"
+          >
+            Flip ↔
+          </button>
+          <button
+            onClick={() => {
+              console.log('🔘 BUTTON: Flip vertical button clicked');
+              canvasApiRef.current?.flipVertical();
+            }}
+            className="px-2 sm:px-3 py-1 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded hover:scale-105 transition-all text-xs sm:text-sm font-semibold"
+            title="Flip selected item vertically"
+          >
+            Flip ↕
           </button>
         </div>
         

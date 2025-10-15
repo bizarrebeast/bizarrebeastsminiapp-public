@@ -14,7 +14,8 @@ import {
   CheckCircle,
   XCircle,
   AlertCircle,
-  Palette
+  Palette,
+  Gift
 } from 'lucide-react';
 import { contestQueries, Contest } from '@/lib/supabase';
 import { formatTokenBalance } from '@/lib/tokenBalance';
@@ -203,6 +204,14 @@ export default function AdminDashboard() {
               </button>
             </Link>
 
+            <Link href="/admin/rewards">
+              <button className="w-full p-4 bg-dark-bg rounded-lg hover:bg-gem-gold/10 transition text-left">
+                <Gift className="w-6 h-6 text-gem-gold mb-2" />
+                <p className="font-medium">Rewards Dashboard</p>
+                <p className="text-xs text-gray-400">Manage streak rewards</p>
+              </button>
+            </Link>
+
             <Link href="/admin/contests/analytics">
               <button className="w-full p-4 bg-dark-bg rounded-lg hover:bg-gem-purple/10 transition text-left">
                 <BarChart3 className="w-6 h-6 text-gem-purple mb-2" />
@@ -224,6 +233,14 @@ export default function AdminDashboard() {
                 <Calendar className="w-6 h-6 text-gem-pink mb-2" />
                 <p className="font-medium">Check-In Analytics</p>
                 <p className="text-xs text-gray-400">Monitor rewards & stats</p>
+              </button>
+            </Link>
+
+            <Link href="/admin/attestations">
+              <button className="w-full p-4 bg-dark-bg rounded-lg hover:bg-blue-500/10 transition text-left">
+                <CheckCircle className="w-6 h-6 text-blue-400 mb-2" />
+                <p className="font-medium">Attestations</p>
+                <p className="text-xs text-gray-400">View attestation stats</p>
               </button>
             </Link>
           </div>

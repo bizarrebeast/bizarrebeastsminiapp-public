@@ -6,6 +6,7 @@ import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import Link from 'next/link';
 import ShareButtons from '@/components/ShareButtons';
+import RitualLeaderboard from '@/components/RitualLeaderboard';
 import { rituals } from './metadata';
 import { sdk } from '@/lib/sdk-init';
 import { openExternalUrl } from '@/lib/open-external-url';
@@ -55,7 +56,19 @@ export default function RitualDetailClient() {
   const handleActionClick = async (e: React.MouseEvent) => {
     if (ritual?.actionUrl) {
       e.preventDefault();
-      await openExternalUrl(ritual.actionUrl);
+
+      // Check if the URL is internal (same domain)
+      const isInternal = ritual.actionUrl.includes('bbapp.bizarrebeasts.io') ||
+                        ritual.actionUrl.startsWith('/');
+
+      if (isInternal) {
+        // For internal links, use Next.js router navigation
+        const path = ritual.actionUrl.replace('https://bbapp.bizarrebeasts.io', '');
+        router.push(path);
+      } else {
+        // For external links, use the external URL opener
+        await openExternalUrl(ritual.actionUrl);
+      }
     }
   };
 
@@ -211,6 +224,11 @@ export default function RitualDetailClient() {
               showLabels={false}
             />
           </div>
+        </div>
+
+        {/* Ritual Leaderboard */}
+        <div className="mt-8">
+          <RitualLeaderboard ritualId={ritual.id} ritualTitle={ritual.title} />
         </div>
 
         {/* Navigation to Other Rituals */}

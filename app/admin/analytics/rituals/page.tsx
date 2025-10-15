@@ -22,9 +22,9 @@ const dailyRituals = [
 ];
 
 const featuredRitual = {
-  title: "The BB Miniapp & Treasure Quest in the dGEN1 app store!",
-  description: "BizarreBeasts ($BB) Miniapp and game Treasure Quest are now officially live in the dGEN1 app store!",
-  sponsor: "dGEN1"
+  title: "Notorious B.I.Z. is Back! Battle for 25M $BB on Farverse!",
+  description: "The legend returns! Battle for 25 MILLION $BB tokens in the ultimate Slay-to-Earn arena!",
+  sponsor: "Farverse"
 };
 
 interface RitualMetrics {
@@ -81,26 +81,38 @@ export default function RitualsAnalyticsDashboard() {
 
   const fetchMetrics = async () => {
     try {
+      // Fetch ritual analytics from our API endpoint
+      const response = await fetch(`/api/rituals/track?timeRange=${timeRange}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch ritual metrics');
+      }
+      const apiData = await response.json();
+
+      // Fetch completions directly from Supabase for detailed data
       const startDate = new Date();
       const days = timeRange === '24h' ? 1 : timeRange === '7d' ? 7 : 30;
       startDate.setDate(startDate.getDate() - days);
 
-      // Fetch shares related to rituals
-      const { data: ritualShares, error: sharesError } = await supabase
-        .from('user_shares')
-        .select(`
-          *,
-          unified_users!inner(farcaster_username)
-        `)
-        .eq('share_type', 'ritual')
-        .gte('created_at', startDate.toISOString());
+      const { data: completions, error: completionsError } = await supabase
+        .from('ritual_completions')
+        .select('*')
+        .gte('created_at', startDate.toISOString())
+        .order('created_at', { ascending: false });
 
-      if (sharesError) {
-        console.error('Error fetching ritual shares:', sharesError);
+      if (completionsError) {
+        console.error('Error fetching completions:', completionsError);
       }
 
-      // Fetch recent ritual completions from shares (as proxy for completions)
-      const completions = ritualShares?.filter(s => s.metadata?.completed) || [];
+      // Fetch clicks for featured ritual
+      const { data: clicks, error: clicksError } = await supabase
+        .from('ritual_clicks')
+        .select('*')
+        .eq('ritual_id', 0) // Featured ritual
+        .gte('created_at', startDate.toISOString());
+
+      if (clicksError) {
+        console.error('Error fetching clicks:', clicksError);
+      }
 
       // Calculate daily activity
       const dailyMap = new Map<string, number>();
@@ -113,8 +125,8 @@ export default function RitualsAnalyticsDashboard() {
       }
 
       // Count completions by day
-      ritualShares?.forEach(share => {
-        const dateStr = share.created_at.split('T')[0];
+      completions?.forEach(completion => {
+        const dateStr = completion.created_at.split('T')[0];
         if (dailyMap.has(dateStr)) {
           dailyMap.set(dateStr, (dailyMap.get(dateStr) || 0) + 1);
         }
@@ -124,29 +136,19 @@ export default function RitualsAnalyticsDashboard() {
         .map(([date, completions]) => ({ date, completions }))
         .reverse(); // Oldest to newest for chart
 
-      // Calculate ritual-specific stats
-      const ritualStatsMap = new Map();
-      dailyRituals.forEach(ritual => {
-        ritualStatsMap.set(ritual.id, {
-          id: ritual.id,
-          title: ritual.title,
-          completions: 0,
-          shares: 0,
-          userSet: new Set(),
-          totalTime: 0
-        });
-      });
+      // Use API data for ritual stats
+      const ritualStats = apiData.ritualStats || [];
 
-      // Process shares to calculate stats
-      ritualShares?.forEach(share => {
-        const ritualId = share.metadata?.ritualId || Math.floor(Math.random() * 9) + 1;
-        const stats = ritualStatsMap.get(ritualId);
-        if (stats) {
-          stats.shares++;
-          if (share.verified) stats.completions++;
-          stats.userSet.add(share.user_id);
-          stats.totalTime += share.metadata?.timeToComplete || 60;
-        }
+      // Enhance ritual stats with titles
+      const enhancedRitualStats = ritualStats.map((stat: any) => {
+        const ritual = dailyRituals.find(r => r.id === stat.id);
+        return {
+          ...stat,
+          title: ritual?.title || stat.title || `Ritual ${stat.id}`,
+          shares: stat.completions, // For now, shares = completions
+          conversionRate: 100, // 100% since we only track completions
+          trend: Math.random() * 40 - 20 // Placeholder trend
+        };
       });
 
       // Calculate week-over-week trend
@@ -157,74 +159,52 @@ export default function RitualsAnalyticsDashboard() {
       thisWeekStart.setDate(thisWeekStart.getDate() - 7);
       thisWeekStart.setHours(0, 0, 0, 0);
 
-      const lastWeekShares = ritualShares?.filter(s => {
-        const date = new Date(s.created_at);
+      const lastWeekCompletions = completions?.filter(c => {
+        const date = new Date(c.created_at);
         return date >= lastWeekStart && date < thisWeekStart;
       }).length || 0;
 
-      const thisWeekShares = ritualShares?.filter(s => {
-        const date = new Date(s.created_at);
+      const thisWeekCompletions = completions?.filter(c => {
+        const date = new Date(c.created_at);
         return date >= thisWeekStart;
       }).length || 0;
 
-      const weekTrend = lastWeekShares > 0
-        ? ((thisWeekShares - lastWeekShares) / lastWeekShares) * 100
+      const weekTrend = lastWeekCompletions > 0
+        ? ((thisWeekCompletions - lastWeekCompletions) / lastWeekCompletions) * 100
         : 0;
 
-      // Format ritual stats
-      const ritualStats = Array.from(ritualStatsMap.values()).map(stats => ({
-        id: stats.id,
-        title: stats.title,
-        completions: stats.completions,
-        shares: stats.shares,
-        conversionRate: stats.shares > 0 ? (stats.completions / stats.shares) * 100 : 0,
-        avgTimeToComplete: stats.completions > 0 ? Math.floor(stats.totalTime / stats.completions) : 0,
-        trend: Math.random() * 40 - 20 // Would calculate from historical data
-      }));
+      // Format top performers
+      const topPerformers = apiData.topPerformers?.map((user: any) => ({
+        username: user.username || 'Anonymous',
+        completedCount: user.completedCount,
+        lastCompleted: getTimeAgo(new Date(user.lastCompleted))
+      })) || [];
 
-      // Get top performers
-      const userCompletions = new Map<string, { username: string; count: number; lastDate: string }>();
-      ritualShares?.forEach(share => {
-        const username = share.unified_users?.farcaster_username || 'Anonymous';
-        if (!userCompletions.has(username)) {
-          userCompletions.set(username, { username, count: 0, lastDate: share.created_at });
-        }
-        const user = userCompletions.get(username)!;
-        user.count++;
-        if (share.created_at > user.lastDate) {
-          user.lastDate = share.created_at;
-        }
-      });
-
-      const topPerformers = Array.from(userCompletions.values())
-        .sort((a, b) => b.count - a.count)
-        .slice(0, 5)
-        .map(user => ({
-          username: user.username,
-          completedCount: user.count,
-          lastCompleted: getTimeAgo(new Date(user.lastDate))
-        }));
-
-      // Recent activity
-      const recentActivity = (ritualShares || [])
+      // Recent activity from completions
+      const recentActivity = (completions || [])
         .slice(0, 10)
-        .map(share => ({
-          username: share.unified_users?.farcaster_username || 'Anonymous',
-          ritualTitle: dailyRituals.find(r => r.id === (share.metadata?.ritualId || 1))?.title || 'Unknown Ritual',
-          completedAt: getTimeAgo(new Date(share.created_at)),
-          shared: share.verified
-        }));
+        .map(completion => {
+          const ritual = dailyRituals.find(r => r.id === completion.ritual_id);
+          return {
+            username: completion.wallet_address?.slice(0, 6) + '...' || 'Anonymous',
+            ritualTitle: ritual?.title || completion.ritual_title || `Ritual ${completion.ritual_id}`,
+            completedAt: getTimeAgo(new Date(completion.created_at)),
+            shared: completion.completed
+          };
+        });
 
-      const totalCompletions = ritualStats.reduce((sum, r) => sum + r.completions, 0);
-      const totalShares = ritualStats.reduce((sum, r) => sum + r.shares, 0);
-      const uniqueUsers = new Set(ritualShares?.map(s => s.user_id)).size;
+      const totalCompletions = apiData.totalCompletions || 0;
+      const uniqueUsers = apiData.uniqueUsers || 0;
+      const totalShares = totalCompletions; // For now, assume all completions are shared
 
-      // Featured metrics (would come from tracking)
+      // Featured metrics from clicks data
+      const featuredClicks = clicks?.length || 0;
+      const featuredCompletions = completions?.filter(c => c.ritual_id === 0).length || 0;
       const featuredMetrics = {
-        impressions: Math.floor(uniqueUsers * 15),
-        clicks: Math.floor(uniqueUsers * 2.5),
-        completions: Math.floor(uniqueUsers * 0.8),
-        shares: Math.floor(uniqueUsers * 0.3),
+        impressions: Math.max(featuredClicks * 5, uniqueUsers * 3), // Estimate impressions
+        clicks: featuredClicks,
+        completions: featuredCompletions,
+        shares: Math.floor(featuredCompletions * 0.5), // Estimate shares
         ctr: 0,
         conversionRate: 0
       };
@@ -238,11 +218,11 @@ export default function RitualsAnalyticsDashboard() {
       setMetrics({
         totalCompletions,
         uniqueUsers,
-        avgCompletionTime: ritualStats.reduce((sum, r) => sum + r.avgTimeToComplete, 0) / ritualStats.length || 0,
-        completionRate: totalShares > 0 ? (totalCompletions / totalShares) * 100 : 0,
-        shareConversionRate: totalCompletions > 0 ? (totalShares / totalCompletions) * 100 : 0,
+        avgCompletionTime: enhancedRitualStats.reduce((sum: number, r: any) => sum + (r.avgTimeToComplete || 0), 0) / Math.max(enhancedRitualStats.length, 1) || 0,
+        completionRate: 100, // Since we only track completions
+        shareConversionRate: totalCompletions > 0 ? (totalShares / totalCompletions) * 100 : 100,
         weekTrend,
-        ritualStats,
+        ritualStats: enhancedRitualStats,
         featuredMetrics,
         dailyActivity,
         topPerformers,
@@ -266,6 +246,11 @@ export default function RitualsAnalyticsDashboard() {
     if (hours > 0) return `${hours}h ago`;
     if (minutes > 0) return `${minutes}m ago`;
     return 'Just now';
+  };
+
+  const abbreviateAddress = (address: string) => {
+    if (!address || !address.startsWith('0x')) return address;
+    return `${address.slice(0, 6)}...${address.slice(-4)}`;
   };
 
   if (loading) {
@@ -464,7 +449,7 @@ export default function RitualsAnalyticsDashboard() {
                   <div className="flex items-center gap-3">
                     <span className="text-gem-gold font-bold text-lg">#{index + 1}</span>
                     <div>
-                      <div className="text-white font-medium">@{user.username}</div>
+                      <div className="text-white font-medium">@{abbreviateAddress(user.username)}</div>
                       <div className="text-xs text-gray-500">Last: {user.lastCompleted}</div>
                     </div>
                   </div>
@@ -483,7 +468,7 @@ export default function RitualsAnalyticsDashboard() {
               {metrics.recentActivity.map((activity, index) => (
                 <div key={index} className="flex items-center justify-between py-2 border-b border-gray-800">
                   <div>
-                    <div className="text-white">@{activity.username}</div>
+                    <div className="text-white">@{abbreviateAddress(activity.username)}</div>
                     <div className="text-xs text-gray-500">{activity.ritualTitle}</div>
                   </div>
                   <div className="flex items-center gap-2">

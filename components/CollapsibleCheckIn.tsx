@@ -13,34 +13,24 @@ interface CollapsibleCheckInProps {
 
 export default function CollapsibleCheckIn({ completedRituals }: CollapsibleCheckInProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const {
-    walletAddress,
-    walletConnected,
-    empireTier,
-    empireRank,
-    farcasterConnected,
-    farcasterUsername,
-    farcasterFid,
-    refreshProfile
-  } = useUnifiedAuthStore();
 
-  // Debug logging
-  console.log('[CollapsibleCheckIn] Empire data:', {
-    empireTier,
-    empireRank,
-    tierType: typeof empireTier,
-    isNormie: empireTier === AccessTier.NORMIE,
-    isBizarre: empireTier === AccessTier.BIZARRE,
-    walletAddress
-  });
+  // Use selectors to prevent unnecessary re-renders
+  const walletAddress = useUnifiedAuthStore(state => state.walletAddress);
+  const walletConnected = useUnifiedAuthStore(state => state.walletConnected);
+  const empireTier = useUnifiedAuthStore(state => state.empireTier);
+  const empireRank = useUnifiedAuthStore(state => state.empireRank);
+  const farcasterConnected = useUnifiedAuthStore(state => state.farcasterConnected);
+  const farcasterUsername = useUnifiedAuthStore(state => state.farcasterUsername);
+  const farcasterFid = useUnifiedAuthStore(state => state.farcasterFid);
 
   // Refresh profile when wallet is connected but Empire data is missing
   useEffect(() => {
     if (walletConnected && walletAddress && (!empireTier || empireTier === AccessTier.NORMIE) && !empireRank) {
       console.log('[CollapsibleCheckIn] Fetching Empire data for wallet:', walletAddress);
-      refreshProfile();
+      // Access function directly from store instead of subscribing to it
+      useUnifiedAuthStore.getState().refreshProfile();
     }
-  }, [walletConnected, walletAddress, empireTier, empireRank, refreshProfile]);
+  }, [walletConnected, walletAddress, empireTier, empireRank]);
 
   // Remove auto-open - keep it collapsed by default
   // useEffect(() => {
@@ -89,7 +79,7 @@ export default function CollapsibleCheckIn({ completedRituals }: CollapsibleChec
     }
     return {
       icon: '✅',
-      text: 'Check-ins unlocked! Claim your daily rewards',
+      text: 'Check-ins unlocked!',
       color: 'text-gem-crystal'
     };
   };
@@ -149,29 +139,30 @@ export default function CollapsibleCheckIn({ completedRituals }: CollapsibleChec
         </div>
       </button>
 
-      {/* Collapsible Content */}
+      {/* UNIFIED CONTAINER - Collapsible Content */}
       {isOpen && (
-        <div className="mt-4 space-y-6 animate-in slide-in-from-top-2 duration-300">
-          {/* How It Works Section */}
-          <div className="bg-gradient-to-br from-dark-card via-dark-card to-gem-crystal/5 border border-gem-crystal/20 rounded-xl p-6">
+        <div className="mt-4 bg-gradient-to-br from-dark-card via-dark-card to-gem-crystal/5 border border-gem-crystal/20 rounded-xl overflow-hidden animate-in slide-in-from-top-2 duration-300">
+
+          {/* Section 1: How It Works */}
+          <div className="p-6">
             <h3 className="text-xl font-bold text-center mb-4 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent">
               💎 How Daily Check-In Rewards Work
             </h3>
 
             <div className="grid md:grid-cols-3 gap-4">
-              <div className="text-center p-4 bg-dark-bg/50 rounded-lg">
+              <div className="text-center p-4 bg-dark-bg/30 rounded-lg">
                 <div className="text-2xl mb-2">1️⃣</div>
                 <h4 className="font-semibold text-gem-crystal mb-2">Complete & Share 3 Rituals</h4>
                 <p className="text-xs text-gray-400">Complete and share any 3 daily rituals to unlock eligibility</p>
               </div>
 
-              <div className="text-center p-4 bg-dark-bg/50 rounded-lg">
+              <div className="text-center p-4 bg-dark-bg/30 rounded-lg">
                 <div className="text-2xl mb-2">2️⃣</div>
                 <h4 className="font-semibold text-gem-gold mb-2">Get Empire Rank</h4>
                 <p className="text-xs text-gray-400">Hold $BB tokens to rank up in the Empire</p>
               </div>
 
-              <div className="text-center p-4 bg-dark-bg/50 rounded-lg">
+              <div className="text-center p-4 bg-dark-bg/30 rounded-lg">
                 <div className="text-2xl mb-2">3️⃣</div>
                 <h4 className="font-semibold text-gem-pink mb-2">Earn $BB Daily</h4>
                 <p className="text-xs text-gray-400">Check in daily and claim rewards every 5 days!</p>
@@ -209,7 +200,7 @@ export default function CollapsibleCheckIn({ completedRituals }: CollapsibleChec
 
             {/* Farcaster Connection Status */}
             {farcasterConnected && (
-              <div className="mt-4 bg-dark-card border border-gem-crystal/30 rounded-lg p-3">
+              <div className="mt-4 bg-dark-bg/30 border border-gem-crystal/30 rounded-lg p-3">
                 <div className="flex items-center gap-2">
                   <span className="text-gem-crystal">✅</span>
                   <p className="text-sm text-gray-300">
@@ -226,18 +217,25 @@ export default function CollapsibleCheckIn({ completedRituals }: CollapsibleChec
             </div>
           </div>
 
-          {/* Rewards Table */}
-          <div>
+          {/* Divider */}
+          <div className="h-px bg-gradient-to-r from-transparent via-gem-crystal/30 to-transparent"></div>
+
+          {/* Section 2: Rewards Table - FULL COMPONENT with collapsible */}
+          <div className="p-6">
             <RewardsTable />
           </div>
 
-          {/* Check-In Component */}
-          <div>
+          {/* Divider */}
+          <div className="h-px bg-gradient-to-r from-transparent via-gem-gold/30 to-transparent"></div>
+
+          {/* Section 3: Check-In Component - FULL COMPONENT */}
+          <div className="p-6">
             <CheckIn
               userTier={empireTier as any || 'NORMIE'}
               completedRituals={completedRituals}
             />
           </div>
+
         </div>
       )}
     </div>

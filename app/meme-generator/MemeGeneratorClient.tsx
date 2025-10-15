@@ -69,7 +69,8 @@ const mockCollections: StickerCollection[] = [
 export default function MemeGeneratorPage() {
   const [selectedCollection, setSelectedCollection] = useState<string>('bizarrebeasts');
   const [canvasRef, setCanvasRef] = useState<any>(null);
-  
+  const [selectedTextOptions, setSelectedTextOptions] = useState<any>(null);
+
   // Use useCallback to prevent recreating the function on every render
   const handleCanvasReady = useCallback((ref: any) => {
     setCanvasRef(ref);
@@ -125,6 +126,7 @@ export default function MemeGeneratorPage() {
             <MemeCanvas
               onCanvasReady={handleCanvasReady}
               selectedCollection={mockCollections.find(c => c.id === selectedCollection)}
+              onTextSelected={setSelectedTextOptions}
             />
           </div>
 
@@ -143,6 +145,7 @@ export default function MemeGeneratorPage() {
                     canvasRef.updateSelectedText(updates);
                   }
                 }}
+                selectedTextOptions={selectedTextOptions}
               />
             </div>
 

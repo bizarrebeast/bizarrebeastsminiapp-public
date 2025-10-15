@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { X, Loader2, Trophy, Calendar, Coins, Users, FileText, Upload, Image, ExternalLink, Link, Save } from 'lucide-react';
+import { X, Loader2, Trophy, Calendar, Coins, Users, FileText, Upload, Image, ExternalLink, Link, Save, Image as ImageIcon } from 'lucide-react';
 import { Contest, contestQueries } from '@/lib/supabase';
 
 interface EditContestFormProps {
@@ -43,7 +43,10 @@ export default function EditContestForm({ contest, isOpen, onClose, onSuccess }:
     cta_button_text: contest.cta_button_text || '',
     cta_type: contest.cta_type || 'internal',
     cta_new_tab: contest.cta_new_tab || false,
-    track_cta_clicks: contest.track_cta_clicks ?? true
+    track_cta_clicks: contest.track_cta_clicks ?? true,
+    gallery_enabled: contest.gallery_enabled ?? false,
+    display_votes: contest.display_votes ?? true,
+    gallery_view_type: contest.gallery_view_type || 'grid'
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -52,8 +55,8 @@ export default function EditContestForm({ contest, isOpen, onClose, onSuccess }:
     setError(null);
 
     try {
-      // Get admin wallet from localStorage
-      const adminWallet = localStorage.getItem('walletAddress') || localStorage.getItem('adminWallet');
+      // Get admin wallet from standardized location
+      const adminWallet = localStorage.getItem('adminWallet');
 
       // Prepare updates, filtering out empty values
       const updates: any = {
@@ -81,6 +84,9 @@ export default function EditContestForm({ contest, isOpen, onClose, onSuccess }:
         cta_type: formData.cta_type || 'internal',
         cta_new_tab: formData.cta_new_tab || false,
         track_cta_clicks: formData.track_cta_clicks ?? true,
+        gallery_enabled: formData.gallery_enabled,
+        display_votes: formData.display_votes,
+        gallery_view_type: formData.gallery_view_type || 'grid',
         updated_at: new Date().toISOString()
       };
 
@@ -199,6 +205,24 @@ export default function EditContestForm({ contest, isOpen, onClose, onSuccess }:
             />
           </div>
 
+          {/* Game Name (conditional) */}
+          {formData.type === 'game_score' && (
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Game Name
+              </label>
+              <input
+                type="text"
+                value={formData.game_name}
+                onChange={(e) => setFormData({ ...formData, game_name: e.target.value })}
+                className="w-full px-4 py-2 bg-dark-bg border border-gray-700 rounded-lg
+                         text-white placeholder-gray-500 focus:border-gem-crystal
+                         focus:outline-none transition"
+                placeholder="e.g., Treasure Quest"
+              />
+            </div>
+          )}
+
           {/* CTA Settings */}
           <div className="space-y-4 p-4 bg-dark-bg/50 rounded-lg border border-gray-700">
             <h3 className="text-lg font-semibold text-white">Call-to-Action Settings</h3>
@@ -291,6 +315,7 @@ export default function EditContestForm({ contest, isOpen, onClose, onSuccess }:
                 onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
                 className="w-full px-4 py-2 bg-dark-bg border border-gray-700 rounded-lg
                          text-white focus:border-gem-crystal focus:outline-none transition"
+                style={{ colorScheme: 'dark' }}
               />
             </div>
             <div>
@@ -304,9 +329,324 @@ export default function EditContestForm({ contest, isOpen, onClose, onSuccess }:
                 onChange={(e) => setFormData({ ...formData, end_date: e.target.value })}
                 className="w-full px-4 py-2 bg-dark-bg border border-gray-700 rounded-lg
                          text-white focus:border-gem-crystal focus:outline-none transition"
+                style={{ colorScheme: 'dark' }}
               />
             </div>
           </div>
+
+          {/* Token Requirements */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                <Coins className="inline w-4 h-4 mr-1" />
+                Min $BB Required
+              </label>
+              <input
+                type="number"
+                min="0"
+                value={formData.min_bb_required}
+                onChange={(e) => setFormData({ ...formData, min_bb_required: e.target.value })}
+                className="w-full px-4 py-2 bg-dark-bg border border-gray-700 rounded-lg
+                         text-white focus:border-gem-crystal focus:outline-none transition"
+                placeholder="0 for free entry"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                <Users className="inline w-4 h-4 mr-1" />
+                Max Entries Per Wallet
+              </label>
+              <input
+                type="number"
+                min="1"
+                value={formData.max_entries_per_wallet}
+                onChange={(e) => setFormData({ ...formData, max_entries_per_wallet: e.target.value })}
+                className="w-full px-4 py-2 bg-dark-bg border border-gray-700 rounded-lg
+                         text-white focus:border-gem-crystal focus:outline-none transition"
+              />
+            </div>
+          </div>
+
+          {/* Prize Info */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Prize Type
+              </label>
+              <select
+                value={formData.prize_type}
+                onChange={(e) => setFormData({ ...formData, prize_type: e.target.value as any })}
+                className="w-full px-4 py-2 bg-dark-bg border border-gray-700 rounded-lg
+                         text-white focus:border-gem-crystal focus:outline-none transition"
+              >
+                <option value="tokens">Tokens</option>
+                <option value="nft">NFT</option>
+                <option value="both">Both</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Prize Amount ($BB)
+              </label>
+              <input
+                type="number"
+                min="0"
+                value={formData.prize_amount}
+                onChange={(e) => setFormData({ ...formData, prize_amount: e.target.value })}
+                className="w-full px-4 py-2 bg-dark-bg border border-gray-700 rounded-lg
+                         text-white focus:border-gem-crystal focus:outline-none transition"
+                placeholder="Optional"
+              />
+            </div>
+          </div>
+
+          {/* Rules */}
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              <FileText className="inline w-4 h-4 mr-1" />
+              Contest Rules
+            </label>
+            <textarea
+              value={formData.rules}
+              onChange={(e) => setFormData({ ...formData, rules: e.target.value })}
+              rows={3}
+              className="w-full px-4 py-2 bg-dark-bg border border-gray-700 rounded-lg
+                       text-white placeholder-gray-500 focus:border-gem-crystal
+                       focus:outline-none transition resize-none"
+              placeholder="Any specific rules or requirements..."
+            />
+          </div>
+
+          {/* Banner Image URL */}
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              <Image className="inline w-4 h-4 mr-1" />
+              Banner Image URL or Path
+            </label>
+            <input
+              type="text"
+              value={formData.banner_image_url}
+              onChange={(e) => setFormData({ ...formData, banner_image_url: e.target.value })}
+              className="w-full px-4 py-2 bg-dark-bg border border-gray-700 rounded-lg
+                       text-white placeholder-gray-500 focus:border-gem-crystal
+                       focus:outline-none transition"
+              placeholder="Full URL or path (e.g., /assets/banners/image.png)"
+            />
+            {formData.banner_image_url && (
+              <div className="mt-2 relative w-full h-32 rounded-lg overflow-hidden border border-gray-700">
+                <img
+                  src={formData.banner_image_url}
+                  alt="Banner preview"
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).style.display = 'none';
+                  }}
+                />
+              </div>
+            )}
+          </div>
+
+          {/* Voting Settings (for creative contests) */}
+          {formData.type === 'creative' && (
+            <div className="space-y-4 p-4 bg-dark-bg/50 rounded-lg border border-gray-700">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-white">Voting Settings</h3>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={formData.voting_enabled || false}
+                    onChange={(e) => setFormData({ ...formData, voting_enabled: e.target.checked })}
+                    className="rounded border-gray-700 bg-dark-bg text-gem-crystal
+                             focus:ring-gem-crystal focus:ring-offset-0"
+                  />
+                  <span className="text-sm text-gray-300">Enable Voting</span>
+                </label>
+              </div>
+
+              {formData.voting_enabled && (
+                <>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">
+                        Voting Start Date
+                      </label>
+                      <input
+                        type="datetime-local"
+                        value={formData.voting_start_date || ''}
+                        onChange={(e) => setFormData({ ...formData, voting_start_date: e.target.value })}
+                        className="w-full px-4 py-2 bg-dark-bg border border-gray-700 rounded-lg
+                                 text-white focus:border-gem-crystal focus:outline-none transition"
+                        style={{ colorScheme: 'dark' }}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">
+                        Voting End Date
+                      </label>
+                      <input
+                        type="datetime-local"
+                        value={formData.voting_end_date || ''}
+                        onChange={(e) => setFormData({ ...formData, voting_end_date: e.target.value })}
+                        className="w-full px-4 py-2 bg-dark-bg border border-gray-700 rounded-lg
+                                 text-white focus:border-gem-crystal focus:outline-none transition"
+                        style={{ colorScheme: 'dark' }}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">
+                        Voting Type
+                      </label>
+                      <select
+                        value={formData.voting_type || 'single'}
+                        onChange={(e) => setFormData({ ...formData, voting_type: e.target.value as any })}
+                        className="w-full px-4 py-2 bg-dark-bg border border-gray-700 rounded-lg
+                                 text-white focus:border-gem-crystal focus:outline-none transition"
+                      >
+                        <option value="single">Single Vote (1 per wallet)</option>
+                        <option value="multiple">Multiple Votes</option>
+                        <option value="ranked">Ranked Choice</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">
+                        Min Votes Required
+                      </label>
+                      <input
+                        type="number"
+                        min="1"
+                        value={formData.min_votes_required || 1}
+                        onChange={(e) => setFormData({ ...formData, min_votes_required: e.target.value })}
+                        className="w-full px-4 py-2 bg-dark-bg border border-gray-700 rounded-lg
+                                 text-white focus:border-gem-crystal focus:outline-none transition"
+                        placeholder="Minimum votes to determine winner"
+                      />
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+          )}
+
+          {/* Recurring Contest Settings */}
+          <div className="space-y-3 p-4 bg-dark-bg/50 rounded-lg border border-gray-700">
+            <div className="flex items-center gap-3">
+              <input
+                type="checkbox"
+                id="is_recurring_edit"
+                checked={formData.is_recurring}
+                onChange={(e) => setFormData({ ...formData, is_recurring: e.target.checked })}
+                className="w-4 h-4 text-gem-crystal bg-dark-bg border-gray-600 rounded
+                         focus:ring-gem-crystal focus:ring-2"
+              />
+              <label htmlFor="is_recurring_edit" className="text-sm font-medium text-gray-300">
+                Make this a recurring contest
+              </label>
+            </div>
+
+            {formData.is_recurring && (
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Recurrence Interval
+                </label>
+                <select
+                  value={formData.recurrence_interval}
+                  onChange={(e) => setFormData({ ...formData, recurrence_interval: e.target.value as any })}
+                  className="w-full px-4 py-2 bg-dark-bg border border-gray-700 rounded-lg
+                           text-white focus:border-gem-crystal focus:outline-none transition"
+                >
+                  <option value="daily">Daily</option>
+                  <option value="weekly">Weekly</option>
+                  <option value="monthly">Monthly</option>
+                </select>
+                <p className="text-xs text-gray-500 mt-1">
+                  A new contest will be created automatically at this interval
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Test Contest Toggle */}
+          <div className="flex items-center">
+            <input
+              type="checkbox"
+              id="is_test_edit"
+              checked={formData.is_test}
+              onChange={(e) => setFormData({ ...formData, is_test: e.target.checked })}
+              className="w-4 h-4 text-gem-crystal bg-dark-bg border-gray-600 rounded
+                       focus:ring-gem-crystal focus:ring-2 mr-3"
+            />
+            <label htmlFor="is_test_edit" className="text-sm font-medium text-gray-300">
+              🧪 Test Contest
+              <span className="block text-xs text-gray-500 mt-1">
+                Mark as test (can be filtered out in production)
+              </span>
+            </label>
+          </div>
+
+          {/* Gallery Settings - Only for creative and onboarding contests */}
+          {(formData.type === 'creative' || formData.type === 'onboarding') && (
+            <div className="bg-gradient-to-r from-gem-crystal/10 via-gem-gold/10 to-gem-pink/10
+                          border border-gem-crystal/20 rounded-lg p-4">
+              <h3 className="text-sm font-medium text-gem-crystal mb-3 flex items-center gap-2">
+                <ImageIcon className="w-4 h-4" />
+                Gallery Settings
+              </h3>
+
+              <div className="space-y-3">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={formData.gallery_enabled}
+                    onChange={(e) => setFormData({
+                      ...formData,
+                      gallery_enabled: e.target.checked
+                    })}
+                    className="rounded border-gray-700 bg-dark-bg text-gem-crystal
+                             focus:ring-gem-crystal focus:ring-offset-0"
+                  />
+                  <span className="text-white">Enable Meme Gallery</span>
+                  <span className="text-xs text-gray-400">(Shows submissions in a visual grid)</span>
+                </label>
+
+                {formData.gallery_enabled && (
+                  <>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={formData.display_votes}
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          display_votes: e.target.checked
+                        })}
+                        className="rounded border-gray-700 bg-dark-bg text-gem-crystal
+                                 focus:ring-gem-crystal focus:ring-offset-0"
+                      />
+                      <span className="text-white">Display vote counts publicly</span>
+                    </label>
+
+                    <div className="flex items-center gap-3">
+                      <label className="text-sm text-gray-300">View Type:</label>
+                      <select
+                        value={formData.gallery_view_type}
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          gallery_view_type: e.target.value as 'grid' | 'carousel'
+                        })}
+                        className="px-3 py-1 bg-dark-bg border border-gray-700 rounded
+                                 text-white focus:border-gem-crystal focus:outline-none transition"
+                      >
+                        <option value="grid">Grid View</option>
+                        <option value="carousel">Carousel View</option>
+                      </select>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* Status */}
           <div>

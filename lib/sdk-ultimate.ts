@@ -19,7 +19,7 @@ const state: SDKState = {
 };
 
 // Keep SDK warm with periodic checks
-let warmupInterval: NodeJS.Timeout | null = null;
+let warmupInterval: ReturnType<typeof setInterval> | null = null;
 
 // Initialize SDK with platform-specific approach
 const initSDK = async (): Promise<boolean> => {
@@ -253,11 +253,11 @@ export const ultimateShare = async (params: {
       // Skip extra init since we only do 1 attempt now
       // This prevents duplicate initialization
       
-      // Try the share
+      // Try the share with longer timeout for miniapp context
       const result = await Promise.race([
         farcasterSDK.actions.composeCast(composeCastParams),
-        new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Share timeout')), 5000)
+        new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('Share timeout')), 15000) // Increased to 15 seconds for miniapp
         )
       ]);
       

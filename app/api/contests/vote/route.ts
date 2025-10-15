@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { contestQueries } from '@/lib/supabase';
 import { syncVoteCount } from '@/lib/vote-sync';
+import { supabaseAdmin } from '@/lib/supabase-admin';
 
 export async function POST(request: NextRequest) {
   try {
@@ -49,11 +50,25 @@ export async function POST(request: NextRequest) {
     }
 
     if (action === 'remove') {
-      // Get the vote before removing to sync the count
-      const existingVote = await contestQueries.getUserVote(contestId, walletAddress);
+      // Get the vote before removing to sync the count (using admin client to bypass RLS)
+      const { data: existingVote } = await supabaseAdmin
+        .from('contest_votes')
+        .select('*')
+        .eq('contest_id', contestId)
+        .eq('voter_address', walletAddress.toLowerCase())
+        .single();
 
-      // Remove existing vote
-      await contestQueries.removeVote(contestId, walletAddress);
+      // Remove existing vote (using admin client to bypass RLS)
+      const { error: deleteError } = await supabaseAdmin
+        .from('contest_votes')
+        .delete()
+        .eq('contest_id', contestId)
+        .eq('voter_address', walletAddress.toLowerCase());
+
+      if (deleteError) {
+        console.error('Error removing vote:', deleteError);
+        throw deleteError;
+      }
 
       // Sync the vote count for the affected submission
       if (existingVote) {
@@ -73,9 +88,14 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      // Check if submission exists and is approved
-      const submissions = await contestQueries.getContestSubmissions(contestId, 'approved');
-      const submission = submissions.find(s => s.id === submissionId);
+      // Check if submission exists and is approved (using admin client to bypass RLS)
+      const { data: submissions } = await supabaseAdmin
+        .from('contest_submissions')
+        .select('*')
+        .eq('contest_id', contestId)
+        .eq('status', 'approved');
+
+      const submission = submissions?.find(s => s.id === submissionId);
 
       if (!submission) {
         return NextResponse.json(
@@ -84,16 +104,43 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      // Check if user already voted (to handle vote changes)
-      const existingVote = await contestQueries.getUserVote(contestId, walletAddress);
+      // Check if user already voted (using admin client to bypass RLS)
+      const { data: existingVote } = await supabaseAdmin
+        .from('contest_votes')
+        .select('*')
+        .eq('contest_id', contestId)
+        .eq('voter_address', walletAddress.toLowerCase())
+        .single();
 
       if (existingVote) {
-        // Remove old vote first
-        await contestQueries.removeVote(contestId, walletAddress);
+        // Remove old vote first (using admin client to bypass RLS)
+        const { error: deleteError } = await supabaseAdmin
+          .from('contest_votes')
+          .delete()
+          .eq('contest_id', contestId)
+          .eq('voter_address', walletAddress.toLowerCase());
+
+        if (deleteError) {
+          console.error('Error removing old vote:', deleteError);
+          throw deleteError;
+        }
       }
 
-      // Cast new vote
-      const vote = await contestQueries.castVote(contestId, submissionId, walletAddress);
+      // Cast new vote (using admin client to bypass RLS)
+      const { data: vote, error: voteError } = await supabaseAdmin
+        .from('contest_votes')
+        .insert({
+          contest_id: contestId,
+          submission_id: submissionId,
+          voter_address: walletAddress.toLowerCase()
+        })
+        .select()
+        .single();
+
+      if (voteError) {
+        console.error('Error casting vote:', voteError);
+        throw voteError;
+      }
 
       // Sync the vote count to the submission
       await syncVoteCount(submissionId);
@@ -132,9 +179,15 @@ export async function GET(request: NextRequest) {
     }
 
     if (walletAddress) {
-      // Get user's vote
-      const vote = await contestQueries.getUserVote(contestId, walletAddress);
-      return NextResponse.json({ vote });
+      // Get user's vote (using admin client to bypass RLS)
+      const { data: vote } = await supabaseAdmin
+        .from('contest_votes')
+        .select('*')
+        .eq('contest_id', contestId)
+        .eq('voter_address', walletAddress.toLowerCase())
+        .single();
+
+      return NextResponse.json({ vote: vote || null });
     } else {
       // Get all voting results
       const results = await contestQueries.getVotingResults(contestId);

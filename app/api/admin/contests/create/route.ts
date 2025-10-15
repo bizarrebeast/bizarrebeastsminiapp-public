@@ -5,13 +5,65 @@ import { validateAdminAccess } from '@/lib/admin';
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    
+
     // Validate admin access
     if (!validateAdminAccess(body.created_by)) {
       return NextResponse.json(
         { error: 'Unauthorized: Admin access required' },
         { status: 403 }
       );
+    }
+
+    // Validate dates
+    if (body.start_date && body.end_date) {
+      const startDate = new Date(body.start_date);
+      const endDate = new Date(body.end_date);
+
+      if (endDate <= startDate) {
+        return NextResponse.json(
+          { error: 'End date must be after start date' },
+          { status: 400 }
+        );
+      }
+    }
+
+    // Validate voting dates if voting is enabled
+    if (body.voting_enabled && body.voting_start_date && body.voting_end_date) {
+      const votingStart = new Date(body.voting_start_date);
+      const votingEnd = new Date(body.voting_end_date);
+      const startDate = body.start_date ? new Date(body.start_date) : null;
+      const endDate = body.end_date ? new Date(body.end_date) : null;
+
+      if (votingEnd <= votingStart) {
+        return NextResponse.json(
+          { error: 'Voting end date must be after voting start date' },
+          { status: 400 }
+        );
+      }
+
+      // Allow voting period to equal or be within contest dates
+      if (startDate && endDate) {
+        // Convert to timestamps for accurate comparison
+        const contestStartMs = startDate.getTime();
+        const contestEndMs = endDate.getTime();
+        const votingStartMs = votingStart.getTime();
+        const votingEndMs = votingEnd.getTime();
+
+        if (votingStartMs < contestStartMs || votingEndMs > contestEndMs) {
+          return NextResponse.json(
+            {
+              error: 'Voting period must be within contest dates',
+              debug: {
+                contestStart: startDate.toISOString(),
+                contestEnd: endDate.toISOString(),
+                votingStart: votingStart.toISOString(),
+                votingEnd: votingEnd.toISOString()
+              }
+            },
+            { status: 400 }
+          );
+        }
+      }
     }
 
     // Prepare contest data

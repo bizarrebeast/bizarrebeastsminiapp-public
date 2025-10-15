@@ -1,15 +1,16 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { TextOptions } from '@/types';
 import { Type, ChevronDown, ChevronUp } from 'lucide-react';
 
 interface TextControlsProps {
   onAddText: (text: string, options: TextOptions) => void;
   onUpdateText?: (updates: Partial<TextOptions>) => void;
+  selectedTextOptions?: TextOptions | null;
 }
 
-export default function TextControls({ onAddText, onUpdateText }: TextControlsProps) {
+export default function TextControls({ onAddText, onUpdateText, selectedTextOptions }: TextControlsProps) {
   const [topText, setTopText] = useState('');
   const [bottomText, setBottomText] = useState('');
   const [customText, setCustomText] = useState('');
@@ -23,6 +24,18 @@ export default function TextControls({ onAddText, onUpdateText }: TextControlsPr
     position: 'top',
     align: 'center',
   });
+
+  // Sync text options when a text object is selected on canvas
+  useEffect(() => {
+    if (selectedTextOptions) {
+      console.log('📝 TEXT CONTROLS: Syncing with selected text:', selectedTextOptions);
+      console.log('📝 TEXT CONTROLS: Current state before sync:', textOptions);
+      setTextOptions(selectedTextOptions);
+      console.log('📝 TEXT CONTROLS: State after sync (will update on next render)');
+    } else {
+      console.log('📝 TEXT CONTROLS: Selection cleared, keeping current options');
+    }
+  }, [selectedTextOptions]);
 
   const fonts = ['Impact', 'Arial', 'Comic Sans'];
 

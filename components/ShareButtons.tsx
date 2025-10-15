@@ -10,7 +10,7 @@ import { useUnifiedAuthStore } from '@/store/useUnifiedAuthStore';
 interface ShareButtonsProps {
   imageDataUrl?: string;
   customText?: string;
-  shareType?: 'default' | 'meme' | 'rank' | 'ritual' | 'checkin' | 'claim' | 'milestone5' | 'milestone15' | 'milestone30' | 'streakbreak' | 'contest' | 'contestEntry' | 'contestPosition' | 'contestWinner';
+  shareType?: 'default' | 'meme' | 'rank' | 'ritual' | 'checkin' | 'claim' | 'milestone5' | 'milestone15' | 'milestone30' | 'streakbreak' | 'contest' | 'contestEntry' | 'contestPosition' | 'contestWinner' | 'swap' | 'tip' | 'flip' | 'flipWin' | 'flipPrize';
   rank?: number;
   ritualData?: {
     id: number | string;
@@ -42,6 +42,21 @@ interface ShareButtonsProps {
     position?: number;
     score?: string | number;
   };
+  swapData?: {
+    txHash?: string;
+  };
+  tipData?: {
+    amount: string;
+    recipient: string;
+    recipientFid?: number;
+    txHash?: string;
+  };
+  flipPrizeData?: {
+    prizeName: string;
+    prizeValue: string;
+    drawingDate: string;
+    totalEntries: number;
+  };
   className?: string;
   showLabels?: boolean;
   buttonSize?: 'sm' | 'md' | 'lg';
@@ -59,6 +74,9 @@ export default function ShareButtons({
   claimData,
   milestoneData,
   contestData,
+  swapData,
+  tipData,
+  flipPrizeData,
   className = '',
   showLabels = true,
   buttonSize = 'md',
@@ -66,71 +84,217 @@ export default function ShareButtons({
   onVerified
 }: ShareButtonsProps) {
   const [sharing, setSharing] = useState<SharePlatform | null>(null);
+  const [verificationStatus, setVerificationStatus] = useState<'idle' | 'verifying' | 'success' | 'failed'>('idle');
+  const [verificationError, setVerificationError] = useState<string>('');
+  const [lastShareId, setLastShareId] = useState<string | null>(null);
+  const [verificationScore, setVerificationScore] = useState<number>(0);
   const { userId, walletAddress, farcasterFid } = useUnifiedAuthStore();
 
   // Track share with our verification system
   const trackShare = async (platform: SharePlatform, shareText: string, shareUrl: string) => {
     try {
-      const response = await fetch('/api/shares/track', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          userId,
-          shareType: shareType === 'contestEntry' ? 'contest_entry' :
-                    shareType === 'contestPosition' ? 'contest_position' :
-                    shareType === 'contestWinner' ? 'contest_winner' :
-                    shareType,
-          sharePlatform: platform,
-          contentId: ritualData?.id?.toString() || contestData?.name,
-          contentData: {
-            ritualData,
-            checkInData,
-            claimData,
-            milestoneData,
-            contestData,
-            rank
-          },
-          shareUrl,
-          shareText,
-          walletAddress,
-          farcasterFid
-        })
-      });
+      // Ritual shares are tracked via the main share tracking system
+      // No need for separate ritual share tracking
 
-      const result = await response.json();
-
-      if (result.success) {
-        console.log('Share tracked:', result.shareId);
-
-        // Auto-verify for eligible platforms
-        if (platform === 'farcaster' || platform === 'telegram') {
-          const verifyResponse = await fetch('/api/shares/verify', {
+      // Try main share tracking with retry on rate limit
+      let shareId = null;
+      let retries = 0;
+      while (retries < 3) {
+        try {
+          const response = await fetch('/api/shares/track', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-              shareId: result.shareId,
-              platform,
-              verificationData: platform === 'telegram' ? { miniapp: true } : {}
+              userId,
+              shareType: shareType === 'contestEntry' ? 'contest_entry' :
+                        shareType === 'contestPosition' ? 'contest_position' :
+                        shareType === 'contestWinner' ? 'contest_winner' :
+                        shareType,
+              sharePlatform: platform,
+              contentId: ritualData?.id?.toString() || contestData?.name || swapData?.txHash || tipData?.txHash,
+              contentData: {
+                ritualData,
+                checkInData,
+                claimData,
+                milestoneData,
+                contestData,
+                swapData,
+                tipData,
+                rank
+              },
+              shareUrl,
+              shareText,
+              walletAddress,
+              farcasterFid
             })
           });
 
-          const verifyResult = await verifyResponse.json();
-          if (verifyResult.success && verifyResult.verified) {
-            console.log('Share verified:', verifyResult.pointsAwarded, 'points awarded');
-            // Call the onVerified callback if provided (for ritual completion)
-            if (onVerified) {
-              onVerified();
+          if (response.status === 429) {
+            retries++;
+            console.log(`Rate limited, retrying in ${retries} second...`);
+            await new Promise(resolve => setTimeout(resolve, retries * 1000));
+            continue;
+          }
+
+          const result = await response.json();
+          shareId = result.shareId;
+          break;
+        } catch (error) {
+          console.error('Share tracking attempt failed:', error);
+          retries++;
+          if (retries >= 3) break;
+        }
+      }
+
+      const result = { success: !!shareId, shareId };
+
+      if (result.success && shareId) {
+        console.log('Share tracked:', shareId);
+        setLastShareId(shareId);
+
+        // For rituals on Farcaster, start verification polling
+        if (shareType === 'ritual' && platform === 'farcaster') {
+          setVerificationStatus('verifying');
+          pollForVerification(shareId, platform);
+        } else {
+          // For non-ritual shares or other platforms, use immediate verification
+          if (platform === 'farcaster' || platform === 'telegram') {
+            const verifyResponse = await fetch('/api/shares/verify', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                shareId: shareId,
+                platform,
+                verificationData: platform === 'telegram' ? { miniapp: true } : {}
+              })
+            });
+
+            const verifyResult = await verifyResponse.json();
+            if (verifyResult.success && verifyResult.verified) {
+              console.log('Share verified:', verifyResult.pointsAwarded, 'points awarded');
+              if (onVerified) {
+                onVerified();
+              }
             }
           }
+        }
+      } else {
+        // Share tracking failed
+        if (shareType === 'ritual') {
+          setVerificationStatus('failed');
+          setVerificationError('Failed to track share. Please try again.');
         }
       }
     } catch (error) {
       console.error('Share tracking failed:', error);
-      // Don't block sharing if tracking fails
+      if (shareType === 'ritual') {
+        setVerificationStatus('failed');
+        setVerificationError('An error occurred. Please try again.');
+      }
+    }
+  };
+
+  // Poll for verification status (for rituals)
+  const pollForVerification = async (shareId: string, platform: SharePlatform) => {
+    const maxAttempts = 24; // 2 minutes total (24 * 5 seconds)
+    let attempts = 0;
+
+    const poll = async () => {
+      attempts++;
+
+      try {
+        const verifyResponse = await fetch('/api/shares/verify', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            shareId,
+            platform,
+            verificationData: {}
+          })
+        });
+
+        const verifyResult = await verifyResponse.json();
+
+        if (verifyResult.verified) {
+          // Success!
+          setVerificationStatus('success');
+          setVerificationScore(verifyResult.verificationScore || 100);
+          console.log('✅ Ritual verification successful:', verifyResult);
+
+          // Call onVerified callback for ritual completion
+          if (onVerified) {
+            onVerified();
+          }
+          return;
+        }
+
+        // Not verified yet, check if we should retry
+        if (attempts < maxAttempts) {
+          // Wait 5 seconds before next attempt
+          setTimeout(poll, 5000);
+        } else {
+          // Max attempts reached
+          setVerificationStatus('failed');
+          setVerificationError(verifyResult.message || 'Share verification timed out. Please ensure your cast includes the ritual URL or hashtag.');
+          console.log('❌ Ritual verification failed after max attempts');
+        }
+      } catch (error) {
+        console.error('Verification polling error:', error);
+
+        if (attempts < maxAttempts) {
+          setTimeout(poll, 5000);
+        } else {
+          setVerificationStatus('failed');
+          setVerificationError('Verification failed. Please try again.');
+        }
+      }
+    };
+
+    // Start polling after a 3-second delay (give Farcaster time to index)
+    setTimeout(poll, 3000);
+  };
+
+  // Manual retry verification
+  const retryVerification = async () => {
+    if (!lastShareId) return;
+
+    setVerificationStatus('verifying');
+    setVerificationError('');
+
+    try {
+      const verifyResponse = await fetch('/api/shares/verify', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          shareId: lastShareId,
+          platform: 'farcaster',
+          verificationData: {}
+        })
+      });
+
+      const verifyResult = await verifyResponse.json();
+
+      if (verifyResult.verified) {
+        setVerificationStatus('success');
+        setVerificationScore(verifyResult.verificationScore || 100);
+        if (onVerified) {
+          onVerified();
+        }
+      } else {
+        setVerificationStatus('failed');
+        setVerificationError(verifyResult.message || 'Verification failed. Please ensure your cast includes the ritual URL or specific hashtag.');
+      }
+    } catch (error) {
+      setVerificationStatus('failed');
+      setVerificationError('Retry failed. Please try sharing again.');
     }
   };
 
@@ -152,9 +316,16 @@ export default function ShareButtons({
             shareText = shareText.replace('#{rank}', rank.toString());
           }
           if (ritualData && shareType === 'ritual') {
+            // Note: Rituals should now always use customText prop with hashtag pre-filled
+            // This fallback is kept for backwards compatibility
             shareText = shareText.replace('{id}', ritualData.id.toString());
             shareText = shareText.replace('{title}', ritualData.title);
             shareText = shareText.replace('{description}', ritualData.description);
+
+            // Use ritual-specific hashtag from RITUAL_HASHTAGS
+            const { RITUAL_HASHTAGS } = await import('@/lib/ritual-hashtags');
+            const ritualHashtag = RITUAL_HASHTAGS[Number(ritualData.id)] || '#BBRituals';
+            shareText = shareText.replace('{ritualHashtag}', ritualHashtag);
           }
           // Check-in placeholders
           if (checkInData && shareType === 'checkin') {
@@ -199,6 +370,24 @@ export default function ShareButtons({
             if (contestData.score) {
               shareText = shareText.replace(/\{score\}/g, contestData.score.toString());
             }
+          }
+          // Tip placeholders
+          if (tipData && shareType === 'tip') {
+            shareText = shareText.replace(/\{amount\}/g, tipData.amount);
+            shareText = shareText.replace(/\{recipient\}/g, tipData.recipient);
+          }
+          // Flip prize placeholders
+          if (flipPrizeData && (shareType === 'flip' || shareType === 'flipWin' || shareType === 'flipPrize')) {
+            // Create prizeDisplay: show "Name (Value)" or just "Name" if they're the same
+            const prizeDisplay = flipPrizeData.prizeName === flipPrizeData.prizeValue
+              ? flipPrizeData.prizeName
+              : `${flipPrizeData.prizeName} (${flipPrizeData.prizeValue})`;
+
+            shareText = shareText.replace(/\{prizeDisplay\}/g, prizeDisplay);
+            shareText = shareText.replace(/\{prizeName\}/g, flipPrizeData.prizeName);
+            shareText = shareText.replace(/\{prizeValue\}/g, flipPrizeData.prizeValue);
+            shareText = shareText.replace(/\{drawingDate\}/g, flipPrizeData.drawingDate);
+            shareText = shareText.replace(/\{totalEntries\}/g, flipPrizeData.totalEntries.toString());
           }
         }
 
@@ -305,6 +494,24 @@ export default function ShareButtons({
               text = text.replace(/\{score\}/g, contestData.score.toString());
             }
           }
+          // Tip placeholders
+          if (tipData && shareType === 'tip') {
+            text = text.replace(/\{amount\}/g, tipData.amount);
+            text = text.replace(/\{recipient\}/g, tipData.recipient);
+          }
+          // Flip prize placeholders
+          if (flipPrizeData && (shareType === 'flip' || shareType === 'flipWin' || shareType === 'flipPrize')) {
+            // Create prizeDisplay: show "Name (Value)" or just "Name" if they're the same
+            const prizeDisplay = flipPrizeData.prizeName === flipPrizeData.prizeValue
+              ? flipPrizeData.prizeName
+              : `${flipPrizeData.prizeName} (${flipPrizeData.prizeValue})`;
+
+            text = text.replace(/\{prizeDisplay\}/g, prizeDisplay);
+            text = text.replace(/\{prizeName\}/g, flipPrizeData.prizeName);
+            text = text.replace(/\{prizeValue\}/g, flipPrizeData.prizeValue);
+            text = text.replace(/\{drawingDate\}/g, flipPrizeData.drawingDate);
+            text = text.replace(/\{totalEntries\}/g, flipPrizeData.totalEntries.toString());
+          }
         }
 
         // Remove hashtags for X/Twitter and Telegram (2025 best practices)
@@ -362,10 +569,40 @@ export default function ShareButtons({
     lg: 'w-6 h-6'
   };
 
+  // Get ritual-specific guidance for error messages
+  const getRitualGuidance = () => {
+    if (!ritualData?.id) return '';
+
+    const ritualId = Number(ritualData.id);
+    const hashtags: { [key: number]: string } = {
+      1: '#BBRitualMeme',
+      2: '#BBRitualDex',
+      3: '#BBRitualBRND',
+      4: '#BBRitualCreateGive',
+      5: '#BBRitualBelieve',
+      6: '#BBRitualGames',
+      7: '#BBRitualVibe',
+      8: '#BBRitualSwap',
+      9: '#BBRitualEmpire',
+      10: '#BBRitualProveIt',
+      0: '#BBRitualFeatured'
+    };
+
+    const requiredHashtag = hashtags[ritualId] || '#BBRituals';
+    return `Make sure to include ${requiredHashtag} and the ritual URL in your cast.`;
+  };
+
   return (
-    <div className={`flex items-center gap-2 ${className}`}>
-      {/* Farcaster Button (First) */}
-      <button
+    <div className={`${className}`}>
+      {/* Share Buttons */}
+      <div className="flex items-center justify-center gap-2">
+        {/* Optional Labels */}
+        {showLabels && (
+          <span className="text-xs text-gray-400 mr-2">Share to:</span>
+        )}
+
+        {/* Farcaster Button (First) */}
+        <button
         onClick={() => handleShare('farcaster')}
         disabled={sharing === 'farcaster'}
         className={`
@@ -438,10 +675,75 @@ export default function ShareButtons({
           </svg>
         )}
       </button>
+      </div>
 
-      {/* Optional Labels */}
-      {showLabels && (
-        <span className="text-xs text-gray-400 ml-2">Share to:</span>
+      {/* Verification Status Display (for rituals) */}
+      {shareType === 'ritual' && verificationStatus !== 'idle' && (
+        <div className="mt-3 p-3 rounded-lg border animate-in fade-in duration-300">
+          {/* Verifying State */}
+          {verificationStatus === 'verifying' && (
+            <div className="flex items-start gap-3">
+              <div className="flex-shrink-0 mt-0.5">
+                <div className="w-5 h-5 animate-spin rounded-full border-2 border-purple-500 border-t-transparent" />
+              </div>
+              <div className="flex-1">
+                <div className="text-sm font-medium text-purple-300">
+                  Verifying your share...
+                </div>
+                <div className="text-xs text-gray-400 mt-1">
+                  This takes up to 2 minutes while we check Farcaster
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Success State */}
+          {verificationStatus === 'success' && (
+            <div className="flex items-start gap-3">
+              <div className="flex-shrink-0 mt-0.5">
+                <svg className="w-5 h-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div className="flex-1">
+                <div className="text-sm font-medium text-green-400">
+                  ✅ Ritual completed!
+                </div>
+                {verificationScore > 0 && (
+                  <div className="text-xs text-gray-400 mt-1">
+                    Verification score: {verificationScore}/100
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Failed State */}
+          {verificationStatus === 'failed' && (
+            <div className="flex items-start gap-3">
+              <div className="flex-shrink-0 mt-0.5">
+                <svg className="w-5 h-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div className="flex-1">
+                <div className="text-sm font-medium text-red-400">
+                  Share not found
+                </div>
+                <div className="text-xs text-gray-400 mt-1">
+                  {verificationError || getRitualGuidance()}
+                </div>
+                <button
+                  onClick={retryVerification}
+                  disabled={!lastShareId}
+                  className="mt-2 px-3 py-1.5 text-xs font-medium text-white bg-purple-600 hover:bg-purple-500 disabled:bg-gray-700 disabled:text-gray-500 rounded transition-colors"
+                >
+                  Retry Verification
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
       )}
     </div>
   );

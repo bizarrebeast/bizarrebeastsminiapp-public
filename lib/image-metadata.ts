@@ -141,9 +141,14 @@ export async function extractImageMetadata(file: File): Promise<ImageMetadata> {
 }
 
 /**
- * Get image dimensions
+ * Get image dimensions (client-side only)
  */
 async function getImageDimensions(file: File): Promise<{ width: number; height: number } | null> {
+  // Skip on server-side (Image and URL.createObjectURL don't exist in Node.js)
+  if (typeof window === 'undefined') {
+    return null;
+  }
+
   return new Promise((resolve) => {
     const img = new Image();
     img.onload = () => {

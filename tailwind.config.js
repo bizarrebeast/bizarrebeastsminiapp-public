@@ -46,6 +46,7 @@ module.exports = {
         'sparkle': 'sparkle 2s ease-in-out infinite',
         'glow': 'glow 2s ease-in-out infinite',
         'float': 'float 3s ease-in-out infinite',
+        'flip': 'flip 2s ease-out',
       },
       keyframes: {
         sparkle: {
@@ -59,6 +60,14 @@ module.exports = {
         float: {
           '0%, 100%': { transform: 'translateY(0px)' },
           '50%': { transform: 'translateY(-10px)' },
+        },
+        flip: {
+          '0%': { transform: 'rotateX(0deg)' },
+          '20%': { transform: 'rotateX(360deg)' },
+          '40%': { transform: 'rotateX(720deg)' },
+          '60%': { transform: 'rotateX(900deg)' },
+          '80%': { transform: 'rotateX(1020deg)' },
+          '100%': { transform: 'rotateX(1080deg)' },
         },
       },
       boxShadow: {

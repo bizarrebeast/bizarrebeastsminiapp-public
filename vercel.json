@@ -1,5 +1,21 @@
 {
   "buildCommand": "npm run build",
   "outputDirectory": ".next",
-  "framework": "nextjs"
+  "framework": "nextjs",
+  "functions": {
+    "app/api/contests/submit/route": {
+      "maxDuration": 30,
+      "memory": 1024
+    }
+  },
+  "crons": [
+    {
+      "path": "/api/cron/recurring-contests",
+      "schedule": "0 1 * * *"
+    },
+    {
+      "path": "/api/flip/process-withdrawals",
+      "schedule": "*/5 * * * *"
+    }
+  ]
 }

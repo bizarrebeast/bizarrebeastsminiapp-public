@@ -187,19 +187,19 @@ export const TIER_FEATURES: Record<AccessTier, FeatureAccess> = {
   [AccessTier.NORMIE]: {
     // Watermark
     watermarkOptional: false,  // Watermark required
-    
+
     // Backgrounds
-    uploadCustomBackground: false,  // No custom uploads
-    
+    uploadCustomBackground: true,  // All users can upload backgrounds
+
     // Collections - all unlocked
     collections: {
       bizarrebeasts: true,  // All collections unlocked
       'treasure-quest': true,  // Individual stickers are tier-gated
       vibecards: true,  // Individual stickers are tier-gated
     },
-    
-    // Stickers - basic only
-    stickerTierAccess: 'basic',
+
+    // Stickers - all stickers unlocked for everyone
+    stickerTierAccess: 'all',
     
     // Contests
     contestParticipation: false,  // Can view but not participate
@@ -249,9 +249,9 @@ export function canRemoveWatermark(userTier: AccessTier): boolean {
 }
 
 export function canUploadBackground(userTier: AccessTier, collectionId: string): boolean {
-  // Only BizarreBeasts collection allows uploads, and only for BIZARRE/Weirdo
+  // BizarreBeasts collection allows uploads for all users
   if (collectionId !== 'bizarrebeasts') return false;
-  return TIER_FEATURES[userTier]?.uploadCustomBackground || false;
+  return true;  // All users can upload backgrounds
 }
 
 export function canAccessSticker(userTier: AccessTier, stickerTier: StickerTier): boolean {

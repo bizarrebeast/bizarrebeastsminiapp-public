@@ -6,15 +6,37 @@ export default function RewardsTable() {
   const [showRewardDetails, setShowRewardDetails] = useState(false);
 
   return (
-    <div className="bg-gradient-to-br from-black/80 via-gem-dark/50 to-black/80 border border-gem-gold/20 rounded-xl p-6 backdrop-blur-sm">
+    <div className="bg-gradient-to-br from-black/80 via-dark-card/50 to-black/80 border border-gem-gold/20 rounded-xl p-6 backdrop-blur-sm">
       <button
-        onClick={() => setShowRewardDetails(!showRewardDetails)}
-        className="w-full flex items-center justify-between text-left"
+        type="button"
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          console.log('BUTTON CLICKED!', showRewardDetails);
+          setShowRewardDetails(prev => !prev);
+        }}
+        onMouseDown={(e) => {
+          console.log('MOUSE DOWN EVENT!');
+        }}
+        onMouseUp={(e) => {
+          console.log('MOUSE UP EVENT!');
+        }}
+        onPointerDown={(e) => {
+          console.log('POINTER DOWN EVENT!');
+        }}
+        onKeyDown={(e) => {
+          console.log('KEY DOWN EVENT:', e.key);
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            setShowRewardDetails(prev => !prev);
+          }
+        }}
+        className="w-full flex items-center justify-between cursor-pointer hover:opacity-80 transition-opacity select-none bg-transparent border-0 p-0 text-left"
       >
         <h3 className="text-xl font-bold bg-gradient-to-r from-gem-gold to-gem-crystal bg-clip-text text-transparent">
           💎 Reward Structure & Milestones
         </h3>
-        <span className="text-gem-crystal text-2xl">
+        <span className="text-gem-crystal text-2xl font-bold">
           {showRewardDetails ? '−' : '+'}
         </span>
       </button>

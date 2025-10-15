@@ -105,12 +105,13 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Get user's verified shares
+    // Get user's verified RITUAL shares (not contests, checkins, etc.)
     const { data: shares, error: sharesError } = await supabase
       .from('user_shares')
       .select('*')
       .eq('user_id', userId)
       .eq('verified', true)
+      .eq('share_type', 'ritual')  // ONLY ritual shares count
       .order('created_at', { ascending: false });
 
     if (sharesError) {
@@ -271,7 +272,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    let query = supabase.from('user_shares').select('*').eq('verified', true);
+    let query = supabase.from('user_shares').select('*').eq('verified', true).eq('share_type', 'ritual');
 
     if (userId) {
       query = query.eq('user_id', userId);
@@ -287,7 +288,8 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({
           qualifiedShares: 0,
           sharesRequired: CHECKIN_UNLOCK_CONFIG.SHARES_REQUIRED,
-          meetsRequirements: false
+          meetsRequirements: false,
+          message: '3 verified ritual shares required for check-in unlock'
         });
       }
 

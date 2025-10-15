@@ -5,6 +5,7 @@
  */
 
 import sdk from '@farcaster/miniapp-sdk';
+import { detectFarcasterContext } from './farcaster-detection';
 
 // Configuration
 const MAX_RETRIES = 10; // 10 seconds total
@@ -101,10 +102,11 @@ export async function initializeBBAuth(): Promise<{
   try {
     console.log('🚀 Initializing BB Auth...');
 
-    // Check if in miniapp
-    const isInMiniapp = await sdk.isInMiniApp();
+    // Use enhanced detection
+    const detection = await detectFarcasterContext();
+    console.log(`🔍 Farcaster detection: ${detection.isInMiniapp} (${detection.method})`);
 
-    if (!isInMiniapp) {
+    if (!detection.isInMiniapp) {
       console.log('🌐 Not in Farcaster miniapp, using fallback auth');
       return { success: false, error: 'Not in miniapp context' };
     }
@@ -140,7 +142,20 @@ export async function initializeBBAuth(): Promise<{
     // Step 3: Try to get connected wallet
     let wallet: string | null = null;
     try {
-      const accounts = await provider.request({ method: 'eth_accounts' }) as string[];
+      // First check if already connected with eth_accounts
+      let accounts = await provider.request({ method: 'eth_accounts' }) as string[];
+
+      // If no accounts, try to request access (this will prompt user if needed)
+      if (!accounts || accounts.length === 0) {
+        console.log('💳 No connected wallet, requesting access...');
+        try {
+          accounts = await provider.request({ method: 'eth_requestAccounts' }) as string[];
+          console.log('💳 Wallet access granted');
+        } catch (requestError) {
+          console.log('💳 User declined wallet access or not available');
+        }
+      }
+
       wallet = accounts?.[0] || null;
       console.log('💳 Connected wallet:', wallet || 'none');
     } catch (error) {
@@ -217,10 +232,18 @@ export async function requestWalletConnection(): Promise<string | null> {
       throw new Error('No wallet provider available');
     }
 
-    // Request accounts
-    const accounts = await provider.request({
-      method: 'eth_requestAccounts'
+    // First check if already connected
+    let accounts = await provider.request({
+      method: 'eth_accounts'
     }) as string[];
+
+    // If not connected, request access
+    if (!accounts || accounts.length === 0) {
+      console.log('🔐 No wallet connected, requesting access...');
+      accounts = await provider.request({
+        method: 'eth_requestAccounts'
+      }) as string[];
+    }
 
     const wallet = accounts?.[0];
 

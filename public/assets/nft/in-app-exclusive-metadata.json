@@ -1,0 +1,51 @@
+{
+  "name": "BizBe's Booty Shake",
+  "description": "The first-ever BizarreBeasts In-App Exclusive NFT! Watch BizBe shake their legendary booty in this animated collectible. Limited to 500 pieces, minted exclusively with $BB tokens.\n\n💎 100% of proceeds used to fund community rewards, treasury drops, and token burns\n🎨 Edition 1 of the In-App Exclusive Collection\n🔥 Dynamic pricing: 5M-20M $BB (rewards early supporters!)\n🎮 Max 5 per wallet\n\n⚡ Only mintable inside the BizarreBeasts miniapp",
+  "image": "ipfs://QmSmjPfYX9cUCsXNwjGmK6MrngoCWzGqLnqcUdyKM8hwE4",
+  "animation_url": "ipfs://QmSmjPfYX9cUCsXNwjGmK6MrngoCWzGqLnqcUdyKM8hwE4",
+  "external_url": "https://bbapp.bizarrebeasts.io",
+  "attributes": [
+    {
+      "trait_type": "Collection",
+      "value": "In-App Exclusive"
+    },
+    {
+      "trait_type": "Edition",
+      "value": "1"
+    },
+    {
+      "trait_type": "Type",
+      "value": "Animated"
+    },
+    {
+      "trait_type": "Character",
+      "value": "BizBe"
+    },
+    {
+      "trait_type": "Rarity",
+      "value": "Limited Edition"
+    },
+    {
+      "trait_type": "Max Supply",
+      "value": "500"
+    },
+    {
+      "trait_type": "Payment Token",
+      "value": "BB"
+    },
+    {
+      "trait_type": "Mint Location",
+      "value": "BizarreBeasts Miniapp"
+    }
+  ],
+  "properties": {
+    "collection": "BizarreBeasts In-App Exclusives",
+    "series": "Treasure Quest Special",
+    "max_supply": 500,
+    "max_per_wallet": 5,
+    "payment_token": "BB",
+    "starting_price": "5000000",
+    "ending_price": "20000000",
+    "proceeds_allocation": "100% of proceeds used to fund community rewards, treasury drops, and token burns"
+  }
+}

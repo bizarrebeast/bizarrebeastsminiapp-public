@@ -99,8 +99,13 @@ export default function CreativeAssetsPage() {
   // Style settings
   const [selectedGradient, setSelectedGradient] = useState(GRADIENT_PRESETS[0]);
   const [gradientAngle, setGradientAngle] = useState(90);
-  const [hasBackground, setHasBackground] = useState(false);
+  const [backgroundType, setBackgroundType] = useState<'solid' | 'gradient' | 'none'>('none');
   const [backgroundColor, setBackgroundColor] = useState('#0A0B0F');
+  const [backgroundGradient, setBackgroundGradient] = useState(GRADIENT_PRESETS[0]);
+  const [backgroundGradientAngle, setBackgroundGradientAngle] = useState(90);
+  const [textColor, setTextColor] = useState('#FFFFFF');
+  const [useGradientText, setUseGradientText] = useState(true);
+  const [hideTextForDownload, setHideTextForDownload] = useState(false);
 
   // Canvas settings
   const [canvasSize, setCanvasSize] = useState(SIZE_PRESETS[0]);
@@ -138,10 +143,30 @@ export default function CreativeAssetsPage() {
     // Clear canvas
     ctx.clearRect(0, 0, width, height);
 
-    // Draw background if enabled
-    if (hasBackground) {
+    // Draw background based on type
+    if (backgroundType === 'solid') {
       ctx.fillStyle = backgroundColor;
       ctx.fillRect(0, 0, width, height);
+    } else if (backgroundType === 'gradient') {
+      // Create background gradient based on angle
+      const angleRad = (backgroundGradientAngle * Math.PI) / 180;
+      const x1 = width / 2 - (Math.cos(angleRad) * width) / 2;
+      const y1 = height / 2 - (Math.sin(angleRad) * height) / 2;
+      const x2 = width / 2 + (Math.cos(angleRad) * width) / 2;
+      const y2 = height / 2 + (Math.sin(angleRad) * height) / 2;
+
+      const bgGradient = ctx.createLinearGradient(x1, y1, x2, y2);
+      backgroundGradient.colors.forEach((color, index) => {
+        bgGradient.addColorStop(index / (backgroundGradient.colors.length - 1), color);
+      });
+
+      ctx.fillStyle = bgGradient;
+      ctx.fillRect(0, 0, width, height);
+    }
+
+    // Skip text rendering if hideTextForDownload is enabled
+    if (hideTextForDownload) {
+      return;
     }
 
     // Create gradient across full text width
@@ -159,28 +184,36 @@ export default function CreativeAssetsPage() {
       }
     });
 
-    // Position gradient based on text alignment and width
-    let gradientStartX = 0;
-    if (textAlign === 'center') {
-      gradientStartX = (width - maxTextWidth) / 2;
-    } else if (textAlign === 'left') {
-      gradientStartX = fontSize;
+    // Set text fill style based on useGradientText
+    if (useGradientText) {
+      // Position gradient based on text alignment and width
+      let gradientStartX = 0;
+      if (textAlign === 'center') {
+        gradientStartX = (width - maxTextWidth) / 2;
+      } else if (textAlign === 'left') {
+        gradientStartX = fontSize;
+      } else {
+        gradientStartX = width - maxTextWidth - fontSize;
+      }
+
+      // Create gradient from left to right of text
+      const gradient = ctx.createLinearGradient(
+        gradientStartX,
+        height / 2,
+        gradientStartX + maxTextWidth,
+        height / 2
+      );
+
+      // Add color stops
+      selectedGradient.colors.forEach((color, index) => {
+        gradient.addColorStop(index / (selectedGradient.colors.length - 1), color);
+      });
+
+      ctx.fillStyle = gradient;
     } else {
-      gradientStartX = width - maxTextWidth - fontSize;
+      // Use solid text color
+      ctx.fillStyle = textColor;
     }
-
-    // Create gradient from left to right of text
-    const gradient = ctx.createLinearGradient(
-      gradientStartX,
-      height / 2,
-      gradientStartX + maxTextWidth,
-      height / 2
-    );
-
-    // Add color stops
-    selectedGradient.colors.forEach((color, index) => {
-      gradient.addColorStop(index / (selectedGradient.colors.length - 1), color);
-    });
 
     // Set text properties
     ctx.font = `${fontWeight} ${fontSize}px ${fontFamily}`;
@@ -191,9 +224,6 @@ export default function CreativeAssetsPage() {
     if (letterSpacing !== 0) {
       ctx.letterSpacing = `${letterSpacing}px`;
     }
-
-    // Set gradient fill
-    ctx.fillStyle = gradient;
 
     // Split text by newlines and draw each line
     const lines = text.split('\n');
@@ -228,8 +258,9 @@ export default function CreativeAssetsPage() {
     });
   }, [
     text, fontSize, fontWeight, fontFamily, lineHeight, letterSpacing,
-    textAlign, selectedGradient, gradientAngle, hasBackground, backgroundColor,
-    canvasSize, customWidth, customHeight
+    textAlign, selectedGradient, gradientAngle, backgroundType, backgroundColor,
+    backgroundGradient, backgroundGradientAngle, textColor, useGradientText,
+    hideTextForDownload, canvasSize, customWidth, customHeight
   ]);
 
   // Export functions
@@ -363,7 +394,7 @@ export default function CreativeAssetsPage() {
                   style={{
                     width: '100%',
                     height: 'auto',
-                    background: hasBackground ? undefined :
+                    background: backgroundType !== 'none' ? undefined :
                       'repeating-conic-gradient(#1a1a1a 0% 25%, #0d0d0d 0% 50%) 50% / 20px 20px'
                   }}
                   className="rounded"
@@ -397,42 +428,74 @@ export default function CreativeAssetsPage() {
               />
             </div>
 
-            {/* Gradient Selection */}
+            {/* Text Color Settings */}
             <div className="bg-dark-card border border-gray-700 rounded-lg p-4">
               <h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
                 <Palette className="w-4 h-4" />
-                Gradient Style
+                Text Color
               </h3>
-              <div className="grid grid-cols-3 gap-1.5 mb-3">
-                {GRADIENT_PRESETS.map((preset) => (
-                  <button
-                    key={preset.name}
-                    onClick={() => setSelectedGradient(preset)}
-                    className={`p-2 rounded border transition ${
-                      selectedGradient.name === preset.name
-                        ? 'border-gem-crystal bg-gem-crystal/10'
-                        : 'border-gray-700 hover:border-gray-600'
-                    }`}
-                  >
-                    <div
-                      className="w-full h-4 rounded mb-1"
-                      style={{ background: preset.value }}
+
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs">Style</span>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setUseGradientText(false)}
+                      className={`px-3 py-1.5 text-xs rounded border transition ${
+                        !useGradientText
+                          ? 'border-gem-crystal bg-gem-crystal/10'
+                          : 'border-gray-700 hover:border-gray-600'
+                      }`}
+                    >
+                      Solid
+                    </button>
+                    <button
+                      onClick={() => setUseGradientText(true)}
+                      className={`px-3 py-1.5 text-xs rounded border transition ${
+                        useGradientText
+                          ? 'border-gem-crystal bg-gem-crystal/10'
+                          : 'border-gray-700 hover:border-gray-600'
+                      }`}
+                    >
+                      Gradient
+                    </button>
+                  </div>
+                </div>
+
+                {!useGradientText ? (
+                  <div className="flex items-center gap-2">
+                    <label className="text-xs">Color:</label>
+                    <input
+                      type="color"
+                      value={textColor}
+                      onChange={(e) => setTextColor(e.target.value)}
+                      className="w-12 h-8 rounded cursor-pointer"
                     />
-                    <p className="text-[10px]">{preset.name}</p>
-                  </button>
-                ))}
-              </div>
-              <div className="flex items-center gap-2">
-                <label className="text-xs">Angle:</label>
-                <input
-                  type="range"
-                  min="0"
-                  max="360"
-                  value={gradientAngle}
-                  onChange={(e) => setGradientAngle(Number(e.target.value))}
-                  className="flex-1"
-                />
-                <span className="text-xs w-10">{gradientAngle}°</span>
+                    <span className="text-xs text-gray-400">{textColor}</span>
+                  </div>
+                ) : (
+                  <>
+                    <div className="grid grid-cols-3 gap-1.5">
+                      {GRADIENT_PRESETS.map((preset) => (
+                        <button
+                          key={preset.name}
+                          onClick={() => setSelectedGradient(preset)}
+                          className={`p-2 rounded border transition ${
+                            selectedGradient.name === preset.name
+                              ? 'border-gem-crystal bg-gem-crystal/10'
+                              : 'border-gray-700 hover:border-gray-600'
+                          }`}
+                        >
+                          <div
+                            className="w-full h-4 rounded mb-1"
+                            style={{ background: preset.value }}
+                          />
+                          <p className="text-[10px]">{preset.name}</p>
+                        </button>
+                      ))}
+                    </div>
+                  </>
+                )}
               </div>
             </div>
 
@@ -589,27 +652,101 @@ export default function CreativeAssetsPage() {
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between">
-                  <span className="text-xs">Background</span>
-                  <div className="flex items-center gap-2">
-                    <label className="flex items-center gap-1">
-                      <input
-                        type="checkbox"
-                        checked={hasBackground}
-                        onChange={(e) => setHasBackground(e.target.checked)}
-                        className="rounded"
-                      />
-                      <span className="text-xs">Enable</span>
-                    </label>
-                    {hasBackground && (
-                      <input
-                        type="color"
-                        value={backgroundColor}
-                        onChange={(e) => setBackgroundColor(e.target.value)}
-                        className="w-12 h-8 rounded cursor-pointer"
-                      />
-                    )}
+                <div>
+                  <label className="block text-xs mb-1">Background Type</label>
+                  <div className="grid grid-cols-3 gap-1.5">
+                    <button
+                      onClick={() => setBackgroundType('none')}
+                      className={`px-2 py-1.5 text-xs rounded border transition ${
+                        backgroundType === 'none'
+                          ? 'border-gem-crystal bg-gem-crystal/10'
+                          : 'border-gray-700 hover:border-gray-600'
+                      }`}
+                    >
+                      None
+                    </button>
+                    <button
+                      onClick={() => setBackgroundType('solid')}
+                      className={`px-2 py-1.5 text-xs rounded border transition ${
+                        backgroundType === 'solid'
+                          ? 'border-gem-crystal bg-gem-crystal/10'
+                          : 'border-gray-700 hover:border-gray-600'
+                      }`}
+                    >
+                      Solid
+                    </button>
+                    <button
+                      onClick={() => setBackgroundType('gradient')}
+                      className={`px-2 py-1.5 text-xs rounded border transition ${
+                        backgroundType === 'gradient'
+                          ? 'border-gem-crystal bg-gem-crystal/10'
+                          : 'border-gray-700 hover:border-gray-600'
+                      }`}
+                    >
+                      Gradient
+                    </button>
                   </div>
+                </div>
+
+                {backgroundType === 'solid' && (
+                  <div className="flex items-center gap-2">
+                    <label className="text-xs">Color:</label>
+                    <input
+                      type="color"
+                      value={backgroundColor}
+                      onChange={(e) => setBackgroundColor(e.target.value)}
+                      className="w-12 h-8 rounded cursor-pointer"
+                    />
+                    <span className="text-xs text-gray-400">{backgroundColor}</span>
+                  </div>
+                )}
+
+                {backgroundType === 'gradient' && (
+                  <>
+                    <div className="grid grid-cols-3 gap-1.5">
+                      {GRADIENT_PRESETS.map((preset) => (
+                        <button
+                          key={preset.name}
+                          onClick={() => setBackgroundGradient(preset)}
+                          className={`p-2 rounded border transition ${
+                            backgroundGradient.name === preset.name
+                              ? 'border-gem-crystal bg-gem-crystal/10'
+                              : 'border-gray-700 hover:border-gray-600'
+                          }`}
+                        >
+                          <div
+                            className="w-full h-4 rounded mb-1"
+                            style={{ background: preset.value }}
+                          />
+                          <p className="text-[10px]">{preset.name}</p>
+                        </button>
+                      ))}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <label className="text-xs">Angle:</label>
+                      <input
+                        type="range"
+                        min="0"
+                        max="360"
+                        value={backgroundGradientAngle}
+                        onChange={(e) => setBackgroundGradientAngle(Number(e.target.value))}
+                        className="flex-1"
+                      />
+                      <span className="text-xs w-10">{backgroundGradientAngle}°</span>
+                    </div>
+                  </>
+                )}
+
+                <div className="flex items-center justify-between pt-2 border-t border-gray-700">
+                  <span className="text-xs">Hide Text for Download</span>
+                  <label className="flex items-center gap-1">
+                    <input
+                      type="checkbox"
+                      checked={hideTextForDownload}
+                      onChange={(e) => setHideTextForDownload(e.target.checked)}
+                      className="rounded"
+                    />
+                  </label>
                 </div>
               </div>
             </div>

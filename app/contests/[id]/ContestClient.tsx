@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
@@ -72,11 +72,67 @@ export default function ContestDetailPage() {
     return null;
   }
 
-  useEffect(() => {
-    if (id) {
-      fetchContestData();
+  // Stable memoized values to prevent infinite loops
+  const stableAddress = useMemo(() => address, [address]);
+  const stableId = useMemo(() => id, [id]);
+
+  // Track initialization and data state
+  const hasInitializedRef = useRef(false);
+  const fetchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const lastFetchKeyRef = useRef<string>('');
+
+  // Stable memoized fetch function
+  const memoizedFetchContestData = useCallback(async () => {
+    if (!stableId) return;
+
+    // Create a unique key for this fetch to prevent duplicates
+    const fetchKey = `${stableId}-${stableAddress || 'no-address'}-${Date.now()}`;
+
+    // Debounce: Clear existing timeout and set new one
+    if (fetchTimeoutRef.current) {
+      clearTimeout(fetchTimeoutRef.current);
     }
-  }, [id, address]);
+
+    fetchTimeoutRef.current = setTimeout(async () => {
+      // Check if this is still the most recent fetch request
+      if (lastFetchKeyRef.current && lastFetchKeyRef.current !== fetchKey) {
+        console.log('[Contest] Skipping stale fetch request');
+        return;
+      }
+
+      lastFetchKeyRef.current = fetchKey;
+
+      console.log('[Contest] Fetching data for:', { id: stableId, address: stableAddress });
+      await fetchContestData();
+    }, 300); // 300ms debounce
+  }, [stableId, stableAddress]);
+
+  // Initialize once when component mounts
+  useEffect(() => {
+    if (!hasInitializedRef.current && stableId) {
+      hasInitializedRef.current = true;
+      console.log('[Contest] Initial data fetch for contest:', stableId);
+      memoizedFetchContestData();
+    }
+  }, [stableId, memoizedFetchContestData]);
+
+  // Re-fetch only when address stabilizes after initial load
+  useEffect(() => {
+    // Only refetch if we've already initialized and address is changing
+    if (hasInitializedRef.current && stableAddress !== undefined) {
+      console.log('[Contest] Address stabilized, refetching data:', stableAddress);
+      memoizedFetchContestData();
+    }
+  }, [stableAddress, memoizedFetchContestData]);
+
+  // Cleanup timeouts
+  useEffect(() => {
+    return () => {
+      if (fetchTimeoutRef.current) {
+        clearTimeout(fetchTimeoutRef.current);
+      }
+    };
+  }, []);
 
   // Initialize debug mode from session storage
   useEffect(() => {
@@ -96,50 +152,67 @@ export default function ContestDetailPage() {
     return () => window.removeEventListener('keydown', handleKeyPress);
   }, []);
 
-  useEffect(() => {
-    if (address && contest) {
-      checkUserBalance();
+  // Memoized balance check to prevent cascading effects
+  const memoizedCheckBalance = useCallback(async () => {
+    if (stableAddress && contest) {
+      console.log('[Contest] Checking balance for:', stableAddress);
+      await checkUserBalance();
     }
-  }, [address, contest]);
+  }, [stableAddress, contest?.id]); // Use contest.id instead of full contest object
 
-  const fetchContestData = async () => {
+  useEffect(() => {
+    memoizedCheckBalance();
+  }, [memoizedCheckBalance]);
+
+  const fetchContestData = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
 
+      const contestId = stableId as string;
+      const userAddress = stableAddress;
+
+      console.log('[Contest] Fetching contest data for:', { contestId, userAddress });
+
       // Fetch contest details
-      const contestData = await contestQueries.getContest(id as string);
+      const contestData = await contestQueries.getContest(contestId);
       setContest(contestData);
 
       // Fetch leaderboard
-      const leaderboardData = await contestQueries.getLeaderboard(id as string);
+      const leaderboardData = await contestQueries.getLeaderboard(contestId);
       setLeaderboard(leaderboardData || []);
 
       // If contest has ended, fetch winners
       if (contestData.status === 'ended') {
-        const winnersData = await contestQueries.getContestWinners(id as string);
+        const winnersData = await contestQueries.getContestWinners(contestId);
         setWinners(winnersData || []);
       }
 
       // If voting is enabled, fetch votable submissions (pending and approved) with vote counts
       if (contestData.voting_enabled) {
-        const submissions = await contestQueries.getSubmissionsWithVotes(id as string);
-        setVotableSubmissions(submissions || []);
+        try {
+          const response = await fetch(`/api/contests/${contestId}/submissions`);
+          const data = await response.json();
+          setVotableSubmissions(data.submissions || []);
+        } catch (error) {
+          console.error('Error fetching submissions:', error);
+          setVotableSubmissions([]);
+        }
       }
 
       // If user is connected, check their submissions and votes
-      if (address) {
-        const submission = await contestQueries.getUserSubmission(id as string, address);
+      if (userAddress) {
+        const submission = await contestQueries.getUserSubmission(contestId, userAddress);
         setUserSubmission(submission);
 
         // Track all user submissions across all contests for debugging
-        const allUserSubmissions = await contestQueries.getAllUserSubmissions(address);
-        const submissions = await contestQueries.getUserSubmissions(id as string, address);
+        const allUserSubmissions = await contestQueries.getAllUserSubmissions(userAddress);
+        const submissions = await contestQueries.getUserSubmissions(contestId, userAddress);
 
-        console.log(`📊 Contest ${id} - User submissions for ${address}:`, {
+        console.log(`📊 Contest ${contestId} - User submissions for ${userAddress}:`, {
           count: submissions.length,
-          contestId: id,
-          wallet: address.toLowerCase(),
+          contestId,
+          wallet: userAddress.toLowerCase(),
           submissions: submissions.map(s => ({
             id: s.id,
             contest_id: s.contest_id,
@@ -150,7 +223,7 @@ export default function ContestDetailPage() {
         // Update debug data
         setDebugData(prev => ({
           ...prev,
-          wallet: address,
+          wallet: userAddress,
           userSubmissions: allUserSubmissions || [],
           allSubmissionsCount: allUserSubmissions?.length || 0,
           renderTime: new Date().toISOString(),
@@ -163,7 +236,7 @@ export default function ContestDetailPage() {
         // Fetch user's existing votes if voting is enabled
         if (contestData.voting_enabled) {
           try {
-            const userVotes = await contestQueries.getUserVotes(id as string, address);
+            const userVotes = await contestQueries.getUserVotes(contestId, userAddress);
             setUserVoteIds(userVotes);
             console.log('Loaded user votes:', userVotes);
           } catch (voteErr) {
@@ -178,18 +251,18 @@ export default function ContestDetailPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [stableId, stableAddress]); // Stable dependencies
 
-  const checkUserBalance = async () => {
-    if (!address) return;
+  const checkUserBalance = useCallback(async () => {
+    if (!stableAddress) return;
 
     try {
-      const balance = await getCachedBBBalance(address);
+      const balance = await getCachedBBBalance(stableAddress);
       setUserBalance(balance);
     } catch (err) {
       console.error('Error checking balance:', err);
     }
-  };
+  }, [stableAddress]);
 
   const getContestStatus = () => {
     if (!contest) return null;
@@ -883,7 +956,8 @@ export default function ContestDetailPage() {
             contest={contest}
             userSubmissions={userSubmissions}
             onSuccess={() => {
-              fetchContestData(); // Refresh data after submission
+              console.log('[Contest] Submission successful, refreshing data...');
+              memoizedFetchContestData(); // Use stable memoized function
               // Only switch to leaderboard if max submissions reached
               if (userSubmissions.length + 1 >= contest.max_entries_per_wallet) {
                 setActiveTab('leaderboard');

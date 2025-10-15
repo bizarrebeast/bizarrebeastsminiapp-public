@@ -191,36 +191,16 @@ export default function BackgroundSelector({
               <ImageIcon className="w-4 h-4" />
               Upload Background
             </h4>
-            {!canUpload && (
-              <button
-                onClick={() => setShowUpgradePrompt(true)}
-                className="text-xs text-gem-crystal flex items-center gap-1 hover:text-gem-gold transition-colors"
-              >
-                <Lock className="w-3 h-3" />
-                BIZARRE/Weirdo only
-              </button>
-            )}
           </div>
 
           {/* Upload button */}
-          <label 
-            onClick={(e) => {
-              if (!canUpload) {
-                e.preventDefault();
-                setShowUpgradePrompt(true);
-              }
-            }}
-            className={`block w-full bg-gray-700 rounded p-3 transition-colors ${
-              canUpload ? 'hover:bg-gray-600 cursor-pointer' : 'hover:bg-gray-600/50 cursor-pointer'
-            }`}
+          <label
+            className="block w-full bg-gray-700 rounded p-3 transition-colors hover:bg-gray-600 cursor-pointer"
           >
             <input
               type="file"
               accept="image/*"
-              disabled={!canUpload}
               onChange={(e) => {
-                if (!canUpload) return;
-                
                 const file = e.target.files?.[0];
                 if (file) {
                   const reader = new FileReader();
@@ -236,17 +216,8 @@ export default function BackgroundSelector({
               className="hidden"
             />
             <div className="text-center">
-              {canUpload ? (
-                <>
-                  <Upload className="w-5 h-5 text-gray-400 mx-auto mb-1" />
-                  <span className="text-sm text-gray-400">Click to upload custom background</span>
-                </>
-              ) : (
-                <>
-                  <Lock className="w-5 h-5 text-gray-500 mx-auto mb-1" />
-                  <span className="text-sm text-gray-500">Unlock with BIZARRE or Weirdo tier</span>
-                </>
-              )}
+              <Upload className="w-5 h-5 text-gray-400 mx-auto mb-1" />
+              <span className="text-sm text-gray-400">Click to upload custom background</span>
             </div>
           </label>
         </div>
@@ -284,9 +255,8 @@ export default function BackgroundSelector({
               <div className="overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800 max-w-full">
                 <div className="flex gap-2">
                   {backgrounds.map(bg => {
-                    const hasAccess = !bg.tier || canAccessSticker(userTier, bg.tier);
-                    const tierBadge = getTierBadge(bg.tier);
-                    
+                    const hasAccess = true; // All backgrounds free for everyone - no tier gating
+
                     return (
                       <button
                         key={bg.id}
@@ -331,14 +301,7 @@ export default function BackgroundSelector({
                             (e.target as HTMLImageElement).style.opacity = '0';
                           }}
                         />
-                        
-                        {/* Tier Badge - show for all tier-locked items */}
-                        {tierBadge && (
-                          <div className="absolute bottom-0.5 right-0.5 bg-black/70 rounded p-0.5 z-20">
-                            {tierBadge.icon}
-                          </div>
-                        )}
-                    
+
                         {/* Selected indicator */}
                         {currentBackground === bg.src && (
                           <div className="absolute inset-0 border-2 border-gem-gold rounded pointer-events-none z-30" />

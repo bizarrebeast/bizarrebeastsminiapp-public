@@ -2,7 +2,8 @@
 export const CONTRACT_ADDRESSES = {
   bbToken: '0x0520bf1d3cEE163407aDA79109333aB1599b4004', // BB Token on Base Mainnet
   ritualGatekeeper: '0x0f57b7755A1CBa924fC23d6b40153668245DBd1a', // Production gatekeeper
-  bizarreCheckIn: '0x12125F025ea390B975aEa210B40c7B81dC2F00E0', // Production check-in
+  bizarreCheckIn: '0x3e8B162E639785f71018DB091A13e3b5A5b77278', // FIXED check-in (deployed Oct 10, 2025)
+  // OLD (buggy): '0x12125F025ea390B975aEa210B40c7B81dC2F00E0'
 } as const;
 
 // Base Mainnet Chain Configuration
@@ -17,10 +18,10 @@ export const BASE_MAINNET_CHAIN = {
   },
   rpcUrls: {
     default: {
-      http: ['https://mainnet.base.org'],
+      http: ['https://base.llamarpc.com'],
     },
     public: {
-      http: ['https://mainnet.base.org'],
+      http: ['https://base.llamarpc.com'],
     },
   },
   blockExplorers: {

@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import { useWallet } from '@/hooks/useWallet';
 import { AccessTier } from '@/lib/empire';
 import { isBetaTester, BETA_BENEFITS, BETA_PHASE_ACTIVE } from '@/lib/beta-testers';
@@ -38,9 +39,10 @@ export function EmpireBadges() {
     <div className="flex items-center gap-2">
       {/* Beta Tester Badge */}
       {isBeta && (
-        <div
-          className="flex items-center gap-1 px-2 py-1 text-xs bg-dark-card rounded-lg cursor-default relative overflow-hidden group"
-          title={`${BETA_BENEFITS.badgeText} - ${BETA_BENEFITS.specialMessage}`}
+        <Link
+          href="/beta"
+          className="flex items-center gap-1 px-2 py-1 text-xs bg-dark-card rounded-lg cursor-pointer relative overflow-hidden group hover:scale-105 transition-transform"
+          title={`${BETA_BENEFITS.badgeText} - ${BETA_BENEFITS.specialMessage} (Click for instructions)`}
         >
           {/* Gradient border effect */}
           <div className="absolute inset-0 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink rounded-lg" />
@@ -51,7 +53,7 @@ export function EmpireBadges() {
             <span className="text-sm">{BETA_BENEFITS.badge}</span>
             <span className="hidden sm:inline bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent font-semibold">BETA</span>
           </div>
-        </div>
+        </Link>
       )}
 
       {/* Empire Tier Badge */}

@@ -7,6 +7,7 @@ import BizarreCheckInABI from '../app/contracts/abi/BizarreCheckIn.json';
 import RitualGatekeeperABI from '../app/contracts/abi/RitualGatekeeper.json';
 import { useWallet } from '@/hooks/useWallet';
 import { web3Service } from '@/lib/web3';
+import { getUnifiedProvider, getUnifiedSigner, isOnBaseNetwork } from '@/lib/unified-provider';
 import ShareButtons from './ShareButtons';
 import { isBetaTester, BETA_PHASE_ACTIVE } from '@/lib/beta-testers';
 import { useUnifiedAuthStore } from '@/store/useUnifiedAuthStore';
@@ -56,27 +57,30 @@ export default function CheckIn({ userTier = 'NORMIE', completedRituals }: Check
       }
 
       try {
-        const signer = await web3Service.getSigner();
-        if (!signer) {
-          console.error('No signer available');
+        // Use unified provider for read-only operations (more reliable than signer)
+        const provider = await getUnifiedProvider();
+        if (!provider) {
+          console.error('No provider available');
           return;
         }
 
-        // Initialize contracts
+        // Initialize contracts with provider (read-only)
+        // For transactions, we'll get the signer when needed
         const checkIn = new ethers.Contract(
           CONTRACT_ADDRESSES.bizarreCheckIn,
           BizarreCheckInABI.abi,
-          signer
+          provider
         );
 
         const gatekeeper = new ethers.Contract(
           CONTRACT_ADDRESSES.ritualGatekeeper,
           RitualGatekeeperABI.abi,
-          signer
+          provider
         );
 
         setCheckInContract(checkIn);
         setGatekeeperContract(gatekeeper);
+        console.log('✅ Contracts initialized with unified provider (read-only)');
 
       } catch (error) {
         console.error('Contract initialization error:', error);
@@ -93,36 +97,80 @@ export default function CheckIn({ userTier = 'NORMIE', completedRituals }: Check
         return;
       }
 
-      // Check if we're on the right network (Base Mainnet)
-      const provider = await web3Service.getProvider();
-      if (provider) {
-        const network = await provider.getNetwork();
-        if (network.chainId !== BigInt(8453)) {
-          console.log('Wrong network! Current:', network.chainId, 'Expected: 8453 (Base Mainnet)');
-          setMessage('⚠️ Please switch to Base network');
-          setIsCheckingStatus(false);
-          return;
-        }
-      }
-
       setIsCheckingStatus(true);
 
       try {
-        // Get user data first
-        const userData = await checkInContract.getUserData(wallet.address);
-        console.log('User data:', userData);
+        // Check if user can check in (ritual requirement from Gatekeeper)
+        let unlocked = false;
+        try {
+          unlocked = await gatekeeperContract.canUserCheckIn(wallet.address);
+          console.log('🔍 CHECK-IN DEBUG:', {
+            wallet: wallet.address,
+            gatekeeperUnlocked: unlocked,
+            completedRituals: completedRituals,
+            expectedBehavior: 'Should be LOCKED if completedRituals < 3',
+            problem: unlocked && completedRituals < 3 ? '❌ GATEKEEPER SAYS UNLOCKED BUT NO RITUALS!' : '✅ OK'
+          });
+        } catch (gatekeeperError: any) {
+          // WORKAROUND: If gatekeeper call fails with BAD_DATA but user has 3+ rituals, assume unlocked
+          // This is a provider issue - the contract works fine from the server
+          if (gatekeeperError.code === 'BAD_DATA' && completedRituals >= 3) {
+            console.log('⚠️ Gatekeeper call failed with BAD_DATA, but user has 3+ rituals - assuming unlocked (provider issue)');
+            unlocked = true; // Assume unlocked since backend says so
+          } else {
+            throw gatekeeperError; // Re-throw other errors
+          }
+        }
 
-        // Check if user can check in (ritual requirement)
-        const unlocked = await gatekeeperContract.canUserCheckIn(wallet.address);
-        console.log('🔍 CHECK-IN DEBUG:', {
-          wallet: wallet.address,
-          gatekeeperUnlocked: unlocked,
-          completedRituals: completedRituals,
-          expectedBehavior: 'Should be LOCKED if completedRituals < 3',
-          problem: unlocked && completedRituals < 3 ? '❌ GATEKEEPER SAYS UNLOCKED BUT NO RITUALS!' : '✅ OK'
-        });
+        // Get user check-in history (may not exist for first-time users)
+        let userData;
+        let hasCheckInHistory = false;
+        try {
+          userData = await checkInContract.getUserData(wallet.address);
+          hasCheckInHistory = true;
+          console.log('User data:', userData);
+        } catch (error: any) {
+          // If contract returns empty data (BAD_DATA error), user has never checked in before
+          if (error.code === 'BAD_DATA') {
+            console.log('📝 No check-in history found - first time user');
+            // Use default values for first-time users
+            // Match the contract's return structure with named properties
+            userData = {
+              0: BigInt(0), // lastCheckInTime
+              1: BigInt(0), // currentStreak
+              2: BigInt(0), // totalEarned
+              lastCheckInTime: BigInt(0),
+              currentStreak: BigInt(0),
+              totalEarned: BigInt(0),
+              pendingRewards: BigInt(0) // Not in getUserData but needed for UI
+            };
+            hasCheckInHistory = false;
 
-        // TEMPORARY: Check if user has checked in today (within last 20 hours)
+            // If they have 3+ rituals but gatekeeper shows locked, auto-unlock them
+            if (completedRituals >= 3 && !unlocked) {
+              console.log('⚠️ User has 3+ rituals but not unlocked in Gatekeeper - auto-unlocking...');
+              try {
+                const unlockResponse = await fetch('/api/unlock-checkin', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    walletAddress: wallet.address,
+                    ritualsCompleted: completedRituals,
+                    fid: farcasterFid
+                  })
+                });
+                const unlockData = await unlockResponse.json();
+                console.log('Auto-unlock result:', unlockData);
+              } catch (unlockError) {
+                console.error('Auto-unlock error:', unlockError);
+              }
+            }
+          } else {
+            throw error; // Re-throw if not BAD_DATA
+          }
+        }
+
+        // Check if user has checked in today (within last 20 hours)
         // If they have, they should be locked regardless of gatekeeper status
         const lastCheckIn = Number(userData[0]);
         const now = Math.floor(Date.now() / 1000);
@@ -158,7 +206,29 @@ export default function CheckIn({ userTier = 'NORMIE', completedRituals }: Check
         setPendingRewards(ethers.formatEther(userData.pendingRewards));
 
         // Check if can check in now
-        const canCheck = await checkInContract.canCheckIn(wallet.address);
+        let canCheck = false;
+        try {
+          canCheck = await checkInContract.canCheckIn(wallet.address);
+          console.log('🔍 CAN CHECK IN DEBUG:', {
+            wallet: wallet.address,
+            canCheckIn: canCheck,
+            currentStreak: Number(userData.currentStreak),
+            lastCheckIn: Number(userData[0]),
+            nowTimestamp: Math.floor(Date.now() / 1000),
+            hoursSinceLastCheckIn: (Math.floor(Date.now() / 1000) - Number(userData[0])) / 3600
+          });
+        } catch (canCheckInError: any) {
+          // If canCheckIn() fails with BAD_DATA, derive the value from our known state
+          if (canCheckInError.code === 'BAD_DATA') {
+            console.log('⚠️ canCheckIn() failed with BAD_DATA - deriving from known state');
+            // If unlocked and not in cooldown, they can check in
+            canCheck = shouldBeUnlocked && !hasCheckedInRecently;
+          } else {
+            console.error('canCheckIn() error:', canCheckInError);
+            // Default to false on other errors
+            canCheck = false;
+          }
+        }
         setCanCheckIn(canCheck);
 
         // Calculate time until next check-in
@@ -206,12 +276,58 @@ export default function CheckIn({ userTier = 'NORMIE', completedRituals }: Check
     setLoading(true);
     setMessage('');
 
+    // NEW: Validate FID cooldown first
+    if (farcasterFid) {
+      try {
+        const validationResponse = await fetch('/api/checkin/validate-fid', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            walletAddress: wallet.address,
+            fid: farcasterFid
+          })
+        });
+
+        const validation = await validationResponse.json();
+
+        if (!validation.allowed) {
+          // FID is in cooldown from another wallet
+          setMessage(`⏰ ${validation.message}`);
+          setLoading(false);
+
+          // Update time until next based on FID cooldown
+          if (validation.hoursRemaining) {
+            setTimeUntilNext(Math.round(validation.hoursRemaining * 3600));
+          }
+
+          console.log('❌ FID check-in blocked:', validation);
+          return;
+        }
+
+        console.log('✅ FID validation passed:', validation);
+      } catch (error) {
+        console.error('FID validation error:', error);
+        // Continue anyway if validation fails - don't block users
+      }
+    }
+
     try {
+      // Get signer for the transaction
+      const signer = await getUnifiedSigner();
+      if (!signer) {
+        setMessage('❌ Could not get signer for transaction');
+        setLoading(false);
+        return;
+      }
+
+      // Connect contract to signer for transaction
+      const checkInWithSigner = checkInContract.connect(signer) as ethers.Contract;
+
       // Use the actual empire tier from wallet, fallback to prop
       // wallet.empireTier comes as lowercase from AccessTier enum, convert to uppercase
       const tierToUse = (wallet.empireTier || userTier).toUpperCase();
 
-      const tx = await checkInContract.checkIn(tierToUse);
+      const tx = await checkInWithSigner.checkIn(tierToUse);
       setMessage('Transaction sent! Confirming on blockchain...');
 
       const receipt = await tx.wait();
@@ -225,6 +341,28 @@ export default function CheckIn({ userTier = 'NORMIE', completedRituals }: Check
 
       // Show share buttons for check-in
       setShowShareAfterCheckIn(true);
+
+      // NEW: Record FID check-in for tracking
+      if (farcasterFid) {
+        try {
+          await fetch('/api/checkin/record-fid', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              walletAddress: wallet.address,
+              fid: farcasterFid,
+              txHash: receipt.transactionHash || tx.hash,
+              streak: newStreak,
+              tier: tierToUse,
+              rewardsEarned: 0 // Will be set when claimed
+            })
+          });
+          console.log('✅ FID check-in recorded');
+        } catch (error) {
+          console.error('Failed to record FID check-in:', error);
+          // Non-critical, continue
+        }
+      }
 
       // CRITICAL: Reset ritual requirement so user needs 3 new rituals tomorrow
       try {
@@ -348,11 +486,17 @@ export default function CheckIn({ userTier = 'NORMIE', completedRituals }: Check
         body: JSON.stringify({
           walletAddress: wallet.address,
           ritualsCompleted: completedRituals,
+          fid: farcasterFid // NEW: Include FID to unlock all associated wallets
         }),
       });
       const data = await response.json();
       if (data.success) {
-        setMessage('✅ Check-ins unlocked!');
+        // Show appropriate message based on FID unlock
+        if (data.unlockedWallets && data.unlockedWallets.length > 1) {
+          setMessage(`✅ Check-ins unlocked for ${data.unlockedWallets.length} wallets!`);
+        } else {
+          setMessage('✅ Check-ins unlocked!');
+        }
         setIsUnlocked(true);
         // Force re-check status after a moment
         setTimeout(async () => {
@@ -381,10 +525,21 @@ export default function CheckIn({ userTier = 'NORMIE', completedRituals }: Check
     setMessage('');
 
     try {
-      const tx = await checkInContract.claimRewards();
+      // Get signer for the transaction
+      const signer = await getUnifiedSigner();
+      if (!signer) {
+        setMessage('❌ Could not get signer for transaction');
+        setLoading(false);
+        return;
+      }
+
+      // Connect contract to signer for transaction
+      const checkInWithSigner = checkInContract.connect(signer) as ethers.Contract;
+
+      const tx = await checkInWithSigner.claimRewards();
       setMessage('Claiming rewards...');
 
-      await tx.wait();
+      const receipt = await tx.wait();
       setMessage(`✅ Successfully claimed ${pendingRewards} BB!`);
 
       // Store claim amount for sharing
@@ -396,6 +551,25 @@ export default function CheckIn({ userTier = 'NORMIE', completedRituals }: Check
 
       // Update local state
       setPendingRewards('0');
+
+      // NEW: Update FID rewards tracking
+      if (farcasterFid) {
+        try {
+          // Update the total rewards earned for this FID
+          await fetch('/api/checkin/record-fid', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              walletAddress: wallet.address,
+              fid: farcasterFid,
+              txHash: receipt.transactionHash || tx.hash,
+              rewardsEarned: parseFloat(pendingRewards)
+            })
+          });
+        } catch (error) {
+          console.error('Failed to update FID rewards:', error);
+        }
+      }
 
       // Show share buttons for claim
       setShowShareAfterClaim(true);
@@ -608,7 +782,15 @@ export default function CheckIn({ userTier = 'NORMIE', completedRituals }: Check
   }
 
   // Check if user is a beta tester (for non-visitors)
-  const isNotBetaTester = BETA_PHASE_ACTIVE && wallet.address && !isBetaTester(wallet.address);
+  // Use walletAddress from unified store which handles Farcaster context properly
+  const addressToCheck = walletAddress || wallet.address;
+  const isNotBetaTester = BETA_PHASE_ACTIVE && addressToCheck && !isBetaTester(addressToCheck);
+
+  console.log('🧪 Beta tester check:', {
+    walletAddress: addressToCheck,
+    isBetaTester: addressToCheck ? isBetaTester(addressToCheck) : false,
+    betaPhaseActive: BETA_PHASE_ACTIVE
+  });
 
   // Show "Coming Soon" for non-beta testers who are connected
   if (isNotBetaTester) {
@@ -634,8 +816,7 @@ export default function CheckIn({ userTier = 'NORMIE', completedRituals }: Check
             </p>
           </div>
           <div className="text-xs text-gray-500 text-center mt-4">
-            Connected: {wallet.address ? wallet.formatAddress(wallet.address) : 'Not connected'}
-            {wallet.empireScore && ` • Empire Score: ${wallet.empireScore}`}
+            Connected: {addressToCheck ? wallet.formatAddress(addressToCheck) : 'Not connected'}
           </div>
         </div>
       </div>
@@ -647,7 +828,7 @@ export default function CheckIn({ userTier = 'NORMIE', completedRituals }: Check
     <div className="bg-gradient-to-br from-gem-dark/90 via-black/90 to-gem-purple/20 border border-gem-gold/30 rounded-xl p-8 backdrop-blur-sm">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-3xl font-bold bg-gradient-to-r from-gem-gold to-gem-pink bg-clip-text text-transparent">
-          ☀️ Daily Check-In {isBetaTester(wallet.address) && <span className="text-sm text-gem-gold ml-2">🧪 Beta Tester</span>}
+          ☀️ Daily Check-In {isBetaTester(addressToCheck) && <span className="text-sm text-gem-gold ml-2">🧪 Beta Tester</span>}
         </h2>
         <div className="text-sm text-gem-crystal/70">
           Check in daily to earn rewards!
@@ -863,7 +1044,6 @@ export default function CheckIn({ userTier = 'NORMIE', completedRituals }: Check
       {/* Footer */}
       <div className="text-xs text-gray-500 text-center">
         Connected: {wallet.address ? wallet.formatAddress(wallet.address) : 'Not connected'}
-        {wallet.empireScore && ` • Empire Score: ${wallet.empireScore}`}
       </div>
     </div>
   );

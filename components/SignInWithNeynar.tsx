@@ -56,7 +56,16 @@ export function SignInWithNeynar() {
       </div>
       <NeynarAuthButton />
       <p className="text-xs text-gray-500 mt-2 text-center">
-        No Farcaster account? Shares will be marked but not verified.
+        No Farcaster account? Shares will be marked but not verified. DM{' '}
+        <a
+          href="https://x.com/bizarrebeasts_"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-gem-crystal hover:text-gem-gold transition-colors"
+        >
+          @bizarrebeasts_
+        </a>
+        {' '}on X for a Farcaster invite.
       </p>
     </div>
   );

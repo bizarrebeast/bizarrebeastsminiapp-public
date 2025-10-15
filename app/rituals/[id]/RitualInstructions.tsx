@@ -7,7 +7,8 @@ export const getRitualInstructions = (ritualId: number) => {
     4: { action: "Send a #create GIVE to @bizarrebeast in the Based Creator's Directory" },
     5: { action: "Play any BizarreBeasts game and complete at least one level" },
     6: { action: "Cast your vote for BizarreBeasts on the ProductClank platform" },
-    7: { action: "Complete a swap transaction to acquire $BB tokens" }
+    7: { action: "Complete a swap transaction to acquire $BB tokens" },
+    11: { action: "Play and win BizBe's BIZARRE Coin Toss, then share your win!" }
   };
 
   return instructions[ritualId] || { action: "Complete the required action on the platform" };

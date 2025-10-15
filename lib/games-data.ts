@@ -18,11 +18,27 @@ export interface GameData {
     online?: string;
   };
   featured: boolean;
+  exclusive?: boolean; // Exclusive to BizarreBeasts
   releaseDate?: string;
   lastUpdated?: string;
 }
 
 export const gamesData: GameData[] = [
+  {
+    id: 'bizbe-coin-toss',
+    title: "BizBe's Daily Coin Toss",
+    description: 'Flip BizBe\'s coin daily and win big! Get one free flip per day to bet on heads (BizBe\'s face) or tails (BizBe\'s butt). Each flip is provably fair using cryptographic verification. Win daily prizes in $BB tokens and compete for the massive monthly prize pool. Additional flips available for $BB holders. Climb the leaderboard and become a coin toss champion!',
+    shortDescription: 'Daily provably fair coin flips with monthly prizes',
+    bannerImage: '/assets/page-assets/games/banners/bizbe-coin-flip-game-banner-9.svg',
+    plays: 430,
+    genre: 'Exclusive',
+    platforms: {
+      online: '/flip'
+    },
+    featured: true,
+    exclusive: true,
+    releaseDate: 'January 2025'
+  },
   {
     id: 'treasure-quest',
     title: 'BizarreBeasts: Treasure Quest',
@@ -30,8 +46,8 @@ export const gamesData: GameData[] = [
     shortDescription: 'Epic underground platformer masterpiece',
     bannerImage: '/assets/page-assets/games/banners/treasure-quest-game-banner-1.svg',
     iconImage: '/assets/stickers/treasure-quest/treasure-quest-game-logo.svg',
-    plays: 4000,
-    genre: 'Platformer/Adventure',
+    plays: 6000,
+    genre: 'Platformer',
     platforms: {
       farcaster: 'https://treasure-quest.remix.gg/',
       telegram: 'https://t.me/the_remix_bot?startapp=user_i1emcnVI6A__path_-games-d281be5d-2111-4a73-afb0-19b2a18c80a9-overview',
@@ -47,7 +63,7 @@ export const gamesData: GameData[] = [
     description: 'Bounce your way through bizarre obstacles in this addictive arcade game! With 42K+ plays, this fan-favorite features responsive controls optimized for all devices, challenging levels, and endless replayability.',
     shortDescription: 'Addictive bouncing arcade action',
     bannerImage: '/assets/page-assets/games/banners/bizarre-bounce-game-banner-2.svg',
-    plays: 42000,
+    plays: 44000,
     genre: 'Arcade',
     platforms: {
       farcaster: 'https://bizarre-bounce.remix.gg',
@@ -63,7 +79,7 @@ export const gamesData: GameData[] = [
     description: 'Help Munchies climb to new heights in this vertical adventure! Jump from platform to platform, avoid obstacles, and collect power-ups as you ascend through the bizarre world. How high can you climb?',
     shortDescription: 'Vertical climbing adventure with Munchies',
     bannerImage: '/assets/page-assets/games/banners/munchies-climb-game-banner-3.svg',
-    plays: 10000,
+    plays: 11000,
     genre: 'Platformer',
     platforms: {
       farcaster: 'https://munchies-climb.remix.gg',
@@ -79,7 +95,7 @@ export const gamesData: GameData[] = [
     description: 'Crush, smash, and destroy in this action-packed BizarreBeasts game! Fast-paced gameplay that will test your reflexes and timing. Built through weeks of dedication and continuous improvements based on player feedback.',
     shortDescription: 'Action-packed crushing game',
     bannerImage: '/assets/page-assets/games/banners/head-crush-game-banner-6.svg',
-    plays: 16000,
+    plays: 20000,
     genre: 'Action',
     platforms: {
       farcaster: 'https://bizarrebeasts-head-crush.remix.gg',
@@ -95,7 +111,7 @@ export const gamesData: GameData[] = [
     description: 'Test your memory with BizarreBeasts characters! Flip cards to find matching pairs in this classic memory game with a bizarre twist. Features multiple difficulty levels and unique BizarreBeasts artwork on every card.',
     shortDescription: 'Classic memory matching game with BizarreBeasts',
     bannerImage: '/assets/page-assets/games/banners/bizarrebeasts-memory-game-banner-5.svg',
-    plays: 22000,
+    plays: 25000,
     genre: 'Puzzle/Memory',
     platforms: {
       farcaster: 'https://bizarrebeasts-memory-game.remix.gg/',
@@ -108,10 +124,10 @@ export const gamesData: GameData[] = [
   {
     id: 'tictactoe',
     title: 'BizarreBeasts TicTacToe',
-    description: 'The classic game of TicTacToe with a BizarreBeasts twist! Play against friends or challenge the AI. Features unique BizarreBeasts characters as your game pieces and special victory animations.',
+    description: 'The classic game of TicTacToe with a BizarreBeasts twist! Challenge the AI in this single-player version. Features unique BizarreBeasts characters as your game pieces and special victory animations. Multiplayer coming soon!',
     shortDescription: 'Classic TicTacToe with BizarreBeasts characters',
     bannerImage: '/assets/page-assets/games/banners/tictactoe-game-banner-4.svg',
-    plays: 24000,
+    plays: 26000,
     genre: 'Strategy/Classic',
     platforms: {
       farcaster: 'https://bizarrebeasts-tictactoe.remix.gg/',
@@ -127,7 +143,7 @@ export const gamesData: GameData[] = [
     description: 'Strategic checkers gameplay featuring BizarreBeasts as your game pieces! Jump, capture, and crown your way to victory. Built with extensive testing and refinement for the perfect gameplay experience.',
     shortDescription: 'Strategic checkers with BizarreBeasts',
     bannerImage: '/assets/page-assets/games/banners/checkerz-game-banner-7.svg',
-    plays: 10000,
+    plays: 12000,
     genre: 'Strategy/Board',
     platforms: {
       farcaster: 'https://bizarrebeasts-checkerz.remix.gg/',
@@ -143,7 +159,7 @@ export const gamesData: GameData[] = [
     description: 'Slide your way through challenging puzzles in this BizarreBeasts slider game. Simple concept but addictive gameplay. Move tiles to create paths and solve increasingly complex puzzles.',
     shortDescription: 'Sliding puzzle challenges',
     bannerImage: '/assets/page-assets/games/banners/sliderz-game-banner-8.svg',
-    plays: 573,
+    plays: 600,
     genre: 'Puzzle',
     platforms: {
       farcaster: 'https://remix.gg?game=QOwHOawyLtQV',

@@ -307,12 +307,52 @@ export const useUnifiedAuthStore = create<UnifiedAuthState>()(
             // Skip refreshProfile to prevent overwriting correct SDK data
             // The SDK data should be the source of truth in Farcaster miniapp
             console.log('🚫 Skipping refreshProfile to preserve SDK data');
+          } else {
+            // API call failed but we still have the data from SDK
+            // Set the state anyway since we're in miniapp with valid data
+            console.log('🔧 API failed but setting Farcaster state from SDK data');
+
+            const verifiedAddresses = userData.verified_addresses?.eth_addresses ||
+                                     userData.verifiedAddresses ||
+                                     [];
+
+            set({
+              farcasterFid: userData.fid,
+              farcasterUsername: userData.username,
+              farcasterDisplayName: userData.display_name || userData.displayName,
+              farcasterPfpUrl: userData.pfp_url || userData.pfpUrl,
+              farcasterBio: userData.bio,
+              farcasterConnected: true, // Mark as connected since we have valid SDK data
+              verifiedAddresses: verifiedAddresses,
+              walletAddress: get().walletAddress || (verifiedAddresses[0] || null),
+              walletConnected: !!get().walletAddress || !!verifiedAddresses[0]
+            });
           }
 
           set({ isLoading: false });
         } catch (error) {
           console.error('Connect Farcaster error:', error);
-          set({ error: 'Failed to connect Farcaster', isLoading: false });
+
+          // Even on error, if we have valid userData from SDK, set the state
+          if (userData?.fid && userData?.username) {
+            console.log('🔧 Setting Farcaster state despite API error');
+            const verifiedAddresses = userData.verified_addresses?.eth_addresses ||
+                                     userData.verifiedAddresses ||
+                                     [];
+
+            set({
+              farcasterFid: userData.fid,
+              farcasterUsername: userData.username,
+              farcasterDisplayName: userData.display_name || userData.displayName,
+              farcasterPfpUrl: userData.pfp_url || userData.pfpUrl,
+              farcasterConnected: true,
+              verifiedAddresses: verifiedAddresses,
+              error: null, // Clear error since we recovered
+              isLoading: false
+            });
+          } else {
+            set({ error: 'Failed to connect Farcaster', isLoading: false });
+          }
         }
       },
 

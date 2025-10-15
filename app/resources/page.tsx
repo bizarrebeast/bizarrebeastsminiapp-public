@@ -611,11 +611,11 @@ export default function ResourcesPage() {
                   <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
                     <span className="text-gray-400 text-sm">Address:</span>
                     <code className="text-gem-crystal text-xs sm:text-sm font-mono break-all">
-                      0x12125F025ea390B975aEa210B40c7B81dC2F00E0
+                      0x3e8B162E639785f71018DB091A13e3b5A5b77278
                     </code>
                   </div>
                   <a
-                    href="https://basescan.org/address/0x12125F025ea390B975aEa210B40c7B81dC2F00E0"
+                    href="https://basescan.org/address/0x3e8B162E639785f71018DB091A13e3b5A5b77278"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 mt-2 text-gem-crystal hover:text-gem-gold text-sm transition-colors"

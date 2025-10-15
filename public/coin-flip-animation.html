@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BizBe Coin Flip Animation</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      width: 800px;
+      height: 800px;
+      background: #000000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .coin-container {
+      perspective: 1000px;
+      width: 400px;
+      height: 400px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .coin {
+      position: relative;
+      width: 400px;
+      height: 400px;
+      transform-style: preserve-3d;
+      animation: flip 2s ease-out infinite;
+    }
+
+    .coin img {
+      position: absolute;
+      width: 400px;
+      height: 400px;
+      backface-visibility: hidden;
+    }
+
+    .coin .tails {
+      transform: rotateX(180deg);
+    }
+
+    @keyframes flip {
+      0% { transform: rotateX(0deg); }
+      20% { transform: rotateX(360deg); }
+      40% { transform: rotateX(720deg); }
+      60% { transform: rotateX(900deg); }
+      80% { transform: rotateX(1020deg); }
+      100% { transform: rotateX(1080deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="coin-container">
+    <div class="coin">
+      <img src="/assets/page-assets/coin/bizbe-gold-coin-heads.svg" alt="Heads" class="heads">
+      <img src="/assets/page-assets/coin/bizbe-gold-coin-tails.svg" alt="Tails" class="tails">
+    </div>
+  </div>
+</body>
+</html>

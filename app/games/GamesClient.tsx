@@ -16,8 +16,17 @@ const platformIcons: Record<string, any> = {
 export default function GamesPage() {
   const [sortBy, setSortBy] = useState<'all' | 'popular'>('all');
   const [isInMiniApp, setIsInMiniApp] = useState(false);
-  const displayGames = sortBy === 'popular' ? getGamesByPopularity() : gamesData;
-  const totalPlays = getTotalPlays();
+  const [flipCount, setFlipCount] = useState<number>(430); // Default fallback
+
+  // Update flip game count in games data
+  const updatedGamesData = gamesData.map(game =>
+    game.id === 'bizbe-coin-toss' ? { ...game, plays: flipCount } : game
+  );
+
+  const displayGames = sortBy === 'popular'
+    ? [...updatedGamesData].sort((a, b) => b.plays - a.plays)
+    : updatedGamesData;
+  const totalPlays = updatedGamesData.reduce((total, game) => total + game.plays, 0);
 
   useEffect(() => {
     // Check if we're in a Farcaster miniapp context
@@ -30,6 +39,25 @@ export default function GamesPage() {
       }
     };
     checkContext();
+  }, []);
+
+  useEffect(() => {
+    // Fetch dynamic flip count
+    const fetchFlipCount = async () => {
+      try {
+        const response = await fetch('/api/games/flip-count');
+        if (response.ok) {
+          const data = await response.json();
+          if (data.count) {
+            setFlipCount(data.count);
+          }
+        }
+      } catch (error) {
+        console.error('Failed to fetch flip count:', error);
+        // Keep default fallback value
+      }
+    };
+    fetchFlipCount();
   }, []);
 
   // Function to handle game link clicks
@@ -51,7 +79,7 @@ export default function GamesPage() {
             BizarreBeasts Games
           </h1>
           <p className="text-lg text-gray-300 max-w-4xl mx-auto px-4">
-            Play all 8 original BizarreBeasts games powered by Remix! Each game features original hand-illustrated BizarreBeasts artwork and characters from the universe. Jump into adventures, collect treasures, and experience the full BIZARRE gaming ecosystem. All games are playable across multiple platforms, including Farcaster, Telegram, World App, and coming soon to iOS and Android!
+            Play all 9 original BizarreBeasts games! 8 games powered by Remix plus BizBe's exclusive Coin Toss. Each game features original hand-illustrated BizarreBeasts artwork and characters from the universe. Jump into adventures, collect treasures, and experience the full BIZARRE gaming ecosystem. All games are playable across multiple platforms, including Farcaster, Telegram, World App, and coming soon to iOS and Android!
           </p>
         </div>
 
@@ -59,7 +87,7 @@ export default function GamesPage() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
           <div className="bg-gradient-to-br from-dark-card via-dark-card to-gem-gold/5 border border-gem-gold/20 rounded-lg p-4 text-center transition-all duration-300">
             <Gamepad2 className="w-8 h-8 text-gem-gold mx-auto mb-2" />
-            <div className="text-2xl font-bold text-gem-gold">8</div>
+            <div className="text-2xl font-bold text-gem-gold">9</div>
             <div className="text-sm text-gray-400">Games</div>
           </div>
           <div className="bg-gradient-to-br from-dark-card via-dark-card to-gem-crystal/5 border border-gem-crystal/20 rounded-lg p-4 text-center transition-all duration-300">
@@ -69,7 +97,7 @@ export default function GamesPage() {
           </div>
           <div className="bg-gradient-to-br from-dark-card via-dark-card to-gem-gold/5 border border-gem-gold/20 rounded-lg p-4 text-center transition-all duration-300">
             <Trophy className="w-8 h-8 text-gem-gold mx-auto mb-2" />
-            <div className="text-2xl font-bold bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent">42K</div>
+            <div className="text-2xl font-bold bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent">44K</div>
             <div className="text-sm text-gray-400">Top Game Plays</div>
           </div>
           <div className="bg-gradient-to-br from-dark-card via-dark-card to-gem-pink/5 border border-gem-pink/20 rounded-lg p-4 text-center transition-all duration-300">
@@ -145,7 +173,12 @@ export default function GamesPage() {
                       alt={game.title}
                       className="w-full h-full object-cover"
                     />
-                    {game.featured && (
+                    {game.exclusive && (
+                      <span className="absolute top-2 right-2 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink text-dark-bg text-xs px-2 py-1 rounded-full font-semibold">
+                        Exclusive
+                      </span>
+                    )}
+                    {game.featured && !game.exclusive && (
                       <span className="absolute top-2 right-2 bg-gem-gold/90 text-dark-bg text-xs px-2 py-1 rounded-full font-semibold">
                         Featured
                       </span>
@@ -224,16 +257,25 @@ export default function GamesPage() {
 
                   {/* Online Play Button - shown only if online link exists */}
                   {game.platforms.online && (
-                    <a
-                      href={game.platforms.online}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={(e) => handleGameClick(game.platforms.online!, e)}
-                      className="w-full bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink text-dark-bg px-4 py-2 rounded-lg font-semibold hover:shadow-lg transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2"
-                    >
-                      Play Online
-                      <ExternalLink className="w-4 h-4" />
-                    </a>
+                    game.platforms.online.startsWith('/') ? (
+                      <Link
+                        href={game.platforms.online}
+                        className="w-full bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink text-dark-bg px-4 py-2 rounded-lg font-semibold hover:shadow-lg transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2"
+                      >
+                        Play Now
+                      </Link>
+                    ) : (
+                      <a
+                        href={game.platforms.online}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={(e) => handleGameClick(game.platforms.online!, e)}
+                        className="w-full bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink text-dark-bg px-4 py-2 rounded-lg font-semibold hover:shadow-lg transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2"
+                      >
+                        Play Online
+                        <ExternalLink className="w-4 h-4" />
+                      </a>
+                    )
                   )}
                 </div>
               </div>

@@ -45,7 +45,7 @@ export const SHARE_TEMPLATES = {
     default: `Check out BizarreBeasts ($BB) and hold 25M tokens to join /bizarrebeasts! 🚀 👹\n\nCC @bizarrebeast`,
     meme: `Just created this epic meme with BizarreBeasts! 👹\n\nJoin the bizarre movement at /bizarrebeasts\nCC @bizarrebeast`,
     rank: `I'm rank #{rank} on the BizarreBeasts Empire Leaderboard! 🏆\n\nJoin /bizarrebeasts and climb the ranks!\nCC @bizarrebeast`,
-    ritual: `Daily BIZARRE Ritual #{id}: {title}\n\n{description}\n\nJoin me in completing daily $BIZARRE rituals in the BizarreBeasts ($BB) Community! 👹\n\n#BizarreBeasts #BBRituals`,
+    ritual: `Daily BIZARRE Ritual #{id}: {title}\n\n{description}\n\nJoin me in completing daily $BIZARRE rituals in the BizarreBeasts ($BB) Community! 👹\n\n@bizarrebeast \n\n#BizarreBeasts #BBRituals {ritualHashtag}`,
     checkin: `🔥 Day {streak} streak on BizarreBeasts!\n\nJust checked in and earning $BB every week for being active in the community!\n\nJoin /bizarrebeasts and start your daily ritual streak!\n\nCC @bizarrebeast\n\n#bbrituals #BBCheckin`,
     claim: `💰 Just claimed {amount} $BB from my BizarreBeasts check-in rewards!\n\n{tierMessage}\nTotal earned: {totalEarned} $BB\n\nStart earning daily rewards at /bizarrebeasts!\nCC @bizarrebeast`,
     milestone5: `🎯 5-day streak complete on BizarreBeasts!\nJust earned {reward} $BB!\n\nJoin /bizarrebeasts and start earning!\nCC @bizarrebeast`,
@@ -56,6 +56,11 @@ export const SHARE_TEMPLATES = {
     contestEntry: `📸 Just entered: {name}\n\nCheck out my BIZARRE creation and vote for me!\n\n💰 Prize pool: {prize}\n⏰ {timeLeft}\n\nJoin the competition at /bizarrebeasts!\nCC @bizarrebeast`,
     contestPosition: `🏆 {playerText} ranked #{rank} in {name}!\n\n💪 Score: {score}\n\nJoin and compete at /bizarrebeasts!\nCC @bizarrebeast`,
     contestWinner: `🎉 I WON {name}!\n\n🥇 Final position: #{position}\n💰 Prize won: {prize}\n🔥 Score: {score}\n\nJoin the next contest at /bizarrebeasts!\nCC @bizarrebeast`,
+    swap: `🔄 Just bought $BB in the BizarreBeasts miniapp!\n\nGO BIZARRE. GET BANK. 💰👹\n\n/bizarrebeasts\nCC @bizarrebeast`,
+    tip: `💸 Just tipped {amount} $BB to @{recipient} using the BizarreBeasts Miniapp!\n\nGO BIZARRE. GET BANK. 💰👹\n\n/bizarrebeasts\nCC @bizarrebeast`,
+    flip: `🪙 BizBe's Daily Coin Flip = BIZARRE Prizes\n\n✅ 50/50 odds to win 5,000 $BB (test tokens in Beta)\n🎟️ PLUS enter monthly prize drawing\n🔥 Empire leaders get up to 5 flips/day\n💰 Just flip. That's it.\n\n/bizarrebeasts\nCC @bizarrebeast`,
+    flipWin: `🎉 I just WON 5,000 $BB on BizBe's Daily Flip!\n\n💰 50/50 odds, instant win (test tokens in Beta)\n🎟️ {totalEntries} entries into monthly drawing\n🔥 Flip daily at /bizarrebeasts\n\nCC @bizarrebeast`,
+    flipPrize: `🎁 THIS MONTH: {prizeDisplay}\n\n🪙 Flip BizBe's coin daily to enter!\n✨ Winners drawn {drawingDate}\n🎟️ {totalEntries} entries so far\n\n💰 Win 5,000 $BB per flip (test tokens in Beta)\n\n/bizarrebeasts\nCC @bizarrebeast`,
   },
   twitter: {
     default: `Check out @bizarrebeasts_ ( $BB ) - The weirdest, wildest meme generator in crypto! 👹🚀`,
@@ -72,6 +77,11 @@ export const SHARE_TEMPLATES = {
     contestEntry: `📸 Just entered: {name}\n\nCheck out my BIZARRE creation and vote for me!\n\n💰 Prize pool: {prize}\n⏰ {timeLeft}\n\nJoin the competition!\nCC @bizarrebeasts_`,
     contestPosition: `🏆 {playerText} ranked #{rank} in {name}!\n\n💪 Score: {score}\n\n@bizarrebeasts_`,
     contestWinner: `🎉 I WON {name}!\n\n🥇 Final position: #{position}\n💰 Prize won: {prize}\n\n@bizarrebeasts_`,
+    swap: `🔄 Just bought ( $BB ) in the BizarreBeasts miniapp!\n\nGO BIZARRE. GET BANK. 💰👹\n\n@bizarrebeasts_`,
+    tip: `💸 Just tipped {amount} ( $BB ) to @{recipient} using the BizarreBeasts Miniapp!\n\nGO BIZARRE. GET BANK. 💰👹\n\n@bizarrebeasts_`,
+    flip: `🪙 BizBe's Daily Coin Flip = BIZARRE Prizes\n\n✅ 50/50 odds to win 5,000 ( $BB ) (test tokens in Beta)\n🎟️ PLUS enter monthly prize drawing\n🔥 Empire leaders get up to 5 flips/day\n💰 Just flip. That's it.\n\n@bizarrebeasts_`,
+    flipWin: `🎉 I just WON 5,000 ( $BB ) on BizBe's Daily Flip!\n\n💰 50/50 odds, instant win (test tokens in Beta)\n🎟️ {totalEntries} entries into monthly drawing\n🔥 Flip daily!\n\n@bizarrebeasts_`,
+    flipPrize: `🎁 THIS MONTH: {prizeDisplay}\n\n🪙 Flip BizBe's coin daily to enter!\n✨ Drawing: {drawingDate}\n🎟️ {totalEntries} entries\n\n💰 Win 5K ( $BB ) per flip (test tokens in Beta)\n\n@bizarrebeasts_`,
   },
   telegram: {
     default: `Check out @bizarrebeast ($BB) - The ultimate meme generator! 👹`,
@@ -88,6 +98,11 @@ export const SHARE_TEMPLATES = {
     contestEntry: `📸 Just entered: {name}\n\nCheck out my BIZARRE creation and vote for me!\n\n💰 Prize pool: {prize}\n⏰ {timeLeft}\n\n@bizarrebeast`,
     contestPosition: `🏆 {playerText} ranked #{rank} in {name}!\n\n💪 Score: {score}\n\n@bizarrebeast`,
     contestWinner: `🎉 I WON {name}!\n\n🥇 Final position: #{position}\n💰 Prize won: {prize}\n\n@bizarrebeast ($BB)`,
+    swap: `🔄 Just bought ($BB) in the BizarreBeasts miniapp!\n\nGO BIZARRE. GET BANK. 💰👹\n\n@bizarrebeast`,
+    tip: `💸 Just tipped {amount} ($BB) to {recipient} using the BizarreBeasts Miniapp!\n\nGO BIZARRE. GET BANK. 💰👹\n\n@bizarrebeast`,
+    flip: `🪙 BizBe's Daily Coin Flip = BIZARRE Prizes\n\n✅ 50/50 odds to win 5,000 ($BB) (test tokens in Beta)\n🎟️ PLUS enter monthly prize drawing\n🔥 Empire leaders get up to 5 flips/day\n💰 Just flip. That's it.\n\n@bizarrebeast`,
+    flipWin: `🎉 I just WON 5,000 ($BB) on BizBe's Daily Flip!\n\n💰 50/50 odds, instant win (test tokens in Beta)\n🎟️ {totalEntries} entries into monthly drawing\n🔥 Flip daily!\n\n@bizarrebeast`,
+    flipPrize: `🎁 THIS MONTH: {prizeDisplay}\n\n🪙 Flip BizBe's coin daily to enter!\n✨ Drawing: {drawingDate}\n🎟️ {totalEntries} entries\n\n💰 Win 5K ($BB) per flip (test tokens in Beta)\n\n@bizarrebeast`,
   }
 };
 

@@ -11,7 +11,7 @@ const supabase = supabaseUrl && supabaseKey
 
 export async function POST(request: NextRequest) {
   try {
-    const { wallet, txHash, blockNumber, gasUsed } = await request.json();
+    const { wallet, txHash, blockNumber, blockTimestamp, gasUsed, username, fid } = await request.json();
 
     if (!wallet || !txHash) {
       return NextResponse.json(
@@ -19,6 +19,10 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+
+    // Use block timestamp if provided, otherwise fall back to current time
+    const attestationTimestamp = blockTimestamp ? new Date(blockTimestamp) : new Date();
+    console.log('📅 Recording attestation with timestamp:', attestationTimestamp.toISOString());
 
     // If Supabase not configured, return mock success
     if (!supabase) {
@@ -30,24 +34,34 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Get user's Farcaster info if available
-    const { data: userData } = await supabase
-      .from('unified_users')
-      .select('farcaster_fid, farcaster_username')
-      .eq('wallet_address', wallet.toLowerCase())
-      .single();
+    // Try to use passed username/fid first, then look up from database
+    let finalUsername = username;
+    let finalFid = fid;
 
-    // Record attestation
+    // If we don't have username/fid passed in, look it up
+    if (!finalUsername || !finalFid) {
+      const { data: userData } = await supabase
+        .from('unified_users')
+        .select('farcaster_fid, farcaster_username')
+        .eq('wallet_address', wallet.toLowerCase())
+        .single();
+
+      finalUsername = finalUsername || userData?.farcaster_username || null;
+      finalFid = finalFid || userData?.farcaster_fid || null;
+    }
+
+    // Record attestation with blockchain timestamp
     const { data: attestation, error: attestError } = await supabase
       .from('bizarre_attestations')
       .insert({
         wallet_address: wallet.toLowerCase(),
-        farcaster_fid: userData?.farcaster_fid || null,
-        username: userData?.farcaster_username || null,
+        farcaster_fid: finalFid,
+        username: finalUsername,
         tx_hash: txHash,
         block_number: blockNumber || 0,
         gas_price: gasUsed || null,
-        attestation_date: new Date().toISOString().split('T')[0]
+        attestation_date: attestationTimestamp.toISOString().split('T')[0],
+        created_at: attestationTimestamp.toISOString() // Use blockchain timestamp for created_at
       })
       .select()
       .single();

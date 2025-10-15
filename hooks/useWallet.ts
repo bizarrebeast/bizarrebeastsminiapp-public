@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { web3Service, WalletState } from '@/lib/web3';
 import { AccessTier } from '@/lib/empire';
 import { useUnifiedAuthStore } from '@/store/useUnifiedAuthStore';
@@ -8,8 +8,11 @@ import { isInFarcasterMiniapp } from '@/lib/farcaster-miniapp';
 import { useBBAuth } from '@/hooks/useBBAuth';
 
 export function useWallet() {
-  // Get unified auth state
-  const unifiedAuth = useUnifiedAuthStore();
+  // Get unified auth state - use selectors to prevent unnecessary re-renders
+  const farcasterConnected = useUnifiedAuthStore(state => state.farcasterConnected);
+  const unifiedWalletAddress = useUnifiedAuthStore(state => state.walletAddress);
+  const unifiedEmpireTier = useUnifiedAuthStore(state => state.empireTier);
+
   // Get BB Auth state for Farcaster context
   const bbAuth = useBBAuth();
 
@@ -20,9 +23,27 @@ export function useWallet() {
   });
   const [isInitializing, setIsInitializing] = useState(true);
 
+  // Track initialization to prevent loops
+  const hasInitializedRef = useRef(false);
+  const renderCountRef = useRef(0);
+
+  // Debug excessive renders
+  renderCountRef.current++;
+  if (renderCountRef.current > 20) {
+    console.warn(`[useWallet] Excessive renders detected: ${renderCountRef.current}`);
+  }
+
   useEffect(() => {
+    // Prevent re-initialization if already done
+    if (hasInitializedRef.current) {
+      console.log('[useWallet] Skipping re-initialization, already initialized');
+      return;
+    }
+
     // Initialize web3 service
     const init = async () => {
+      hasInitializedRef.current = true;
+
       // Skip initialization in Farcaster miniapp
       const inMiniapp = isInFarcasterMiniapp();
       if (inMiniapp) {
@@ -51,12 +72,12 @@ export function useWallet() {
             address: bbAuth.wallet,
             empireTier: tierMapping[bbAuth.empireTier || 'NORMIE'] || AccessTier.NORMIE
           });
-        } else if (unifiedAuth.walletAddress) {
+        } else if (unifiedWalletAddress) {
           // Fall back to unified auth
           setWalletState({
             isConnected: true,
-            address: unifiedAuth.walletAddress,
-            empireTier: unifiedAuth.empireTier as AccessTier || AccessTier.NORMIE
+            address: unifiedWalletAddress,
+            empireTier: unifiedEmpireTier as AccessTier || AccessTier.NORMIE
           });
         }
         return;
@@ -109,7 +130,19 @@ export function useWallet() {
     // Subscribe to state changes
     const unsubscribe = web3Service.onStateChange((newState) => {
       setWalletState(newState);
-      
+
+      // Update unified auth store if wallet address changed
+      if (newState.isConnected && newState.address) {
+        const currentUnifiedAddress = useUnifiedAuthStore.getState().walletAddress;
+        if (currentUnifiedAddress !== newState.address) {
+          console.log('[useWallet] Wallet address changed, updating unified auth store:', {
+            old: currentUnifiedAddress,
+            new: newState.address
+          });
+          useUnifiedAuthStore.getState().connectWallet(newState.address);
+        }
+      }
+
       // Update initializing state if needed
       if (isInitializing && newState.isConnected) {
         setIsInitializing(false);
@@ -119,40 +152,80 @@ export function useWallet() {
     return () => {
       unsubscribe();
     };
-  }, [bbAuth.isAuthenticated, bbAuth.wallet, bbAuth.empireTier, unifiedAuth.walletAddress, unifiedAuth.empireTier]);
+  }, []); // Remove dependencies to prevent re-initialization loop
 
-  // Update wallet state when BB Auth empire tier changes
+  // Memoized stable values to prevent cascading re-renders
+  const stableBBAuth = useMemo(() => ({
+    isAuthenticated: bbAuth.isAuthenticated,
+    wallet: bbAuth.wallet,
+    empireTier: bbAuth.empireTier,
+    empireRank: bbAuth.empireRank
+  }), [bbAuth.isAuthenticated, bbAuth.wallet, bbAuth.empireTier, bbAuth.empireRank]);
+
+  // Track previous values to prevent unnecessary updates
+  const prevBBAuthRef = useRef(stableBBAuth);
+
+  // Update wallet state when BB Auth empire tier changes (with deep equality check)
   useEffect(() => {
     const inMiniapp = isInFarcasterMiniapp();
-    console.log('🎮 useWallet - BB Auth state:', {
-      inMiniapp,
-      isAuthenticated: bbAuth.isAuthenticated,
-      wallet: bbAuth.wallet,
-      empireTier: bbAuth.empireTier,
-      empireRank: bbAuth.empireRank
+    const current = stableBBAuth;
+    const previous = prevBBAuthRef.current;
+
+    // Only proceed if we're in miniapp and have meaningful changes
+    if (!inMiniapp || !current.isAuthenticated || !current.wallet) {
+      return;
+    }
+
+    // Deep equality check to prevent unnecessary updates
+    const hasChanges = (
+      previous.isAuthenticated !== current.isAuthenticated ||
+      previous.wallet !== current.wallet ||
+      previous.empireTier !== current.empireTier ||
+      previous.empireRank !== current.empireRank
+    );
+
+    if (!hasChanges) {
+      return;
+    }
+
+    console.log('📱 BB Auth state changed, updating wallet:', {
+      changes: {
+        authenticated: previous.isAuthenticated !== current.isAuthenticated,
+        wallet: previous.wallet !== current.wallet,
+        tier: previous.empireTier !== current.empireTier,
+        rank: previous.empireRank !== current.empireRank
+      },
+      current
     });
 
-    if (inMiniapp && bbAuth.isAuthenticated && bbAuth.wallet && bbAuth.empireTier) {
-      const tierMapping: { [key: string]: AccessTier } = {
-        'BIZARRE': AccessTier.BIZARRE,
-        'WEIRDO': AccessTier.WEIRDO,
-        'ODDBALL': AccessTier.ODDBALL,
-        'MISFIT': AccessTier.MISFIT,
-        'NORMIE': AccessTier.NORMIE
-      };
+    const tierMapping: { [key: string]: AccessTier } = {
+      'BIZARRE': AccessTier.BIZARRE,
+      'WEIRDO': AccessTier.WEIRDO,
+      'ODDBALL': AccessTier.ODDBALL,
+      'MISFIT': AccessTier.MISFIT,
+      'NORMIE': AccessTier.NORMIE
+    };
 
-      const mappedTier = tierMapping[bbAuth.empireTier] || AccessTier.NORMIE;
-      setWalletState({
+    const mappedTier = tierMapping[current.empireTier || 'NORMIE'] || AccessTier.NORMIE;
+
+    // Update wallet state
+    setWalletState(prev => {
+      if (prev.address === current.wallet && prev.empireTier === mappedTier && prev.isConnected) {
+        return prev; // No change needed
+      }
+
+      return {
         isConnected: true,
-        address: bbAuth.wallet,
+        address: current.wallet,
         empireTier: mappedTier
-      });
+      };
+    });
 
-      console.log('📱 Updated wallet state with BB Auth empire tier:', bbAuth.empireTier, '→', mappedTier);
-    }
-  }, [bbAuth.empireTier, bbAuth.wallet, bbAuth.isAuthenticated, bbAuth.empireRank]);
+    // Update previous reference
+    prevBBAuthRef.current = current;
+  }, [stableBBAuth]);
 
-  const connect = async () => {
+  const connect = useCallback(async () => {
     // In miniapp, wallet comes from Farcaster
     const inMiniapp = isInFarcasterMiniapp();
     if (inMiniapp) {
@@ -181,9 +254,9 @@ export function useWallet() {
         setIsInitializing(false);
       }
     }
-  };
+  }, [isInitializing]);
 
-  const disconnect = async () => {
+  const disconnect = useCallback(async () => {
     const inMiniapp = isInFarcasterMiniapp();
     if (inMiniapp) {
       console.log('📱 In miniapp - clearing wallet state');
@@ -200,38 +273,53 @@ export function useWallet() {
     } catch (error) {
       console.error('Failed to disconnect wallet:', error);
     }
-  };
+  }, []);
 
-  const refreshEmpireData = async () => {
+  const refreshEmpireData = useCallback(async () => {
     try {
       await web3Service.refreshEmpireData();
     } catch (error) {
       console.error('Failed to refresh Empire data:', error);
     }
-  };
+  }, []);
 
-  // If Farcaster is connected with a verified address, use that instead
-  const isConnectedViaFarcaster = unifiedAuth.farcasterConnected && unifiedAuth.walletAddress;
+  // Memoize computed values to prevent unnecessary re-renders
+  const isConnectedViaFarcaster = useMemo(() =>
+    farcasterConnected && !!unifiedWalletAddress,
+    [farcasterConnected, unifiedWalletAddress]
+  );
 
-  // In Farcaster miniapp, prioritize BB Auth's empire data
-  const inMiniapp = isInFarcasterMiniapp();
-  const shouldUseBBAuthData = inMiniapp && bbAuth.isAuthenticated && bbAuth.wallet;
+  const inMiniapp = useMemo(() => isInFarcasterMiniapp(), []);
 
-  return {
+  const shouldUseBBAuthData = useMemo(() =>
+    inMiniapp && stableBBAuth.isAuthenticated && !!stableBBAuth.wallet,
+    [inMiniapp, stableBBAuth.isAuthenticated, stableBBAuth.wallet]
+  );
+
+  // Memoize the final return object to prevent cascading re-renders
+  return useMemo(() => ({
     ...walletState,
     // Override with Farcaster verified address if available
     isConnected: walletState.isConnected || isConnectedViaFarcaster,
-    address: isConnectedViaFarcaster ? unifiedAuth.walletAddress : walletState.address,
+    address: isConnectedViaFarcaster ? unifiedWalletAddress : walletState.address,
     // Add empire rank and score from BB Auth when in miniapp
-    empireRank: shouldUseBBAuthData ? bbAuth.empireRank : walletState.empireRank,
-    empireScore: shouldUseBBAuthData ? null : walletState.empireScore, // BB Auth doesn't provide score
-    // The walletState.empireTier is already correctly set from BB Auth in the effect above
+    empireRank: shouldUseBBAuthData ? stableBBAuth.empireRank : walletState.empireRank,
+    empireScore: shouldUseBBAuthData ? null : walletState.empireScore,
     isInitializing,
     connect,
     disconnect,
     refreshEmpireData,
     formatAddress: web3Service.formatAddress,
-    // Add a flag to indicate if connection is via Farcaster
     isViaFarcaster: isConnectedViaFarcaster
-  };
+  }), [
+    walletState,
+    isConnectedViaFarcaster,
+    unifiedWalletAddress,
+    shouldUseBBAuthData,
+    stableBBAuth.empireRank,
+    isInitializing,
+    connect,
+    disconnect,
+    refreshEmpireData
+  ]);
 }

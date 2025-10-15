@@ -6,6 +6,7 @@
  */
 
 import sdk from '@farcaster/miniapp-sdk';
+import { detectFarcasterContext } from './farcaster-detection';
 
 // Type definitions
 export interface AuthHeaders {
@@ -19,15 +20,28 @@ export interface AuthHeaders {
  */
 export async function getConnectedWallet(): Promise<string | null> {
   try {
-    const isInMiniapp = await sdk.isInMiniApp();
+    const detection = await detectFarcasterContext();
+    console.log('🔍 [getConnectedWallet] Detection:', detection);
 
-    if (isInMiniapp) {
-      // Get wallet from Farcaster SDK
-      console.log('🔍 Getting wallet from Farcaster SDK...');
+    if (detection.isInMiniapp) {
+      // PRIORITY 1: Try unified auth store first (persisted wallet from FarcasterSDKSync)
+      console.log('🔍 [getConnectedWallet] PRIORITY 1: Checking unified auth store...');
+      const { useUnifiedAuthStore } = await import('@/store/useUnifiedAuthStore');
+      const storeWallet = useUnifiedAuthStore.getState().walletAddress;
+      console.log('🔍 [getConnectedWallet] Store wallet:', storeWallet);
+
+      if (storeWallet) {
+        console.log('✅ [getConnectedWallet] PRIORITY 1 WIN: Using wallet from unified auth store:', storeWallet);
+        return storeWallet;
+      }
+
+      // PRIORITY 2: Get wallet from Farcaster SDK
+      console.log('🔍 [getConnectedWallet] PRIORITY 2: Checking Farcaster SDK provider...');
       const provider = await sdk.wallet.getEthereumProvider();
+      console.log('🔍 [getConnectedWallet] SDK provider available:', !!provider);
 
       if (!provider) {
-        console.log('⚠️ No wallet provider available');
+        console.log('⚠️ [getConnectedWallet] No wallet provider available');
         return null;
       }
 
@@ -35,22 +49,24 @@ export async function getConnectedWallet(): Promise<string | null> {
       const accounts = await provider.request({
         method: 'eth_accounts'
       }) as string[];
+      console.log('🔍 [getConnectedWallet] SDK accounts:', accounts);
 
       if (accounts && accounts.length > 0) {
-        console.log('✅ Found connected wallet:', accounts[0]);
+        console.log('✅ [getConnectedWallet] PRIORITY 2 WIN: Found connected wallet from SDK:', accounts[0]);
         return accounts[0];
       }
 
-      console.log('ℹ️ No wallet connected yet');
+      console.log('ℹ️ [getConnectedWallet] No wallet connected yet');
       return null;
     } else {
       // Get from localStorage for web context
+      console.log('🌐 [getConnectedWallet] Not in miniapp, checking localStorage...');
       const wallet = localStorage.getItem('connected_wallet');
-      console.log('🌐 Web wallet:', wallet || 'none');
+      console.log('🌐 [getConnectedWallet] Web wallet:', wallet || 'none');
       return wallet;
     }
   } catch (error) {
-    console.error('Failed to get connected wallet:', error);
+    console.error('❌ [getConnectedWallet] Failed to get connected wallet:', error);
     return null;
   }
 }
@@ -60,9 +76,9 @@ export async function getConnectedWallet(): Promise<string | null> {
  */
 export async function requestWalletConnection(): Promise<string | null> {
   try {
-    const isInMiniapp = await sdk.isInMiniApp();
+    const detection = await detectFarcasterContext();
 
-    if (isInMiniapp) {
+    if (detection.isInMiniapp) {
       console.log('📱 Requesting wallet connection in miniapp...');
       const provider = await sdk.wallet.getEthereumProvider();
 
@@ -101,22 +117,30 @@ export async function authenticatedFetch(
   options: RequestInit = {}
 ): Promise<Response> {
   try {
-    const isInMiniapp = await sdk.isInMiniApp();
-    console.log(`🔐 BB Auth fetch to ${url}, in miniapp: ${isInMiniapp}`);
+    // Use enhanced detection
+    const detection = await detectFarcasterContext();
+    console.log(`🔐 BB Auth fetch to ${url}, in miniapp: ${detection.isInMiniapp} (${detection.method})`);
 
-    if (isInMiniapp) {
+    if (detection.isInMiniapp) {
       // CRITICAL: Use SDK's quickAuth.fetch - it handles the token automatically
       // This is what the Slay developer uses and it works
-      console.log('📱 Using quickAuth.fetch (BB Auth)');
+      console.log('📱 [authenticatedFetch] Using quickAuth.fetch (BB Auth)');
 
       // Get wallet to add as header
       const walletAddress = await getConnectedWallet();
+      console.log('🔍 [authenticatedFetch] Wallet for header:', walletAddress);
 
       // Add wallet header if connected
       const headers: HeadersInit = {
         ...options.headers,
         ...(walletAddress && { 'X-Wallet-Address': walletAddress })
       };
+
+      console.log('📤 [authenticatedFetch] Final headers:', {
+        ...headers,
+        hasWalletHeader: !!walletAddress,
+        walletValue: walletAddress
+      });
 
       // quickAuth.fetch automatically adds the Authorization header with FC token
       return await sdk.quickAuth.fetch(url, {
@@ -177,8 +201,8 @@ export async function verifyAuth(): Promise<{
 
     // Store session token if provided
     if (data.sessionToken) {
-      const isInMiniapp = await sdk.isInMiniApp();
-      if (!isInMiniapp) {
+      const detection = await detectFarcasterContext();
+      if (!detection.isInMiniapp) {
         // Store for web context
         localStorage.setItem('bb_session_token', data.sessionToken);
       }
@@ -279,9 +303,9 @@ export async function initializeAuth(): Promise<{
   try {
     console.log('🚀 Initializing authentication...');
 
-    const isInMiniapp = await sdk.isInMiniApp();
+    const detection = await detectFarcasterContext();
 
-    if (isInMiniapp) {
+    if (detection.isInMiniapp) {
       console.log('📱 In Farcaster miniapp - using SDK auth');
 
       // SDK will handle auth automatically

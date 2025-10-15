@@ -18,10 +18,10 @@ const miniAppEmbed = {
 
 export const metadata: Metadata = {
   title: 'Games | BizarreBeasts',
-  description: 'Play 8 original BizarreBeasts games powered by Remix! Adventures, puzzles, and treasures await in the BIZARRE gaming ecosystem.',
+  description: 'Play 9 original BizarreBeasts games! 8 powered by Remix plus BizBe\'s exclusive Coin Toss. Adventures, puzzles, and treasures await in the BIZARRE gaming ecosystem.',
   openGraph: {
     title: 'BizarreBeasts Games',
-    description: 'Play 8 original BizarreBeasts games powered by Remix! Adventures, puzzles, and treasures await.',
+    description: 'Play 9 original BizarreBeasts games! 8 powered by Remix plus BizBe\'s exclusive Coin Toss.',
     type: 'website',
     url: 'https://bbapp.bizarrebeasts.io/games',
     siteName: 'BizarreBeasts',
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'BizarreBeasts Games',
-    description: 'Play 8 original BizarreBeasts games powered by Remix!',
+    description: 'Play 9 original BizarreBeasts games! 8 powered by Remix plus BizBe\'s exclusive Coin Toss.',
     images: ['https://bbapp.bizarrebeasts.io/farcaster-assets/hero.png'],
     creator: '@bizarrebeasts_',
   },

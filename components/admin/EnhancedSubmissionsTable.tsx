@@ -249,6 +249,41 @@ export default function EnhancedSubmissionsTable({
 
   return (
     <div className="space-y-4">
+      {/* Contest Context Card */}
+      {contest && (
+        <div className="bg-gradient-to-r from-gem-crystal/10 to-gem-gold/10 border border-gem-crystal/20 rounded-lg p-4">
+          <h3 className="text-sm font-semibold text-gem-crystal mb-2">Contest Requirements</h3>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+            <div>
+              <span className="text-gray-400">Min $BB:</span>
+              <p className="font-medium">{contest.min_bb_required > 0 ? contest.min_bb_required.toLocaleString() : 'None'}</p>
+            </div>
+            <div>
+              <span className="text-gray-400">Max Entries:</span>
+              <p className="font-medium">{contest.max_entries_per_wallet} per wallet</p>
+            </div>
+            {contest.prize_amount && (
+              <div>
+                <span className="text-gray-400">Prize Pool:</span>
+                <p className="font-medium text-gem-gold">{contest.prize_amount} $BB</p>
+              </div>
+            )}
+            {contest.gallery_enabled && (
+              <div>
+                <span className="text-gray-400">Gallery:</span>
+                <p className="font-medium text-gem-pink">Enabled</p>
+              </div>
+            )}
+          </div>
+          {contest.rules && (
+            <div className="mt-3 pt-3 border-t border-gem-crystal/20">
+              <span className="text-xs text-gray-400">Rules:</span>
+              <p className="text-sm mt-1">{contest.rules}</p>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Filter Bar */}
       <div className="bg-dark-card border border-gray-700 rounded-lg p-4">
         <div className="flex items-center justify-between mb-3">

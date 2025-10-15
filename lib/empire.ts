@@ -122,8 +122,54 @@ export class EmpireService {
   }
 
   async getUserTierByAddress(address: string): Promise<AccessTier> {
+    // First check for dedication path to BIZARRE tier (100-day streak)
+    try {
+      const response = await fetch(`/api/attestations/streak?wallet=${address}`);
+      if (response.ok) {
+        const streakData = await response.json();
+
+        // 100-day streak grants automatic BIZARRE tier
+        if (streakData.has_bizarre_tier_override) {
+          return AccessTier.BIZARRE;
+        }
+      }
+    } catch (error) {
+      console.error('Error checking attestation streak:', error);
+    }
+
+    // Fall back to rank-based tier
     const rank = await this.getUserRank(address);
     return this.getUserTier(rank);
+  }
+
+  // New method for enhanced tier calculation with streak override
+  async getUserTierWithStreak(address: string, rank: number | null): Promise<{
+    tier: AccessTier;
+    isStreakBased: boolean;
+    streakDays: number;
+  }> {
+    let isStreakBased = false;
+    let streakDays = 0;
+    let tier = this.getUserTier(rank);
+
+    // Check for dedication path override
+    try {
+      const response = await fetch(`/api/attestations/streak?wallet=${address}`);
+      if (response.ok) {
+        const streakData = await response.json();
+        streakDays = streakData.best_streak || 0;
+
+        // 100-day streak grants BIZARRE tier regardless of rank
+        if (streakData.has_bizarre_tier_override) {
+          tier = AccessTier.BIZARRE;
+          isStreakBased = true;
+        }
+      }
+    } catch (error) {
+      console.error('Error checking attestation streak:', error);
+    }
+
+    return { tier, isStreakBased, streakDays };
   }
 
   // Format large numbers for display
@@ -187,3 +233,64 @@ export class EmpireService {
 }
 
 export const empireService = EmpireService.getInstance();
+
+/**
+ * Server-side function to fetch Empire data directly from API
+ * (bypasses client-side service)
+ */
+export async function fetchEmpireDataServer(walletAddress: string, retries: number = 2): Promise<{
+  tier: string | null;
+  rank: number | null;
+}> {
+  const timeout = 5000; // 5 second timeout
+
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+      const response = await fetch(`${EMPIRE_API_BASE}/leaderboard/${BB_TOKEN_ADDRESS}`, {
+        signal: controller.signal,
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+
+      clearTimeout(timeoutId);
+
+      if (response.ok) {
+        const data = await response.json();
+        const holder = data.holders?.find((h: any) =>
+          h.address?.toLowerCase() === walletAddress.toLowerCase()
+        );
+
+        if (holder) {
+          const rank = holder.rank || null;
+          // Use auth/profile tier thresholds for consistency
+          let tier: string | null = null;
+          if (rank) {
+            if (rank <= 25) tier = 'BIZARRE';  // Fixed: was 10, should be 25
+            else if (rank <= 50) tier = 'WEIRDO';
+            else if (rank <= 100) tier = 'ODDBALL';  // Fixed: was 150, should be 100
+            else if (rank <= 500) tier = 'MISFIT';
+            else tier = 'NORMIE';
+          }
+          return { tier, rank };
+        }
+
+        return { tier: null, rank: null };
+      }
+
+      if (response.status >= 400 && response.status < 500) {
+        break;
+      }
+    } catch (error: any) {
+      if (attempt === retries) {
+        break;
+      }
+      await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000));
+    }
+  }
+
+  return { tier: null, rank: null };
+}

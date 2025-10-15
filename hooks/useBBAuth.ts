@@ -6,7 +6,7 @@
 
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import {
   initializeBBAuth,
   waitForFarcasterContext,
@@ -14,6 +14,7 @@ import {
   bbAuthFetch
 } from '@/lib/auth/bb-auth-sdk';
 import { authenticatedFetch, verifyAuth, endSession } from '@/lib/auth/authenticated-fetch';
+import { useUnifiedAuthStore } from '@/store/useUnifiedAuthStore';
 
 export interface BBAuthState {
   // Authentication state
@@ -61,7 +62,18 @@ export interface BBAuthActions {
 
 const INIT_TIMEOUT = 10000; // 10 seconds
 
+// Global initialization guard to prevent multiple simultaneous initializations
+let globalInitPromise: Promise<any> | null = null;
+let globalIsInitialized = false;
+
 export function useBBAuth(): BBAuthState & BBAuthActions {
+  // Get UnifiedStore actions and selective state to prevent re-renders
+  const connectFarcaster = useUnifiedAuthStore(state => state.connectFarcaster);
+  const unifiedConnectWallet = useUnifiedAuthStore(state => state.connectWallet);
+  const unifiedFarcasterFid = useUnifiedAuthStore(state => state.farcasterFid);
+  const unifiedFarcasterUsername = useUnifiedAuthStore(state => state.farcasterUsername);
+  const unifiedWalletAddress = useUnifiedAuthStore(state => state.walletAddress);
+
   // State
   const [state, setState] = useState<BBAuthState>({
     isInitialized: false,
@@ -80,10 +92,18 @@ export function useBBAuth(): BBAuthState & BBAuthActions {
 
   const timeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
   const isMountedRef = useRef(true);
+  const hasInitializedRef = useRef(false);
 
   // Initialize on mount
   useEffect(() => {
+    // Prevent multiple initializations from same instance
+    if (hasInitializedRef.current) {
+      console.log('[useBBAuth] Skipping re-initialization, already initialized');
+      return;
+    }
+
     isMountedRef.current = true;
+    hasInitializedRef.current = true;
     initialize();
 
     return () => {
@@ -101,6 +121,28 @@ export function useBBAuth(): BBAuthState & BBAuthActions {
     try {
       if (!isMountedRef.current) return;
 
+      // Check if store is empty (auth regression fix)
+      const storeIsEmpty = !unifiedFarcasterFid || !unifiedFarcasterUsername;
+
+      // If global initialization already completed AND store has data, skip
+      if (globalIsInitialized && !storeIsEmpty) {
+        console.log('[useBBAuth] Global initialization already complete with valid data, skipping');
+        return;
+      }
+
+      // If store is empty but global says initialized, allow re-init
+      if (globalIsInitialized && storeIsEmpty) {
+        console.log('[useBBAuth] Global initialized but store is empty, forcing re-initialization');
+        globalIsInitialized = false;
+      }
+
+      // If another instance is initializing, wait for it
+      if (globalInitPromise) {
+        console.log('[useBBAuth] Another instance is initializing, waiting...');
+        await globalInitPromise;
+        return;
+      }
+
       setState(prev => ({ ...prev, isLoading: true, error: null, hasTimedOut: false }));
 
       // Set timeout for initialization
@@ -115,9 +157,14 @@ export function useBBAuth(): BBAuthState & BBAuthActions {
         }
       }, INIT_TIMEOUT);
 
-      // Initialize BB Auth with retry logic
+      // Create global init promise to prevent concurrent initializations
       console.log('🚀 Initializing BB Auth...');
-      const result = await initializeBBAuth();
+      const initPromise = initializeBBAuth();
+      globalInitPromise = initPromise;
+
+      const result = await initPromise;
+      globalIsInitialized = true;
+      globalInitPromise = null;
 
       // Clear timeout if successful
       if (timeoutRef.current) {
@@ -128,7 +175,8 @@ export function useBBAuth(): BBAuthState & BBAuthActions {
 
       if (result.success && result.context) {
         // We have Farcaster context
-        const { context, wallet } = result;
+        const { context } = result;
+        let { wallet } = result;
 
         setState(prev => ({
           ...prev,
@@ -153,12 +201,78 @@ export function useBBAuth(): BBAuthState & BBAuthActions {
           wallet: wallet
         });
 
-        // Fetch empire tier immediately and independently
-        if (wallet) {
-          console.log('📊 Fetching Empire data directly for wallet:', wallet);
+        // Sync with UnifiedStore
+        if (context.user) {
+          // Fetch verified addresses from Neynar API
+          let verifiedAddresses: string[] = [];
+          try {
+            const neynarResponse = await fetch(`/api/auth/v2/user?fid=${context.user.fid}`);
+            if (neynarResponse.ok) {
+              const neynarData = await neynarResponse.json();
+              verifiedAddresses = neynarData.user?.verified_addresses?.eth_addresses || [];
+              console.log('✅ Fetched verified addresses:', verifiedAddresses);
 
-          // Don't wait for this - fire and forget
-          (async () => {
+              // If we don't have a wallet but have verified addresses, use the first one
+              if (!wallet && verifiedAddresses.length > 0) {
+                wallet = verifiedAddresses[0];
+                setState(prev => ({ ...prev, wallet: wallet || null }));
+                console.log('✅ Using first verified address as wallet:', wallet);
+              }
+            }
+          } catch (error) {
+            console.log('Failed to fetch verified addresses:', error);
+          }
+
+          // Only sync with UnifiedStore if data is different to prevent infinite loops
+          const shouldSync = (
+            context.user.fid !== unifiedFarcasterFid ||
+            context.user.username !== unifiedFarcasterUsername ||
+            wallet !== unifiedWalletAddress
+          );
+
+          if (shouldSync) {
+            // Sync Farcaster data with UnifiedStore
+            try {
+              await connectFarcaster({
+                fid: context.user.fid,
+                username: context.user.username,
+                displayName: context.user.displayName || context.user.username,
+                pfpUrl: context.user.pfpUrl,
+                verifiedAddresses: verifiedAddresses, // Pass as array directly
+                verified_addresses: { eth_addresses: verifiedAddresses } // Also pass in expected format
+              });
+              console.log('✅ Synced Farcaster data with UnifiedStore');
+            } catch (error) {
+              console.error('❌ Failed to sync with UnifiedStore:', error);
+              // Still set local state even if UnifiedStore sync fails
+              setState(prev => ({
+                ...prev,
+                farcasterSynced: false
+              }));
+            }
+
+            // Also sync wallet if available
+            if (wallet) {
+              try {
+                await unifiedConnectWallet(wallet);
+                console.log('✅ Synced wallet with UnifiedStore');
+              } catch (error) {
+                console.error('❌ Failed to sync wallet with UnifiedStore:', error);
+              }
+            }
+          } else {
+            console.log('🚫 Skipping UnifiedStore sync to prevent loops');
+          }
+        }
+
+        // Fetch empire tier independently, but only if not already loaded for this wallet
+        if (wallet && (!state.empireTier || state.empireTier === 'NORMIE')) {
+          console.log('📊 Fetching Empire data for new wallet:', wallet);
+
+          // Debounced empire data fetch to prevent rapid successive calls
+          setTimeout(async () => {
+            if (!isMountedRef.current) return;
+
             try {
               const empireResponse = await fetch('/api/empire/leaderboard');
               const empireData = await empireResponse.json();
@@ -170,8 +284,6 @@ export function useBBAuth(): BBAuthState & BBAuthActions {
                   h.address?.toLowerCase() === wallet.toLowerCase()
                 );
 
-                console.log('📊 Found holder:', holder);
-
                 if (holder) {
                   const rank = holder.rank || null;
                   let tier = 'NORMIE';
@@ -181,11 +293,18 @@ export function useBBAuth(): BBAuthState & BBAuthActions {
                   else if (rank && rank <= 500) tier = 'MISFIT';
 
                   if (isMountedRef.current) {
-                    setState(prev => ({
-                      ...prev,
-                      empireTier: tier,
-                      empireRank: rank
-                    }));
+                    setState(prev => {
+                      // Only update if tier actually changed
+                      if (prev.empireTier === tier && prev.empireRank === rank) {
+                        return prev;
+                      }
+
+                      return {
+                        ...prev,
+                        empireTier: tier,
+                        empireRank: rank
+                      };
+                    });
                     console.log('✅ Empire tier loaded:', tier, 'Rank:', rank);
                   }
                 } else {
@@ -195,7 +314,7 @@ export function useBBAuth(): BBAuthState & BBAuthActions {
             } catch (error) {
               console.log('Failed to fetch Empire data:', error);
             }
-          })();
+          }, 500); // 500ms delay to debounce
         }
 
         // Verify with backend separately
@@ -390,10 +509,15 @@ export function useBBAuth(): BBAuthState & BBAuthActions {
    * Refresh auth state
    */
   const refresh = useCallback(async () => {
+    // Reset global guards to allow re-initialization
+    globalIsInitialized = false;
+    globalInitPromise = null;
+    hasInitializedRef.current = false;
     await initialize();
   }, []);
 
-  return {
+  // Memoize return value to prevent new object on every render
+  return useMemo(() => ({
     // State
     ...state,
 
@@ -405,5 +529,13 @@ export function useBBAuth(): BBAuthState & BBAuthActions {
     connectWallet,
     disconnectWallet,
     authenticatedFetch
-  };
+  }), [
+    state,
+    login,
+    logout,
+    refresh,
+    retry,
+    connectWallet,
+    disconnectWallet
+  ]);
 }

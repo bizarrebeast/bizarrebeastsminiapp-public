@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
 
     // Get leaderboard using the view
     const { data: leaderboard, error } = await supabase
-      .from('attestation_leaderboard')
+      .from('bizarre_attestation_leaderboard')
       .select('*')
       .range(offset, offset + limit - 1);
 

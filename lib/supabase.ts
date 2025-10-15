@@ -95,6 +95,119 @@ export interface OnboardingTask {
   verification_data?: any;
 }
 
+// ============================================================================
+// HANS' COIN FLIP TYPES
+// ============================================================================
+
+export interface CoinFlipBet {
+  id: string;
+  wallet_address: string;
+  farcaster_fid?: number;
+  farcaster_username?: string;
+  amount: string; // bigint as string
+  choice: 'heads' | 'tails';
+  client_seed_hash: string;
+  client_seed?: string;
+  server_seed_hash: string;
+  server_seed?: string;
+  combined_hash?: string;
+  result?: 'heads' | 'tails';
+  is_winner?: boolean;
+  payout: string; // bigint as string
+  streak_level: number;
+  streak_multiplier: number;
+  cashed_out: boolean;
+  bet_transaction_hash?: string;
+  payout_transaction_hash?: string;
+  status: 'pending' | 'revealed' | 'paid' | 'failed';
+  ip_address?: string;
+  user_agent?: string;
+  created_at: string;
+  revealed_at?: string;
+  paid_at?: string;
+}
+
+export interface CoinFlipLeaderboard {
+  wallet_address: string;
+  farcaster_username?: string;
+  farcaster_fid?: number;
+  empire_tier?: string;
+  empire_rank?: number;
+  total_flips: number;
+  total_wins: number;
+  total_losses: number;
+  total_wagered: string; // bigint as string
+  total_won: string;
+  total_lost: string;
+  net_profit: string;
+  biggest_win: string;
+  biggest_loss: string;
+  current_streak: number;
+  longest_streak: number;
+  best_cashout: string;
+  total_cashouts: number;
+  first_flip_at?: string;
+  last_flip_at?: string;
+  total_play_time: number;
+  win_rate: number;
+  avg_bet: string;
+  avg_win: string;
+  avg_profit_per_flip: string;
+  rank_by_profit?: number;
+  rank_by_volume?: number;
+  rank_by_wins?: number;
+  rank_by_streak?: number;
+  rank_by_win_rate?: number;
+  rank_by_biggest_win?: number;
+  updated_at: string;
+}
+
+export interface CoinFlipDailyLimit {
+  wallet_address: string;
+  date: string;
+  bets_count: number;
+  total_wagered: string;
+  total_won: string;
+  total_lost: string;
+  last_bet_at?: string;
+}
+
+export interface CoinFlipSelfExclusion {
+  wallet_address: string;
+  exclusion_type: 'cooloff' | 'self_exclude' | 'permanent';
+  start_date: string;
+  end_date: string;
+  is_permanent: boolean;
+  can_override: boolean;
+  reason?: string;
+  created_at: string;
+}
+
+export interface CoinFlipAchievement {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  tier: 'bronze' | 'silver' | 'gold' | 'legendary';
+  condition_type: string;
+  condition_value?: number;
+  created_at: string;
+}
+
+export interface CoinFlipUserAchievement {
+  wallet_address: string;
+  achievement_id: string;
+  unlocked_at: string;
+}
+
+export interface CoinFlipConfig {
+  key: string;
+  value: any;
+  description?: string;
+  updated_at: string;
+  updated_by?: string;
+}
+
 // Database types for active_contests_view
 export interface ActiveContestView extends Contest {
   participant_count: number;
@@ -121,16 +234,30 @@ export const contestQueries = {
     // Find and update expired active contests
     const { data: expiredContests, error: fetchError } = await supabase
       .from('contests')
-      .select('id')
+      .select('id, name, end_date')
       .eq('status', 'active')
       .lt('end_date', now);
 
     if (!fetchError && expiredContests && expiredContests.length > 0) {
-      for (const contest of expiredContests) {
-        await supabase
-          .from('contests')
-          .update({ status: 'ended' })
-          .eq('id', contest.id);
+      console.log(`⏰ Found ${expiredContests.length} expired contest(s), updating status to 'ended'...`);
+
+      // Update all in one query for efficiency
+      const contestIds = expiredContests.map(c => c.id);
+      const { error: updateError } = await supabase
+        .from('contests')
+        .update({
+          status: 'ended',
+          updated_at: now
+        })
+        .in('id', contestIds);
+
+      if (updateError) {
+        console.error('❌ Error updating expired contests:', updateError);
+      } else {
+        console.log(`✅ Updated ${expiredContests.length} contest(s) to ended status`);
+        expiredContests.forEach(c => {
+          console.log(`   - ${c.name} (ended: ${c.end_date})`);
+        });
       }
     }
   },
@@ -232,40 +359,75 @@ export const contestQueries = {
 
   // Get submissions for a contest
   async getContestSubmissions(contestId: string, status?: 'pending' | 'approved' | 'rejected') {
-    let query = supabase
-      .from('contest_submissions')
-      .select('*')
-      .eq('contest_id', contestId)
-      .order('score', { ascending: false });
+    // Use admin client to bypass RLS for viewing pending/all submissions
+    try {
+      const { supabaseAdmin } = await import('./supabase-admin');
+      let query = supabaseAdmin
+        .from('contest_submissions')
+        .select('*')
+        .eq('contest_id', contestId)
+        .order('score', { ascending: false});
 
-    if (status) {
-      query = query.eq('status', status);
+      if (status) {
+        query = query.eq('status', status);
+      }
+
+      const { data, error } = await query;
+      if (error) {
+        console.error('Error fetching contest submissions with admin client:', error);
+        throw error;
+      }
+      console.log(`📊 getContestSubmissions fetched ${data?.length || 0} submissions (admin client)`);
+      return data as ContestSubmission[];
+    } catch (importError) {
+      // Fallback to regular client if admin client not available
+      console.warn('Admin client not available, falling back to regular client (may not see pending)');
+      let query = supabase
+        .from('contest_submissions')
+        .select('*')
+        .eq('contest_id', contestId)
+        .order('score', { ascending: false });
+
+      if (status) {
+        query = query.eq('status', status);
+      }
+
+      const { data, error } = await query;
+      if (error) throw error;
+      return data as ContestSubmission[];
     }
-
-    const { data, error } = await query;
-    if (error) throw error;
-    return data as ContestSubmission[];
   },
 
   // Get submissions with vote counts for gallery
+  // Uses admin client to show BOTH pending and approved submissions
+  // This allows users to see their submission immediately and vote/share
+  // Admin will moderate and reject bad ones later
   async getSubmissionsWithVotes(contestId: string) {
+    const { supabaseAdmin } = await import('./supabase-admin');
+
     // Get both pending and approved submissions (exclude rejected)
-    const { data: submissions, error: subError } = await supabase
+    const { data: submissions, error: subError } = await supabaseAdmin
       .from('contest_submissions')
       .select('*')
       .eq('contest_id', contestId)
       .in('status', ['pending', 'approved'])
       .order('submitted_at', { ascending: false });
 
-    if (subError) throw subError;
+    if (subError) {
+      console.error('Error fetching submissions:', subError);
+      throw subError;
+    }
 
     // Then get vote counts for each submission
-    const { data: votes, error: voteError } = await supabase
+    const { data: votes, error: voteError } = await supabaseAdmin
       .from('contest_votes')
       .select('submission_id')
       .eq('contest_id', contestId);
 
-    if (voteError) throw voteError;
+    if (voteError) {
+      console.error('Error fetching votes:', voteError);
+      throw voteError;
+    }
 
     // Count votes per submission
     const voteCounts: { [key: string]: number } = {};
@@ -279,9 +441,10 @@ export const contestQueries = {
       vote_count: voteCounts[sub.id] || 0
     })) || [];
 
-    // Sort by vote count if needed
+    // Sort by vote count
     submissionsWithVotes.sort((a, b) => (b.vote_count || 0) - (a.vote_count || 0));
 
+    console.log(`📊 getSubmissionsWithVotes fetched ${submissionsWithVotes.length} submissions (${submissions?.filter(s => s.status === 'pending').length || 0} pending, ${submissions?.filter(s => s.status === 'approved').length || 0} approved)`);
     return submissionsWithVotes;
   },
 
@@ -409,11 +572,21 @@ export const contestQueries = {
     return data as ContestWinner;
   },
 
-  // Get winners for a contest
+  // Get winners for a contest with submission details
   async getContestWinners(contestId: string) {
     const { data, error } = await supabase
       .from('contest_winners')
-      .select('*')
+      .select(`
+        *,
+        contest_submissions (
+          username,
+          score,
+          screenshot_url,
+          submitted_at,
+          vote_count,
+          wallet_address
+        )
+      `)
       .eq('contest_id', contestId)
       .order('position', { ascending: true });
 

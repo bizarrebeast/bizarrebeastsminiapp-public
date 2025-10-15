@@ -217,10 +217,9 @@ export default function FeaturedRitualClient() {
       {/* Partnership CTA */}
       <div className="text-center">
         <button
-          onClick={async () => await openExternalUrl('https://bbapp.bizarrebeasts.io/partnerships')}
+          onClick={() => window.location.href = '/contact'}
           className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-dark-card to-gem-gold/10 border border-gem-gold/30 text-gem-gold font-semibold rounded-lg hover:from-gem-gold/20 hover:to-gem-gold/30 hover:border-gem-gold/50 transition-all group"
         >
-          <span className="text-lg">🤝</span>
           <span>Want to feature your project here?</span>
           <span className="text-sm opacity-70 group-hover:opacity-100">Learn more →</span>
         </button>

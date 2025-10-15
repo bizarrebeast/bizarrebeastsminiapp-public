@@ -46,8 +46,8 @@ interface FeaturedCampaign {
 
 export const ACTIVE_CAMPAIGN: FeaturedCampaign | null = {
   // Basic Campaign Info
-  title: "Notorious B.I.Z. is Back! Battle for 25M $BB on Farverse!",
-  description: `The legend returns! Notorious B.I.Z. is back and ready to dominate the Farverse arena! Join the ultimate Slay-to-Earn battle where skill meets rewards.\n\nFarverse is a premier Farcaster-native gaming platform where you can battle, earn, and prove your dominance. With 25 MILLION $BB tokens up for grabs, plus other prizes for more villains, it's time to GO BIZARRE show what you're made of!`,
+  title: "Notorious B.I.Z. is Back! Battle for 20M $BB on Farverse!",
+  description: `The legend returns! Notorious B.I.Z. is back and ready to dominate the Farverse arena! Join the ultimate Slay-to-Earn battle where skill meets rewards.\n\nFarverse is a premier Farcaster-native gaming platform where you can battle, earn, and prove your dominance. With 20 MILLION $BB tokens up for grabs, plus other prizes for more villains, it's time to GO BIZARRE show what you're made of!`,
 
   actionText: "Join the Battle",
   actionUrl: "https://slay.farverse.games/enemies/24",
@@ -59,7 +59,7 @@ export const ACTIVE_CAMPAIGN: FeaturedCampaign | null = {
 
   // Optional: Auto-expire (remove or update if needed)
   // expiresAt: "2025-01-31",
-  urgencyText: "25M $BB Prize Pool!",
+  urgencyText: "20M $BB Prize Pool!",
 
   // Optional: Sponsorship (uncomment if needed)
   // sponsorType: 'collab',
@@ -69,7 +69,7 @@ export const ACTIVE_CAMPAIGN: FeaturedCampaign | null = {
 
   // Optional: Custom sharing
   shareTitle: "Notorious B.I.Z. is BACK! 🎮⚔️",
-  shareText: "NOTORIOUS B.I.Z. IS BACK! 🦾\n\nCheck out today's featured ritual on the BizarreBeasts ($BB) Miniapp: Battle for 25 MILLION $BB + other rewards on /farverse - the ultimate Slay-to-Earn arena! ⚔️ 👹\n\nCC @bizarrebeast @mfbevan.eth\n\n#BizarreBeasts #FeaturedRitual #Farverse #SlayToEarn",
+  shareText: "NOTORIOUS B.I.Z. IS BACK! 🦾\n\nCheck out today's featured ritual on the BizarreBeasts ($BB) Miniapp: Battle for 20 MILLION $BB + other rewards on /farverse - the ultimate Slay-to-Earn arena! ⚔️ 👹\n\nCC @bizarrebeast @mfbevan.eth\n\n#BizarreBeasts #FeaturedRitual #Farverse #SlayToEarn",
   shareEmbed: "https://bbapp.bizarrebeasts.io/rituals/featured"
 };
 

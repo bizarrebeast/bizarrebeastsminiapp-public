@@ -31,34 +31,33 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // Get user stats using the RPC function
-    const { data, error } = await supabase
-      .rpc('get_user_attestation_stats', { p_wallet_address: wallet.toLowerCase() });
+    // Get user stats from the stats table
+    const { data: stats, error } = await supabase
+      .from('bizarre_attestation_stats')
+      .select('*')
+      .eq('wallet_address', wallet.toLowerCase())
+      .single();
 
-    if (error) {
+    if (error && error.code !== 'PGRST116') { // PGRST116 = no rows found
       console.error('Error fetching stats:', error);
-      // Return default values if user has no stats yet
-      return NextResponse.json({
-        totalAttestations: 0,
-        currentStreak: 0,
-        bestStreak: 0,
-        lastAttestationDate: null,
-        rank: 0,
-        canAttestToday: true,
-        timeUntilNext: 0
-      });
     }
 
-    // Parse the JSON response from the RPC function
-    const stats = data || {};
+    // Get user's rank from leaderboard view
+    const { data: leaderboard } = await supabase
+      .from('bizarre_attestation_leaderboard')
+      .select('rank')
+      .eq('wallet_address', wallet.toLowerCase())
+      .single();
+
+    const userRank = leaderboard?.rank || 0;
 
     return NextResponse.json({
-      totalAttestations: stats.total_attestations || 0,
-      currentStreak: stats.current_streak || 0,
-      bestStreak: stats.best_streak || 0,
-      lastAttestationDate: stats.last_attestation_date || null,
-      rank: stats.rank || 0,
-      canAttestToday: stats.can_attest_today !== false,
+      totalAttestations: stats?.total_attestations || 0,
+      currentStreak: stats?.current_streak || 0,
+      bestStreak: stats?.best_streak || 0,
+      lastAttestationDate: stats?.last_attestation_date || null,
+      rank: userRank,
+      canAttestToday: true, // Let the frontend calculate based on last attestation
       timeUntilNext: 0 // Could calculate from contract if needed
     });
   } catch (error) {

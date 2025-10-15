@@ -42,6 +42,9 @@ export default function ContestsPage() {
 
       console.log('Fetching contests from Supabase...');
 
+      // Update expired contest statuses first
+      await contestQueries.updateExpiredContestStatuses();
+
       // Fetch all contest types in parallel
       const [active, upcoming, ended] = await Promise.all([
         contestQueries.getActiveContestsWithStats(),  // Back to using the view with stats

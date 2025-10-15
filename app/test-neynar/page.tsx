@@ -6,8 +6,20 @@ import { UnifiedAuthButton } from '@/components/auth/UnifiedAuthButton';
 import { useUnifiedAuthStore } from '@/store/useUnifiedAuthStore';
 import { useEffect, useState } from 'react';
 import sdk from '@farcaster/miniapp-sdk';
+import { FEATURES } from '@/lib/feature-flags';
 
 export default function TestNeynarPage() {
+  // Block access if test pages are disabled
+  if (!FEATURES.TEST_PAGES) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-dark-bg">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-white mb-4">Page Not Available</h1>
+          <p className="text-gray-400">Test pages are disabled in production.</p>
+        </div>
+      </div>
+    );
+  }
   const { user } = useNeynarContext();
   const [farcasterUser, setFarcasterUser] = useState<any>(null);
   const [sdkLoaded, setSdkLoaded] = useState(false);

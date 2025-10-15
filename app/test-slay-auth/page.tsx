@@ -8,8 +8,20 @@
 import { useState } from 'react';
 import { useSlayAuth } from '@/hooks/useSlayAuth';
 import { authenticatedFetch } from '@/lib/auth/authenticated-fetch';
+import { FEATURES } from '@/lib/feature-flags';
 
 export default function TestSlayAuthPage() {
+  // Block access if test pages are disabled
+  if (!FEATURES.TEST_PAGES) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-dark-bg">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-white mb-4">Page Not Available</h1>
+          <p className="text-gray-400">Test pages are disabled in production.</p>
+        </div>
+      </div>
+    );
+  }
   const auth = useSlayAuth();
   const [testResults, setTestResults] = useState<any>(null);
   const [isTestingApi, setIsTestingApi] = useState(false);

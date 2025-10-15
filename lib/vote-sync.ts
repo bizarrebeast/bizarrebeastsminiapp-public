@@ -1,10 +1,10 @@
 // Helper to sync vote counts from contest_votes to contest_submissions
-import { supabase } from './supabase';
+import { supabaseAdmin } from './supabase-admin';
 
 export async function syncVoteCount(submissionId: string) {
   try {
-    // Count votes for this submission
-    const { count, error: countError } = await supabase
+    // Count votes for this submission (using admin client to bypass RLS)
+    const { count, error: countError } = await supabaseAdmin
       .from('contest_votes')
       .select('*', { count: 'exact', head: true })
       .eq('submission_id', submissionId);
@@ -14,8 +14,8 @@ export async function syncVoteCount(submissionId: string) {
       return false;
     }
 
-    // Update the submission with the vote count
-    const { error: updateError } = await supabase
+    // Update the submission with the vote count (using admin client to bypass RLS)
+    const { error: updateError } = await supabaseAdmin
       .from('contest_submissions')
       .update({ vote_count: count || 0 })
       .eq('id', submissionId);
@@ -35,8 +35,8 @@ export async function syncVoteCount(submissionId: string) {
 
 export async function syncAllVoteCounts(contestId: string) {
   try {
-    // Get all submissions for this contest
-    const { data: submissions, error: subError } = await supabase
+    // Get all submissions for this contest (using admin client to bypass RLS)
+    const { data: submissions, error: subError } = await supabaseAdmin
       .from('contest_submissions')
       .select('id')
       .eq('contest_id', contestId);

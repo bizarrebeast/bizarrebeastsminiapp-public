@@ -262,28 +262,30 @@ export default function StickerGallery({
             <div className="overflow-x-auto overflow-y-visible pb-3 pt-2 px-1 sticker-scroll-container max-w-full">
               <div className="flex gap-3">
               {filteredStickers.map(sticker => {
-                const hasAccess = !sticker.tier || canAccessSticker(userTier, sticker.tier);
-                const tierBadge = getTierBadge(sticker.tier);
-                
+                // All collections: all stickers accessible to everyone (tier gating disabled for now)
+                const hasAccess = true; // Tier gating disabled - all stickers free for everyone
+                // Hide tier badges - no longer showing tiers
+                const tierBadge = null;
+
                 return (
                   <TouchSafeButton
                     key={sticker.id}
                     onClick={(e) => {
                       // Extra safety: prevent event propagation
                       preventEventDefaults(e);
-                      
+
                       if (hasAccess) {
                         console.log('Adding sticker:', sticker.id);
                         onSelectSticker(sticker);
                       } else {
                         // Show upgrade prompt for locked sticker
-                        const requiredTier = 
+                        const requiredTier =
                           sticker.tier === 'all' ? AccessTier.BIZARRE :
                           sticker.tier === 'premium' ? AccessTier.WEIRDO :
                           sticker.tier === 'rare' ? AccessTier.ODDBALL :
                           sticker.tier === 'common' ? AccessTier.MISFIT :
                           AccessTier.NORMIE;
-                        
+
                         setUpgradeInfo({
                           tier: requiredTier,
                           feature: `Premium Sticker`
@@ -292,27 +294,27 @@ export default function StickerGallery({
                       }
                     }}
                     className={`group relative bg-gray-700 rounded p-1 transition-all transform flex-shrink-0 ${
-                      hasAccess 
-                        ? 'hover:bg-purple-600/40 hover:scale-110 hover:shadow-lg hover:shadow-purple-500/30 hover:border-purple-500 hover:z-10 border-2 border-transparent cursor-pointer' 
+                      hasAccess
+                        ? 'hover:bg-purple-600/40 hover:scale-110 hover:shadow-lg hover:shadow-purple-500/30 hover:border-purple-500 hover:z-10 border-2 border-transparent cursor-pointer'
                         : 'hover:bg-gray-600/50 cursor-pointer border-2 border-transparent'
                     }`}
                     style={{ width: '64px', height: '64px' }}
                     preventDoubleTap={true}
                   >
                     {/* Sticker image */}
-                    <img 
-                      src={sticker.thumbnail} 
+                    <img
+                      src={sticker.thumbnail}
                       alt=""
                       className="w-full h-full object-contain"
                       loading="lazy"
                     />
-                    
-                    {/* Tier Badge - show for all tier-locked items */}
-                    {tierBadge && (
+
+                    {/* Tier Badge - disabled (all stickers free for now) */}
+                    {/* {tierBadge && (
                       <div className="absolute bottom-0.5 right-0.5 bg-black/70 rounded p-0.5 flex items-center justify-center" style={{ width: '18px', height: '18px' }}>
                         <span className="text-xs leading-none">{tierBadge.emoji}</span>
                       </div>
-                    )}
+                    )} */}
                   </TouchSafeButton>
                 );
               })}

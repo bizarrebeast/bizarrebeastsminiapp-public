@@ -2,11 +2,14 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
-import { Menu, X, Palette, Gamepad2, FileText, Crown, ArrowDownUp, Music, Sparkles, Trophy } from 'lucide-react';
+import { Menu, X, Palette, Gamepad2, FileText, Crown, ArrowDownUp, Music, Sparkles, Trophy, Mail, Settings, Image, User, ImageIcon, Send, Bug } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import { UnifiedAuthButton } from '@/components/auth/UnifiedAuthButton';
 import { BBAuthButton } from '@/components/auth/BBAuthButton';
 import { EmpireBadges } from '@/components/wallet/EmpireBadges';
+import { useWallet } from '@/hooks/useWallet';
+import { isAdmin } from '@/lib/admin';
+import { FEATURES } from '@/lib/feature-flags';
 
 // Feature flag to switch between auth systems
 const USE_BB_AUTH = false; // Using UnifiedAuthButton which works for desktop/PWA
@@ -15,17 +18,25 @@ const USE_BB_AUTH = false; // Using UnifiedAuthButton which works for desktop/PW
 const navItems = [
   { href: '/meme-generator', label: 'Stickers & Meme Creator', icon: Palette },
   { href: '/games', label: 'BizarreBeasts Games', icon: Gamepad2 },
+  { href: '/nft', label: 'NFT Gallery', icon: Image },
   { href: '/rituals', label: 'BIZARRE Rituals & Checkin', icon: Sparkles },
   { href: '/contests', label: 'Contests & Competitions', icon: Trophy },
-  { href: '/swap', label: 'Token Swap', icon: ArrowDownUp },
+  { href: '/swap', label: 'Buy $BB Tokens', icon: ArrowDownUp },
+  { href: '/tip', label: 'Tip $BB Tokens', icon: Send },
   { href: '/empire', label: 'Empire Leaderboard', icon: Crown },
   { href: '/music', label: 'Music & Soundtracks', icon: Music },
   { href: '/resources', label: 'Community Resources', icon: FileText },
+  { href: '/about', label: 'About', icon: User },
+  { href: '/gallery', label: 'Canvas Paintings', icon: Palette },
+  { href: '/illustrations', label: 'Paper Illustrations', icon: ImageIcon },
+  { href: '/contact', label: 'Contact', icon: Mail },
 ];
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const { address } = useWallet();
+  const showAdminLink = address && isAdmin(address);
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -86,12 +97,12 @@ export function Navbar() {
       {/* Dropdown Menu */}
       <div
         className={cn(
-          'absolute top-full right-0 bg-dark-panel border border-gem-crystal/20 rounded-b-lg shadow-xl z-50 transition-all duration-300 ease-in-out overflow-hidden',
-          isOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'
+          'absolute top-full right-0 bg-dark-panel border border-gem-crystal/20 rounded-b-lg shadow-xl z-50 transition-all duration-300 ease-in-out',
+          isOpen ? 'max-h-[80vh] opacity-100 pointer-events-auto' : 'max-h-0 opacity-0 pointer-events-none'
         )}
         style={{ width: '320px', maxWidth: '90vw' }}
       >
-        <div className="px-4 py-4">
+        <div className="px-4 py-4 max-h-[80vh] overflow-y-auto">
           <div className="space-y-1">
             {navItems.map((item) => {
               const Icon = item.icon;
@@ -107,6 +118,36 @@ export function Navbar() {
                 </Link>
               );
             })}
+
+            {/* Admin Link - Only visible to admin */}
+            {showAdminLink && (
+              <>
+                <div className="border-t border-gem-crystal/20 my-2" />
+                <Link
+                  href="/admin"
+                  onClick={() => setIsOpen(false)}
+                  className="bg-gradient-to-r from-gem-gold via-gem-pink to-gem-purple bg-clip-text text-transparent hover:from-gem-purple hover:via-gem-gold hover:to-gem-pink hover:bg-gem-gold/10 block px-3 py-3 rounded-lg text-base font-medium flex items-center gap-3 transition-all duration-300"
+                >
+                  <Settings className="w-5 h-5 text-gem-gold flex-shrink-0" />
+                  <span>Admin Panel</span>
+                </Link>
+              </>
+            )}
+
+            {/* Debug Auth Link - Visible when test pages enabled */}
+            {FEATURES.TEST_PAGES && (
+              <>
+                <div className="border-t border-gem-crystal/20 my-2" />
+                <Link
+                  href="/test-auth"
+                  onClick={() => setIsOpen(false)}
+                  className="bg-gradient-to-r from-purple-400 via-pink-400 to-red-400 bg-clip-text text-transparent hover:from-red-400 hover:via-pink-400 hover:to-purple-400 hover:bg-purple-400/10 block px-3 py-3 rounded-lg text-base font-medium flex items-center gap-3 transition-all duration-300"
+                >
+                  <Bug className="w-5 h-5 text-purple-400 flex-shrink-0" />
+                  <span>Auth Debug</span>
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </div>

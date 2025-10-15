@@ -151,19 +151,26 @@ export default function AdminContestsPage() {
       // Use getSubmissionsWithVotes for gallery contests to include vote counts
       const contest = contests.find(c => c.id === contestId);
 
-      const subs = contest?.gallery_enabled
-        ? await contestQueries.getSubmissionsWithVotes(contestId)
-        : await contestQueries.getContestSubmissions(contestId);
+      // Fetch from admin API endpoint
+      const includeVotes = contest?.gallery_enabled ? 'true' : 'false';
+      const response = await fetch(
+        `/api/admin/contests/${contestId}/submissions?wallet=${address}&includeVotes=${includeVotes}`
+      );
+      const data = await response.json();
 
-      setSubmissions(subs || []);
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to fetch submissions');
+      }
+
+      setSubmissions(data.submissions || []);
 
       // Calculate stats
-      const pending = subs?.filter(s => s.status === 'pending').length || 0;
-      const approved = subs?.filter(s => s.status === 'approved').length || 0;
-      const rejected = subs?.filter(s => s.status === 'rejected').length || 0;
+      const pending = data.submissions?.filter((s: any) => s.status === 'pending').length || 0;
+      const approved = data.submissions?.filter((s: any) => s.status === 'approved').length || 0;
+      const rejected = data.submissions?.filter((s: any) => s.status === 'rejected').length || 0;
 
       setStats({
-        totalSubmissions: subs?.length || 0,
+        totalSubmissions: data.submissions?.length || 0,
         pendingCount: pending,
         approvedCount: approved,
         rejectedCount: rejected
@@ -229,6 +236,103 @@ export default function AdminContestsPage() {
       alert('Failed to reject submission');
     } finally {
       setProcessingId(null);
+    }
+  };
+
+  const handlePublishContest = async (contestId: string) => {
+    if (!address) return;
+
+    const contest = contests.find(c => c.id === contestId);
+    if (!contest) return;
+
+    const confirmPublish = window.confirm(
+      `Publish "${contest.name}" as active?\n\nThis will make it visible to all users.`
+    );
+
+    if (!confirmPublish) return;
+
+    try {
+      const response = await fetch('/api/admin/contests/update', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-wallet': address,
+        },
+        body: JSON.stringify({
+          contestId,
+          adminWallet: address,
+          updates: {
+            status: 'active',
+            updated_at: new Date().toISOString()
+          }
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to publish contest');
+      }
+
+      alert(`Contest "${contest.name}" is now active!`);
+      await fetchContests();
+
+      // Refresh submissions if this was the selected contest
+      if (selectedContest?.id === contestId) {
+        await fetchSubmissions(contestId);
+      }
+    } catch (error) {
+      console.error('Error publishing contest:', error);
+      alert(`Failed to publish contest: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  };
+
+  const handleEndContest = async (contestId: string) => {
+    if (!address) return;
+
+    const contest = contests.find(c => c.id === contestId);
+    if (!contest) return;
+
+    const confirmEnd = window.confirm(
+      `End "${contest.name}"?\n\nThis will stop accepting new submissions and mark the contest as ended.`
+    );
+
+    if (!confirmEnd) return;
+
+    try {
+      const response = await fetch('/api/admin/contests/update', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-wallet': address,
+        },
+        body: JSON.stringify({
+          contestId,
+          adminWallet: address,
+          updates: {
+            status: 'ended',
+            end_date: new Date().toISOString(), // Set end date to now
+            updated_at: new Date().toISOString()
+          }
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to end contest');
+      }
+
+      alert(`Contest "${contest.name}" has been ended.`);
+      await fetchContests();
+
+      // Refresh submissions if this was the selected contest
+      if (selectedContest?.id === contestId) {
+        await fetchSubmissions(contestId);
+      }
+    } catch (error) {
+      console.error('Error ending contest:', error);
+      alert(`Failed to end contest: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   };
 
@@ -397,6 +501,30 @@ export default function AdminContestsPage() {
               <RefreshCw className="w-4 h-4" />
               Refresh
             </button>
+            <button
+              onClick={async () => {
+                if (!address) return;
+                if (!confirm('Manually trigger recurring contest processing?\n\nThis will check all recurring contests and create new instances if needed.')) return;
+
+                try {
+                  const response = await fetch(`/api/admin/contests/recurring/trigger?wallet=${address}`);
+                  const data = await response.json();
+
+                  if (response.ok) {
+                    alert(`✅ Recurring contests processed!\n\nProcessed: ${data.processed}\nSkipped: ${data.skipped}\n\nDetails:\n${data.details?.processed?.join('\n') || 'None'}`);
+                    await fetchContests();
+                  } else {
+                    alert(`❌ Error: ${data.error}`);
+                  }
+                } catch (error) {
+                  alert(`❌ Failed to trigger recurring contests: ${error}`);
+                }
+              }}
+              className="flex items-center gap-2 px-4 py-2 bg-gem-purple/20 text-gem-purple border border-gem-purple/40 rounded-lg hover:bg-gem-purple/30 transition"
+              title="Manually trigger recurring contest processing"
+            >
+              🔄 Process Recurring
+            </button>
           </div>
         </div>
 
@@ -555,7 +683,33 @@ export default function AdminContestsPage() {
               })}
             </select>
             {selectedContest && (
-              <div className="flex gap-2">
+              <div className="flex gap-2 flex-wrap">
+                {/* Status Management Actions */}
+                {selectedContest.status === 'draft' && (
+                  <button
+                    onClick={() => handlePublishContest(selectedContest.id)}
+                    className="px-3 py-1 bg-green-500 text-white rounded-lg hover:bg-green-600 transition flex items-center gap-1 text-sm font-semibold"
+                    title="Publish draft contest to make it active"
+                  >
+                    ✅ Publish
+                  </button>
+                )}
+                {selectedContest.status === 'active' && (
+                  <button
+                    onClick={() => handleEndContest(selectedContest.id)}
+                    className="px-3 py-1 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition flex items-center gap-1 text-sm font-semibold"
+                    title="End this active contest"
+                  >
+                    🏁 End Contest
+                  </button>
+                )}
+
+                {/* Divider */}
+                {(selectedContest.status === 'draft' || selectedContest.status === 'active') && (
+                  <div className="border-l border-gray-600 mx-1"></div>
+                )}
+
+                {/* Edit Actions */}
                 <button
                   onClick={() => {
                     setEditingContest(selectedContest);
@@ -574,6 +728,11 @@ export default function AdminContestsPage() {
                 >
                   📋 Duplicate
                 </button>
+
+                {/* Divider */}
+                <div className="border-l border-gray-600 mx-1"></div>
+
+                {/* Export Actions */}
                 <button
                   onClick={() => exportToCSV(false)}
                   className="px-3 py-1 bg-dark-bg border border-gray-600 rounded-lg hover:bg-gray-800 transition flex items-center gap-1 text-sm"
@@ -773,6 +932,8 @@ export default function AdminContestsPage() {
             contestName={selectedContest.name}
             contestType={selectedContest.type}
             submissions={submissions}
+            votingEnabled={selectedContest.voting_enabled}
+            galleryEnabled={selectedContest.gallery_enabled}
             onWinnersSelected={() => {
               // Refresh submissions after winners are selected
               if (selectedContest) {

@@ -1,0 +1,24 @@
+{
+  "name": "bizarreflip-contracts",
+  "version": "1.0.0",
+  "description": "Smart contracts for BizarreBeasts coin flip game",
+  "private": true,
+  "scripts": {
+    "compile": "npx hardhat compile",
+    "test": "npx hardhat test",
+    "deploy:testnet": "npx hardhat run scripts/deploy.js --network base-sepolia",
+    "deploy:mainnet": "npx hardhat run scripts/deploy.js --network base-mainnet",
+    "verify": "npx hardhat verify --network base-mainnet"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.4.0"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "@nomicfoundation/hardhat-verify": "^2.0.0",
+    "hardhat": "^2.22.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ethers } from 'ethers';
+import { createClient } from '@supabase/supabase-js';
 
 // Contract ABI - only the function we need
 const GATEKEEPER_ABI = [
@@ -16,7 +17,7 @@ const PRIVATE_KEY = process.env.RITUAL_ADMIN_PRIVATE_KEY;
 
 export async function POST(request: NextRequest) {
   try {
-    const { walletAddress, ritualsCompleted } = await request.json();
+    const { walletAddress, ritualsCompleted, fid } = await request.json();
 
     if (!walletAddress) {
       return NextResponse.json(
@@ -31,6 +32,35 @@ export async function POST(request: NextRequest) {
         { error: 'At least 3 rituals must be completed' },
         { status: 400 }
       );
+    }
+
+    // If FID provided, unlock all wallets associated with that FID
+    let walletsToUnlock = [walletAddress];
+    if (fid) {
+      console.log(`FID ${fid} provided - checking for additional wallets to unlock`);
+
+      // Get all verified wallets for this FID from the users table
+      const supabase = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY!
+      );
+
+      // Get all user records with this FID
+      const { data: userRecords } = await supabase
+        .from('users')
+        .select('wallet_address')
+        .eq('farcaster_fid', fid);
+
+      if (userRecords && userRecords.length > 0) {
+        const additionalWallets = userRecords
+          .map(r => r.wallet_address)
+          .filter(w => w && w !== walletAddress.toLowerCase());
+
+        if (additionalWallets.length > 0) {
+          walletsToUnlock = [walletAddress, ...additionalWallets];
+          console.log(`Found ${additionalWallets.length} additional wallets for FID ${fid}`);
+        }
+      }
     }
 
     if (!PRIVATE_KEY) {
@@ -52,29 +82,63 @@ export async function POST(request: NextRequest) {
       wallet
     );
 
-    // Check if already unlocked
-    const isUnlocked = await gatekeeper.canUserCheckIn(walletAddress);
+    // Track which wallets were unlocked
+    const unlockedWallets = [];
+    const alreadyUnlockedWallets = [];
+    const failedWallets = [];
 
-    if (isUnlocked) {
-      return NextResponse.json({
-        success: true,
-        message: 'Check-in already unlocked',
-        alreadyUnlocked: true
-      });
+    // Process each wallet
+    for (const wallet of walletsToUnlock) {
+      try {
+        // Check if already unlocked
+        let isUnlocked = false;
+        try {
+          isUnlocked = await gatekeeper.canUserCheckIn(wallet);
+        } catch (checkError: any) {
+          // If BAD_DATA error, wallet is not registered yet - treat as not unlocked
+          if (checkError.code === 'BAD_DATA') {
+            console.log(`Wallet ${wallet} not registered in contract yet (BAD_DATA) - will unlock`);
+            isUnlocked = false;
+          } else {
+            throw checkError; // Re-throw other errors
+          }
+        }
+
+        if (isUnlocked) {
+          alreadyUnlockedWallets.push(wallet);
+          console.log(`Wallet ${wallet} already unlocked`);
+          continue;
+        }
+
+        // Unlock the check-in
+        console.log(`Unlocking check-in for ${wallet} with ${ritualsCompleted} rituals completed`);
+        const tx = await gatekeeper.unlockCheckIn(wallet, ritualsCompleted);
+
+        // Wait for transaction confirmation
+        const receipt = await tx.wait();
+        unlockedWallets.push({
+          wallet,
+          txHash: receipt.hash
+        });
+        console.log(`Successfully unlocked ${wallet} - tx: ${receipt.hash}`);
+      } catch (error) {
+        console.error(`Failed to unlock ${wallet}:`, error);
+        failedWallets.push({
+          wallet,
+          error: error instanceof Error ? error.message : 'Unknown error'
+        });
+      }
     }
 
-    // Unlock the check-in
-    console.log(`Unlocking check-in for ${walletAddress} with ${ritualsCompleted} rituals completed`);
-    const tx = await gatekeeper.unlockCheckIn(walletAddress, ritualsCompleted);
-
-    // Wait for transaction confirmation
-    const receipt = await tx.wait();
-
     return NextResponse.json({
-      success: true,
-      message: 'Check-in unlocked successfully',
-      transactionHash: receipt.hash,
-      alreadyUnlocked: false
+      success: unlockedWallets.length > 0 || alreadyUnlockedWallets.length > 0,
+      message: fid
+        ? `Check-ins processed for FID ${fid}`
+        : 'Check-in unlock processed',
+      unlockedWallets,
+      alreadyUnlockedWallets,
+      failedWallets,
+      totalProcessed: walletsToUnlock.length
     });
 
   } catch (error: any) {

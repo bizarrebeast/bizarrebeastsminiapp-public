@@ -64,6 +64,12 @@ const rituals = [
     title: "Prove It",
     description: "Prove that you are BIZARRE onchain, forever!",
     image: "/assets/page-assets/banners/rituals-boxes/bizarre-attest-ritual-banner.png"
+  },
+  {
+    id: 11,
+    title: "Play and win BizBe's BIZARRE Coin Toss",
+    description: "Play and win BizBe's BIZARRE Coin Toss, then share your win!",
+    image: "/assets/page-assets/banners/rituals-boxes/bizbe-coin-toss-ritual-banner.png"
   }
 ];
 

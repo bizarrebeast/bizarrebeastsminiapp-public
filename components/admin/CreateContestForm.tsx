@@ -65,13 +65,16 @@ export default function CreateContestForm({ isOpen, onClose, onSuccess, duplicat
   // Populate form when duplicating a contest
   useEffect(() => {
     if (duplicateFrom && isOpen) {
+      const newStartDate = new Date().toISOString().slice(0, 16);
+      const newEndDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 16);
+
       setFormData({
         name: `${duplicateFrom.name} (Copy)`,
         type: duplicateFrom.type || 'game_score',
         description: duplicateFrom.description || '',
         game_name: duplicateFrom.game_name || '',
-        start_date: new Date().toISOString().slice(0, 16), // New dates
-        end_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 16),
+        start_date: newStartDate,
+        end_date: newEndDate,
         min_bb_required: duplicateFrom.min_bb_required?.toString() || '',
         max_bb_required: duplicateFrom.max_bb_required?.toString() || '',
         prize_amount: duplicateFrom.prize_amount?.toString() || '',
@@ -85,8 +88,9 @@ export default function CreateContestForm({ isOpen, onClose, onSuccess, duplicat
         is_test: false, // Don't duplicate test flag
         banner_image_url: duplicateFrom.banner_image_url || '',
         voting_enabled: duplicateFrom.voting_enabled ?? false,
-        voting_start_date: '',
-        voting_end_date: '',
+        // Default voting dates to match contest dates
+        voting_start_date: duplicateFrom.voting_enabled ? newStartDate : '',
+        voting_end_date: duplicateFrom.voting_enabled ? newEndDate : '',
         voting_type: duplicateFrom.voting_type || 'single',
         min_votes_required: duplicateFrom.min_votes_required?.toString() || '1',
         cta_url: duplicateFrom.cta_url || '',
@@ -105,6 +109,17 @@ export default function CreateContestForm({ isOpen, onClose, onSuccess, duplicat
       }
     }
   }, [duplicateFrom, isOpen]);
+
+  // Auto-populate voting dates when voting is enabled
+  useEffect(() => {
+    if (formData.voting_enabled && !formData.voting_start_date && !formData.voting_end_date && formData.start_date && formData.end_date) {
+      setFormData(prev => ({
+        ...prev,
+        voting_start_date: formData.start_date,
+        voting_end_date: formData.end_date
+      }));
+    }
+  }, [formData.voting_enabled, formData.start_date, formData.end_date]);
 
   // Apply selected template
   const handleTemplateSelect = (templateId: string) => {
@@ -234,6 +249,35 @@ export default function CreateContestForm({ isOpen, onClose, onSuccess, duplicat
     setError(null);
 
     try {
+      // Validate dates
+      const startDate = new Date(formData.start_date);
+      const endDate = new Date(formData.end_date);
+
+      if (endDate <= startDate) {
+        setError('End date must be after start date');
+        setLoading(false);
+        return;
+      }
+
+      // Validate voting dates if voting is enabled
+      if (formData.voting_enabled) {
+        if (formData.voting_start_date && formData.voting_end_date) {
+          const votingStart = new Date(formData.voting_start_date);
+          const votingEnd = new Date(formData.voting_end_date);
+
+          if (votingEnd <= votingStart) {
+            setError('Voting end date must be after voting start date');
+            setLoading(false);
+            return;
+          }
+
+          if (votingStart < startDate || votingEnd > endDate) {
+            setError('Voting period must be within contest dates');
+            setLoading(false);
+            return;
+          }
+        }
+      }
       // Upload banner image if selected
       let bannerUrl: string | undefined;
       if (bannerFile) {
@@ -246,19 +290,8 @@ export default function CreateContestForm({ isOpen, onClose, onSuccess, duplicat
         }
       }
 
-      // Get admin wallet - try multiple sources
-      let adminWallet = localStorage.getItem('walletAddress');
-
-      // If not in localStorage, try to get from window.ethereum
-      if (!adminWallet && typeof window !== 'undefined' && (window as any).ethereum) {
-        const accounts = await (window as any).ethereum.request({ method: 'eth_accounts' });
-        adminWallet = accounts[0];
-      }
-
-      // Use environment variable as fallback for admin
-      if (!adminWallet) {
-        adminWallet = process.env.NEXT_PUBLIC_CONTEST_ADMIN_WALLET || null;
-      }
+      // Get admin wallet from standardized location
+      const adminWallet = localStorage.getItem('adminWallet');
 
       if (!adminWallet) {
         throw new Error('Please connect your admin wallet first');
@@ -731,16 +764,16 @@ export default function CreateContestForm({ isOpen, onClose, onSuccess, duplicat
               {/* URL Input (Optional) */}
               <div>
                 <input
-                  type="url"
+                  type="text"
                   value={formData.banner_image_url}
                   onChange={(e) => setFormData({ ...formData, banner_image_url: e.target.value })}
                   className="w-full px-4 py-2 bg-dark-bg border border-gray-700 rounded-lg
                            text-white placeholder-gray-500 focus:border-gem-crystal
                            focus:outline-none transition text-sm"
-                  placeholder="Or paste banner image URL (optional)"
+                  placeholder="Or paste banner image URL or path (e.g., /assets/banners/image.png)"
                 />
                 <p className="text-xs text-gray-500 mt-1">
-                  Upload a file or provide a URL for the contest banner
+                  Upload a file, provide a full URL, or enter a path to a file in /public
                 </p>
               </div>
             </div>

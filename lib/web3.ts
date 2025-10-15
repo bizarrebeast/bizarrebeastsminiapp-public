@@ -446,7 +446,7 @@ class Web3Service {
                     symbol: 'ETH',
                     decimals: 18
                   },
-                  rpcUrls: ['https://mainnet.base.org'],
+                  rpcUrls: ['https://base.llamarpc.com'],
                   blockExplorerUrls: ['https://basescan.org']
                 }]
               });

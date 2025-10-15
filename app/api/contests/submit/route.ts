@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabase-admin';
 import { uploadToR2, generateScreenshotKey, getFileExtension, validateImageFile, isR2Configured } from '@/lib/r2-storage';
 import { rateLimit, getClientIp } from '@/lib/rate-limit';
 import { extractImageMetadata, validateImageWithMetadata, createFraudDetectionSummary } from '@/lib/image-metadata';
@@ -66,7 +66,7 @@ export async function POST(request: Request) {
 
     // Check if contest exists and is active
     console.log('🏆 Fetching contest:', contestId);
-    const { data: contest, error: contestError } = await supabase
+    const { data: contest, error: contestError } = await supabaseAdmin
       .from('contests')
       .select('*')
       .eq('id', contestId)
@@ -120,7 +120,7 @@ export async function POST(request: Request) {
 
     // Check submission limit based on max_entries_per_wallet
     console.log('📊 Checking existing submissions for wallet:', walletAddress?.substring(0, 6) + '...');
-    const { data: existingSubmissions, error: countError } = await supabase
+    const { data: existingSubmissions, error: countError } = await supabaseAdmin
       .from('contest_submissions')
       .select('id')
       .eq('contest_id', contestId)
@@ -157,6 +157,15 @@ export async function POST(request: Request) {
     let fraudDetectionSummary = null;
 
     if (screenshot) {
+      // Check file size (Vercel limit is 4.5MB)
+      const MAX_SIZE = 4 * 1024 * 1024; // 4MB to stay safe
+      if (screenshot.size > MAX_SIZE) {
+        return NextResponse.json(
+          { error: `Image file is too large (${(screenshot.size / 1024 / 1024).toFixed(2)}MB). Please compress your image to under 4MB. You can use tools like TinyPNG or reduce image quality.` },
+          { status: 413 }
+        );
+      }
+
       // Basic validation first
       const basicValidation = validateImageFile(screenshot);
       if (!basicValidation.valid) {
@@ -256,7 +265,7 @@ export async function POST(request: Request) {
       }
     };
 
-    const { data: submission, error: submissionError } = await supabase
+    const { data: submission, error: submissionError } = await supabaseAdmin
       .from('contest_submissions')
       .insert(submissionData)
       .select()
@@ -285,7 +294,7 @@ export async function POST(request: Request) {
         ...task
       }));
 
-      await supabase
+      await supabaseAdmin
         .from('onboarding_tasks')
         .insert(taskData);
     }

@@ -29,6 +29,9 @@ export const FEATURES = {
 
   // Analytics tracking - User behavior and feature usage
   ANALYTICS: process.env.NEXT_PUBLIC_ENABLE_ANALYTICS !== 'false',
+
+  // Test/Debug pages - Disabled in production
+  TEST_PAGES: false, // Debugging complete - disabled
 };
 
 // Admin wallet for contest management
@@ -47,7 +50,7 @@ export function canAccessContests(): boolean {
 
 // Beta tester wallets (optional future use)
 const BETA_TESTERS: string[] = [
-  // Add beta tester addresses here
+  '0xb78fe547830c5b83529bc2609a0e1a2948e0a477', // @evogsr.eth (FID 247437)
 ];
 
 export function isBetaTester(walletAddress: string | null): boolean {

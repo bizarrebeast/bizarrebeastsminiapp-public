@@ -40,9 +40,9 @@ interface UnifiedProfile {
  */
 function getTierFromRank(rank: number | null): string | null {
   if (!rank) return null;
-  if (rank <= 10) return 'BIZARRE';
+  if (rank <= 25) return 'BIZARRE';  // Fixed: was 10, should be 25
   if (rank <= 50) return 'WEIRDO';
-  if (rank <= 150) return 'ODDBALL';
+  if (rank <= 100) return 'ODDBALL'; // Fixed: was 150, should be 100
   if (rank <= 500) return 'MISFIT';
   return 'NORMIE';
 }

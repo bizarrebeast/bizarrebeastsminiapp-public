@@ -12,6 +12,8 @@ interface WinnerSelectionModalProps {
   contestType: string;
   submissions: ContestSubmission[];
   onWinnersSelected: () => void;
+  votingEnabled?: boolean;
+  galleryEnabled?: boolean;
 }
 
 export default function WinnerSelectionModal({
@@ -21,28 +23,65 @@ export default function WinnerSelectionModal({
   contestName,
   contestType,
   submissions,
-  onWinnersSelected
+  onWinnersSelected,
+  votingEnabled = false,
+  galleryEnabled = false
 }: WinnerSelectionModalProps) {
   const [loading, setLoading] = useState(false);
   const [selectedWinners, setSelectedWinners] = useState<Set<string>>(new Set());
   const [winnerCount, setWinnerCount] = useState(3);
   const [selectionMode, setSelectionMode] = useState<'auto' | 'manual'>('auto');
   const [exportFormat, setExportFormat] = useState<'winners' | 'all'>('winners');
+  const [existingWinners, setExistingWinners] = useState<any[]>([]);
 
   // Filter only approved submissions for winner selection
   const approvedSubmissions = submissions.filter(s => s.status === 'approved');
-  const sortedSubmissions = [...approvedSubmissions].sort((a, b) => (b.score || 0) - (a.score || 0));
 
-  // For onboarding/gig tasks, all approved submissions are winners
-  const isPassFailContest = contestType === 'onboarding' || contestType === 'creative';
+  // Sort by votes if voting/gallery enabled, otherwise by score
+  const sortedSubmissions = [...approvedSubmissions].sort((a, b) => {
+    if (votingEnabled || galleryEnabled) {
+      return (b.vote_count || 0) - (a.vote_count || 0);
+    }
+    return (b.score || 0) - (a.score || 0);
+  });
+
+  // For onboarding tasks, all approved submissions are winners
+  // Creative contests with voting are competitive (manual selection)
+  const isPassFailContest = contestType === 'onboarding' && !votingEnabled;
+
+  // Fetch existing winners when modal opens
+  useEffect(() => {
+    if (isOpen && contestId) {
+      fetchExistingWinners();
+    }
+  }, [isOpen, contestId]);
+
+  const fetchExistingWinners = async () => {
+    try {
+      const adminWallet = localStorage.getItem('adminWallet');
+      if (!adminWallet) return;
+
+      const response = await fetch(`/api/admin/contests/winners?contestId=${contestId}&wallet=${adminWallet}`);
+      const data = await response.json();
+
+      if (response.ok && data.winners) {
+        setExistingWinners(data.winners);
+        // Pre-select existing winners
+        const winnerSubmissionIds = data.winners.map((w: any) => w.submission_id);
+        setSelectedWinners(new Set(winnerSubmissionIds));
+      }
+    } catch (error) {
+      console.error('Error fetching existing winners:', error);
+    }
+  };
 
   useEffect(() => {
-    if (isPassFailContest && approvedSubmissions.length > 0) {
-      // For pass/fail contests, all approved are winners
+    if (isPassFailContest && approvedSubmissions.length > 0 && existingWinners.length === 0) {
+      // For pass/fail contests, all approved are winners (only if no winners exist yet)
       setSelectedWinners(new Set(approvedSubmissions.map(s => s.id)));
       setSelectionMode('auto');
     }
-  }, [isPassFailContest, approvedSubmissions.length, contestId]);
+  }, [isPassFailContest, approvedSubmissions.length, contestId, existingWinners.length]);
 
   const handleAutoSelect = () => {
     if (isPassFailContest) {
@@ -74,7 +113,7 @@ export default function WinnerSelectionModal({
       return;
     }
 
-    // Enhanced CSV with more fields
+    // Enhanced CSV with more fields, using actual winner data if available
     const headers = [
       'Position',
       'Wallet Address',
@@ -91,19 +130,24 @@ export default function WinnerSelectionModal({
     const rows = dataToExport.map((submission, index) => {
       const submissionDate = new Date(submission.submitted_at);
       const isWinner = selectedWinners.has(submission.id);
-      const position = isWinner ? sortedSubmissions.findIndex(s => s.id === submission.id) + 1 : '-';
+
+      // Find winner record if it exists
+      const winnerRecord = existingWinners.find(w => w.submission_id === submission.id);
+      const position = winnerRecord ? winnerRecord.position :
+                      (isWinner ? sortedSubmissions.findIndex(s => s.id === submission.id) + 1 : '-');
+      const prizeAmount = winnerRecord?.prize_amount || '';
 
       return [
         position,
         submission.wallet_address,
         submission.username || 'Anonymous',
-        submission.score || 'N/A',
+        submission.score || submission.vote_count || 'N/A',
         submission.token_balance || 0,
         submissionDate.toLocaleDateString(),
         submissionDate.toLocaleTimeString(),
         submission.status,
         isWinner ? 'Yes' : 'No',
-        '' // Prize amount to be filled manually
+        prizeAmount
       ];
     });
 
@@ -134,16 +178,60 @@ export default function WinnerSelectionModal({
   };
 
   const saveWinners = async () => {
+    if (selectedWinners.size === 0) {
+      alert('Please select at least one winner');
+      return;
+    }
+
     setLoading(true);
     try {
-      // Here we would call an API to save winners to the database
-      // For now, just export the CSV
+      // Get admin wallet from standardized location
+      const adminWallet = localStorage.getItem('adminWallet');
+      if (!adminWallet) {
+        alert('Admin wallet not found. Please reconnect.');
+        setLoading(false);
+        return;
+      }
+
+      // Prepare winner data
+      const winnersData = approvedSubmissions
+        .filter(s => selectedWinners.has(s.id))
+        .sort((a, b) => (b.score || b.vote_count || 0) - (a.score || a.vote_count || 0))
+        .map((submission) => ({
+          submissionId: submission.id,
+          walletAddress: submission.wallet_address,
+          score: submission.score,
+          voteCount: submission.vote_count,
+          prizeAmount: null // Can be set later
+        }));
+
+      // Save winners to database
+      const response = await fetch('/api/admin/contests/winners', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          contestId,
+          winners: winnersData,
+          adminWallet
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to save winners');
+      }
+
+      // Success - export CSV and notify
+      alert(`Successfully saved ${winnersData.length} winner(s)!`);
       exportCSV(false);
       onWinnersSelected();
       onClose();
     } catch (error) {
       console.error('Error saving winners:', error);
-      alert('Failed to save winners');
+      alert(`Failed to save winners: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setLoading(false);
     }
@@ -183,7 +271,11 @@ export default function WinnerSelectionModal({
               <div>
                 <span className="text-gray-500">Selection Mode:</span>
                 <p className="font-medium">
-                  {isPassFailContest ? 'Pass/Fail (All Approved Win)' : 'Top Performers'}
+                  {isPassFailContest
+                    ? 'Pass/Fail (All Approved Win)'
+                    : votingEnabled || galleryEnabled
+                      ? 'Competitive (Vote-Based)'
+                      : 'Competitive (Score-Based)'}
                 </p>
               </div>
             </div>
@@ -230,6 +322,9 @@ export default function WinnerSelectionModal({
           <div className="mb-6">
             <h3 className="text-lg font-semibold mb-3">
               {isPassFailContest ? 'All Approved Participants (Winners)' : 'Select Winners'}
+              {(votingEnabled || galleryEnabled) && !isPassFailContest && (
+                <span className="text-sm text-gem-crystal ml-2">(Sorted by Votes)</span>
+              )}
             </h3>
             <div className="bg-dark-bg border border-gray-700 rounded-lg overflow-hidden">
               <div className="max-h-96 overflow-y-auto">
@@ -240,7 +335,9 @@ export default function WinnerSelectionModal({
                       <th className="px-4 py-2 text-left text-xs font-semibold text-gray-400">Rank</th>
                       <th className="px-4 py-2 text-left text-xs font-semibold text-gray-400">Username</th>
                       <th className="px-4 py-2 text-left text-xs font-semibold text-gray-400">Wallet</th>
-                      <th className="px-4 py-2 text-left text-xs font-semibold text-gray-400">Score</th>
+                      <th className="px-4 py-2 text-left text-xs font-semibold text-gray-400">
+                        {votingEnabled || galleryEnabled ? 'Votes' : 'Score'}
+                      </th>
                       <th className="px-4 py-2 text-left text-xs font-semibold text-gray-400">$BB Balance</th>
                     </tr>
                   </thead>
@@ -269,7 +366,9 @@ export default function WinnerSelectionModal({
                           {submission.wallet_address.slice(0, 6)}...{submission.wallet_address.slice(-4)}
                         </td>
                         <td className="px-4 py-2 text-sm">
-                          {submission.score || 'N/A'}
+                          {votingEnabled || galleryEnabled
+                            ? (submission.vote_count || 0)
+                            : (submission.score || 'N/A')}
                         </td>
                         <td className="px-4 py-2 text-sm">
                           {submission.token_balance || 0}
@@ -296,7 +395,11 @@ export default function WinnerSelectionModal({
               <div>
                 <span className="text-gray-400">Contest Type:</span>
                 <p className="font-medium">
-                  {isPassFailContest ? 'Pass/Fail - All Approved Win' : 'Competitive - Top Scores Win'}
+                  {isPassFailContest
+                    ? 'Pass/Fail - All Approved Win'
+                    : votingEnabled || galleryEnabled
+                      ? 'Competitive - Top Votes Win'
+                      : 'Competitive - Top Scores Win'}
                 </p>
               </div>
             </div>

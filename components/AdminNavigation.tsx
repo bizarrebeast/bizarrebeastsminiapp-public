@@ -43,6 +43,12 @@ const navigationItems = [
         href: '/admin/checkin-analytics',
         icon: '☀️',
         description: 'Check-in rewards & metrics'
+      },
+      {
+        title: 'Attestations',
+        href: '/admin/attestations',
+        icon: '✅',
+        description: 'Ritual 10: Prove It analytics'
       }
     ]
   },
@@ -63,6 +69,12 @@ const navigationItems = [
         description: 'Contest performance'
       },
       {
+        title: 'Daily Flip',
+        href: '/admin/flip',
+        icon: '🪙',
+        description: 'Monthly prize configuration'
+      },
+      {
         title: 'Leaderboards',
         href: '/admin/leaderboards',
         icon: '🏅',
@@ -74,6 +86,12 @@ const navigationItems = [
     title: 'Tools',
     icon: '🛠️',
     children: [
+      {
+        title: 'Contact Submissions',
+        href: '/admin/contact-submissions',
+        icon: '📬',
+        description: 'View contact form messages'
+      },
       {
         title: 'Creative Assets',
         href: '/admin/creative-assets',

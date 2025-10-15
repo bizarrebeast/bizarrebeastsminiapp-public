@@ -9,30 +9,80 @@ const supabase = createClient(
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { userId, ritualId, ritualTitle, completed, timeToComplete } = body;
+    const { userId, walletAddress, ritualId, ritualTitle, completed, timeToComplete, action } = body;
 
-    if (!userId || !ritualId) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    // Support both userId and walletAddress for backwards compatibility
+    if (!userId && !walletAddress) {
+      return NextResponse.json({ error: 'Missing user identifier (userId or walletAddress)' }, { status: 400 });
     }
 
-    // Insert ritual completion record
-    const { data, error } = await supabase
-      .from('ritual_completions')
-      .insert({
-        user_id: userId,
+    if (!ritualId) {
+      return NextResponse.json({ error: 'Missing ritualId' }, { status: 400 });
+    }
+
+    // Prepare the insert data
+    const insertData: any = {
+      ritual_id: ritualId,
+      ritual_title: ritualTitle,
+      completed,
+      time_to_complete: timeToComplete,
+      created_at: new Date().toISOString()
+    };
+
+    // Add user identification - prefer UUID user_id over wallet_address
+    if (userId) {
+      insertData.user_id = userId;
+    }
+    if (walletAddress) {
+      insertData.wallet_address = walletAddress;
+    }
+
+    // Handle different tracking types
+    if (action === 'click_cta') {
+      // Track click action
+      const clickData: any = {
         ritual_id: ritualId,
         ritual_title: ritualTitle,
-        completed,
-        time_to_complete: timeToComplete,
+        action: action,
         created_at: new Date().toISOString()
-      });
+      };
 
-    if (error) {
-      console.error('Failed to track ritual:', error);
-      return NextResponse.json({ error: 'Failed to track ritual' }, { status: 500 });
+      if (userId) {
+        clickData.user_id = userId;
+      }
+      if (walletAddress) {
+        clickData.wallet_address = walletAddress;
+      }
+
+      const { data, error } = await supabase
+        .from('ritual_clicks')
+        .insert(clickData);
+
+      if (error) {
+        console.error('Failed to track ritual click:', error);
+        return NextResponse.json({
+          error: 'Failed to track click',
+          details: error.message
+        }, { status: 500 });
+      }
+
+      return NextResponse.json({ success: true, type: 'click', data });
+    } else {
+      // Track completion
+      const { data, error } = await supabase
+        .from('ritual_completions')
+        .insert(insertData);
+
+      if (error) {
+        console.error('Failed to track ritual completion:', error);
+        return NextResponse.json({
+          error: 'Failed to track completion',
+          details: error.message
+        }, { status: 500 });
+      }
+
+      return NextResponse.json({ success: true, type: 'completion', data });
     }
-
-    return NextResponse.json({ success: true, data });
   } catch (error) {
     console.error('Track ritual error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
@@ -53,13 +103,10 @@ export async function GET(request: NextRequest) {
       startDate.setDate(startDate.getDate() - 30);
     }
 
-    // Fetch ritual completions
+    // Fetch ritual completions - no unified_users join in new schema
     const { data: completions, error } = await supabase
       .from('ritual_completions')
-      .select(`
-        *,
-        unified_users!inner(farcaster_username, wallet_address)
-      `)
+      .select('*')
       .gte('created_at', startDate.toISOString())
       .order('created_at', { ascending: false });
 
@@ -91,10 +138,13 @@ export async function GET(request: NextRequest) {
       }
       ritualStats[completion.ritual_id].completions++;
       ritualStats[completion.ritual_id].totalTime += completion.time_to_complete || 0;
-      ritualStats[completion.ritual_id].users.add(completion.user_id);
+      // Use user_id if available, fallback to wallet_address for uniqueness
+      // Normalize wallet addresses to lowercase for consistent aggregation
+      const userIdentifier = completion.user_id || (completion.wallet_address ? completion.wallet_address.toLowerCase() : null);
+      ritualStats[completion.ritual_id].users.add(userIdentifier);
 
-      // User stats
-      const username = completion.unified_users?.farcaster_username || 'Anonymous';
+      // User stats - use wallet address or user_id as identifier
+      const username = userIdentifier || 'Anonymous';
       if (!userStats[username]) {
         userStats[username] = {
           username,
@@ -128,7 +178,7 @@ export async function GET(request: NextRequest) {
       topPerformers,
       hourlyActivity,
       totalCompletions: completions?.length || 0,
-      uniqueUsers: new Set(completions?.map(c => c.user_id)).size
+      uniqueUsers: new Set(completions?.map(c => c.user_id || (c.wallet_address ? c.wallet_address.toLowerCase() : null))).size
     });
   } catch (error) {
     console.error('Get ritual analytics error:', error);
