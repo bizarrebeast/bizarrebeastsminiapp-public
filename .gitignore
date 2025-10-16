@@ -108,3 +108,44 @@ grant-*.txt
 FRAUD_DETECTION_ANALYSIS.md
 NEYNAR_SETUP.md
 RITUALS_CHECKINS_INSTRUCTIONS.md
+
+# Application and grant materials
+BASE_BATCHES_APPLICATION.md
+BASE-BATCHES-GRANT-APPLICATION.md
+*APPLICATION*.md
+*GRANT*.md
+
+# Internal planning and strategy
+GAMEPLAN.md
+BUILDER_STATS.md
+*MASTERPLAN*.md
+
+# Setup and deployment guides (internal)
+*_SETUP*.md
+*SETUP_GUIDE*.md
+*DEPLOYMENT*.md
+BASE-SEPOLIA-DEPLOYMENT-PLAN.md
+
+# Internal guides and instructions
+*INSTRUCTIONS*.md
+*CONFIRMATION*.md
+SYNC_GUIDE.md
+
+# Security and admin docs
+SECURITY_*.md
+ADMIN_*.md
+PUBLIC_REPO_VERIFIED_SAFE.md
+FINAL_SECURITY_CONFIRMATION.md
+
+# Keep public-facing docs
+!README-PUBLIC.md
+
+# Debug and lookup scripts
+batch-lookup.sh
+lookup-beta-testers.js
+*-lookup*.sh
+*-lookup*.js
+
+# Deployment artifacts
+mainnet-deployment.json
+*deployment*.json
