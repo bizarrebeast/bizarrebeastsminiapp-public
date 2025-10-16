@@ -8,11 +8,11 @@ import { fetchEmpireDataServer } from '@/lib/empire';
 
 // Tier-based daily flip limits
 export const TIER_FLIP_LIMITS: Record<string, number> = {
-  'BIZARRE': 5,
-  'WEIRDO': 3,
-  'ODDBALL': 2,
-  'MISFIT': 1,
-  'NORMIE': 1
+  'BIZARRE': 6,
+  'WEIRDO': 5,
+  'ODDBALL': 4,
+  'MISFIT': 3,
+  'NORMIE': 3
 };
 
 export interface UserTierInfo {

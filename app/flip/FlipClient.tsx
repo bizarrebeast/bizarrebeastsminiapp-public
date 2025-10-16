@@ -344,7 +344,7 @@ export default function FlipClient() {
 
         {/* Header */}
         <div className="max-w-2xl mx-auto text-center mb-6 pt-8">
-          <h1 className="text-5xl font-bold mb-2 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent">
+          <h1 className="text-5xl font-bold mb-2 pb-1 bg-gradient-to-r from-gem-crystal via-gem-gold to-gem-pink bg-clip-text text-transparent">
             BizBe's Daily Coin Toss
           </h1>
           <p className="text-xl text-gem-crystal/80">
@@ -748,7 +748,7 @@ export default function FlipClient() {
             </h3>
             <div className="space-y-2 text-sm text-gray-300">
               <p>1. Pick heads or tails</p>
-              <p>2. Flip daily for free (1-5 times based on Empire tier)</p>
+              <p>2. Flip daily for free (3-6 times based on Empire tier)</p>
               <p>3. Win 5,000 test $BB instantly (50/50 chance)</p>
               <p>4. Each flip = 1 entry into monthly prize drawing</p>
               <p>5. Accumulate test tokens during beta (withdrawals coming soon)</p>
@@ -767,28 +767,28 @@ export default function FlipClient() {
               <div className={`p-3 rounded-lg border ${status?.userTier === 'BIZARRE' ? 'bg-gem-pink/10 border-gem-pink' : 'bg-dark-panel border-gem-crystal/20'}`}>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <span className="text-xl">👑</span>
+                    <span className="text-xl">👹</span>
                     <span className="font-bold text-gem-pink">BIZARRE</span>
                   </div>
-                  <span className="text-gem-crystal font-bold">5 flips/day</span>
+                  <span className="text-gem-crystal font-bold">6 flips/day</span>
                 </div>
               </div>
               <div className={`p-3 rounded-lg border ${status?.userTier === 'WEIRDO' ? 'bg-gem-crystal/10 border-gem-crystal' : 'bg-dark-panel border-gem-crystal/20'}`}>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <span className="text-xl">💎</span>
+                    <span className="text-xl">🤡</span>
                     <span className="font-bold text-gem-crystal">WEIRDO</span>
                   </div>
-                  <span className="text-gem-crystal font-bold">3 flips/day</span>
+                  <span className="text-gem-crystal font-bold">5 flips/day</span>
                 </div>
               </div>
               <div className={`p-3 rounded-lg border ${status?.userTier === 'ODDBALL' ? 'bg-gem-gold/10 border-gem-gold' : 'bg-dark-panel border-gem-crystal/20'}`}>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <span className="text-xl">⭐</span>
+                    <span className="text-xl">🎭</span>
                     <span className="font-bold text-gem-gold">ODDBALL</span>
                   </div>
-                  <span className="text-gem-crystal font-bold">2 flips/day</span>
+                  <span className="text-gem-crystal font-bold">4 flips/day</span>
                 </div>
               </div>
               <div className={`p-3 rounded-lg border ${status?.userTier === 'MISFIT' || status?.userTier === 'NORMIE' || !status?.userTier ? 'bg-gray-500/10 border-gray-500' : 'bg-dark-panel border-gem-crystal/20'}`}>
@@ -797,7 +797,7 @@ export default function FlipClient() {
                     <span className="text-xl">🪙</span>
                     <span className="font-bold text-gray-300">Everyone Else</span>
                   </div>
-                  <span className="text-gem-crystal font-bold">1 flip/day</span>
+                  <span className="text-gem-crystal font-bold">3 flips/day</span>
                 </div>
               </div>
             </div>
